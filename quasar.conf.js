@@ -9,12 +9,13 @@ module.exports = function (ctx) {
     boot: [
       'i18n',
       'axios',
-      'apex'
+      'apex',
+      'bus'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [
-      'app.css'
+      'app.scss'
     ],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
@@ -49,7 +50,16 @@ module.exports = function (ctx) {
       directives: [],
 
       // Quasar plugins
-      plugins: ['AppFullscreen']
+      plugins: [
+        'AppFullscreen',
+        'Notify',
+        'LoadingBar'
+      ],
+      config:{
+        loadingBar:{
+          position: 'top'
+        }
+      }
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
@@ -72,7 +82,7 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       https: false,
-      port: 8080,
+      port: 5050,
       open: true // opens browser window automatically
     },
 

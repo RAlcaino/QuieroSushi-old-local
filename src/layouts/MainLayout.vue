@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header class="bg-header">
       <q-toolbar>
         <q-btn
           flat
@@ -11,7 +11,7 @@
           aria-label="Menu"
         />
         <q-toolbar-title>
-          Quasar App
+          <img src="../assets/brand/logo-qs-400x72-white.png" alt="QuieroSushi.cl Panel" width="50%">
         </q-toolbar-title>
         <q-space/>
         <div class="q-gutter-sm row items-center no-wrap">
@@ -51,9 +51,41 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      content-class="bg-primary text-white"
+      content-class="bg-sidebar text-white"
     >
-      <q-list>
+      <q-list >
+        <div class="user-sidebar">
+          <div class="user-sidebar-border">
+            <q-avatar size="100px">
+              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+            </q-avatar>
+            <q-chip color="primary" text-color="white">
+              Gabriel Romero
+            </q-chip>
+            <q-chip color="green" text-color="white">
+              Online
+            </q-chip>
+          </div>
+        </div>
+        <q-item to="/" active-class="q-item-no-link-highlighting">
+          <q-item-section avatar>
+            <q-icon name="dashboard"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Opcion 1</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-separator color="grey-11" inset/>
+        <q-item to="/to" active-class="q-item-no-link-highlighting">
+          <q-item-section avatar>
+            <q-icon name="dashboard"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Opcion 2</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-separator color="grey-11" inset/>
+        <!--
         <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
@@ -62,6 +94,7 @@
             <q-item-label>Dashboard</q-item-label>
           </q-item-section>
         </q-item>
+        <q-separator color="grey-11" inset/>
         <q-item to="/Dashboard2" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
@@ -70,9 +103,11 @@
             <q-item-label>CRM Dashboard</q-item-label>
           </q-item-section>
         </q-item>
+        <q-separator color="grey-11" inset/>
         <q-expansion-item
           icon="pages"
           label="Pages"
+          expand-icon-class="text-white"
         >
           <q-list class="q-pl-lg">
             <q-item to="/Login-1" active-class="q-item-no-link-highlighting">
@@ -129,6 +164,7 @@
         <q-expansion-item
           icon="map"
           label="Maps"
+          expand-icon-class="text-white"
         >
           <q-list class="q-pl-lg">
             <q-item to="/Map" active-class="q-item-no-link-highlighting">
@@ -246,41 +282,7 @@
             <q-item-label>Product Catalogues</q-item-label>
           </q-item-section>
         </q-item>
-        <q-expansion-item
-          icon="menu_open"
-          label="Menu Levels"
-        >
-          <q-item class="q-ml-xl" active-class="q-item-no-link-highlighting">
-            <q-item-section>
-              <q-item-label>Level 1</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-expansion-item
-            :header-inset-level="0.85"
-            label="Level 2"
-          >
-            <q-item class="q-ml-xl" style="margin-left: 55px  !important;" active-class="q-item-no-link-highlighting">
-              <q-item-section>
-                <q-item-label>Level 2.1</q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-expansion-item
-              :header-inset-level="1"
-              label="Level 2.2"
-            >
-              <q-item style="margin-left: 65px  !important;" active-class="q-item-no-link-highlighting">
-                <q-item-section>
-                  <q-item-label>Level 2.2.1</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item style="margin-left: 65px  !important;" active-class="q-item-no-link-highlighting">
-                <q-item-section>
-                  <q-item-label>Level 2.2.2</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-expansion-item>
-          </q-expansion-item>
-        </q-expansion-item>
+      -->
       </q-list>
     </q-drawer>
 
@@ -309,3 +311,39 @@
         }
     }
 </script>
+
+<style lang="scss">
+  .bg-header{
+    background: #333;
+  }
+  .bg-sidebar{
+    background: #ff2d2d;
+  }
+
+  .user-sidebar{
+    width: 100%;
+    height: 200px;
+    background-image: url('https://cdn.quasar.dev/img/mountains.jpg');
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+
+    .user-sidebar-border{
+      width: 95%;
+      height: 95%;
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid rgba($color: #fff, $alpha: 0.7);
+    }
+  }
+</style>
+
+
+
+

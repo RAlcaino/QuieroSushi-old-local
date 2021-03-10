@@ -34,8 +34,8 @@ const routes = [
     component: () => import('pages/Pricing.vue')
   },
   {
-    path: '/Login-1',
-    component: () => import('pages/Login-1.vue')
+    path: '/login',
+    component: () => import('src/pages/login/TheLogin.vue')
   },
   {
     path: '/Mail',
