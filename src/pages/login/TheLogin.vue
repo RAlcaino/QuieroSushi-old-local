@@ -21,8 +21,8 @@
             >
               <q-input
                 filled
-                v-model="username"
-                label="Usuario/Correo electronico"
+                v-model.lazy="user.email"
+                label="Correo electronico"
                 lazy-rules
                 style="width: 80%"
               />
@@ -30,14 +30,14 @@
               <q-input
                 type="password"
                 filled
-                v-model="password"
+                v-model.lazy="user.password"
                 label="Contraseña"
                 style="width: 80%"
 
               />
 
               <div>
-                <q-btn style="border-radius:20px"  label="Iniciar Sesión" to="/" type="button" color="primary"/>
+                <q-btn style="border-radius:20px"  label="Iniciar Sesión" @click="login()" type="button" color="primary"/>
               </div>
             </q-form>
           </q-card-section>
@@ -48,20 +48,71 @@
 </template>
 
 <script>
+    import jwt_decode from "jwt-decode";
     export default {
         data() {
             return {
-                username: 'Pratik',
-                password: '12345'
+                user:{
+                  email: '',
+                  password: ''
+                }
             }
         },
+        methods:{
+          login(){
+              var url = this.$store.getters['routes/getRoute']('login');
+              console.log(this.user);
+              this.$axios.post(url, this.user)
+              .then(response => {
+                  if(response.data.status==='success'){
+                    localStorage.setItem('token',response.data.result);
+                    this.bus.$emit('reload-login');
+                    this.showNotification(response.data.message, 'positive','check_circle');  
+                    console.log(this.$store.getters['auth/getDataUser']);
+                    console.log(this.$store.getters['auth/getAvailableMenuOptions']);
+                    console.log(this.$store.getters['auth/getAllMenuOptions']);
+                    console.log(this.$store.getters['auth/getAuthenticated']);
+                    this.$router.push({path:'/home'});
+                  }else{
+                    this.showNotification(response.data.message, 'negative', 'error');
+                  }
+                })
+                .catch(error => {
+                  if (error.response) {
+                    if (error.response.status == 500) {
+                      this.showNotification('Ha ocurrido un error con el servidor', 'negative', 'error');
+                    } 
+                    else if(error.response.status == 404){
+                      this.showNotification('Ha ocurrido un error de rutas', 'negative', 'error');
+                    }
+                    else if (error.response.status == 400) {
+                      this.showNotification(error.response.message, 'negative', 'error');
+                    }
+                  } 
+                  else {
+                    this.showNotification(error.message, 'negative', 'error');
+                  }
+                });
+
+          },
+          showNotification: function(message, color,icon) {
+            this.$q.notify({
+              progress: true,
+              position:'top',
+              message: message,
+              color: color,
+              icon: icon,
+            });
+          },
+
+        }
     }
 </script>
 
 <style>
 
   .bg-image {
-   background: #ff2d2d;
+   background: #333;
   }
 
   .form-login{

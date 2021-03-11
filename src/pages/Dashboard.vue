@@ -32,6 +32,10 @@
         TodoList: () =>  import('components/list/TodoList'),
         TableVisits: () =>  import('components/tables/TableVisits'),
     },
+    mounted(){
+      this.bus.$emit('reload-login');
+      console.log(this.$store.getters['auth/getDataUser']);
+    },
     data() {
       return {
       mode: 'list',

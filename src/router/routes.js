@@ -1,10 +1,41 @@
+import jwt_decode from "jwt-decode";
+
 const routes = [
   {
     path: '/',
+    beforeEnter:(to,from,next)=>{
+      console.log(isAuthenticated());
+      if(isAuthenticated()){
+        next("/home");
+      }else{
+        next("/login");
+      }
+    }
+  },
+  {
+    path: '/home',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      {path: '', component: () => import('pages/Dashboard.vue')},
+      { 
+        path: '', 
+        component: () => import('pages/Dashboard.vue'),
+        beforeEnter:(to,from,next)=>{
+          if(isAuthenticated()){
+            if(accessTo('All')){
+              next();
+            }
+            else{
+              next("/404");
+            }
+          }else{
+            next("/login");
+          }
+        }
+      },
       {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},
+      
+      
+      /* Template Paths - It could be useful*/
       {path: '/Profile', component: () => import('pages/UserProfile.vue')},
       {path: '/Map', component: () => import('pages/Map.vue')},
       {path: '/MapMarker', component: () => import('pages/MapMarker.vue')},
@@ -26,7 +57,7 @@ const routes = [
     component: () => import('pages/LockScreen.vue')
   },
   {
-    path: '/Maintenance',
+    path: '/mantenimiento',
     component: () => import('pages/Maintenance.vue')
   },
   {
@@ -35,7 +66,15 @@ const routes = [
   },
   {
     path: '/login',
-    component: () => import('src/pages/login/TheLogin.vue')
+    component: () => import('src/pages/login/TheLogin.vue'),
+    beforeEnter:(to,from,next)=>{
+      if(isAuthenticated()){
+        next("/home");
+      }else{
+        next();
+      }
+    }
+
   },
   {
     path: '/Mail',
@@ -54,5 +93,32 @@ if (process.env.MODE !== 'ssr') {
     component: () => import('pages/Error404.vue')
   })
 }
+
+function isAuthenticated(){
+  var token=localStorage.getItem('token');
+
+  if(token!==null){
+    //Check token here 
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+function accessTo(role){
+  let user= jwt_decode(localStorage.getItem('token'));
+
+  if(role===user.role.trim() || role==='All'){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+
+ 
+
 
 export default routes

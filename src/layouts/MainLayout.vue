@@ -11,7 +11,7 @@
           aria-label="Menu"
         />
         <q-toolbar-title>
-          <img src="../assets/brand/logo-qs-400x72-white.png" alt="QuieroSushi.cl Panel" width="50%">
+          <img src="../assets/brand/logo-qs-400x72-white.png" alt="QuieroSushi.cl Panel" id="img-logo">
         </q-toolbar-title>
         <q-space/>
         <div class="q-gutter-sm row items-center no-wrap">
@@ -38,11 +38,14 @@
               </q-list>
             </q-menu>
           </q-btn>
-          <q-btn round flat>
+
+          <q-btn round dense flat color="white" icon="logout" @click="logout()">
+          </q-btn>
+          <!--<q-btn round flat>
             <q-avatar size="26px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar>
-          </q-btn>
+          </q-btn>-->
         </div>
       </q-toolbar>
     </q-header>
@@ -308,6 +311,11 @@
             return {
                 leftDrawerOpen: false,
             }
+        },
+        methods:{
+          logout(){
+            this.bus.$emit('logout');
+          }
         }
     }
 </script>
@@ -342,6 +350,12 @@
       border: 1px solid rgba($color: #fff, $alpha: 0.7);
     }
   }
+
+  #img-logo{
+    padding-top: 5px ;
+    width: 80% ;
+  }
+
 </style>
 
 

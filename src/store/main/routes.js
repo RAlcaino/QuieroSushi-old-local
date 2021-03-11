@@ -1,12 +1,8 @@
 const state = {
-    urlGlobal:'http://localhost:8080/api',
+    urlGlobal:'http://190.79.237.112:5000/api',
     routes: [{
-        name: "home",
-        link: "/home"
-    },
-    {
-        name: "home-2",
-        link: "/home/{id}"
+        name: "login",
+        link: "/login"
     },]
 }
 const mutations = {
