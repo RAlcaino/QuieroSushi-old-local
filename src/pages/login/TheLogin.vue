@@ -59,14 +59,13 @@
             }
         },
         methods:{
-          login(){
+          login(){              
               var url = this.$store.getters['routes/getRoute']('login');
               console.log(this.user);
               this.$axios.post(url, this.user)
               .then(response => {
                   if(response.data.status==='success'){
                     localStorage.setItem('token',response.data.result);
-                    this.bus.$emit('reload-login');
                     this.showNotification(response.data.message, 'positive','check_circle');  
                     console.log(this.$store.getters['auth/getDataUser']);
                     console.log(this.$store.getters['auth/getAvailableMenuOptions']);

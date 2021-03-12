@@ -70,6 +70,19 @@
             </q-chip>
           </div>
         </div>
+        <div v-for="option in optionsAvailable" :key="option.label">
+          <q-item :to="option.link" active-class="q-item-no-link-highlighting">
+            <q-item-section avatar>
+              <q-icon :name="option.icon"/>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{option.label}}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-separator color="grey-11" inset/>
+        </div>
+
+        <!--
         <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
@@ -88,7 +101,7 @@
           </q-item-section>
         </q-item>
         <q-separator color="grey-11" inset/>
-        <!--
+
         <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
@@ -306,14 +319,20 @@
             Messages,
             EssentialLink
         },
-
+        mounted(){
+          this.bus.$emit('check-session');
+          console.log(this.$store.getters['auth/getAvailableMenuOptions']);
+          this.optionsAvailable=this.$store.getters['auth/getAvailableMenuOptions'];
+        },
         data() {
             return {
                 leftDrawerOpen: false,
+                optionsAvailable:[]
             }
         },
         methods:{
           logout(){
+            this.optionsAvailable=[];
             this.bus.$emit('logout');
           }
         }

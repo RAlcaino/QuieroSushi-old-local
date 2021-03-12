@@ -33,8 +33,7 @@
         TableVisits: () =>  import('components/tables/TableVisits'),
     },
     mounted(){
-      this.bus.$emit('reload-login');
-      console.log(this.$store.getters['auth/getDataUser']);
+      this.bus.$emit('check-session');
     },
     data() {
       return {

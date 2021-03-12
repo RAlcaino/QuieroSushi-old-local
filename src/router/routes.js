@@ -4,7 +4,6 @@ const routes = [
   {
     path: '/',
     beforeEnter:(to,from,next)=>{
-      console.log(isAuthenticated());
       if(isAuthenticated()){
         next("/home");
       }else{

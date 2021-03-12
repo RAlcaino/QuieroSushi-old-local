@@ -8,42 +8,37 @@ const state = {
         local_name:'',
         token:''
     },
-    allMenuOptions: [{
-        label: 'opcion-cajero 1',
-        link: '/opcion-cajero-1',
-        icon:'home',
-        role:'cajero',
-    },
-    {
-        label: 'opcion-cajero 2',
-        link: '/opcion-cajero-2',
-        icon:'home',
-        role:'cajero'
-    },
-    {
-        label: 'opcion-gerente 1',
-        link: '/opcion-gerente-1',
-        icon:'home',
-        role:'gerente'
-    },
-    {
-        label: 'opcion-gerente 2',
-        link: '/opcion-gerente-2',
-        icon:'home',
-        role:'gerente'
-    },
-    {
-        label: 'opcion-admin 1',
-        link: '/opcion-admin-1',
-        icon:'home',
-        role:'admin'
-    },
-    {
-        label: 'opcion-admin 2',
-        link: '/opcion-admin-2',
-        icon:'home',
-        role:'admin'
-    }],
+    allMenuOptions: [
+        {
+            role:'Cajero',
+            options:[
+                {label: 'opcion-cajero 1', link: '/opcion-cajero-1', icon:'home'},
+                {label: 'opcion-cajero 2', link: '/opcion-cajero-2', icon:'home'}
+            ]
+
+        },
+        {
+            role:'Gerente',
+            options:[
+                {label: 'opcion-gerente 1', link: '/opcion-gerente-1', icon:'home'},
+                {label: 'opcion-gerente 2', link: '/opcion-gerente-2', icon:'home'}
+            ]
+        },
+        {
+            role:'Administrador',
+            options:[
+                {label: 'opcion-admin 1', link: '/opcion-admin-1', icon:'home'},
+                {label: 'opcion-admin 2', link: '/opcion-admin-2', icon:'home'}
+            ]
+        },
+        {
+            role:'Super Admin',
+            options:[
+                {label: 'opcion-sudo 1', link: '/opcion-sudo-1', icon:'home'},
+                {label: 'opcion-sudo 2', link: '/opcion-sudo-2', icon:'home'}
+            ]
+        },
+    ],
     availableMenuOptions:[]
 
 }
@@ -56,10 +51,10 @@ const mutations = {
         state.user.email=payload.email;
         state.user.role=payload.role;
         state.user.local_id=payload.local_id;
-        state.user.local_id=payload.local_name;
+        state.user.local_name=payload.local_name;
         state.user.token=payload.token;
 
-        state.availableMenuOptions=state.allMenuOptions.filter(item => item.role===payload.role.trim());
+        state.availableMenuOptions=state.allMenuOptions.find(item => item.role===payload.role.trim()).options;
         state.authenticated=true;
     },
     resetDataUserSesion(state){
