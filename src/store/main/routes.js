@@ -1,5 +1,5 @@
 const state = {
-    urlGlobal:'http://190.79.237.112:5000/api',
+    urlGlobal:'http://190.79.67.37:5000/api',
     routes: [{
         name: "login",
         link: "/login"

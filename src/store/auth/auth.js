@@ -4,8 +4,6 @@ const state = {
         id: null,
         email:'',
         role:'',
-        local_id: null,
-        local_name:'',
         token:''
     },
     allMenuOptions: [
@@ -49,20 +47,16 @@ const mutations = {
     setDataUserSesion(state, payload){
         state.user.id=payload.id;
         state.user.email=payload.email;
-        state.user.role=payload.role;
-        state.user.local_id=payload.local_id;
-        state.user.local_name=payload.local_name;
+        state.user.role=payload.role.name;
         state.user.token=payload.token;
 
-        state.availableMenuOptions=state.allMenuOptions.find(item => item.role===payload.role.trim()).options;
+        state.availableMenuOptions=state.allMenuOptions.find(item => item.role===payload.role.name.trim()).options;
         state.authenticated=true;
     },
     resetDataUserSesion(state){
         state.user.id=null;
         state.user.email='';
         state.user.role='';
-        state.user.local_id=null;
-        state.user.local_name='';
         state.user.token='';
 
         state.availableMenuOptions=[];

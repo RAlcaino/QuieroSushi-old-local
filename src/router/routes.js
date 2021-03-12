@@ -108,7 +108,7 @@ function isAuthenticated(){
 function accessTo(role){
   let user= jwt_decode(localStorage.getItem('token'));
 
-  if(role===user.role.trim() || role==='All'){
+  if(role===user.role.name.trim() || role==='All'){
     return true;
   }
   else{

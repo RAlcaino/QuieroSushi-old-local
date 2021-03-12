@@ -48,7 +48,6 @@
 </template>
 
 <script>
-    import jwt_decode from "jwt-decode";
     export default {
         data() {
             return {
@@ -59,18 +58,21 @@
             }
         },
         methods:{
-          login(){              
+          login(){
+              if(this.validate(this.user)){
+                return;
+              }           
+              
               var url = this.$store.getters['routes/getRoute']('login');
-              console.log(this.user);
               this.$axios.post(url, this.user)
               .then(response => {
                   if(response.data.status==='success'){
                     localStorage.setItem('token',response.data.result);
                     this.showNotification(response.data.message, 'positive','check_circle');  
-                    console.log(this.$store.getters['auth/getDataUser']);
+                    /*console.log(this.$store.getters['auth/getDataUser']);
                     console.log(this.$store.getters['auth/getAvailableMenuOptions']);
                     console.log(this.$store.getters['auth/getAllMenuOptions']);
-                    console.log(this.$store.getters['auth/getAuthenticated']);
+                    console.log(this.$store.getters['auth/getAuthenticated']);*/
                     this.$router.push({path:'/home'});
                   }else{
                     this.showNotification(response.data.message, 'negative', 'error');
@@ -85,7 +87,13 @@
                       this.showNotification('Ha ocurrido un error de rutas', 'negative', 'error');
                     }
                     else if (error.response.status == 400) {
-                      this.showNotification(error.response.message, 'negative', 'error');
+                      if(typeof error.response.data.message ==='object'){
+                        for (var field in error.response.data.message) {
+                          this.showNotification(error.response.data.message[field], 'negative','error');
+                        }
+                      }else{
+                        this.showNotification(error.response.data.message, 'negative','error');
+                      }
                     }
                   } 
                   else {
@@ -103,6 +111,25 @@
               icon: icon,
             });
           },
+          validate(user){
+            let flag=false;
+
+            if(user.email==='' && user.password===''){
+                this.showNotification('El correo es obligatorio', 'negative', 'error');
+                this.showNotification('La contraseña es obligatoria', 'negative', 'error');
+                flag=true;
+            }
+            else if(user.email=='' && user.password!==''){
+               this.showNotification('El correo es obligatorio', 'negative', 'error');
+               flag=true;
+            }
+            else if(user.email!=='' && user.password==''){
+               this.showNotification('La contraseña es obligatoria', 'negative', 'error');
+               flag=true;
+            }
+
+            return flag;
+          }
 
         }
     }

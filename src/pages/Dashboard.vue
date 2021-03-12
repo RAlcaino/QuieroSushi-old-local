@@ -34,6 +34,8 @@
     },
     mounted(){
       this.bus.$emit('check-session');
+      /*console.log(this.$store.getters['auth/getAvailableMenuOptions']);
+      console.log(this.$store.getters['auth/getDataUser']);*/
     },
     data() {
       return {
