@@ -320,9 +320,8 @@
             EssentialLink
         },
         mounted(){
-          this.bus.$emit('check-session');
-          /*console.log(this.$store.getters['auth/getAvailableMenuOptions']);
-          console.log(this.$store.getters['auth/getDataUser']);*/
+          console.log('main layout mounted');
+          console.log(this.$store.getters['auth/getAvailableMenuOptions']);
           this.optionsAvailable=this.$store.getters['auth/getAvailableMenuOptions'];
         },
         data() {

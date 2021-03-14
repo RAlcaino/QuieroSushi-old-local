@@ -6,26 +6,35 @@
 
 <script>
 import jwt_decode from "jwt-decode";
+import SecureLS from "secure-ls";
+
 export default {
   name: 'App',
   mounted(){
-    this.bus.$on('check-session',()=>{
-      this.checkSession();
-    });
-    this.bus.$on('logout',()=>{
-      localStorage.removeItem('token');
-      this.$router.push({path:'/login'});
-    });
+    console.log('app mounted');
+    this.init();
   },
   methods:{
-    checkSession(){
-        var token=localStorage.getItem('token');
-        
-        if(token!==undefined){
+    init(){
+      this.bus.$on('login',()=>{
+        this.login();
+      });
+      this.bus.$on('logout',()=>{
+        this.logout();
+      });
+    },
+    login(){
+        var ls = new SecureLS({ isCompression: false });
+        var token=ls.get('token');
+        if(token!==''){
           let user=jwt_decode(token);
           user.token=token;
           this.$store.commit('auth/setDataUserSesion',user);
         }
+    },
+    logout(){
+      localStorage.clear();
+      this.$router.push({path:'/login'});
     }
   }
 }

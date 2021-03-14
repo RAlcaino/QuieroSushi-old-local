@@ -48,6 +48,7 @@
 </template>
 
 <script>
+    import SecureLS from "secure-ls";
     export default {
         data() {
             return {
@@ -61,14 +62,16 @@
           login(){
               if(this.validate(this.user)){
                 return;
-              }           
-              
+              }     
+              var ls = new SecureLS({ isCompression: false });
               var url = this.$store.getters['routes/getRoute']('login');
+
               this.$axios.post(url, this.user)
               .then(response => {
                   if(response.data.status==='success'){
-                    localStorage.setItem('token',response.data.result);
+                    ls.set('token',response.data.result);
                     this.showNotification(response.data.message, 'positive','check_circle');  
+                    this.bus.$emit('login');
                     /*console.log(this.$store.getters['auth/getDataUser']);
                     console.log(this.$store.getters['auth/getAvailableMenuOptions']);
                     console.log(this.$store.getters['auth/getAllMenuOptions']);
@@ -126,6 +129,10 @@
             else if(user.email!=='' && user.password==''){
                this.showNotification('La contraseña es obligatoria', 'negative', 'error');
                flag=true;
+            }
+            else if(!user.email.includes('@')){
+                this.showNotification('Debe ingresar un correo valido', 'negative', 'error');
+                flag=true;
             }
 
             return flag;

@@ -1,4 +1,6 @@
 import jwt_decode from "jwt-decode";
+import SecureLS from "secure-ls";
+var ls = new SecureLS({ isCompression: false });
 
 const routes = [
   {
@@ -17,7 +19,7 @@ const routes = [
     children: [
       { 
         path: '', 
-        component: () => import('pages/Dashboard.vue'),
+        component: () => import('pages/dashboard/Dashboard.vue'),
         beforeEnter:(to,from,next)=>{
           if(isAuthenticated()){
             if(accessTo('All')){
@@ -65,7 +67,7 @@ const routes = [
   },
   {
     path: '/login',
-    component: () => import('src/pages/login/TheLogin.vue'),
+    component: () => import('pages/login/TheLogin.vue'),
     beforeEnter:(to,from,next)=>{
       if(isAuthenticated()){
         next("/home");
@@ -94,9 +96,9 @@ if (process.env.MODE !== 'ssr') {
 }
 
 function isAuthenticated(){
-  var token=localStorage.getItem('token');
-
-  if(token!==null){
+  let token=ls.get('token');
+  
+  if(token!==''){
     //Check token here 
     return true;
   }
@@ -106,7 +108,7 @@ function isAuthenticated(){
 }
 
 function accessTo(role){
-  let user= jwt_decode(localStorage.getItem('token'));
+  let user= jwt_decode(ls.get('token'));
 
   if(role===user.role.name.trim() || role==='All'){
     return true;
