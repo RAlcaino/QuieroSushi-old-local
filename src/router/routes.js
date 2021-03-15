@@ -33,10 +33,27 @@ const routes = [
           }
         }
       },
-      {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},
+      { 
+        path: '/pedidos', 
+        component: () => import('pages/orders/TheOrders.vue'),
+        beforeEnter:(to,from,next)=>{
+          if(isAuthenticated()){
+            if(accessTo('All')){
+              next();
+            }
+            else{
+              next("/404");
+            }
+          }else{
+            next("/login");
+          }
+        }
+      },
+      
       
       
       /* Template Paths - It could be useful*/
+      {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},
       {path: '/Profile', component: () => import('pages/UserProfile.vue')},
       {path: '/Map', component: () => import('pages/Map.vue')},
       {path: '/MapMarker', component: () => import('pages/MapMarker.vue')},

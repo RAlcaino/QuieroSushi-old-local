@@ -66,16 +66,30 @@
               var ls = new SecureLS({ isCompression: false });
               var url = this.$store.getters['routes/getRoute']('login');
 
+              //Without backend
+              setTimeout(()=>{
+                    ls.set('token','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImdhYnJpZWxAZ21haWwuY29tIiwicm9sZSI6eyJuYW1lIjoiQ2FqZXJvIn0sImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNjAwMDAwMDAwfQ.7BgE71uhy9vytS1vugWhcznDqjK6jZmAG50mV51ezJQ');
+                    this.showNotification('Inicio de sesión exitoso', 'positive','check_circle');         
+                    this.bus.$emit('login');
+                    /*console.log(this.$store.getters['auth/getDataUser']);
+                    console.log(this.$store.getters['auth/getAvailableMenuOptions']);
+                    console.log(this.$store.getters['auth/getAllMenuOptions']);
+                    console.log(this.$store.getters['auth/getAuthenticated']);*/
+                    this.$router.push({path:'/home'});
+              },3000);
+              /*var ls = new SecureLS({ isCompression: false });
+              var url = this.$store.getters['routes/getRoute']('login');
+
               this.$axios.post(url, this.user)
               .then(response => {
                   if(response.data.status==='success'){
                     ls.set('token',response.data.result);
                     this.showNotification(response.data.message, 'positive','check_circle');  
                     this.bus.$emit('login');
-                    /*console.log(this.$store.getters['auth/getDataUser']);
+                    console.log(this.$store.getters['auth/getDataUser']);
                     console.log(this.$store.getters['auth/getAvailableMenuOptions']);
                     console.log(this.$store.getters['auth/getAllMenuOptions']);
-                    console.log(this.$store.getters['auth/getAuthenticated']);*/
+                    console.log(this.$store.getters['auth/getAuthenticated']);
                     this.$router.push({path:'/home'});
                   }else{
                     this.showNotification(response.data.message, 'negative', 'error');
@@ -102,7 +116,7 @@
                   else {
                     this.showNotification(error.message, 'negative', 'error');
                   }
-                });
+                });*/
 
           },
           showNotification: function(message, color,icon) {

@@ -10,30 +10,31 @@ const state = {
         {
             role:'Cajero',
             options:[
-                {label: 'opcion-cajero 1', link: '/opcion-cajero-1', icon:'home'},
-                {label: 'opcion-cajero 2', link: '/opcion-cajero-2', icon:'home'}
+                {label: 'Home', link: '/home', icon:'home'},
+                {label: 'Pedidos', link: '/pedidos', icon:'delivery_dining'}
             ]
 
         },
         {
             role:'Gerente',
             options:[
-                {label: 'opcion-gerente 1', link: '/opcion-gerente-1', icon:'home'},
-                {label: 'opcion-gerente 2', link: '/opcion-gerente-2', icon:'home'}
+                {label: 'Home', link: '/home', icon:'home'},
+                {label: 'Pedidos', link: '/pedidos', icon:'delivery_dining'}
             ]
         },
         {
             role:'Administrador',
             options:[
-                {label: 'opcion-admin 1', link: '/opcion-admin-1', icon:'home'},
-                {label: 'opcion-admin 2', link: '/opcion-admin-2', icon:'home'}
+                {label: 'Home', link: '/home', icon:'home'},
+                {label: 'Pedidos', link: '/pedidos', icon:'delivery_dining'}
             ]
         },
         {
             role:'Super Admin',
             options:[
-                {label: 'opcion-sudo 1', link: '/opcion-sudo-1', icon:'home'},
-                {label: 'opcion-sudo 2', link: '/opcion-sudo-2', icon:'home'}
+                {label: 'Home', link: '/home', icon:'home'},
+                {label: 'Pedidos', link: '/pedidos', icon:'delivery_dining'}
+
             ]
         },
     ],

@@ -33,6 +33,7 @@ export default {
         }
     },
     logout(){
+      this.$store.commit('auth/resetDataUserSesion');
       localStorage.clear();
       this.$router.push({path:'/login'});
     }
