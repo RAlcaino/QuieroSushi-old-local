@@ -1,93 +1,85 @@
 const state = {
-    authenticated:false,
-    user:{
-        id: null,
-        email:'',
-        role:'',
-        token:''
+  authenticated: false,
+  token: "",
+  user: {
+    id: null,
+    email: "",
+    role: "",
+    localName: "",
+    localId: null
+  },
+  allMenuOptions: [
+    {
+      label: "Home",
+      link: "/home",
+      icon: "home",
+      role: ["Cajero", "Gerente", "Administrador", "Super Admin"]
     },
-    allMenuOptions: [
-        {
-            role:'Cajero',
-            options:[
-                {label: 'Home', link: '/home', icon:'home'},
-                {label: 'Pedidos', link: '/pedidos', icon:'delivery_dining'}
-            ]
-
-        },
-        {
-            role:'Gerente',
-            options:[
-                {label: 'Home', link: '/home', icon:'home'},
-                {label: 'Pedidos', link: '/pedidos', icon:'delivery_dining'}
-            ]
-        },
-        {
-            role:'Administrador',
-            options:[
-                {label: 'Home', link: '/home', icon:'home'},
-                {label: 'Pedidos', link: '/pedidos', icon:'delivery_dining'}
-            ]
-        },
-        {
-            role:'Super Admin',
-            options:[
-                {label: 'Home', link: '/home', icon:'home'},
-                {label: 'Pedidos', link: '/pedidos', icon:'delivery_dining'}
-
-            ]
-        },
-    ],
-    availableMenuOptions:[]
-
-}
+    {
+      label: "Pedidos",
+      link: "/pedidos",
+      icon: "delivery_dining",
+      role: ["Cajero", "Gerente", "Administrador", "Super Admin"]
+    }
+  ],
+  availableMenuOptions: []
+};
 const mutations = {
-    setAvailableMenuOptions(state,payload){
-        state.availableMenuOptions=payload;
-    },
-    setDataUserSesion(state, payload){
-        state.user.id=payload.id;
-        state.user.email=payload.email;
-        state.user.role=payload.role.name;
-        state.user.token=payload.token;
+  setAvailableMenuOptions(state, payload) {
+    state.availableMenuOptions = payload;
+  },
+  setDataUserSesion(state, payload) {
+    state.user.id = payload.id;
+    state.user.email = payload.email;
+    state.user.role = payload.role.name;
+    state.user.localId = payload.localId;
+    state.user.localName = payload.localName;
 
-        state.availableMenuOptions=state.allMenuOptions.find(item => item.role===payload.role.name.trim()).options;
-        state.authenticated=true;
-    },
-    resetDataUserSesion(state){
-        state.user.id=null;
-        state.user.email='';
-        state.user.role='';
-        state.user.token='';
+    state.token = payload.token;
+    console.log()
+    state.availableMenuOptions = state.allMenuOptions.filter(item =>
+        item.role.some(item2 => item2 === payload.role.name.trim())
+    );
+    state.authenticated = true;
+  },
+  resetDataUserSesion(state) {
+    state.user.id = null;
+    state.user.email = "";
+    state.user.role = "";
+    state.user.localId = null;
+    state.user.localName = "";
 
-        state.availableMenuOptions=[];
-        state.authenticated=false;
-    }
-
-}
-const actions = {
-
-}
+    state.token = "";
+    state.availableMenuOptions = [];
+    state.authenticated = false;
+  }
+};
+const actions = {};
 const getters = {
-    getAllMenuOptions: (state) => {
-        return state.allMenuOptions;
-    },
-    getAvailableMenuOptions: (state) => {
-        return state.availableMenuOptions;
-    },
-    getDataUser(state){
-        return state.user;
-    },
-    getAuthenticated(state){
-        return state.authenticated;
-    }
-
-}
+  getAllMenuOptions: state => {
+    return state.allMenuOptions;
+  },
+  getAvailableMenuOptions: state => {
+    return state.availableMenuOptions;
+  },
+  getDataUser(state) {
+    return state.user;
+  },
+  getAuthenticated(state) {
+    return state.authenticated;
+  },
+  getDataLocal(state) {
+    return {
+      id: state.user.localId,
+      name: state.user.localName
+    };
+  }
+};
 
 export default {
-    namespaced: true,
-    state,
-    mutations,
-    actions,
-    getters
-}
+  namespaced: true,
+  state,
+  mutations,
+  actions,
+  getters
+};

@@ -68,7 +68,7 @@
 
               //Without backend
               setTimeout(()=>{
-                    ls.set('token','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImdhYnJpZWxAZ21haWwuY29tIiwicm9sZSI6eyJuYW1lIjoiQ2FqZXJvIn0sImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNjAwMDAwMDAwfQ.7BgE71uhy9vytS1vugWhcznDqjK6jZmAG50mV51ezJQ');
+                    ls.set('token','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImdhYnJpZWxAZ21haWwuY29tIiwicm9sZSI6eyJuYW1lIjoiQ2FqZXJvIn0sImxvY2FsSWQiOjIsImxvY2FsTmFtZSI6IlN1c2hpIFZJUCIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNjAwMDAwMDAwfQ.TQkqLa4J7pUKcCnz7ZvRPk50liBMucqrS0Jv7KiIn4k');
                     this.showNotification('Inicio de sesión exitoso', 'positive','check_circle');         
                     this.bus.$emit('login');
                     /*console.log(this.$store.getters['auth/getDataUser']);

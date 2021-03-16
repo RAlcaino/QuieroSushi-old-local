@@ -2,11 +2,9 @@
   <q-page class="q-pa-sm" style="background:white">
     <q-toolbar class="bg-primary text-white" style="border-radius:50px">
       <q-btn flat round dense icon="delivery_dining" />
-      <q-toolbar-title>
-        Pedidos
-      </q-toolbar-title>
+      <q-toolbar-title> Pedidos de {{ local.name }} </q-toolbar-title>
+      <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync()"/>
       <q-btn flat round dense icon="info" class="q-mr-xs" />
-      <q-btn flat round dense icon="help" />
     </q-toolbar>
     <div class="orders-tab">
       <q-splitter
@@ -46,17 +44,18 @@
             transition-next="jump-up"
           >
             <q-tab-panel name="not-confirmed">
-                <not-confirmed :data="data"></not-confirmed>
+              <not-confirmed
+                :ordersNotConfirmed="ordersNotConfirmed"
+              ></not-confirmed>
             </q-tab-panel>
 
-            <q-tab-panel name="confirmed"> 
-                <the-confirmed :data="data"></the-confirmed>
+            <q-tab-panel name="confirmed">
+              <the-confirmed :ordersConfirmed="ordersConfirmed"></the-confirmed>
             </q-tab-panel>
 
             <q-tab-panel name="done">
-                <the-done :data="data"></the-done>
+              <the-done :ordersDone="ordersDone"></the-done>
             </q-tab-panel>
-
           </q-tab-panels>
         </template>
       </q-splitter>
@@ -75,11 +74,24 @@ export default {
     TheConfirmed,
     TheDone
   },
+  created() {
+    this.local = this.$store.getters["auth/getDataLocal"];
+    this.sync();
+    /*console.log(this.ordersNotConfirmed);
+    console.log(this.ordersConfirmed);
+    console.log(this.ordersDone);*/
+  },
   data() {
     return {
       tab: "not-confirmed",
       splitterModel: 20,
-      
+      local: {
+        id: null,
+        name: ""
+      },
+      ordersDone: [],
+      ordersConfirmed: [],
+      ordersNotConfirmed: [],
       data: [
         {
           name: "Frozen Yogurt",
@@ -141,7 +153,374 @@ export default {
           fat: 26.0,
           carbs: 65
         }
+      ],
+      result: [
+        {
+          id: 105,
+          status: "done",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "done",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "done",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "not-confimed",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "not-confirmed",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "not-confirmed",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "confirmed",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "confirmed",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "confirmed",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "done",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        },
+        {
+          id: 105,
+          status: "not-confirmed",
+          idLocal: 3,
+          requestedTime: "2021-02-04 18:51:21",
+          orderType: "despacho",
+          subtotal: 13000,
+          deliveryCost: 2000,
+          total: 15000,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                name: "Coca-Cola",
+                price: 3000
+              }
+            },
+            {
+              quantity: 4,
+              detail: {
+                name: "Gyosas",
+                price: 2500
+              }
+            }
+          ],
+          payDetail: {
+            user: "Juan Perez",
+            userPhone: "3432423423",
+            pay: "credito",
+            address: "Calle 1 Apto 10 Edificio Pina"
+          }
+        }
       ]
+    };
+  },
+  methods: {
+    sync() {
+      setTimeout(() => {
+        this.ordersDone = this.result.filter(item => item.status === "done");
+        this.ordersConfirmed = this.result.filter(
+          item => item.status === "confirmed"
+        );
+        this.ordersNotConfirmed = this.result.filter(
+          item => item.status === "not-confirmed"
+        );
+      }, 5000);
     }
   }
 };

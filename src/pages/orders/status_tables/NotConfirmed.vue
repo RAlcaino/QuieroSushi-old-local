@@ -1,73 +1,75 @@
 <template>
-  <q-table
-    :pagination.sync="pagination"
-    class="q-my-xs q-my-md"
-    :data="data"
-    :columns="columns"
-    row-key="key"
-    :loading="loading"
-    no-data-label="I didn't find anything for you"
-    title="Pedidos sin confirmar"
-    :filter="filter"
-    style="border-radius: 10px !important"
-  >
-    <template v-slot:header="props">
-      <q-tr :props="props">
-        <q-th
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-          v-on:click="onChangeField(col, datatable.currentPage)"
+  <div>
+    <more-details></more-details>
+    <q-table
+      :pagination.sync="pagination"
+      class="q-my-xs q-my-md"
+      :data="ordersNotConfirmed"
+      :columns="columns"
+      row-key="key"
+      :loading="loading"
+      no-data-label="I didn't find anything for you"
+      title="Pedidos sin confirmar"
+      :filter="filter"
+      style="border-radius: 10px !important"
+    >
+      <template v-slot:header="props">
+        <q-tr :props="props">
+          <q-th
+            v-for="col in props.cols"
+            :key="col.name"
+            :props="props"
+            v-on:click="onChangeField(col, datatable.currentPage)"
+          >
+            {{ col.label }}
+          </q-th>
+          <q-th auto-width />
+        </q-tr>
+      </template>
+
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+            {{ col.value }}
+          </q-td>
+          <base-more-component :props="props" color="primary">
+            <q-item clickable @click="moreDetails(props.row)">
+              <q-item-section class="i-section">
+                <q-icon name="more" class="i-icon" />
+                <span> Ver más</span>
+              </q-item-section>
+            </q-item>
+            <q-separator />
+          </base-more-component>
+        </q-tr>
+      </template>
+
+      <template v-slot:top-right>
+        <q-input
+          borderless
+          dense
+          debounce="300"
+          v-model="filter"
+          placeholder="Buscar"
         >
-          {{ col.label }}
-        </q-th>
-        <q-th auto-width />
-      </q-tr>
-    </template>
-
-    <template v-slot:body="props">
-      <q-tr :props="props">
-        <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          {{ col.value }}
-        </q-td>
-        <base-more-component :props="props" color="primary">
-          <q-item clickable>
-            <q-item-section>New tab</q-item-section>
-          </q-item>
-          <q-item clickable>
-            <q-item-section>New incognito tab</q-item-section>
-          </q-item>
-          <q-separator />
-          <q-item clickable>
-            <q-item-section>Help &amp; Feedback</q-item-section>
-          </q-item>
-        </base-more-component>
-      </q-tr>
-    </template>
-
-    <template v-slot:top-right>
-      <q-input
-        borderless
-        dense
-        debounce="300"
-        v-model="filter"
-        placeholder="Buscar"
-      >
-        <template v-slot:append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-    </template>
-  </q-table>
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+    </q-table>
+  </div>
 </template>
 
 <script>
 import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
+import MoreDetails from "./dialogs/MoreDetails.vue";
 
 export default {
-  props: ["data"],
+  props: ["ordersNotConfirmed"],
   components: {
-    BaseMoreComponent
+    BaseMoreComponent,
+    MoreDetails
   },
   data() {
     return {
@@ -78,27 +80,57 @@ export default {
       },
       columns: [
         {
-          name: "desc",
+          name: "id",
           required: true,
-          label: "Dessert (100g serving)",
+          label: "ID Pedido",
           align: "left",
-          field: row => row.name,
+          field: row => row.id,
           format: val => `${val}`,
           sortable: true
         },
         {
-          name: "calories",
+          name: "requestedTime",
           align: "center",
-          label: "Calories",
-          field: "calories",
+          label: "Fecha",
+          field: "requestedTime",
           sortable: true
         },
-        { name: "fat", label: "Fat (g)", field: "fat", sortable: true },
-        { name: "carbs", label: "Carbs (g)", field: "carbs" }
+        {
+          name: "orderType",
+          label: "Tipo de Venta",
+          field: "orderType",
+          sortable: true
+        },
+        {
+          name: "subtotal",
+          label: "Subtotal ($)",
+          field: "subtotal",
+          sortable: true
+        },
+        {
+          name: "total",
+          label: "Total ($)",
+          field: "total",
+          sortable: true
+        }
       ]
     };
+  },
+  methods: {
+    moreDetails(row) {
+      this.bus.$emit("more-details", row);
+    }
   }
 };
 </script>
 
-<style></style>
+<style>
+.i-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.i-icon {
+  padding-right: 5px;
+}
+</style>
