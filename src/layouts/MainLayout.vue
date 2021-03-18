@@ -11,25 +11,39 @@
           aria-label="Menu"
         />
         <q-toolbar-title>
-          <img src="../assets/brand/logo-qs-400x72-white.png" alt="QuieroSushi.cl Panel" id="img-logo">
+          <img
+            src="../assets/brand/logo-qs-400x72-white.png"
+            alt="QuieroSushi.cl Panel"
+            :style="responsiveMode"
+          />
         </q-toolbar-title>
-        <q-space/>
+        <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
-                 @click="$q.fullscreen.toggle()"
-                 v-if="$q.screen.gt.sm">
+          <q-btn
+            round
+            dense
+            flat
+            color="white"
+            :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
+            @click="$q.fullscreen.toggle()"
+            v-if="$q.screen.gt.sm"
+          >
           </q-btn>
           <q-btn round dense flat color="white" icon="notifications">
             <q-badge color="red" text-color="white" floating>
               5
             </q-badge>
-            <q-menu
-            >
+            <q-menu>
               <q-list style="min-width: 100px">
                 <messages></messages>
                 <q-card class="text-center no-shadow no-border">
-                  <q-btn label="View All" style="max-width: 120px !important;" flat dense
-                         class="text-indigo-8"></q-btn>
+                  <q-btn
+                    label="View All"
+                    style="max-width: 120px !important;"
+                    flat
+                    dense
+                    class="text-indigo-8"
+                  ></q-btn>
                 </q-card>
               </q-list>
             </q-menu>
@@ -52,11 +66,11 @@
       bordered
       content-class="bg-sidebar text-white"
     >
-      <q-list >
+      <q-list>
         <div class="user-sidebar">
           <div class="user-sidebar-border">
             <q-avatar size="100px">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+              <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
             </q-avatar>
             <q-chip color="primary" text-color="white">
               Gabriel Romero
@@ -69,13 +83,13 @@
         <div v-for="option in optionsAvailable" :key="option.label">
           <q-item :to="option.link" active-class="q-item-no-link-highlighting">
             <q-item-section avatar>
-              <q-icon :name="option.icon"/>
+              <q-icon :name="option.icon" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{option.label}}</q-item-label>
+              <q-item-label>{{ option.label }}</q-item-label>
             </q-item-section>
           </q-item>
-          <q-separator color="grey-11" inset/>
+          <q-separator color="grey-11" inset />
         </div>
 
         <!--
@@ -299,80 +313,102 @@
     </q-drawer>
 
     <q-page-container class="bg-grey-2">
-      <router-view/>
+      <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-    import EssentialLink from 'components/EssentialLink'
-    import Messages from "./Messages";
+import EssentialLink from "components/EssentialLink";
+import Messages from "./Messages";
 
-    export default {
-        name: 'MainLayout',
+export default {
+  name: "MainLayout",
 
-        components: {
-            Messages,
-            EssentialLink
-        },
-        mounted(){
-          console.log('main layout mounted');
-          console.log(this.$store.getters['auth/getAvailableMenuOptions']);
-          this.optionsAvailable=this.$store.getters['auth/getAvailableMenuOptions'];
-        },
-        data() {
-            return {
-                leftDrawerOpen: false,
-                optionsAvailable:[]
-            }
-        },
-        methods:{
-          logout(){
-            this.optionsAvailable=[];
-            this.bus.$emit('logout');
-          }
-        }
+  components: {
+    Messages,
+    EssentialLink
+  },
+  created(){
+    this.prod=this.$store.getters["mode/getMode"];
+  },
+  mounted() {
+    console.log("main layout mounted");
+    console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
+    this.optionsAvailable = this.$store.getters["auth/getAvailableMenuOptions"];
+    this.modeResponsive();
+
+  },
+  computed:{
+    responsiveMode(){
+      if(this.responsiveMobile){
+        return{width:'100%',paddingTop: '10px'}
+      }else{
+        return{width:'50%',paddingTop: '5px'}
+      }
     }
+  },
+  data() {
+    return {
+      leftDrawerOpen: false,
+      optionsAvailable: [],
+      responsiveMobile:false,
+      prod:null
+    };
+  },
+  methods: {
+    logout() {
+      this.optionsAvailable = [];
+      this.bus.$emit("logout");
+    },
+    modeResponsive() {
+      var responsive = window.matchMedia("(max-width: 500px)");
+      var vue = this;
+
+      if (screen.width < 400) {
+        vue.responsiveMobile = true;
+      }
+
+      responsive.addListener(function(event) {
+        if (event.matches) {
+          vue.responsiveMobile = true;
+        } else {
+          vue.responsiveMobile = false;
+        }
+      });
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-  .bg-header{
-    background: #333;
-  }
-  .bg-sidebar{
-    background: #ff2d2d ;
-  }
+.bg-header {
+  background: #333;
+}
+.bg-sidebar {
+  background: #ff2d2d;
+}
 
-  .user-sidebar{
-    width: 100%;
-    height: 200px;
-    background-image: url('https://cdn.quasar.dev/img/mountains.jpg');
-    background-size: cover;
+.user-sidebar {
+  width: 100%;
+  height: 200px;
+  background-image: url("https://cdn.quasar.dev/img/mountains.jpg");
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+
+  .user-sidebar-border {
+    width: 95%;
+    height: 95%;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 10px;
-
-    .user-sidebar-border{
-      width: 95%;
-      height: 95%;
-      display: flex;
-      justify-content: space-around;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      border-radius: 10px;
-      border: 1px solid rgba($color: #fff, $alpha: 0.7);
-    }
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba($color: #fff, $alpha: 0.7);
   }
-
-  #img-logo{
-    padding-top: 5px ;
-    width: 80% ;
-  }
-
+}
 </style>
-
-
-
-

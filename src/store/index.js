@@ -6,8 +6,9 @@ var ls = new SecureLS({ isCompression: false });
 
 // import example from './module-example'
 
-import routes from './main/routes'
-import auth from './auth/auth'
+import routes from './modules/routes/routes'
+import auth from './modules/auth/auth'
+import mode from './modules/mode/mode'
 
 Vue.use(Vuex)
 
@@ -24,7 +25,8 @@ export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       routes,
-      auth
+      auth,
+      mode
     },
     plugins: [
       createPersistedState({

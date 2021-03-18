@@ -1,6 +1,7 @@
 <template>
   <div>
     <more-details></more-details>
+    <the-confirm></the-confirm>
     <q-table
       :pagination.sync="pagination"
       class="q-my-xs q-my-md"
@@ -12,6 +13,7 @@
       title="Pedidos sin confirmar"
       :filter="filter"
       style="border-radius: 10px !important"
+      virtual-scroll
     >
       <template v-slot:header="props">
         <q-tr :props="props">
@@ -40,6 +42,12 @@
               </q-item-section>
             </q-item>
             <q-separator />
+            <q-item clickable @click="confirm(props.row)">
+              <q-item-section class="i-section">
+                <q-icon name="check_circle" class="i-icon" />
+                <span> Confirmar</span>
+              </q-item-section>
+            </q-item>
           </base-more-component>
         </q-tr>
       </template>
@@ -64,12 +72,14 @@
 <script>
 import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
+import TheConfirm from "./dialogs/TheConfirm.vue";
 
 export default {
   props: ["ordersNotConfirmed"],
   components: {
     BaseMoreComponent,
-    MoreDetails
+    MoreDetails,
+    TheConfirm
   },
   data() {
     return {
@@ -119,6 +129,9 @@ export default {
   methods: {
     moreDetails(row) {
       this.bus.$emit("more-details", row);
+    },
+    confirm(row) {
+      this.bus.$emit("the-confirm", row);
     }
   }
 };

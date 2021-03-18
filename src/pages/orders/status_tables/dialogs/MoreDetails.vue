@@ -1,6 +1,10 @@
 <template>
-  <q-dialog v-model="card" transition-show="slide-down" transition-hide="slide-up">
-    <q-card class="my-card" style="width: 400px; border-radius:10px">
+  <q-dialog
+    v-model="card"
+    transition-show="slide-down"
+    transition-hide="slide-up"
+  >
+    <q-card class="my-card" style="width: 400px; border-radius:10px;">
       <q-img
         src="https://mahatmarice.com/wp-content/uploads/2019/05/Vegetarian-Sushi-Rolls.jpg"
       />
@@ -16,14 +20,21 @@
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="one" class="tab-panel" v-if="orderDetail.product">
             <div class="tab-overview-headers">
-              <p><strong style="color: #333">Items</strong></p>
-              <p><strong style="color: #333 ">Subtotales</strong></p>
+              <p>
+                <strong style="color: #333; padding-left: 25px">Items</strong>
+              </p>
+              <p>
+                <strong style="color: #333;padding-left: 25px "
+                  >Subtotales</strong
+                >
+              </p>
             </div>
             <div class="tab-overview">
               <div class="tab-overview-items">
                 <p v-for="(item, index) in orderDetail.product" :key="index">
-                  {{ item.quantity }} x {{ item.detail.name }} x $
-                  {{ item.detail.price }}
+                  <strong>+</strong>{{ item.quantity }} x
+                  {{ item.detail[0].name }} x $
+                  {{ item.detail[0].price }}
                 </p>
               </div>
               <div class="tab-overview-subtotals">
@@ -32,7 +43,8 @@
                   :key="index"
                   style="display:flex; justify-content:right;text-align:left"
                 >
-                  $ {{ item.quantity * item.detail.price }}
+                  <strong>+ </strong>
+                  {{ " $" + item.quantity * item.detail[0].price }}
                 </p>
               </div>
             </div>
@@ -106,7 +118,7 @@
       <q-separator />
 
       <q-card-actions align="right">
-        <q-btn v-close-popup flat color="primary" label="Cerrar" />
+        <q-btn size="sm" v-close-popup rounded color="primary" label="Cerrar" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -114,7 +126,7 @@
 
 <script>
 export default {
-  created() {
+  mounted() {
     this.bus.$on("more-details", data => {
       this.card = !this.card;
       this.orderDetail = data;
