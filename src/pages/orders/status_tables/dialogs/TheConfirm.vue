@@ -42,13 +42,42 @@
                   >Tiempo de preparación</strong
                 >
                 <p
-                  style="display:flex; flex-direction: column; justify-content:center;align-items:center"
+                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
                 >
                   <q-chip
                     color="red"
                     text-color="white"
                     icon="query_builder"
                     :label="orderDetail.local.preparationTime + ' min'"
+                    v-if="!flagPreparation"
+                  />
+                  <q-icon
+                    v-if="flagPreparation"
+                    style="cursor:pointer"
+                    @click="changeFlagPreparation()"
+                    name="close"
+                    class="i-icon"
+                  />
+                  <input
+                    v-if="flagPreparation"
+                    style="width:50px; border:0; border-bottom: 1px solid #333;outline:none;"
+                    type="number"
+                    ref="newPreparation"
+                    :value="orderDetail.local.preparationTime"
+                  />
+                  <q-icon
+                    v-if="!flagPreparation"
+                    style="cursor:pointer"
+                    @click="changeFlagPreparation()"
+                    name="edit"
+                    class="i-icon"
+                  />
+                  <q-icon
+                    v-if="flagPreparation"
+                    style="cursor:pointer"
+                    @click="changePreparationTime()"
+                    name="check"
+                    class="i-icon"
                   />
                 </p>
               </div>
@@ -66,7 +95,7 @@
                     color="red"
                     text-color="white"
                     icon="room"
-                    :label="'Viaje: 6 min'"
+                    :label="orderDetail.gmapsDeliveryTime + ' min'"
                   />
                   <q-chip
                     color="red"
@@ -75,6 +104,35 @@
                     :label="
                       'Adicional: ' + orderDetail.local.deliveryTime + ' min'
                     "
+                    v-if="!flagDelivery"
+                  />
+                  <q-icon
+                    v-if="flagDelivery"
+                    style="cursor:pointer;margin-left:10px"
+                    @click="changeFlagDelivery()"
+                    name="close"
+                    class="i-icon"
+                  />
+                  <input
+                    v-if="flagDelivery"
+                    style="width:50px; border:0; border-bottom: 1px solid #333;outline:none;"
+                    type="number"
+                    ref="newDelivery"
+                    :value="orderDetail.local.deliveryTime"
+                  />
+                  <q-icon
+                    v-if="!flagDelivery"
+                    style="cursor:pointer"
+                    @click="changeFlagDelivery()"
+                    name="edit"
+                    class="i-icon"
+                  />
+                  <q-icon
+                    v-if="flagDelivery"
+                    style="cursor:pointer"
+                    @click="changeDeliveryTime()"
+                    name="check"
+                    class="i-icon"
                   />
                 </p>
               </div>
@@ -92,15 +150,27 @@
                     color="green"
                     text-color="white"
                     icon="room_service"
-                    :label="'2021-03-02 20:00'"
+                    :label="finalTime"
                   />
                 </p>
               </div>
             </div>
             <q-separator />
             <q-card-actions align="right">
-              <q-btn size="sm" v-close-popup rounded color="primary" label="Cerrar" />
-              <q-btn size="sm" @click="confirm()" rounded color="green" label="Confirmar" />
+              <q-btn
+                size="sm"
+                rounded
+                color="primary"
+                label="Cerrar"
+                @click="close()"
+              />
+              <q-btn
+                size="sm"
+                @click="confirm()"
+                rounded
+                color="green"
+                label="Confirmar"
+              />
             </q-card-actions>
           </q-tab-panel>
 
@@ -128,50 +198,43 @@
             <q-separator />
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center;padding-bottom:5px "
+                <strong
+                  style="color: #333; text-align:center;padding-bottom:5px "
                   >Horario de entrega</strong
                 >
                 <div
                   style="display:flex; flex-direction: row; justify-content:center;align-items:center"
                 >
-                  <q-btn size="sm" icon="query_builder" round color="primary">
-                    <q-popup-proxy
-                      @before-show="updateProxy"
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-time
-                        v-model="model"
-                        mask="YYYY-MM-DD HH:mm"
-                        color="primary"
-                      >
-                        <div class="row items-center justify-end q-gutter-sm">
-                          <q-btn
-                            label="Cancel"
-                            color="primary"
-                            flat
-                            v-close-popup
-                          />
-                          <q-btn
-                            label="OK"
-                            color="primary"
-                            flat
-                            @click="save"
-                            v-close-popup
-                          />
-                        </div>
-                      </q-time>
-                    </q-popup-proxy>
-                  </q-btn>
-                  <strong style="color: #333; text-align:center; padding-left:10px">
-                    {{model}}
-                  </strong>
+                  <q-input filled v-model="selectedTime">
+                    <template v-slot:append>
+                      <q-icon name="access_time" class="cursor-pointer">
+                        <q-popup-proxy
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-time
+                            v-model="selectedTime"
+                            mask="YYYY-MM-DD HH:mm"
+                            format24h
+                          >
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-time>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
                 </div>
-
               </div>
             </div>
             <q-separator />
-            <div class="tab-overview-c">
+            <div class="tab-overview-c" v-if="selectedTime">
               <div class="tab-overview-items-c">
                 <strong style="color: #333; text-align:center"
                   >Hora de confirmación final</strong
@@ -183,16 +246,27 @@
                     color="green"
                     text-color="white"
                     icon="room_service"
-                    :label="'2021-03-02 20:00'"
+                    :label="selectedTime"
                   />
                 </p>
               </div>
             </div>
             <q-separator />
             <q-card-actions align="right">
-              <q-btn size="sm" v-close-popup rounded color="primary" label="Cerrar" />
-              <q-btn size="sm" @click="confirm()" rounded color="green" label="Confirmar" />
-           
+              <q-btn
+                size="sm"
+                rounded
+                color="primary"
+                label="Cerrar"
+                @click="close()"
+              />
+              <q-btn
+                size="sm"
+                @click="confirm()"
+                rounded
+                color="green"
+                label="Confirmar"
+              />
             </q-card-actions>
           </q-tab-panel>
         </q-tab-panels>
@@ -204,9 +278,16 @@
 <script>
 export default {
   created() {
+    console.log("confirm created");
     this.bus.$on("the-confirm", data => {
       this.card = !this.card;
       this.orderDetail = data;
+      this.currentPreparationTime= this.orderDetail.local.preparationTime;
+      this.currentDeliveryTime=this.orderDetail.local.deliveryTime;
+      this.updateTime();
+      setInterval(() => {
+        this.updateTime();
+      }, 1000);
     });
   },
   computed: {
@@ -216,8 +297,37 @@ export default {
       return timeNSec[0] + ":" + timeNSec[1];
     },
     currentTime() {
-      let date = new Date();
-      return date.getHours() + ":" + date.getMinutes();
+      let timeValue = "";
+      timeValue +=
+        this.current.hour < 10 ? "0" + this.current.hour : this.current.hour; // get hour
+      timeValue +=
+        this.current.minutes < 10
+          ? ":0" + this.current.minutes
+          : ":" + this.current.minutes; // get minutes
+      //timeValue += this.current.hour >= 12 ? " P.M." : " A.M."; // get AM/PM
+      return timeValue;
+    },
+    finalTime() {
+      let tempFinalDetail = "";
+      let date = new Date(Date.now());
+      tempFinalDetail +=
+        this.final.hour < 10 ? "0" + this.final.hour : this.final.hour; // get hour
+      tempFinalDetail +=
+        this.final.minutes < 10
+          ? ":0" + this.final.minutes
+          : ":" + this.final.minutes; // get minutes
+
+      this.finalDateDetail =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        tempFinalDetail;
+      return this.finalDateDetail;
     }
   },
   data() {
@@ -225,13 +335,27 @@ export default {
       card: false,
       tab: "one",
       orderDetail: {},
-      model: null
+      selectedTime: null,
+      current: {
+        hour: null,
+        minutes: null
+      },
+      final: {
+        hour: null,
+        minutes: null
+      },
+      finalDateDetail: null,
+      flagPreparation: false,
+      flagDelivery: false,
+      currentDeliveryTime:null,
+      currentPreparationTime:null
     };
   },
   methods: {
     confirm() {
       console.log(this.orderDetail.id);
-      this.card = !this.card;
+      console.log(this.finalDateDetail);
+      this.close();
     },
     updateProxy() {
       this.proxyDate = this.date;
@@ -239,6 +363,74 @@ export default {
 
     save() {
       this.date = this.proxyDate;
+    },
+    close() {
+      this.card = !this.card;
+      this.selectedTime = null;
+      this.tab = "one";
+      this.flagPreparation = false;
+      this.flagDelivery = false;
+      this.orderDetail.local.preparationTime=this.currentPreparationTime;
+      this.orderDetail.local.deliveryTime=this.currentDeliveryTime;
+    },
+    updateTime() {
+      let date = new Date();
+      this.current.hour = date.getHours();
+      this.current.minutes = date.getMinutes();
+      this.updateFinalTime();
+    },
+    updateFinalTime() {
+      console.log;
+      let date = new Date();
+      date.setMinutes(
+        date.getMinutes() +
+          this.orderDetail.local.deliveryTime +
+          this.orderDetail.local.preparationTime +
+          this.orderDetail.gmapsDeliveryTime
+      );
+      this.final.hour = date.getHours();
+      this.final.minutes = date.getMinutes();
+    },
+    changeFlagPreparation() {
+      if (this.flagDelivery) {
+        this.showNotification(
+          "Termine de editar el tiempo de despacho ",
+          "warning",
+          "warning"
+        );
+        return;
+      }
+      this.flagPreparation = !this.flagPreparation;
+    },
+    changeFlagDelivery() {
+      if (this.flagPreparation) {
+        this.showNotification(
+          "Termine de editar el tiempo de preparación ",
+          "warning",
+          "warning"
+        );
+        return;
+      }
+      this.flagDelivery = !this.flagDelivery;
+    },
+    changePreparationTime() {
+      this.orderDetail.local.preparationTime = +this.$refs.newPreparation.value;
+      this.flagPreparation = false;
+      this.updateFinalTime();
+    },
+    changeDeliveryTime() {
+      this.orderDetail.local.deliveryTime = +this.$refs.newDelivery.value;
+      this.flagDelivery = false;
+      this.updateFinalTime();
+    },
+    showNotification: function(message, color, icon) {
+      this.$q.notify({
+        progress: true,
+        position: "top",
+        message: message,
+        color: color,
+        icon: icon
+      });
     }
   }
 };

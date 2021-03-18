@@ -89,10 +89,10 @@ export default {
           sortable: true
         },
         {
-          name: "requestedTime",
+          name: "finalTimestamp",
           align: "center",
-          label: "Fecha",
-          field: "requestedTime",
+          label: "Fecha Final",
+          field: "finalTimestamp",
           sortable: true
         },
         {

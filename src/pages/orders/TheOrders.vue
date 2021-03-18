@@ -158,753 +158,818 @@ export default {
       ordersNotConfirmed: [],
       response: [
         {
-          "id": 63250,
-          "status": "not-confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2020-12-09 17:00:00",
-          "orderType": "retiro",
-          "subtotal": 14000,
-          "deliveryCost": 0,
-          "total": 14000,
-          "product": [
+          id: 63250,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2020-12-09 17:00:00",
+          orderType: "retiro",
+          subtotal: 14000,
+          deliveryCost: 0,
+          total: 14000,
+
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "QS",
-            "userPhone": "992232948",
-            "pay": "Sodexo",
-            "address": ""
+          payDetail: {
+            user: "QS",
+            userPhone: "992232948",
+            pay: "Sodexo",
+            address: ""
           }
         },
         {
-          "id": 63371,
-          "status": "not-confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2020-12-10 15:53:00",
-          "orderType": "despacho",
-          "subtotal": 28000,
-          "deliveryCost": 1000,
-          "total": 29000,
-          "product": [
+          id: 63371,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2020-12-10 15:53:00",
+          orderType: "despacho",
+          subtotal: 28000,
+          deliveryCost: 1000,
+          total: 29000,
+
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "MariaJose",
-            "userPhone": "992232948",
-            "pay": "Debito",
-            "address": "cruzada moon 632"
+          payDetail: {
+            user: "MariaJose",
+            userPhone: "992232948",
+            pay: "Debito",
+            address: "cruzada moon 632"
           }
         },
         {
-          "id": 65131,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2020-12-18 21:02:00",
-          "orderType": "despacho",
-          "subtotal": 0,
-          "deliveryCost": 1000,
-          "total": 1000,
-          "product": [
+          id: 65131,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2020-12-18 21:02:00",
+          orderType: "despacho",
+          subtotal: 0,
+          deliveryCost: 1000,
+          total: 1000,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Alexi Anthoni zamora silva ",
-            "userPhone": "992232948",
-            "pay": "Efectivo",
-            "address": "Maximiliano Ib\u00e1\u00f1ez 1331 "
+          payDetail: {
+            user: "Alexi Anthoni zamora silva ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Maximiliano Ib\u00e1\u00f1ez 1331 "
           }
         },
         {
-          "id": 65132,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2020-12-18 21:02:00",
-          "orderType": "despacho",
-          "subtotal": 0,
-          "deliveryCost": 1000,
-          "total": 1000,
-          "product": [
+          id: 65132,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2020-12-18 21:02:00",
+          orderType: "despacho",
+          subtotal: 0,
+          deliveryCost: 1000,
+          total: 1000,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Alexi Anthoni zamora silva ",
-            "userPhone": "992232948",
-            "pay": "Efectivo",
-            "address": "Maximiliano Ib\u00e1\u00f1ez 1331 "
+          payDetail: {
+            user: "Alexi Anthoni zamora silva ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Maximiliano Ib\u00e1\u00f1ez 1331 "
           }
         },
         {
-          "id": 65133,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2020-12-18 21:04:00",
-          "orderType": "despacho",
-          "subtotal": 0,
-          "deliveryCost": 1000,
-          "total": 1000,
-          "product": [
+          id: 65133,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2020-12-18 21:04:00",
+          orderType: "despacho",
+          subtotal: 0,
+          deliveryCost: 1000,
+          total: 1000,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Alexi Anthoni zamora silva ",
-            "userPhone": "992232948",
-            "pay": "Efectivo",
-            "address": "Maximiliano Ib\u00e1\u00f1ez 1331 "
+          payDetail: {
+            user: "Alexi Anthoni zamora silva ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Maximiliano Ib\u00e1\u00f1ez 1331 "
           }
         },
         {
-          "id": 65505,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2020-12-19 23:42:00",
-          "orderType": "despacho",
-          "subtotal": 14000,
-          "deliveryCost": 3000,
-          "total": 17000,
-          "product": [
+          id: 65505,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2020-12-19 23:42:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 3000,
+          total: 17000,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Ayleen romero ",
-            "userPhone": "992232948",
-            "pay": "Debito",
-            "address": "Romero 2385"
+          payDetail: {
+            user: "Ayleen romero ",
+            userPhone: "992232948",
+            pay: "Debito",
+            address: "Romero 2385"
           }
         },
         {
-          "id": 65707,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2020-12-21 00:01:00",
-          "orderType": "despacho",
-          "subtotal": 15000,
-          "deliveryCost": 3000,
-          "total": 18000,
-          "product": [
+          id: 65707,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2020-12-21 00:01:00",
+          orderType: "despacho",
+          subtotal: 15000,
+          deliveryCost: 3000,
+          total: 18000,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11800,
-                  "name": "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
-                  "price": 15000
+                  id: 11800,
+                  name:
+                    "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                  price: 15000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Mario sandoval ",
-            "userPhone": "992232948",
-            "pay": "Debito",
-            "address": "Almirante la torre 37"
+          payDetail: {
+            user: "Mario sandoval ",
+            userPhone: "992232948",
+            pay: "Debito",
+            address: "Almirante la torre 37"
           }
         },
         {
-          "id": 65853,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2020-12-21 21:18:00",
-          "orderType": "despacho",
-          "subtotal": 14000,
-          "deliveryCost": 1000,
-          "total": 15000,
-          "product": [
+          id: 65853,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2020-12-21 21:18:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1000,
+          total: 15000,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11800,
-                  "name": "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
-                  "price": 15000
+                  id: 11800,
+                  name:
+                    "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                  price: 15000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Cristina Ocared",
-            "userPhone": "992232948",
-            "pay": "Debito",
-            "address": "Antonio Ebner 1413"
+          payDetail: {
+            user: "Cristina Ocared",
+            userPhone: "992232948",
+            pay: "Debito",
+            address: "Antonio Ebner 1413"
           }
         },
         {
-          "id": 69420,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2021-01-08 20:50:00",
-          "orderType": "despacho",
-          "subtotal": 14000,
-          "deliveryCost": 2000,
-          "total": 16000,
-          "product": [
+          id: 69420,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2021-01-08 20:50:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 2000,
+          total: 16000,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11800,
-                  "name": "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
-                  "price": 15000
+                  id: 11800,
+                  name:
+                    "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                  price: 15000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Isabel Lagos",
-            "userPhone": "992232948",
-            "pay": "Efectivo",
-            "address": "Gonzalo Bulnes 2514"
+          payDetail: {
+            user: "Isabel Lagos",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Gonzalo Bulnes 2514"
           }
         },
         {
-          "id": 69553,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2021-01-09 16:12:00",
-          "orderType": "despacho",
-          "subtotal": 14000,
-          "deliveryCost": 2000,
-          "total": 16000,
-          "product": [
+          id: 69553,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2021-01-09 16:12:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 2000,
+          total: 16000,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11800,
-                  "name": "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
-                  "price": 15000
+                  id: 11800,
+                  name:
+                    "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                  price: 15000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Sara Toledo",
-            "userPhone": "992232948",
-            "pay": "Debito",
-            "address": "Meza Bell 2851"
+          payDetail: {
+            user: "Sara Toledo",
+            userPhone: "992232948",
+            pay: "Debito",
+            address: "Meza Bell 2851"
           }
         },
         {
-          "id": 69949,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2021-01-10 22:00:00",
-          "orderType": "despacho",
-          "subtotal": 15000,
-          "deliveryCost": 2000,
-          "total": 17000,
-          "product": [
+          id: 69949,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2021-01-10 22:00:00",
+          orderType: "despacho",
+          subtotal: 15000,
+          deliveryCost: 2000,
+          total: 17000,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11800,
-                  "name": "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
-                  "price": 15000
+                  id: 11800,
+                  name:
+                    "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                  price: 15000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11800,
-                  "name": "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
-                  "price": 15000
+                  id: 11800,
+                  name:
+                    "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                  price: 15000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Nicolas aravena",
-            "userPhone": "992232948",
-            "pay": "Efectivo",
-            "address": "Patricio lynch 1650"
+          payDetail: {
+            user: "Nicolas aravena",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Patricio lynch 1650"
           }
         },
         {
-          "id": 70470,
-          "status": "confirmed",
-          "finalTimestamp": null,
-          "finalDate": null,
-          "local": { "id_local": 1912, "preparationTime": 30, "deliveryTime": 5 },
-          "requestedTime": "2021-01-14 17:48:00",
-          "orderType": "despacho",
-          "subtotal": 14000,
-          "deliveryCost": 1500,
-          "total": 15500,
-          "product": [
+          id: 70470,
+          status: "confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: { id_local: 1912, preparationTime: 30, deliveryTime: 5 },
+          requestedTime: "2021-01-14 17:48:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1500,
+          total: 15500,
+          gmapsDeliveryTime: 10,
+          product: [
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11801,
-                  "name": "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
-                  "price": 28000
+                  id: 11801,
+                  name:
+                    "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                  price: 28000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11800,
-                  "name": "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
-                  "price": 15000
+                  id: 11800,
+                  name:
+                    "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                  price: 15000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11800,
-                  "name": "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
-                  "price": 15000
+                  id: 11800,
+                  name:
+                    "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                  price: 15000
                 }
               ]
             },
             {
-              "quantity": 1,
-              "detail": [
+              quantity: 1,
+              detail: [
                 {
-                  "id": 11799,
-                  "name": "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
-                  "price": 14000
+                  id: 11799,
+                  name:
+                    "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  price: 14000
                 }
               ]
             }
           ],
-          "payDetail": {
-            "user": "Pablo Urz\u00faa Cid ",
-            "userPhone": "992232948",
-            "pay": "Efectivo",
-            "address": "Heriberto rojas 5935"
+          payDetail: {
+            user: "Pablo Urz\u00faa Cid ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Heriberto rojas 5935"
           }
         }
       ],
@@ -1005,7 +1070,6 @@ export default {
           vue.responsiveMobile = false;
         }
       });
-      
     },
     filters() {
       console.log(this.data);

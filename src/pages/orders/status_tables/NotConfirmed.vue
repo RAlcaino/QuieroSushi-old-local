@@ -1,7 +1,9 @@
 <template>
   <div>
     <more-details></more-details>
-    <the-confirm></the-confirm>
+    <keep-alive>
+      <the-confirm></the-confirm>
+    </keep-alive>
     <q-table
       :pagination.sync="pagination"
       class="q-my-xs q-my-md"
@@ -101,7 +103,7 @@ export default {
         {
           name: "requestedTime",
           align: "center",
-          label: "Fecha",
+          label: "Fecha Solicitud",
           field: "requestedTime",
           sortable: true
         },
