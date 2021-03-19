@@ -8,6 +8,7 @@
       <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync()" />
       <q-btn flat round dense icon="info" class="q-mr-xs" />
     </q-toolbar>
+
     <div class="orders-tab">
       <q-splitter
         v-model="splitterModel"
@@ -133,6 +134,7 @@ export default {
     this.bus.$on("sync-orders", () => {
       this.sync();
     });
+    
     /*console.log(this.ordersNotConfirmed);
     console.log(this.ordersConfirmed);
     console.log(this.ordersDone);*/
@@ -353,7 +355,7 @@ export default {
               detail: {
                 id: 11799,
                 name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor Mix de $p piezas! variedad de sabores y un exclusivo sabor",
                 price: 14000
               }
             },
@@ -963,7 +965,7 @@ export default {
         this.$axios
           .get(url)
           .then(response => {
-            console.log(response.data);
+            //console.log(response.data);
             this.hideLoading();
             if (response.data.status === "success") {
               this.data = response.data.result;
@@ -1044,7 +1046,7 @@ export default {
       });
     },
     filters() {
-      console.log(this.data);
+      //console.log(this.data);
       this.ordersDone = this.data.filter(item => item.status === "done");
       this.ordersConfirmed = this.data.filter(
         item => item.status === "confirmed"

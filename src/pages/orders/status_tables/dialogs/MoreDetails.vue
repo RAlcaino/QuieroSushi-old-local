@@ -31,21 +31,23 @@
             </div>
             <div class="tab-overview">
               <div class="tab-overview-items">
-                <p v-for="(item, index) in orderDetail.product" :key="index">
-                  <strong>+</strong>{{ item.quantity }} x
-                  {{ item.detail.name }} x $
-                  {{ item.detail.price }}
-                </p>
-              </div>
-              <div class="tab-overview-subtotals">
-                <p
-                  v-for="(item, index) in orderDetail.product"
-                  :key="index"
-                  style="display:flex; justify-content:right;text-align:left"
-                >
-                  <strong>+ </strong>
-                  {{ " $" + item.quantity * item.detail.price }}
-                </p>
+                <div v-for="(item, index) in orderDetail.product" :key="index" style="display:flex; justify-content:space-between">
+                  <div style="width:60%">
+                    <p>
+                      <strong>+</strong>
+                      {{ item.quantity }} x
+                      {{ item.detail.name }} x 
+                      ${{ item.detail.price }}
+                    </p>
+                  </div>
+
+                  <div style="width:30%">
+                    <p>
+                      <strong>+ </strong>
+                      {{ " $" + item.quantity * item.detail.price }}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="tab-overview-footer">
@@ -165,13 +167,16 @@ export default {
   }
 }
 .tab-overview-items {
-  width: 60%;
+  width: 100%;
   display: flex;
   justify-content: right;
   flex-direction: column;
   text-align: left;
   p {
-    margin-bottom: 0;
+    word-wrap: break-word;
+    hyphens: manual;
+    width: 100%;
+    margin-bottom: 10px;
   }
 }
 .tab-overview-subtotals {

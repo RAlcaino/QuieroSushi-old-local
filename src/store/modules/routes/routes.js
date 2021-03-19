@@ -1,5 +1,5 @@
 const state = {
-  urlGlobal: "http://201.210.254.212:5000/api",
+  urlGlobal: "http://190.202.196.228:5000/api",
   routes: [
     {
       name: "login",
@@ -11,7 +11,7 @@ const state = {
     },
     {
       name: "order.confirm",
-      link: "/confirm"
+      link: "/pedidos/confirm"
     }
   ]
 };

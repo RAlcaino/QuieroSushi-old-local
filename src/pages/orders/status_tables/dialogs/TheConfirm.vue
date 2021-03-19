@@ -1,4 +1,5 @@
 <template>
+
   <q-dialog
     v-model="card"
     transition-show="slide-down"
@@ -14,15 +15,14 @@
         <q-separator />
 
         <q-tab-panels v-model="tab" animated>
+
           <q-tab-panel
             name="one"
             class="tab-panel-c"
             v-if="orderDetail.product"
           >
             <div class="tab-overview-headers-c">
-              <p
-                style="display:flex; flex-direction: column; justify-content:center;align-items:center"
-              >
+              <p style="display:flex; flex-direction: column; justify-content:center;align-items:center">
                 <strong style="color: #333"
                   >Hora actual
                   <div class="live-c"></div
@@ -31,22 +31,20 @@
                   currentTime
                 }}</strong>
               </p>
-              <p
-                style="display:flex; flex-direction: column;justify-content:center;align-items:center"
-              >
+              <p style="display:flex; flex-direction: column;justify-content:center;align-items:center" >
                 <strong style="color: #333 ">Hora solicitada</strong>
                 <strong style="color: #333; font-size:18px">{{ time }}</strong>
               </p>
             </div>
+
             <q-separator />
+
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center"
-                  >Tiempo de preparación</strong
-                >
-                <p
-                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
-                >
+                <strong style="color: #333; text-align:center">
+                  Tiempo de preparación
+                </strong>
+                <p style="display:flex; flex-direction: row; justify-content:center;align-items:center">
                   <q-input
                     v-model="preparationTime"
                     color="primary"
@@ -61,15 +59,15 @@
                 </p>
               </div>
             </div>
+
             <q-separator />
+
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center"
-                  >Tiempo de Despacho</strong
-                >
-                <p
-                  style="display:flex; flex-direction: row; justify-content:space-around;align-items:center"
-                >
+                <strong style="color: #333; text-align:center">
+                  Tiempo de Despacho 
+                </strong>
+                <p style="display:flex; flex-direction: row; justify-content:space-around;align-items:center">
                   <q-chip
                     color="red"
                     text-color="white"
@@ -90,15 +88,13 @@
                 </p>
               </div>
             </div>
+
             <q-separator />
+
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center"
-                  >Hora de confirmación final</strong
-                >
-                <p
-                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
-                >
+                <strong style="color: #333; text-align:center">Hora de confirmación final</strong>
+                <p style="display:flex; flex-direction: row; justify-content:center;align-items:center">
                   <q-chip
                     color="green"
                     text-color="white"
@@ -108,7 +104,9 @@
                 </p>
               </div>
             </div>
+
             <q-separator />
+
             <q-card-actions align="right">
               <q-btn
                 size="sm"
@@ -125,6 +123,7 @@
                 label="Confirmar"
               />
             </q-card-actions>
+
           </q-tab-panel>
 
           <q-tab-panel
@@ -133,34 +132,29 @@
             v-if="orderDetail.product"
           >
             <div class="tab-overview-headers-c">
-              <p
-                style="display:flex; flex-direction: column; justify-content:center;align-items:center"
-              >
-                <strong style="color: #333"
-                  >Hora actual
+              <p style="display:flex; flex-direction: column; justify-content:center;align-items:center">
+                <strong style="color: #333">
+                   Hora actual
                   <div class="live-c"></div
                 ></strong>
-                <strong style="color: #333; font-size:18px">{{
-                  currentTime
-                }}</strong>
+                <strong style="color: #333; font-size:18px">
+                  {{currentTime}}
+                </strong>
               </p>
-              <p
-                style="display:flex; flex-direction: column;justify-content:center;align-items:center"
-              >
+              <p style="display:flex; flex-direction: column;justify-content:center;align-items:center">
                 <strong style="color: #333">Hora solicitada</strong>
                 <strong style="color: #333; font-size:18px">{{ time }}</strong>
               </p>
             </div>
+
             <q-separator />
+            
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong
-                  style="color: #333; text-align:center;padding-bottom:5px "
-                  >Horario de entrega</strong
-                >
-                <div
-                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
-                >
+                <strong style="color: #333; text-align:center;padding-bottom:5px ">
+                  Horario de entrega
+                </strong>
+                <div style="display:flex; flex-direction: row; justify-content:center;align-items:center">
                   <q-input filled v-model="finalDateManual">
                     <template v-slot:append>
                       <q-icon name="access_time" class="cursor-pointer">
@@ -170,7 +164,7 @@
                         >
                           <q-time
                             v-model="finalDateManual"
-                            mask="YYYY-MM-DD HH:mm"
+                            mask="YYYY-MM-DD HH:mm:ss"
                             format24h
                           >
                             <div class="row items-center justify-end">
@@ -189,15 +183,15 @@
                 </div>
               </div>
             </div>
+
             <q-separator />
+
             <div class="tab-overview-c" v-if="finalDateManual">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center"
-                  >Hora de confirmación final</strong
-                >
-                <p
-                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
-                >
+                <strong style="color: #333; text-align:center">
+                  Hora de confirmación final
+                </strong>
+                <p style="display:flex; flex-direction: row; justify-content:center;align-items:center">
                   <q-chip
                     color="green"
                     text-color="white"
@@ -207,7 +201,9 @@
                 </p>
               </div>
             </div>
+
             <q-separator />
+
             <q-card-actions align="right">
               <q-btn
                 size="sm"
@@ -224,17 +220,24 @@
                 label="Confirmar"
               />
             </q-card-actions>
+
           </q-tab-panel>
+
         </q-tab-panels>
+
       </q-card-section>
+
     </q-card>
+
   </q-dialog>
+
 </template>
 
 <script>
 export default {
   created() {
     console.log("confirm created");
+    this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-confirm", data => {
       this.card = !this.card;
       this.orderDetail = data;
@@ -254,40 +257,28 @@ export default {
     },
     currentTime() {
       let timeValue = "";
-      timeValue +=
-        this.current.hour < 10 ? "0" + this.current.hour : this.current.hour; // get hour
-      timeValue +=
-        this.current.minutes < 10
-          ? ":0" + this.current.minutes
-          : ":" + this.current.minutes; // get minutes
-      //timeValue += this.current.hour >= 12 ? " P.M." : " A.M."; // get AM/PM
+      timeValue +=this.current.hour < 10 ? "0" + this.current.hour : this.current.hour; // get hour
+      timeValue +=this.current.minutes < 10 ? ":0" + this.current.minutes: ":" + this.current.minutes; // get minutes
       return timeValue;
     },
     finalTime() {
       let tempFinalDetail = "";
       let date = new Date(Date.now());
-      tempFinalDetail +=
-        this.final.hour < 10 ? "0" + this.final.hour : this.final.hour; // get hour
-      tempFinalDetail +=
-        this.final.minutes < 10
-          ? ":0" + this.final.minutes
-          : ":" + this.final.minutes; // get minutes
+      tempFinalDetail += this.final.hour < 10 ? "0" + this.final.hour : this.final.hour; // get hour
+      tempFinalDetail += this.final.minutes < 10 ? ":0" + this.final.minutes: ":" + this.final.minutes; // get minutes
+      tempFinalDetail += this.final.seconds < 10 ? ":0" + this.final.seconds: ":" + this.final.seconds //get seconds
 
-      this.finalDateDetail =
-        date.getFullYear() +
-        "-" +
-        (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) +
-        "-" +
-        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
-        " " +
-        tempFinalDetail;
-      return this.finalDateDetail;
+      this.finalDateDetail  = date.getFullYear() + "-" + 
+                              (date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1): date.getMonth() + 1) + "-" +
+                              (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) + " " +
+                              tempFinalDetail;
+     
+     return this.finalDateDetail;
     }
   },
   data() {
     return {
+      prod: null,
       card: false,
       tab: "one",
       orderDetail: {},
@@ -297,7 +288,8 @@ export default {
       },
       final: {
         hour: null,
-        minutes: null
+        minutes: null,
+        seconds: null
       },
       finalDateManual: null,
       finalDateDetail: null,
@@ -309,12 +301,12 @@ export default {
     confirm() {
       var data = {
         orderID: this.orderDetail.id,
-        confirmationTimestamp:
-          this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
+        confirmationTimestamp: this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
+        //confirmationTimestamp: '2021-03-08 23:00:00',
         deliveryTime: +this.deliveryTime,
         preparationTime: +this.preparationTime
       };
-      console.log(data);
+      //console.log(data);
 
       this.showLoading();
 
@@ -322,7 +314,7 @@ export default {
         setTimeout(() => {
           this.hideLoading();
           this.showNotification(
-            "Pedido #"+this.orderDetail.id+ " Confirmado",
+            "Pedido #" + this.orderDetail.id + " Confirmado",
             "positive",
             "check_circle"
           );
@@ -330,10 +322,11 @@ export default {
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("order.confirm");
+        //console.log(url);
         this.$axios
-          .post(url, data)
+          .put(url, data)
           .then(response => {
-            console.log(response.data);
+            //console.log(response.data);
 
             if (response.data.status === "success") {
               this.bus.$emit("sync-orders");
@@ -400,14 +393,14 @@ export default {
     },
     updateFinalTime() {
       let date = new Date();
-      date.setMinutes(
-        date.getMinutes() +
-          (+this.preparationTime +
-            +this.deliveryTime +
-            +this.orderDetail.gmapsDeliveryTime)
-      );
+      date.setMinutes(date.getMinutes() + (
+                      +this.preparationTime +
+                      +this.deliveryTime +
+                      +this.orderDetail.gmapsDeliveryTime));
+
       this.final.hour = date.getHours();
       this.final.minutes = date.getMinutes();
+      this.final.seconds = date.getSeconds();
     },
     showNotification: function(message, color, icon) {
       this.$q.notify({
