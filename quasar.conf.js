@@ -53,7 +53,8 @@ module.exports = function (ctx) {
       plugins: [
         'AppFullscreen',
         'Notify',
-        'LoadingBar'
+        'LoadingBar',
+        'Loading'
       ],
       config:{
         loadingBar:{

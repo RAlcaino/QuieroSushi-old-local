@@ -1,5 +1,5 @@
 const state = {
-  urlGlobal: "http://190.73.3.183:5000/api",
+  urlGlobal: "http://201.210.254.212:5000/api",
   routes: [
     {
       name: "login",
@@ -8,6 +8,10 @@ const state = {
     {
       name: "orders",
       link: "/pedidos/{localId}"
+    },
+    {
+      name: "order.confirm",
+      link: "/confirm"
     }
   ]
 };

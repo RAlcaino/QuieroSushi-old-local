@@ -23,7 +23,10 @@
               <p
                 style="display:flex; flex-direction: column; justify-content:center;align-items:center"
               >
-                <strong style="color: #333">Hora actual</strong>
+                <strong style="color: #333"
+                  >Hora actual
+                  <div class="live-c"></div
+                ></strong>
                 <strong style="color: #333; font-size:18px">{{
                   currentTime
                 }}</strong>
@@ -44,41 +47,17 @@
                 <p
                   style="display:flex; flex-direction: row; justify-content:center;align-items:center"
                 >
-                  <q-chip
-                    color="red"
-                    text-color="white"
-                    icon="query_builder"
-                    :label="orderDetail.local.preparationTime + ' min'"
-                    v-if="!flagPreparation"
-                  />
-                  <q-icon
-                    v-if="flagPreparation"
-                    style="cursor:pointer"
-                    @click="changeFlagPreparation()"
-                    name="close"
-                    class="i-icon"
-                  />
-                  <input
-                    v-if="flagPreparation"
-                    style="width:50px; border:0; border-bottom: 1px solid #333;outline:none;"
+                  <q-input
+                    v-model="preparationTime"
+                    color="primary"
+                    label="Minutos"
+                    style="width: 100px;"
                     type="number"
-                    ref="newPreparation"
-                    :value="orderDetail.local.preparationTime"
-                  />
-                  <q-icon
-                    v-if="!flagPreparation"
-                    style="cursor:pointer"
-                    @click="changeFlagPreparation()"
-                    name="edit"
-                    class="i-icon"
-                  />
-                  <q-icon
-                    v-if="flagPreparation"
-                    style="cursor:pointer"
-                    @click="changePreparationTime()"
-                    name="check"
-                    class="i-icon"
-                  />
+                  >
+                    <template v-slot:append>
+                      <q-icon name="query_builder" />
+                    </template>
+                  </q-input>
                 </p>
               </div>
             </div>
@@ -89,7 +68,7 @@
                   >Tiempo de Despacho</strong
                 >
                 <p
-                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
+                  style="display:flex; flex-direction: row; justify-content:space-around;align-items:center"
                 >
                   <q-chip
                     color="red"
@@ -97,43 +76,17 @@
                     icon="room"
                     :label="orderDetail.gmapsDeliveryTime + ' min'"
                   />
-                  <q-chip
-                    color="red"
-                    text-color="white"
-                    icon="moped"
-                    :label="
-                      'Adicional: ' + orderDetail.local.deliveryTime + ' min'
-                    "
-                    v-if="!flagDelivery"
-                  />
-                  <q-icon
-                    v-if="flagDelivery"
-                    style="cursor:pointer;margin-left:10px"
-                    @click="changeFlagDelivery()"
-                    name="close"
-                    class="i-icon"
-                  />
-                  <input
-                    v-if="flagDelivery"
-                    style="width:50px; border:0; border-bottom: 1px solid #333;outline:none;"
+                  <q-input
+                    color="primary"
+                    label="Minutos"
+                    style="width: 100px;"
                     type="number"
-                    ref="newDelivery"
-                    :value="orderDetail.local.deliveryTime"
-                  />
-                  <q-icon
-                    v-if="!flagDelivery"
-                    style="cursor:pointer"
-                    @click="changeFlagDelivery()"
-                    name="edit"
-                    class="i-icon"
-                  />
-                  <q-icon
-                    v-if="flagDelivery"
-                    style="cursor:pointer"
-                    @click="changeDeliveryTime()"
-                    name="check"
-                    class="i-icon"
-                  />
+                    v-model="deliveryTime"
+                  >
+                    <template v-slot:append>
+                      <q-icon name="moped" />
+                    </template>
+                  </q-input>
                 </p>
               </div>
             </div>
@@ -183,7 +136,10 @@
               <p
                 style="display:flex; flex-direction: column; justify-content:center;align-items:center"
               >
-                <strong style="color: #333">Hora actual</strong>
+                <strong style="color: #333"
+                  >Hora actual
+                  <div class="live-c"></div
+                ></strong>
                 <strong style="color: #333; font-size:18px">{{
                   currentTime
                 }}</strong>
@@ -205,7 +161,7 @@
                 <div
                   style="display:flex; flex-direction: row; justify-content:center;align-items:center"
                 >
-                  <q-input filled v-model="selectedTime">
+                  <q-input filled v-model="finalDateManual">
                     <template v-slot:append>
                       <q-icon name="access_time" class="cursor-pointer">
                         <q-popup-proxy
@@ -213,7 +169,7 @@
                           transition-hide="scale"
                         >
                           <q-time
-                            v-model="selectedTime"
+                            v-model="finalDateManual"
                             mask="YYYY-MM-DD HH:mm"
                             format24h
                           >
@@ -234,7 +190,7 @@
               </div>
             </div>
             <q-separator />
-            <div class="tab-overview-c" v-if="selectedTime">
+            <div class="tab-overview-c" v-if="finalDateManual">
               <div class="tab-overview-items-c">
                 <strong style="color: #333; text-align:center"
                   >Hora de confirmación final</strong
@@ -246,7 +202,7 @@
                     color="green"
                     text-color="white"
                     icon="room_service"
-                    :label="selectedTime"
+                    :label="finalDateManual"
                   />
                 </p>
               </div>
@@ -282,8 +238,8 @@ export default {
     this.bus.$on("the-confirm", data => {
       this.card = !this.card;
       this.orderDetail = data;
-      this.currentPreparationTime= this.orderDetail.local.preparationTime;
-      this.currentDeliveryTime=this.orderDetail.local.deliveryTime;
+      this.preparationTime = this.orderDetail.local.preparationTime;
+      this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.updateTime();
       setInterval(() => {
         this.updateTime();
@@ -335,7 +291,6 @@ export default {
       card: false,
       tab: "one",
       orderDetail: {},
-      selectedTime: null,
       current: {
         hour: null,
         minutes: null
@@ -344,34 +299,98 @@ export default {
         hour: null,
         minutes: null
       },
+      finalDateManual: null,
       finalDateDetail: null,
-      flagPreparation: false,
-      flagDelivery: false,
-      currentDeliveryTime:null,
-      currentPreparationTime:null
+      deliveryTime: null,
+      preparationTime: null
     };
   },
   methods: {
     confirm() {
-      console.log(this.orderDetail.id);
-      console.log(this.finalDateDetail);
-      this.close();
-    },
-    updateProxy() {
-      this.proxyDate = this.date;
-    },
+      var data = {
+        orderID: this.orderDetail.id,
+        confirmationTimestamp:
+          this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
+        deliveryTime: +this.deliveryTime,
+        preparationTime: +this.preparationTime
+      };
+      console.log(data);
 
-    save() {
-      this.date = this.proxyDate;
+      this.showLoading();
+
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+          this.showNotification(
+            "Pedido #"+this.orderDetail.id+ " Confirmado",
+            "positive",
+            "check_circle"
+          );
+          this.bus.$emit("sync-orders");
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("order.confirm");
+        this.$axios
+          .post(url, data)
+          .then(response => {
+            console.log(response.data);
+
+            if (response.data.status === "success") {
+              this.bus.$emit("sync-orders");
+              this.showNotification(
+                response.data.message,
+                "positive",
+                "check_circle"
+              );
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.hideLoading();
+            if (error.response) {
+              if (error.response.status == 500) {
+                this.showNotification(
+                  "Ha ocurrido un error con el servidor",
+                  "negative",
+                  "error"
+                );
+              } else if (error.response.status == 404) {
+                this.showNotification(
+                  "Ha ocurrido un error de rutas",
+                  "negative",
+                  "error"
+                );
+              } else if (error.response.status == 400) {
+                if (typeof error.response.data.message === "object") {
+                  for (var field in error.response.data.message) {
+                    this.showNotification(
+                      error.response.data.message[field],
+                      "negative",
+                      "error"
+                    );
+                  }
+                } else {
+                  this.showNotification(
+                    error.response.data.message,
+                    "negative",
+                    "error"
+                  );
+                }
+              }
+            } else {
+              this.showNotification(error.message, "negative", "error");
+            }
+          });
+      }
+      this.close();
     },
     close() {
       this.card = !this.card;
-      this.selectedTime = null;
+      this.finalDateManual = null;
       this.tab = "one";
-      this.flagPreparation = false;
-      this.flagDelivery = false;
-      this.orderDetail.local.preparationTime=this.currentPreparationTime;
-      this.orderDetail.local.deliveryTime=this.currentDeliveryTime;
+      this.preparationTime = this.orderDetail.local.preparationTime;
+      this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
     },
     updateTime() {
       let date = new Date();
@@ -380,48 +399,15 @@ export default {
       this.updateFinalTime();
     },
     updateFinalTime() {
-      console.log;
       let date = new Date();
       date.setMinutes(
         date.getMinutes() +
-          this.orderDetail.local.deliveryTime +
-          this.orderDetail.local.preparationTime +
-          this.orderDetail.gmapsDeliveryTime
+          (+this.preparationTime +
+            +this.deliveryTime +
+            +this.orderDetail.gmapsDeliveryTime)
       );
       this.final.hour = date.getHours();
       this.final.minutes = date.getMinutes();
-    },
-    changeFlagPreparation() {
-      if (this.flagDelivery) {
-        this.showNotification(
-          "Termine de editar el tiempo de despacho ",
-          "warning",
-          "warning"
-        );
-        return;
-      }
-      this.flagPreparation = !this.flagPreparation;
-    },
-    changeFlagDelivery() {
-      if (this.flagPreparation) {
-        this.showNotification(
-          "Termine de editar el tiempo de preparación ",
-          "warning",
-          "warning"
-        );
-        return;
-      }
-      this.flagDelivery = !this.flagDelivery;
-    },
-    changePreparationTime() {
-      this.orderDetail.local.preparationTime = +this.$refs.newPreparation.value;
-      this.flagPreparation = false;
-      this.updateFinalTime();
-    },
-    changeDeliveryTime() {
-      this.orderDetail.local.deliveryTime = +this.$refs.newDelivery.value;
-      this.flagDelivery = false;
-      this.updateFinalTime();
     },
     showNotification: function(message, color, icon) {
       this.$q.notify({
@@ -431,6 +417,14 @@ export default {
         color: color,
         icon: icon
       });
+    },
+    showLoading() {
+      this.$q.loading.show({
+        message: "Espere un momento, por favor..."
+      });
+    },
+    hideLoading() {
+      this.$q.loading.hide();
     }
   }
 };
@@ -489,6 +483,22 @@ export default {
   p {
     text-align: right;
     margin-bottom: 0;
+  }
+}
+.live-c {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background-color: red;
+  border-radius: 100%;
+  margin-bottom: 2px;
+  animation: live-animation 1s linear infinite;
+}
+
+@keyframes live-animation {
+  50% {
+    opacity: 0.2;
+    color: red;
   }
 }
 </style>

@@ -33,8 +33,8 @@
               <div class="tab-overview-items">
                 <p v-for="(item, index) in orderDetail.product" :key="index">
                   <strong>+</strong>{{ item.quantity }} x
-                  {{ item.detail[0].name }} x $
-                  {{ item.detail[0].price }}
+                  {{ item.detail.name }} x $
+                  {{ item.detail.price }}
                 </p>
               </div>
               <div class="tab-overview-subtotals">
@@ -44,7 +44,7 @@
                   style="display:flex; justify-content:right;text-align:left"
                 >
                   <strong>+ </strong>
-                  {{ " $" + item.quantity * item.detail[0].price }}
+                  {{ " $" + item.quantity * item.detail.price }}
                 </p>
               </div>
             </div>

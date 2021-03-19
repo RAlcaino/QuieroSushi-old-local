@@ -8,13 +8,14 @@
       :columns="columns"
       row-key="key"
       :loading="loading"
-      no-data-label="I didn't find anything for you"
+      no-data-label="No se encontro ningún registro"
       title="Pedidos confirmados"
       :filter="filter"
       style="border-radius: 10px !important"
     >
       <template v-slot:header="props">
         <q-tr :props="props">
+          <q-th auto-width />
           <q-th
             v-for="col in props.cols"
             :key="col.name"
@@ -23,15 +24,11 @@
           >
             {{ col.label }}
           </q-th>
-          <q-th auto-width />
         </q-tr>
       </template>
 
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td v-for="col in props.cols" :key="col.name" :props="props">
-            {{ col.value }}
-          </q-td>
           <base-more-component :props="props" color="blue">
             <q-item clickable @click="moreDetails(props.row)">
               <q-item-section class="i-section">
@@ -41,6 +38,9 @@
             </q-item>
             <q-separator />
           </base-more-component>
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+            {{ col.value }}
+          </q-td>
         </q-tr>
       </template>
 
@@ -89,10 +89,10 @@ export default {
           sortable: true
         },
         {
-          name: "requestedTime",
+          name: "confirmationTimestamp",
           align: "center",
-          label: "Fecha",
-          field: "requestedTime",
+          label: "Fecha Confirmación",
+          field: "confirmationTimestamp",
           sortable: true
         },
         {
