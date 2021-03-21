@@ -77,6 +77,7 @@ export default {
       
       if (!this.prod) {
         //Without backend
+        this.$q.loadingBar.start();
         setTimeout(() => {
           ls.set(
             "token",
@@ -88,6 +89,7 @@ export default {
             "check_circle"
           );
           this.bus.$emit("login");
+          this.$q.loadingBar.stop();
           /*console.log(this.$store.getters['auth/getDataUser']);
             console.log(this.$store.getters['auth/getAvailableMenuOptions']);
             console.log(this.$store.getters['auth/getAllMenuOptions']);

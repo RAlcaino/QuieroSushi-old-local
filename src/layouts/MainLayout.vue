@@ -365,7 +365,7 @@ export default {
       var responsive = window.matchMedia("(max-width: 500px)");
       var vue = this;
 
-      if (screen.width < 400) {
+      if (screen.width < 500) {
         vue.responsiveMobile = true;
       }
 

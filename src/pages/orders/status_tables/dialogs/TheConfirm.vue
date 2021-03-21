@@ -324,7 +324,11 @@ export default {
         var url = this.$store.getters["routes/getRoute"]("order.confirm");
         //console.log(url);
         this.$axios
-          .put(url, data)
+          .put(url, data, {
+            headers:{
+              'Authorization':this.$store.getters["auth/getToken"]
+            }
+          })
           .then(response => {
             //console.log(response.data);
 

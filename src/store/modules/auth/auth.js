@@ -73,7 +73,10 @@ const getters = {
       id: state.user.localId,
       name: state.user.localName
     };
-  }
+  },
+  getToken(state) {
+    return state.token;
+  },
 };
 
 export default {
