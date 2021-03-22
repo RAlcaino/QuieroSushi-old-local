@@ -72,11 +72,11 @@
             <q-avatar size="100px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
             </q-avatar>
-            <q-chip color="primary" text-color="white">
-              Gabriel Romero
+            <q-chip :color="this.$store.getters['auth/getDataUser'].role==='God'?'green':'primary'" text-color="white">
+              {{this.$store.getters['auth/getDataUser'].role==='God'?'Acceso Total':this.$store.getters['auth/getDataUser'].role}}
             </q-chip>
-            <q-chip color="green" text-color="white">
-              Online
+            <q-chip v-if="this.$store.getters['auth/getDataUser'].role!=='God'" color="green" text-color="white" icon="store">
+              {{this.$store.getters['auth/getDataLocal'].name}}
             </q-chip>
           </div>
         </div>

@@ -5,7 +5,7 @@
       :pagination.sync="pagination"
       class="q-my-xs q-my-md"
       :data="ordersDone"
-      :columns="columns"
+      :columns="getColumns"
       row-key="key"
       :loading="loading"
       no-data-label="No se encontro ningún registro"
@@ -20,7 +20,6 @@
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            v-on:click="onChangeField(col, datatable.currentPage)"
           >
             {{ col.label }}
           </q-th>
@@ -71,6 +70,18 @@ export default {
     BaseMoreComponent,
     MoreDetails
   },
+  computed:{
+    getColumns(){
+      var newArray=[];
+      var role=this.$store.getters["auth/getDataUser"].role;
+      var roots = this.columns.map(function(item) {
+          if(item.role.some(item2 => item2 === role)){
+            newArray.push(item);
+          }
+      });
+      return newArray;
+    }
+  },
   data() {
     return {
       filter: "",
@@ -82,38 +93,56 @@ export default {
         {
           name: "id",
           required: true,
-          label: "ID Pedido",
+          label: "ID del pedido",
           align: "left",
           field: row => row.id,
           format: val => `${val}`,
-          sortable: true
+          sortable: true,
+          role: ["Administrador", "Super Admin","God"]
         },
         {
-          name: "finalTimestamp",
+          name: "name",
+          required: true,
+          label: "Cliente",
+          align: "left",
+          field: row => row.name,
+          format: val => `${val}`,
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
+        },
+        {
+          name: "userPhone",
           align: "center",
-          label: "Fecha Final",
-          field: "finalTimestamp",
-          sortable: true
+          label: "Teléfono",
+          field: "userPhone",
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
+        },
+        {
+          name: "requestedTime",
+          align: "center",
+          label: "Fecha Solicitud",
+          field: "requestedTime",
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
         },
         {
           name: "orderType",
+          align: "center",
           label: "Tipo de Venta",
           field: "orderType",
-          sortable: true
-        },
-        {
-          name: "subtotal",
-          label: "Subtotal ($)",
-          field: "subtotal",
-          sortable: true
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
         },
         {
           name: "total",
           label: "Total ($)",
+          align: "right",
           field: "total",
-          sortable: true
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
         }
-      ]
+      ] 
     };
   },
   methods: {

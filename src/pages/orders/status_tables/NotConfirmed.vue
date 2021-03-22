@@ -4,11 +4,12 @@
     <keep-alive>
       <the-confirm></the-confirm>
     </keep-alive>
+    <the-cancel></the-cancel>
     <q-table
       :pagination.sync="pagination"
       class="q-my-xs q-my-md"
       :data="ordersNotConfirmed"
-      :columns="columns"
+      :columns="getColumns"
       row-key="key"
       :loading="loading"
       no-data-label="No se encontro ningún registro"
@@ -24,7 +25,6 @@
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            v-on:click="onChangeField(col, datatable.currentPage)"
           >
             {{ col.label }}
           </q-th>
@@ -34,17 +34,24 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <base-more-component :props="props" color="primary">
-            <q-item clickable @click="moreDetails(props.row)">
+            <q-item clickable @click="moreDetailsDialog(props.row)">
               <q-item-section class="i-section">
                 <q-icon name="more" class="i-icon" />
                 <span> Ver más</span>
               </q-item-section>
             </q-item>
             <q-separator />
-            <q-item clickable @click="confirm(props.row)">
+            <q-item clickable @click="confirmDialog(props.row)">
               <q-item-section class="i-section">
                 <q-icon name="check_circle" class="i-icon" />
                 <span> Confirmar</span>
+              </q-item-section>
+            </q-item>
+            <q-separator />
+            <q-item clickable @click="cancelDialog(props.row)">
+              <q-item-section class="i-section">
+                <q-icon name="cancel" class="i-icon" />
+                <span> Anular</span>
               </q-item-section>
             </q-item>
           </base-more-component>
@@ -75,13 +82,27 @@
 import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
 import TheConfirm from "./dialogs/TheConfirm.vue";
+import TheCancel from "./dialogs/TheCancel.vue";
 
 export default {
   props: ["ordersNotConfirmed"],
   components: {
     BaseMoreComponent,
     MoreDetails,
-    TheConfirm
+    TheConfirm,
+    TheCancel
+  },
+  computed:{
+    getColumns(){
+      var newArray=[];
+      var role=this.$store.getters["auth/getDataUser"].role;
+      var roots = this.columns.map(function(item) {
+          if(item.role.some(item2 => item2 === role)){
+            newArray.push(item);
+          }
+      });
+      return newArray;
+    }
   },
   data() {
     return {
@@ -94,46 +115,67 @@ export default {
         {
           name: "id",
           required: true,
-          label: "ID Pedido",
+          label: "ID del pedido",
           align: "left",
           field: row => row.id,
           format: val => `${val}`,
-          sortable: true
+          sortable: true,
+          role: ["Administrador", "Super Admin","God"]
+        },
+        {
+          name: "name",
+          required: true,
+          label: "Cliente",
+          align: "left",
+          field: row => row.name,
+          format: val => `${val}`,
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
+        },
+        {
+          name: "userPhone",
+          align: "center",
+          label: "Teléfono",
+          field: "userPhone",
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
         },
         {
           name: "requestedTime",
           align: "center",
           label: "Fecha Solicitud",
           field: "requestedTime",
-          sortable: true
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
         },
         {
           name: "orderType",
+          align: "center",
           label: "Tipo de Venta",
           field: "orderType",
-          sortable: true
-        },
-        {
-          name: "subtotal",
-          label: "Subtotal ($)",
-          field: "subtotal",
-          sortable: true
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
         },
         {
           name: "total",
           label: "Total ($)",
+          align: "right",
           field: "total",
-          sortable: true
+          sortable: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
         }
-      ]
+      ] 
     };
   },
   methods: {
-    moreDetails(row) {
+    moreDetailsDialog(row) {
       this.bus.$emit("more-details", row);
     },
-    confirm(row) {
+    confirmDialog(row) {
       this.bus.$emit("the-confirm", row);
+    },
+    cancelDialog(row) {
+      this.bus.$emit("the-cancel", row);
     }
   }
 };

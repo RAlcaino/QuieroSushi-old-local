@@ -3,13 +3,13 @@
     <q-card>
       <q-card-section class="row items-center">
         <span class="q-ml-sm">
-            ¿Estas seguro de anular el pedido?
+            ¿Estas seguro que deseas marcar como listo este pedido?
         </span>
       </q-card-section>
 
       <q-card-actions align="right">
         <q-btn flat label="No" color="primary" v-close-popup />
-        <q-btn @click="DoCancel()" flat label="Si" color="green" />
+        <q-btn @click="DoDone()" flat label="Si" color="green" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -19,7 +19,7 @@
 export default {
     created(){
         this.prod = this.$store.getters["mode/getMode"];
-        this.bus.$on('the-cancel',(row)=>{
+        this.bus.$on('the-done',(row)=>{
             this.card=true;
             this.orderId=row.id;
         })
@@ -32,28 +32,27 @@ export default {
         }
     },
     methods:{
-        DoCancel(){
+        DoDone(){
             let data={
                 orderID:this.orderId,
-                canceledTimestamp:this.currentTimestamp()
+                doneTimestamp:this.currentTimestamp()
+                //doneTimestamp: '2021-03-08 23:00:00',
             }
-
-            console.log(data); //
+             
             this.showLoading();
 
             if (!this.prod) {
                 setTimeout(() => {
                 this.hideLoading();
                 this.showNotification(
-                    "Pedido #" + this.orderId + " Cancelado",
+                    "Pedido #" + this.orderId + " Listo",
                     "positive",
                     "check_circle"
                 );
                 this.bus.$emit("sync-orders");
                 }, 3000);
             } else {
-                var url = this.$store.getters["routes/getRoute"]("order.cancel");
-                //console.log(url);
+                var url = this.$store.getters["routes/getRoute"]("order.done");
                 this.$axios
                 .put(url, data, {
                     headers:{
@@ -61,7 +60,7 @@ export default {
                     }
                 })
                 .then(response => {
-                    console.log(response.data);
+                    //console.log(response.data);
 
                     if (response.data.status === "success") {
                     this.bus.$emit("sync-orders");
@@ -114,7 +113,8 @@ export default {
                                 );
                                 this.bus.$emit("logout");
                             }
-                    } else {
+                    } 
+                    else {
                     this.showNotification(error.message, "negative", "error");
                     }
                 });

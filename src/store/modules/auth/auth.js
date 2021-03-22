@@ -1,5 +1,6 @@
 const state = {
   authenticated: false,
+  godMode:false,
   token: "",
   user: {
     id: null,
@@ -13,13 +14,13 @@ const state = {
       label: "Home",
       link: "/home",
       icon: "home",
-      role: ["Cajero", "Gerente", "Administrador", "Super Admin"]
+      role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
     },
     {
       label: "Pedidos",
       link: "/pedidos",
       icon: "delivery_dining",
-      role: ["Cajero", "Gerente", "Administrador", "Super Admin"]
+      role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
     }
   ],
   availableMenuOptions: []
@@ -35,20 +36,28 @@ const mutations = {
     state.user.localId = payload.localId;
     state.user.localName = payload.localName;
 
+    if(payload.role.name.trim()==='God'){
+      state.godMode=true;
+    }
+
     state.token = payload.token;
-    console.log()
     state.availableMenuOptions = state.allMenuOptions.filter(item =>
         item.role.some(item2 => item2 === payload.role.name.trim())
     );
     state.authenticated = true;
   },
   resetDataUserSesion(state) {
+
+    if(state.user.role==='God'){
+      state.godMode=false;
+    }
+    
     state.user.id = null;
     state.user.email = "";
     state.user.role = "";
     state.user.localId = null;
     state.user.localName = "";
-
+    
     state.token = "";
     state.availableMenuOptions = [];
     state.authenticated = false;
@@ -76,6 +85,9 @@ const getters = {
   },
   getToken(state) {
     return state.token;
+  },
+  getGodMode(state) {
+    return state.godMode;
   },
 };
 

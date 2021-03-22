@@ -81,7 +81,7 @@ export default {
         setTimeout(() => {
           ls.set(
             "token",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImdhYnJpZWxAZ21haWwuY29tIiwicm9sZSI6eyJuYW1lIjoiQ2FqZXJvIn0sImxvY2FsSWQiOjIsImxvY2FsTmFtZSI6IlN1c2hpIFZJUCIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNjAwMDAwMDAwfQ.TQkqLa4J7pUKcCnz7ZvRPk50liBMucqrS0Jv7KiIn4k"
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImdhYnJpZWxAZ21haWwuY29tIiwicm9sZSI6eyJuYW1lIjoiR29kIn0sImxvY2FsSWQiOjIsImxvY2FsTmFtZSI6IlN1c2hpIFZJUCIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNjAwMDAwMDAwfQ.84TMccPT4ioxbKXtgH4LX8pMEcjMEVyMuYhtZFNbRKE"
           );
           this.showNotification(
             "Inicio de sesión exitoso",

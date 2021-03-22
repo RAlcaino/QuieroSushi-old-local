@@ -21,18 +21,21 @@
               class="text-primary"
               name="not-confirmed"
               icon="watch_later"
+              style="outline:none;"
               :label="responsiveLabels ? '' : 'Sin Confirmar'"
             />
             <q-tab
               class="text-blue"
               name="confirmed"
               icon="room_service"
+              style="outline:none;"
               :label="responsiveLabels ? '' : 'Confirmados'"
             />
             <q-tab
               class="text-green"
               name="done"
               icon="check_circle"
+              style="outline:none;"
               :label="responsiveLabels ? '' : 'Listos'"
             />
           </q-tabs>
@@ -186,8 +189,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             }
@@ -222,8 +224,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -231,8 +232,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name:"Coca-Cola",
                 price: 28000
               }
             }
@@ -266,8 +266,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name:"50 roles de sushi",
                 price: 14000
               }
             },
@@ -275,8 +274,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name:"Agua",
                 price: 28000
               }
             }
@@ -310,8 +308,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name:"20 roles de sushi",
                 price: 14000
               }
             },
@@ -319,8 +316,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name:"Fanta",
                 price: 28000
               }
             }
@@ -354,8 +350,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name:"50 roles de sushi",
                 price: 14000
               }
             },
@@ -363,8 +358,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name:"Pepsi",
                 price: 28000
               }
             }
@@ -398,8 +392,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name:"Agua",
                 price: 14000
               }
             },
@@ -407,8 +400,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name:"500 roles de sushi",
                 price: 28000
               }
             },
@@ -416,8 +408,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name:"Coca-Cola",
                 price: 14000
               }
             }
@@ -451,8 +442,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name:"100 roles de sushi",
                 price: 14000
               }
             },
@@ -460,8 +450,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name:"200 roles de sushi",
                 price: 28000
               }
             },
@@ -469,8 +458,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name:"Coca-Cola",
                 price: 14000
               }
             },
@@ -478,8 +466,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:
-                  "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                name:"Agua",
                 price: 15000
               }
             }
@@ -513,8 +500,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name:"200 roles de sushi",
                 price: 14000
               }
             },
@@ -522,8 +508,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name:"Agua",
                 price: 28000
               }
             },
@@ -531,8 +516,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name:"Coca-Cola",
                 price: 14000
               }
             },
@@ -540,8 +524,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:
-                  "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                name:"100 roles de sushi",
                 price: 15000
               }
             },
@@ -549,8 +532,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             }
@@ -585,8 +567,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -594,8 +575,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name: "100 roles de sushi",
                 price: 28000
               }
             },
@@ -603,8 +583,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -612,8 +591,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:
-                  "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                name: "100 roles de sushi",
                 price: 15000
               }
             },
@@ -621,8 +599,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -630,8 +607,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             }
@@ -666,8 +642,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -675,8 +650,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name: "100 roles de sushi",
                 price: 28000
               }
             },
@@ -684,8 +658,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -693,8 +666,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:
-                  "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                name: "100 roles de sushi",
                 price: 15000
               }
             },
@@ -702,8 +674,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -711,8 +682,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -720,8 +690,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             }
@@ -756,8 +725,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -765,8 +733,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name: "100 roles de sushi",
                 price: 28000
               }
             },
@@ -774,8 +741,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -783,8 +749,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:
-                  "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                name: "100 roles de sushi",
                 price: 15000
               }
             },
@@ -792,8 +757,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -801,8 +765,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -810,8 +773,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -819,8 +781,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:
-                  "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                name: "100 roles de sushi",
                 price: 15000
               }
             }
@@ -855,8 +816,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -864,8 +824,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:
-                  "\u00bfTe lo vas a perder? $p ricas de sushi en con un sabor \u00fanico",
+                name: "100 roles de sushi",
                 price: 28000
               }
             },
@@ -873,8 +832,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -882,8 +840,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:
-                  "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                name: "100 roles de sushi",
                 price: 15000
               }
             },
@@ -891,8 +848,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -900,8 +856,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -909,8 +864,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -918,8 +872,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:
-                  "\u00a1Imperdible! \u00a1No te quedes sin estas ricas $p piezas de selecci\u00f3n!",
+                name: "100 roles de sushi",
                 price: 15000
               }
             },
@@ -927,8 +880,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:
-                  "\u00a1Mix de $p piezas! variedad de sabores y un exclusivo sabor",
+                name: "100 roles de sushi",
                 price: 14000
               }
             }
@@ -950,6 +902,7 @@ export default {
       if (!this.prod) {
         setTimeout(() => {
           this.data = this.response;
+          //console.log(this.data);
           this.filters();
           this.hideLoading();
           this.showNotification(
@@ -963,7 +916,11 @@ export default {
           localId: this.local.id
         });
         this.$axios
-          .get(url)
+          .get(url,{
+            headers:{
+              'Authorization':this.$store.getters["auth/getToken"]
+            }
+          })
           .then(response => {
             //console.log(response.data);
             this.hideLoading();
@@ -1011,6 +968,14 @@ export default {
                   );
                 }
               }
+              else if(error.response.status == 401){
+                  this.showNotification(
+                    error.response.data.message,
+                    "negative",
+                    "error"
+                  );
+                  this.bus.$emit("logout");
+              }
             } else {
               this.showNotification(error.message, "negative", "error");
             }
@@ -1046,6 +1011,15 @@ export default {
       });
     },
     filters() {
+      
+      var newArray=[];
+      var roots = this.data.map(function(item) {
+          item.name=item.payDetail.user;
+          item.userPhone=item.payDetail.userPhone;
+          newArray.push(item);
+      });
+
+      this.data=newArray;
       //console.log(this.data);
       this.ordersDone = this.data.filter(item => item.status === "done");
       this.ordersConfirmed = this.data.filter(

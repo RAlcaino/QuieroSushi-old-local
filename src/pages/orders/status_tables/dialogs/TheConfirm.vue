@@ -241,6 +241,7 @@ export default {
     this.bus.$on("the-confirm", data => {
       this.card = !this.card;
       this.orderDetail = data;
+      this.finalDateManual= this.orderDetail.requestedTime;
       this.preparationTime = this.orderDetail.local.preparationTime;
       this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.updateTime();
@@ -368,12 +369,20 @@ export default {
                     );
                   }
                 } else {
+                    this.showNotification(
+                      error.response.data.message,
+                      "negative",
+                      "error"
+                    );
+                }
+              }
+              else if(error.response.status == 401){
                   this.showNotification(
                     error.response.data.message,
                     "negative",
                     "error"
                   );
-                }
+                  this.bus.$emit("logout");
               }
             } else {
               this.showNotification(error.message, "negative", "error");

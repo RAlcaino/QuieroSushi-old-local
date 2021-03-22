@@ -5,10 +5,6 @@
     transition-hide="slide-up"
   >
     <q-card class="my-card" style="width: 400px; border-radius:10px;">
-      <q-img
-        src="https://mahatmarice.com/wp-content/uploads/2019/05/Vegetarian-Sushi-Rolls.jpg"
-      />
-
       <q-card-section class="q-pt-none">
         <q-tabs v-model="tab" class="text-blacklight">
           <q-tab label="Resumen" name="one" />
@@ -67,7 +63,6 @@
           </q-tab-panel>
           <q-tab-panel
             name="two"
-            class="tab-panel"
             v-if="orderDetail.payDetail"
           >
             <q-list>
@@ -98,12 +93,12 @@
                 </q-item-section>
               </q-item>
 
-              <q-item clickable>
+              <q-item clickable v-if="orderDetail.orderType!=='retiro'">
                 <q-item-section avatar>
                   <q-icon color="blacklight" name="location_on" />
                 </q-item-section>
 
-                <q-item-section>
+                <q-item-section >
                   <q-item-label>Dirección de despacho</q-item-label>
                   <q-item-label caption>{{
                     orderDetail.payDetail.address
@@ -146,7 +141,7 @@ export default {
 
 <style lang="scss">
 .tab-panel {
-  height: 170px !important;
+  height: 220px !important;
   overflow: visible !important;
 }
 .tab-overview {
