@@ -79,10 +79,46 @@ export default {
         //Without backend
         this.$q.loadingBar.start();
         setTimeout(() => {
-          ls.set(
-            "token",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImdhYnJpZWxAZ21haWwuY29tIiwicm9sZSI6eyJuYW1lIjoiR29kIn0sImxvY2FsSWQiOjIsImxvY2FsTmFtZSI6IlN1c2hpIFZJUCIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNjAwMDAwMDAwfQ.84TMccPT4ioxbKXtgH4LX8pMEcjMEVyMuYhtZFNbRKE"
-          );
+          if(this.user.email==='cajero@cajero.com'){
+              ls.set(
+              "token",
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJDYWplcm8iLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwibG9jYWxzIjpbeyJpZCI6MTI5LCJuYW1lIjoiU3VzaGkgVmVuZXp1ZWxhIn0seyJpZCI6MTMwLCJuYW1lIjoiU3VzaGkgQ2hpbGUifSx7ImlkIjoxMzEsIm5hbWUiOiJTdXNoaSBDb2xvbWJpYSJ9LHsiaWQiOjEzMiwibmFtZSI6IlN1c2hpIEVFVVUifSx7ImlkIjoxMzMsIm5hbWUiOiJTdXNoaSBVSyJ9XSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.rLU7paoejNWs-ybvUGAF9qFD9h7Aqiht_rWUUT-_TJc"
+              );
+          }
+          else if(this.user.email==='gerente@gerente.com'){
+              ls.set(
+              "token",
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHZXJlbnRlIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImxvY2FscyI6W3siaWQiOjEyOSwibmFtZSI6IlN1c2hpIFZlbmV6dWVsYSJ9LHsiaWQiOjEzMCwibmFtZSI6IlN1c2hpIENoaWxlIn0seyJpZCI6MTMxLCJuYW1lIjoiU3VzaGkgQ29sb21iaWEifSx7ImlkIjoxMzIsIm5hbWUiOiJTdXNoaSBFRVVVIn0seyJpZCI6MTMzLCJuYW1lIjoiU3VzaGkgVUsifV0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ.d_XCTpRXtovQDneWeP_20O_gUm3vC1NUnaXSPUEHfYo"
+              );
+          }
+          else if(this.user.email==='sudo@sudo.com'){
+              ls.set(
+              "token",
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJTdXBlciBBZG1pbiIsImd1YXJkX25hbWUiOiJhcGkiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIiwidXBkYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiJ9LCJsb2NhbHMiOlt7ImlkIjoxMjksIm5hbWUiOiJTdXNoaSBWZW5lenVlbGEifSx7ImlkIjoxMzAsIm5hbWUiOiJTdXNoaSBDaGlsZSJ9LHsiaWQiOjEzMSwibmFtZSI6IlN1c2hpIENvbG9tYmlhIn0seyJpZCI6MTMyLCJuYW1lIjoiU3VzaGkgRUVVVSJ9LHsiaWQiOjEzMywibmFtZSI6IlN1c2hpIFVLIn1dLCJpYXQiOjE2MTY1MjgzODgsImV4cCI6MTYxNzEzMzE4OH0.9MxN8s0tIb7KhyS-oKWM3BYVdGynn1YGvYp1_OEwMYA"
+              );
+          }
+          else if(this.user.email==='admin@admin.com'){
+              ls.set(
+              "token",
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImxvY2FscyI6W3siaWQiOjEyOSwibmFtZSI6IlN1c2hpIFZlbmV6dWVsYSJ9LHsiaWQiOjEzMCwibmFtZSI6IlN1c2hpIENoaWxlIn0seyJpZCI6MTMxLCJuYW1lIjoiU3VzaGkgQ29sb21iaWEifSx7ImlkIjoxMzIsIm5hbWUiOiJTdXNoaSBFRVVVIn0seyJpZCI6MTMzLCJuYW1lIjoiU3VzaGkgVUsifV0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ._5kuSKmXkxaaExhHqi2nTSXm86ygOpAxm3vfPgppWms"
+              );
+          }
+          else if(this.user.email==='god@god.com'){
+              ls.set(
+              "token",
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHb2QiLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwibG9jYWxzIjpbeyJpZCI6MTI5LCJuYW1lIjoiU3VzaGkgVmVuZXp1ZWxhIn0seyJpZCI6MTMwLCJuYW1lIjoiU3VzaGkgQ2hpbGUifSx7ImlkIjoxMzEsIm5hbWUiOiJTdXNoaSBDb2xvbWJpYSJ9LHsiaWQiOjEzMiwibmFtZSI6IlN1c2hpIEVFVVUifSx7ImlkIjoxMzMsIm5hbWUiOiJTdXNoaSBVSyJ9XSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.3LvxGQ6ObOTtx-k6Nu9Zx3-WH0TFbZl-m1BGytqZbzM"
+              );
+          }
+          else{
+            this.showNotification(
+              "Credenciales Incorrectas",
+              "negative",
+              "error"
+            );
+            this.$q.loadingBar.stop();
+            return;
+          }
+
           this.showNotification(
             "Inicio de sesión exitoso",
             "positive",

@@ -6,8 +6,7 @@ const state = {
     id: null,
     email: "",
     role: "",
-    localName: "",
-    localId: null
+    locals:[]
   },
   allMenuOptions: [
     {
@@ -33,8 +32,8 @@ const mutations = {
     state.user.id = payload.id;
     state.user.email = payload.email;
     state.user.role = payload.role.name;
-    state.user.localId = payload.localId;
-    state.user.localName = payload.localName;
+    state.user.locals = payload.locals;
+
 
     if(payload.role.name.trim()==='God'){
       state.godMode=true;
@@ -55,8 +54,7 @@ const mutations = {
     state.user.id = null;
     state.user.email = "";
     state.user.role = "";
-    state.user.localId = null;
-    state.user.localName = "";
+    state.user.locals = [];
     
     state.token = "";
     state.availableMenuOptions = [];
@@ -79,8 +77,8 @@ const getters = {
   },
   getDataLocal(state) {
     return {
-      id: state.user.localId,
-      name: state.user.localName
+      id: state.user.locals[0].id,
+      name: state.user.locals[0].name
     };
   },
   getToken(state) {
@@ -88,6 +86,9 @@ const getters = {
   },
   getGodMode(state) {
     return state.godMode;
+  },
+  getDataLocals(state) {
+    return state.user.locals;
   },
 };
 

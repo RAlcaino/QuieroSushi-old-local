@@ -3,11 +3,34 @@
     <q-toolbar class="bg-primary text-white" style="border-radius:50px">
       <q-btn flat round dense icon="delivery_dining" />
       <q-toolbar-title :style="FontSize">
-        Pedidos de {{ local.name }}</q-toolbar-title
+        Pedidos de {{ local.label }}</q-toolbar-title
       >
       <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync()" />
       <q-btn flat round dense icon="info" class="q-mr-xs" />
     </q-toolbar>
+
+    <div
+      style="padding-top:5%;"
+      class="fit row wrap justify-end items-start content-start"
+    >
+      <div class="dropdown-locals">
+        <q-btn-dropdown
+          color="blacklight"
+          rounded
+          outline
+          label="Sucursales"
+          icon="store"
+        >
+          <q-list>
+            <q-item v-for="item in locals" :key="item.value" clickable v-close-popup @click="findOrders(item)">
+              <q-item-section>
+                <q-item-label>{{item.label}}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+      </div>
+    </div>
 
     <div class="orders-tab">
       <q-splitter
@@ -128,16 +151,28 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
   },
-
   mounted() {
-    this.local = this.$store.getters["auth/getDataLocal"];
+    var vue = this;
+    //console.log(this.$store.getters["auth/getDataLocals"]);
+    var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+      let row={
+        value: item.id,
+        label: item.name
+      }
+      vue.locals.push(row);
+    });
+
+    this.local.value = this.$store.getters["auth/getDataLocal"].id;
+    this.local.label = this.$store.getters["auth/getDataLocal"].name;
+    /*console.log(this.locals);
+    console.log(this.local);*/
     this.sync();
     this.responsiveMode();
 
     this.bus.$on("sync-orders", () => {
       this.sync();
     });
-    
+
     /*console.log(this.ordersNotConfirmed);
     console.log(this.ordersConfirmed);
     console.log(this.ordersDone);*/
@@ -156,9 +191,11 @@ export default {
       tab: "not-confirmed",
       splitterModel: 20,
       local: {
-        id: null,
-        name: ""
+        value: null,
+        label: ""
       },
+      selectedLocal: "Seleccionar",
+      locals: [],
       prod: null,
       responsiveLabels: false,
       responsiveMobile: false,
@@ -232,7 +269,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:"Coca-Cola",
+                name: "Coca-Cola",
                 price: 28000
               }
             }
@@ -266,7 +303,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:"50 roles de sushi",
+                name: "50 roles de sushi",
                 price: 14000
               }
             },
@@ -274,7 +311,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:"Agua",
+                name: "Agua",
                 price: 28000
               }
             }
@@ -308,7 +345,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:"20 roles de sushi",
+                name: "20 roles de sushi",
                 price: 14000
               }
             },
@@ -316,7 +353,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:"Fanta",
+                name: "Fanta",
                 price: 28000
               }
             }
@@ -350,7 +387,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:"50 roles de sushi",
+                name: "50 roles de sushi",
                 price: 14000
               }
             },
@@ -358,7 +395,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:"Pepsi",
+                name: "Pepsi",
                 price: 28000
               }
             }
@@ -392,7 +429,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:"Agua",
+                name: "Agua",
                 price: 14000
               }
             },
@@ -400,7 +437,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:"500 roles de sushi",
+                name: "500 roles de sushi",
                 price: 28000
               }
             },
@@ -408,7 +445,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:"Coca-Cola",
+                name: "Coca-Cola",
                 price: 14000
               }
             }
@@ -442,7 +479,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:"100 roles de sushi",
+                name: "100 roles de sushi",
                 price: 14000
               }
             },
@@ -450,7 +487,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:"200 roles de sushi",
+                name: "200 roles de sushi",
                 price: 28000
               }
             },
@@ -458,7 +495,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:"Coca-Cola",
+                name: "Coca-Cola",
                 price: 14000
               }
             },
@@ -466,7 +503,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:"Agua",
+                name: "Agua",
                 price: 15000
               }
             }
@@ -500,7 +537,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:"200 roles de sushi",
+                name: "200 roles de sushi",
                 price: 14000
               }
             },
@@ -508,7 +545,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11801,
-                name:"Agua",
+                name: "Agua",
                 price: 28000
               }
             },
@@ -516,7 +553,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11799,
-                name:"Coca-Cola",
+                name: "Coca-Cola",
                 price: 14000
               }
             },
@@ -524,7 +561,7 @@ export default {
               quantity: 1,
               detail: {
                 id: 11800,
-                name:"100 roles de sushi",
+                name: "100 roles de sushi",
                 price: 15000
               }
             },
@@ -898,6 +935,7 @@ export default {
   },
   methods: {
     sync() {
+      //console.log(this.local.value);
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
@@ -913,12 +951,12 @@ export default {
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("orders", {
-          localId: this.local.id
+          localId: this.local.value
         });
         this.$axios
-          .get(url,{
-            headers:{
-              'Authorization':this.$store.getters["auth/getToken"]
+          .get(url, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
             }
           })
           .then(response => {
@@ -967,14 +1005,13 @@ export default {
                     "error"
                   );
                 }
-              }
-              else if(error.response.status == 401){
-                  this.showNotification(
-                    error.response.data.message,
-                    "negative",
-                    "error"
-                  );
-                  this.bus.$emit("logout");
+              } else if (error.response.status == 401) {
+                this.showNotification(
+                  error.response.data.message,
+                  "negative",
+                  "error"
+                );
+                this.bus.$emit("logout");
               }
             } else {
               this.showNotification(error.message, "negative", "error");
@@ -1011,15 +1048,14 @@ export default {
       });
     },
     filters() {
-      
-      var newArray=[];
+      var newArray = [];
       var roots = this.data.map(function(item) {
-          item.name=item.payDetail.user;
-          item.userPhone=item.payDetail.userPhone;
-          newArray.push(item);
+        item.name = item.payDetail.user;
+        item.userPhone = item.payDetail.userPhone;
+        newArray.push(item);
       });
 
-      this.data=newArray;
+      this.data = newArray;
       //console.log(this.data);
       this.ordersDone = this.data.filter(item => item.status === "done");
       this.ordersConfirmed = this.data.filter(
@@ -1037,6 +1073,11 @@ export default {
     },
     hideLoading() {
       this.$q.loading.hide();
+    },
+    findOrders(local){
+      this.local.value=local.value;
+      this.local.label=local.label;
+      this.sync();
     }
   }
 };
@@ -1047,6 +1088,19 @@ export default {
   height: 100vh;
   display: flex;
   justify-content: center;
-  padding-top: 50px;
+}
+.q-tab-panel {
+    padding: 10px 16px;
+}
+
+.dropdown-locals{
+  padding: 0 16px;
+}
+
+@media screen and (max-width: 900px) {
+  .dropdown-locals{
+    padding: 16px;
+  }
+
 }
 </style>

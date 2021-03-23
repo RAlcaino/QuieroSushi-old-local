@@ -1,8 +1,8 @@
 <template>
   <q-dialog v-model="card" persistent>
-    <q-card>
+    <q-card style="border-radius:10px">
       <q-card-section class="row items-center">
-        <span class="q-ml-sm">
+        <span style="font-size:16px" class="q-ml-sm">
             ¿Estas seguro que deseas marcar como listo este pedido?
         </span>
       </q-card-section>
