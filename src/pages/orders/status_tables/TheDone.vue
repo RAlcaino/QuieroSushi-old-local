@@ -70,6 +70,22 @@ export default {
     BaseMoreComponent,
     MoreDetails
   },
+  mounted(){
+      var responsive = window.matchMedia("(max-width: 450px)");
+      var vue = this;
+
+      if (screen.width < 450) {
+        vue.pagination.rowsPerPage=7;
+      }
+
+      responsive.addListener(function(event) {
+        if (event.matches) {
+          vue.pagination.rowsPerPage=7;
+        }else{
+          vue.pagination.rowsPerPage=10;
+        }
+      });
+  },
   computed:{
     getColumns(){
       var newArray=[];

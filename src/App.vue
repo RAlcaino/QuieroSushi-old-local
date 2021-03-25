@@ -16,19 +16,20 @@ export default {
   },
   methods:{
     init(){
-      this.bus.$on('login',()=>{
-        this.login();
+      this.bus.$on('login',(data)=>{
+        this.login(data);
       });
       this.bus.$on('logout',()=>{
         this.logout();
       });
     },
-    login(){
+    login(data){
         var ls = new SecureLS({ isCompression: false });
         var token=ls.get('token');
         if(token!==''){
           let user=jwt_decode(token);
           user.token=token;
+          user.locals=data;
           this.$store.commit('auth/setDataUserSesion',user);
         }
     },

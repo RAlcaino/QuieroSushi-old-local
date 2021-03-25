@@ -5,7 +5,7 @@
     transition-hide="slide-up"
   >
     <q-card class="my-card" style="width: 400px; border-radius:10px;">
-      <q-card-section class="q-pt-none">
+      <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
           <q-tab label="Resumen" name="one" />
           <q-tab label="Detalle pedido" name="two" />
@@ -109,8 +109,6 @@
           </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
-
-      <q-card-section class="q-pt-none"> </q-card-section>
 
       <q-separator />
 

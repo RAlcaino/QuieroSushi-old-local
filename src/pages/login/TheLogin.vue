@@ -82,31 +82,31 @@ export default {
           if(this.user.email==='cajero@cajero.com'){
               ls.set(
               "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJDYWplcm8iLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwibG9jYWxzIjpbeyJpZCI6MTI5LCJuYW1lIjoiU3VzaGkgVmVuZXp1ZWxhIn0seyJpZCI6MTMwLCJuYW1lIjoiU3VzaGkgQ2hpbGUifSx7ImlkIjoxMzEsIm5hbWUiOiJTdXNoaSBDb2xvbWJpYSJ9LHsiaWQiOjEzMiwibmFtZSI6IlN1c2hpIEVFVVUifSx7ImlkIjoxMzMsIm5hbWUiOiJTdXNoaSBVSyJ9XSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.rLU7paoejNWs-ybvUGAF9qFD9h7Aqiht_rWUUT-_TJc"
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJDYWplcm8iLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.cADPBjQxGBIqab2zyqf3XvNyb70p_godxTT3HHSvDqM"
               );
           }
           else if(this.user.email==='gerente@gerente.com'){
               ls.set(
               "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHZXJlbnRlIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImxvY2FscyI6W3siaWQiOjEyOSwibmFtZSI6IlN1c2hpIFZlbmV6dWVsYSJ9LHsiaWQiOjEzMCwibmFtZSI6IlN1c2hpIENoaWxlIn0seyJpZCI6MTMxLCJuYW1lIjoiU3VzaGkgQ29sb21iaWEifSx7ImlkIjoxMzIsIm5hbWUiOiJTdXNoaSBFRVVVIn0seyJpZCI6MTMzLCJuYW1lIjoiU3VzaGkgVUsifV0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ.d_XCTpRXtovQDneWeP_20O_gUm3vC1NUnaXSPUEHfYo"
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHZXJlbnRlIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ.4f4WgpFJA_veiJj6hpnMFXSYdvxAHgDrvgGhfLPQVv4"
               );
           }
           else if(this.user.email==='sudo@sudo.com'){
               ls.set(
               "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJTdXBlciBBZG1pbiIsImd1YXJkX25hbWUiOiJhcGkiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIiwidXBkYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiJ9LCJsb2NhbHMiOlt7ImlkIjoxMjksIm5hbWUiOiJTdXNoaSBWZW5lenVlbGEifSx7ImlkIjoxMzAsIm5hbWUiOiJTdXNoaSBDaGlsZSJ9LHsiaWQiOjEzMSwibmFtZSI6IlN1c2hpIENvbG9tYmlhIn0seyJpZCI6MTMyLCJuYW1lIjoiU3VzaGkgRUVVVSJ9LHsiaWQiOjEzMywibmFtZSI6IlN1c2hpIFVLIn1dLCJpYXQiOjE2MTY1MjgzODgsImV4cCI6MTYxNzEzMzE4OH0.9MxN8s0tIb7KhyS-oKWM3BYVdGynn1YGvYp1_OEwMYA"
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJTdXBlciBBZG1pbiIsImd1YXJkX25hbWUiOiJhcGkiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIiwidXBkYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiJ9LCJpYXQiOjE2MTY1MjgzODgsImV4cCI6MTYxNzEzMzE4OH0.F4ldHxzfuGISfFTkTqMrjGyFIU_L36ufYSWckZ8YFvs"
               );
           }
           else if(this.user.email==='admin@admin.com'){
               ls.set(
               "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImxvY2FscyI6W3siaWQiOjEyOSwibmFtZSI6IlN1c2hpIFZlbmV6dWVsYSJ9LHsiaWQiOjEzMCwibmFtZSI6IlN1c2hpIENoaWxlIn0seyJpZCI6MTMxLCJuYW1lIjoiU3VzaGkgQ29sb21iaWEifSx7ImlkIjoxMzIsIm5hbWUiOiJTdXNoaSBFRVVVIn0seyJpZCI6MTMzLCJuYW1lIjoiU3VzaGkgVUsifV0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ._5kuSKmXkxaaExhHqi2nTSXm86ygOpAxm3vfPgppWms"
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ.HdvKZItN90loQ7GUwFNZrmhrD20LAnueCAYi8Fi2TCY"
               );
           }
           else if(this.user.email==='god@god.com'){
               ls.set(
               "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHb2QiLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwibG9jYWxzIjpbeyJpZCI6MTI5LCJuYW1lIjoiU3VzaGkgVmVuZXp1ZWxhIn0seyJpZCI6MTMwLCJuYW1lIjoiU3VzaGkgQ2hpbGUifSx7ImlkIjoxMzEsIm5hbWUiOiJTdXNoaSBDb2xvbWJpYSJ9LHsiaWQiOjEzMiwibmFtZSI6IlN1c2hpIEVFVVUifSx7ImlkIjoxMzMsIm5hbWUiOiJTdXNoaSBVSyJ9XSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.3LvxGQ6ObOTtx-k6Nu9Zx3-WH0TFbZl-m1BGytqZbzM"
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHb2QiLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.Hk6oKPIksi1Mt5j7izhbRR7SOTzPOkIzU6cnuEPgK2s"
               );
           }
           else{
@@ -124,7 +124,29 @@ export default {
             "positive",
             "check_circle"
           );
-          this.bus.$emit("login");
+          let locals=[
+              {
+                id: 129,
+                name: "Sushi Venezuela"
+              },
+              {
+                id: 130,
+                name: "Sushi Chile"
+              },
+              {
+                id: 131,
+                name: "Sushi Colombia"
+              },
+              {
+                id: 132,
+                name: "Sushi EEUU"
+              },
+              {
+                id: 133,
+                name: "Sushi UK"
+              }
+          ];
+          this.bus.$emit("login",locals);
           this.$q.loadingBar.stop();
           /*console.log(this.$store.getters['auth/getDataUser']);
             console.log(this.$store.getters['auth/getAvailableMenuOptions']);
@@ -139,13 +161,13 @@ export default {
           .post(url, this.user)
           .then(response => {
             if (response.data.status === "success") {
-              ls.set("token", response.data.result);
+              ls.set("token", response.data.result.token);
               this.showNotification(
                 response.data.message,
                 "positive",
                 "check_circle"
               );
-              this.bus.$emit("login");
+              this.bus.$emit("login",response.data.result.locals);
               /*console.log(this.$store.getters["auth/getDataUser"]);
               console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
               console.log(this.$store.getters["auth/getAllMenuOptions"]);

@@ -10,8 +10,7 @@
     </q-toolbar>
 
     <div
-      style="padding-top:5%;"
-      class="fit row wrap justify-end items-start content-start"
+      class="dropdown-container"
     >
       <div class="dropdown-locals">
         <q-btn-dropdown
@@ -204,6 +203,286 @@ export default {
       ordersNotConfirmed: [],
       response: [
         {
+          id: 63250,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2020-12-09 17:00:00",
+          confirmationTimestamp: null,
+          orderType: "retiro",
+          subtotal: 14000,
+          deliveryCost: 0,
+          total: 14000,
+
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "QS",
+            userPhone: "992232948",
+            pay: "Sodexo",
+            address: ""
+          }
+        },
+                {
+          id: 63250,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2020-12-09 17:00:00",
+          confirmationTimestamp: null,
+          orderType: "retiro",
+          subtotal: 14000,
+          deliveryCost: 0,
+          total: 14000,
+
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "QS",
+            userPhone: "992232948",
+            pay: "Sodexo",
+            address: ""
+          }
+        },
+                {
+          id: 63250,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2020-12-09 17:00:00",
+          confirmationTimestamp: null,
+          orderType: "retiro",
+          subtotal: 14000,
+          deliveryCost: 0,
+          total: 14000,
+
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "QS",
+            userPhone: "992232948",
+            pay: "Sodexo",
+            address: ""
+          }
+        },
+                {
+          id: 63250,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2020-12-09 17:00:00",
+          confirmationTimestamp: null,
+          orderType: "retiro",
+          subtotal: 14000,
+          deliveryCost: 0,
+          total: 14000,
+
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "QS",
+            userPhone: "992232948",
+            pay: "Sodexo",
+            address: ""
+          }
+        },
+                {
+          id: 63250,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2020-12-09 17:00:00",
+          confirmationTimestamp: null,
+          orderType: "retiro",
+          subtotal: 14000,
+          deliveryCost: 0,
+          total: 14000,
+
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "QS",
+            userPhone: "992232948",
+            pay: "Sodexo",
+            address: ""
+          }
+        },
+                {
+          id: 63250,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2020-12-09 17:00:00",
+          confirmationTimestamp: null,
+          orderType: "retiro",
+          subtotal: 14000,
+          deliveryCost: 0,
+          total: 14000,
+
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "QS",
+            userPhone: "992232948",
+            pay: "Sodexo",
+            address: ""
+          }
+        },
+                {
+          id: 63250,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2020-12-09 17:00:00",
+          confirmationTimestamp: null,
+          orderType: "retiro",
+          subtotal: 14000,
+          deliveryCost: 0,
+          total: 14000,
+
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "QS",
+            userPhone: "992232948",
+            pay: "Sodexo",
+            address: ""
+          }
+        },
+                {
+          id: 63250,
+          status: "not-confirmed",
+          finalTimestamp: null,
+          finalDate: null,
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2020-12-09 17:00:00",
+          confirmationTimestamp: null,
+          orderType: "retiro",
+          subtotal: 14000,
+          deliveryCost: 0,
+          total: 14000,
+
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "QS",
+            userPhone: "992232948",
+            pay: "Sodexo",
+            address: ""
+          }
+        },
+                {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
@@ -928,6 +1207,798 @@ export default {
             pay: "Efectivo",
             address: "Heriberto rojas 5935"
           }
+        },
+        {
+          id: 70470,
+          status: "done",
+          finalTimestamp: "2021-01-14 18:48:00",
+          finalDate: "2021-01-14",
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2021-01-14 17:48:00",
+
+          confirmationTimestamp: "2021-12-20 21:02:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1500,
+          total: 15500,
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11801,
+                name: "100 roles de sushi",
+                price: 28000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "Pablo Urz\u00faa Cid ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Heriberto rojas 5935"
+          }
+        },
+        {
+          id: 70470,
+          status: "done",
+          finalTimestamp: "2021-01-14 18:48:00",
+          finalDate: "2021-01-14",
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2021-01-14 17:48:00",
+
+          confirmationTimestamp: "2021-12-20 21:02:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1500,
+          total: 15500,
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11801,
+                name: "100 roles de sushi",
+                price: 28000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "Pablo Urz\u00faa Cid ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Heriberto rojas 5935"
+          }
+        },
+        {
+          id: 70470,
+          status: "done",
+          finalTimestamp: "2021-01-14 18:48:00",
+          finalDate: "2021-01-14",
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2021-01-14 17:48:00",
+
+          confirmationTimestamp: "2021-12-20 21:02:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1500,
+          total: 15500,
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11801,
+                name: "100 roles de sushi",
+                price: 28000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "Pablo Urz\u00faa Cid ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Heriberto rojas 5935"
+          }
+        },
+        {
+          id: 70470,
+          status: "done",
+          finalTimestamp: "2021-01-14 18:48:00",
+          finalDate: "2021-01-14",
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2021-01-14 17:48:00",
+
+          confirmationTimestamp: "2021-12-20 21:02:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1500,
+          total: 15500,
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11801,
+                name: "100 roles de sushi",
+                price: 28000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "Pablo Urz\u00faa Cid ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Heriberto rojas 5935"
+          }
+        },
+        {
+          id: 70470,
+          status: "done",
+          finalTimestamp: "2021-01-14 18:48:00",
+          finalDate: "2021-01-14",
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2021-01-14 17:48:00",
+
+          confirmationTimestamp: "2021-12-20 21:02:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1500,
+          total: 15500,
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11801,
+                name: "100 roles de sushi",
+                price: 28000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "Pablo Urz\u00faa Cid ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Heriberto rojas 5935"
+          }
+        },
+        {
+          id: 70470,
+          status: "done",
+          finalTimestamp: "2021-01-14 18:48:00",
+          finalDate: "2021-01-14",
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2021-01-14 17:48:00",
+
+          confirmationTimestamp: "2021-12-20 21:02:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1500,
+          total: 15500,
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11801,
+                name: "100 roles de sushi",
+                price: 28000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "Pablo Urz\u00faa Cid ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Heriberto rojas 5935"
+          }
+        },
+        {
+          id: 70470,
+          status: "done",
+          finalTimestamp: "2021-01-14 18:48:00",
+          finalDate: "2021-01-14",
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2021-01-14 17:48:00",
+
+          confirmationTimestamp: "2021-12-20 21:02:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1500,
+          total: 15500,
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11801,
+                name: "100 roles de sushi",
+                price: 28000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "Pablo Urz\u00faa Cid ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Heriberto rojas 5935"
+          }
+        },
+        {
+          id: 70470,
+          status: "done",
+          finalTimestamp: "2021-01-14 18:48:00",
+          finalDate: "2021-01-14",
+          local: {
+            id_local: 1912,
+            preparationTime: 30,
+            aditionalDeliveryTime: 5
+          },
+          requestedTime: "2021-01-14 17:48:00",
+
+          confirmationTimestamp: "2021-12-20 21:02:00",
+          orderType: "despacho",
+          subtotal: 14000,
+          deliveryCost: 1500,
+          total: 15500,
+          gmapsDeliveryTime: 10,
+          product: [
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11801,
+                name: "100 roles de sushi",
+                price: 28000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11800,
+                name: "100 roles de sushi",
+                price: 15000
+              }
+            },
+            {
+              quantity: 1,
+              detail: {
+                id: 11799,
+                name: "100 roles de sushi",
+                price: 14000
+              }
+            }
+          ],
+          payDetail: {
+            user: "Pablo Urz\u00faa Cid ",
+            userPhone: "992232948",
+            pay: "Efectivo",
+            address: "Heriberto rojas 5935"
+          }
         }
       ],
       data: []
@@ -1093,14 +2164,31 @@ export default {
     padding: 10px 16px;
 }
 
-.dropdown-locals{
-  padding: 0 16px;
-}
-
-@media screen and (max-width: 900px) {
+  .dropdown-container{
+    padding-top: 3%;
+    display: flex;
+    width: auto;
+    margin: 0 auto;
+    flex-direction: row-reverse;
+  }
   .dropdown-locals{
-    padding: 16px;
+    padding: 16px 16px 0px 16px;
+  }
+@media screen and (max-width:900px) {
+    .dropdown-container{
+    padding-top: 3%;
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+    flex-direction: row-reverse;
+  }
+  .dropdown-locals{
+    padding: 16px 0;
   }
 
+
+
 }
+
+
 </style>
