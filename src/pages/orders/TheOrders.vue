@@ -21,7 +21,14 @@
           icon="store"
         >
           <q-list>
-            <q-item v-for="item in locals" :key="item.value" clickable v-close-popup @click="findOrders(item)">
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  <input v-model="localFilter" type="text" placeholder="Buscar" style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;">
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item v-for="item in getLocals" :key="item.value" clickable v-close-popup @click="findOrders(item)">
               <q-item-section>
                 <q-item-label>{{item.label}}</q-item-label>
               </q-item-section>
@@ -149,6 +156,10 @@ export default {
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+    this.echo.channel('app-channel')
+             .listen('custom-event', (data)=>{
+               console.log(data.notification);
+             });
   },
   mounted() {
     var vue = this;
@@ -183,6 +194,15 @@ export default {
       } else {
         return { fontSize: "18px" };
       }
+    },
+    getLocals(){
+      let filteredLocals = this.locals.filter((item) => {
+        return item.label.toLowerCase().includes(this.localFilter.toLowerCase());
+      })
+      let orderedLocals = filteredLocals.sort((a, b) => {
+        return b.label - a.label;
+      })
+      return orderedLocals;
     }
   },
   data() {
@@ -193,6 +213,7 @@ export default {
         value: null,
         label: ""
       },
+      localFilter:'',
       selectedLocal: "Seleccionar",
       locals: [],
       prod: null,
@@ -2148,6 +2169,7 @@ export default {
     findOrders(local){
       this.local.value=local.value;
       this.local.label=local.label;
+      this.localFilter='';
       this.sync();
     }
   }
