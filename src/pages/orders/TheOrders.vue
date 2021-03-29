@@ -156,10 +156,6 @@ export default {
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
-    this.echo.channel('app-channel')
-             .listen('custom-event', (data)=>{
-               console.log(data.notification);
-             });
   },
   mounted() {
     var vue = this;

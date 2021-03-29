@@ -1,5 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
+    <modal-new-order></modal-new-order>
     <q-header class="bg-header">
       <q-toolbar>
         <q-btn
@@ -72,11 +73,27 @@
             <q-avatar size="100px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
             </q-avatar>
-            <q-chip :color="this.$store.getters['auth/getDataUser'].role==='God'?'green':'primary'" text-color="white">
-              {{this.$store.getters['auth/getDataUser'].role==='God'?'Acceso Total':this.$store.getters['auth/getDataUser'].role}}
+            <q-chip
+              :color="
+                this.$store.getters['auth/getDataUser'].role === 'God'
+                  ? 'green'
+                  : 'primary'
+              "
+              text-color="white"
+            >
+              {{
+                this.$store.getters["auth/getDataUser"].role === "God"
+                  ? "Acceso Total"
+                  : this.$store.getters["auth/getDataUser"].role
+              }}
             </q-chip>
-            <q-chip v-if="this.$store.getters['auth/getDataUser'].role!=='God'" color="green" text-color="white" icon="store">
-              {{this.$store.getters['auth/getDataLocal'].name}}
+            <q-chip
+              v-if="this.$store.getters['auth/getDataUser'].role !== 'God'"
+              color="green"
+              text-color="white"
+              icon="store"
+            >
+              {{ this.$store.getters["auth/getDataLocal"].name }}
             </q-chip>
           </div>
         </div>
@@ -321,30 +338,44 @@
 <script>
 import EssentialLink from "components/EssentialLink";
 import Messages from "./Messages";
+import ModalNewOrder from "../components/modals/ModalNewOrder.vue";
 
 export default {
   name: "MainLayout",
 
   components: {
     Messages,
-    EssentialLink
+    EssentialLink,
+    ModalNewOrder
   },
-  created(){
-    this.prod=this.$store.getters["mode/getMode"];
+  created() {
+    this.bus.$on("stop-bell", () => {
+      this.bell.loop(false);
+    });
+    this.prod = this.$store.getters["mode/getMode"];
+    this.channelName = "Private-";
+
+    if (this.$store.getters["auth/getGodMode"]) {
+      this.channelName += "-1";
+    } else {
+      this.channelName += this.$store.getters["auth/getDataUser"].id;
+    }
+
+    this.privateChannel = this.Pusher.subscribe(this.channelName);
+    this.listenEvent();
   },
   mounted() {
     console.log("main layout mounted");
     console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
     this.optionsAvailable = this.$store.getters["auth/getAvailableMenuOptions"];
     this.modeResponsive();
-
   },
-  computed:{
-    responsiveMode(){
-      if(this.responsiveMobile){
-        return{width:'100%',paddingTop: '10px'}
-      }else{
-        return{width:'50%',paddingTop: '5px'}
+  computed: {
+    responsiveMode() {
+      if (this.responsiveMobile) {
+        return { width: "100%", paddingTop: "10px" };
+      } else {
+        return { width: "50%", paddingTop: "5px" };
       }
     }
   },
@@ -352,13 +383,17 @@ export default {
     return {
       leftDrawerOpen: false,
       optionsAvailable: [],
-      responsiveMobile:false,
-      prod:null
+      responsiveMobile: false,
+      prod: null,
+      privateChannel: null,
+      channelName:''
     };
   },
   methods: {
     logout() {
       this.optionsAvailable = [];
+      this.privateChannel = this.Pusher.unsubscribe(this.channelName);
+      this.channelName='';
       this.bus.$emit("logout");
     },
     modeResponsive() {
@@ -375,6 +410,14 @@ export default {
         } else {
           vue.responsiveMobile = false;
         }
+      });
+    },
+    listenEvent() {
+      var vue = this;
+      this.privateChannel.bind("PedidoNuevo", function(data) {
+        vue.bell.loop(true);
+        vue.bell.play();
+        vue.bus.$emit("new-order", data);
       });
     }
   }
