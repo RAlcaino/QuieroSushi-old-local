@@ -17,6 +17,7 @@
     "howler": "^2.2.1",
     "jquery": "^3.6.0",
     "jwt-decode": "^3.1.2",
+    "laravel-echo": "^1.10.0",
     "pusher-js": "^7.0.3",
     "quasar": "^1.15.9",
     "secure-ls": "^1.2.6",

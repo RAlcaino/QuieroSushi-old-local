@@ -361,7 +361,7 @@ export default {
       this.channelName += this.$store.getters["auth/getDataUser"].id;
     }
 
-    this.privateChannel = this.Pusher.subscribe(this.channelName);
+    this.privateChannel = this.Echo.channel(this.channelName);
     this.listenEvent();
   },
   mounted() {
@@ -386,14 +386,14 @@ export default {
       responsiveMobile: false,
       prod: null,
       privateChannel: null,
-      channelName:''
+      channelName: ""
     };
   },
   methods: {
     logout() {
       this.optionsAvailable = [];
-      this.privateChannel = this.Pusher.unsubscribe(this.channelName);
-      this.channelName='';
+      this.privateChannel = this.Echo.leaveChannel(this.channelName);
+      this.channelName = "";
       this.bus.$emit("logout");
     },
     modeResponsive() {
@@ -414,7 +414,7 @@ export default {
     },
     listenEvent() {
       var vue = this;
-      this.privateChannel.bind("PedidoNuevo", function(data) {
+      this.privateChannel.listen(".PedidoNuevo", function(data) {
         vue.bell.loop(true);
         vue.bell.play();
         vue.bus.$emit("new-order", data);

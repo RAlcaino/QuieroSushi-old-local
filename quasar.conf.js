@@ -11,7 +11,7 @@ module.exports = function (ctx) {
       'axios',
       'apex',
       'bus',
-      'pusher',
+      'echo',
       'bell'
     ],
 
