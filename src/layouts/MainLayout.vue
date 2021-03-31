@@ -350,10 +350,11 @@ export default {
   },
   created() {
     this.bus.$on("stop-bell", () => {
+      this.modalOpen = false;
       this.bell.loop(false);
     });
     this.prod = this.$store.getters["mode/getMode"];
-    this.channelName = "Private-";
+    this.channelName = "Private-qs-venta-";
 
     if (this.$store.getters["auth/getGodMode"]) {
       this.channelName += "-1";
@@ -386,7 +387,8 @@ export default {
       responsiveMobile: false,
       prod: null,
       privateChannel: null,
-      channelName: ""
+      channelName: "",
+      modalOpen: false
     };
   },
   methods: {
@@ -415,9 +417,14 @@ export default {
     listenEvent() {
       var vue = this;
       this.privateChannel.listen(".PedidoNuevo", function(data) {
-        vue.bell.loop(true);
-        vue.bell.play();
-        vue.bus.$emit("new-order", data);
+        if (vue.modalOpen) {
+          vue.bus.$emit("sync-new-order", data);
+        } else {
+          vue.modalOpen = true;
+          vue.bell.loop(true);
+          vue.bell.play();
+          vue.bus.$emit("new-order", data);
+        }
       });
     }
   }
