@@ -103,8 +103,8 @@ module.exports = function (ctx) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Quasar App',
-        short_name: 'Quasar App',
+        name: 'QuieroSushi',
+        short_name: 'QuieroSushi',
         description: 'A Quasar Framework app',
         display: 'standalone',
         orientation: 'portrait',
@@ -112,30 +112,15 @@ module.exports = function (ctx) {
         theme_color: '#027be3',
         icons: [
           {
-            'src': 'icons/icon-128x128.png',
+            'src': 'icons/favicon-128.png',
             'sizes': '128x128',
             'type': 'image/png'
           },
           {
-            'src': 'icons/icon-192x192.png',
-            'sizes': '192x192',
+            'src': 'icons/favicon-196x196.png',
+            'sizes': '196x196',
             'type': 'image/png'
           },
-          {
-            'src': 'icons/icon-256x256.png',
-            'sizes': '256x256',
-            'type': 'image/png'
-          },
-          {
-            'src': 'icons/icon-384x384.png',
-            'sizes': '384x384',
-            'type': 'image/png'
-          },
-          {
-            'src': 'icons/icon-512x512.png',
-            'sizes': '512x512',
-            'type': 'image/png'
-          }
         ]
       }
     },
