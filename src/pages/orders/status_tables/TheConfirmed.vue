@@ -112,7 +112,7 @@ export default {
       filter: "",
       loading: false,
       pagination: {
-        rowsPerPage: 10
+        rowsPerPage: 9
       },
       columns: [
         {

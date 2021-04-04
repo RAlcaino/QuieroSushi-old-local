@@ -52,11 +52,6 @@
 
           <q-btn round dense flat color="white" icon="logout" @click="logout()">
           </q-btn>
-          <!--<q-btn round flat>
-            <q-avatar size="26px">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-            </q-avatar>
-          </q-btn>-->
         </div>
       </q-toolbar>
     </q-header>
@@ -329,9 +324,35 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container class="bg-grey-2">
+    <q-drawer
+      :width="250"
+      v-model="rightDrawerOpen"
+      side="right"
+      bordered
+    >
+      <!-- drawer content -->
+    </q-drawer>
+
+    <q-page-container class="bg-white">
       <router-view />
     </q-page-container>
+
+    <q-footer class="bg-footer">
+      <q-toolbar>
+        <div class="fit row no-wrap justify-end items-start content-start">
+          <q-btn
+            round
+            dense
+            flat
+            color="white"
+            icon="chat"
+            style="font-size:15px; padding: 5px; margin-bottom:10px; background:#333;"
+            @click="rightDrawerOpen = !rightDrawerOpen"
+          >
+          </q-btn>
+        </div>
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -383,6 +404,7 @@ export default {
   data() {
     return {
       leftDrawerOpen: false,
+      rightDrawerOpen: false,
       optionsAvailable: [],
       responsiveMobile: false,
       prod: null,
@@ -434,6 +456,10 @@ export default {
 <style lang="scss">
 .bg-header {
   background: #333;
+}
+
+.bg-footer{
+  background: transparent;
 }
 .bg-sidebar {
   background: #ff2d2d;
