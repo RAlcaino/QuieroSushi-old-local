@@ -20,7 +20,15 @@ const state = {
     {
       name: "order.done",
       link: "/pedidos/done"
-    }
+    },
+    {
+      name: "coupons",
+      link: "/cupones/{localId}"
+    },
+    {
+      name: "services.prices",
+      link: "/services/prices"
+    },
   ]
 };
 const mutations = {};

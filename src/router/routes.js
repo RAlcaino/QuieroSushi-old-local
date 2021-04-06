@@ -49,6 +49,22 @@ const routes = [
           }
         }
       },
+      { 
+        path: '/cupones', 
+        component: () => import('pages/coupons/TheCoupons.vue'),
+        beforeEnter:(to,from,next)=>{
+          if(isAuthenticated()){
+            if(accessTo('All')){
+              next();
+            }
+            else{
+              next("/404");
+            }
+          }else{
+            next("/login");
+          }
+        }
+      },
       
       
       

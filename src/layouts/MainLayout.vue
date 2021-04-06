@@ -61,6 +61,7 @@
       show-if-above
       bordered
       content-class="bg-sidebar text-white"
+      :width="230"
     >
       <q-list>
         <div class="user-sidebar">
@@ -329,15 +330,28 @@
       v-model="rightDrawerOpen"
       side="right"
       bordered
+      content-class="bg-sidebar"
     >
-      <!-- drawer content -->
+      
+        <div class="fit row no-wrap justify-end items-start content-start">
+          <q-btn
+            round
+            dense
+            flat
+            color="white"
+            icon="cancel"
+            style="font-size:12px; padding: 5px;"
+            @click="rightDrawerOpen = !rightDrawerOpen"
+          >
+          </q-btn>
+        </div>
     </q-drawer>
 
     <q-page-container class="bg-white">
       <router-view />
     </q-page-container>
 
-    <q-footer class="bg-footer">
+    <div style="position: fixed; right: 0; bottom:0;" >
       <q-toolbar>
         <div class="fit row no-wrap justify-end items-start content-start">
           <q-btn
@@ -352,7 +366,7 @@
           </q-btn>
         </div>
       </q-toolbar>
-    </q-footer>
+    </div>
   </q-layout>
 </template>
 

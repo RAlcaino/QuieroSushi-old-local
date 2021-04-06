@@ -20,6 +20,12 @@ const state = {
       link: "/pedidos",
       icon: "delivery_dining",
       role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
+    },
+    {
+      label: "Cupones",
+      link: "/cupones",
+      icon: "confirmation_number",
+      role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
     }
   ],
   availableMenuOptions: []
