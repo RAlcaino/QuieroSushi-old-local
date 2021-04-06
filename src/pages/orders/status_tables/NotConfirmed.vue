@@ -13,6 +13,8 @@
       row-key="key"
       :loading="loading"
       no-data-label="No se encontro ningún registro"
+      no-results-label="No se encontro ningún registro"
+      rows-per-page-label="Registros por página"
       title="Pedidos sin confirmar"
       :filter="filter"
       style="border-radius: 10px !important"
@@ -21,11 +23,7 @@
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th auto-width />
-          <q-th
-            v-for="col in props.cols"
-            :key="col.name"
-            :props="props"
-          >
+          <q-th v-for="col in props.cols" :key="col.name" :props="props">
             {{ col.label }}
           </q-th>
         </q-tr>
@@ -56,7 +54,10 @@
             </q-item>
           </base-more-component>
           <q-td v-for="col in props.cols" :key="col.name" :props="props">
-            {{ col.value }}
+            <template v-if="col.name === 'total'">{{
+              formatNumber(col.value)
+            }}</template>
+            <template v-else>{{ col.value }}</template>
           </q-td>
         </q-tr>
       </template>
@@ -86,36 +87,37 @@ import TheCancel from "./dialogs/TheCancel.vue";
 
 export default {
   props: ["ordersNotConfirmed"],
+  inject: ["formatNumber"],
   components: {
     BaseMoreComponent,
     MoreDetails,
     TheConfirm,
     TheCancel
   },
-  mounted(){
-      var responsive = window.matchMedia("(max-width: 450px)");
-      var vue = this;
+  mounted() {
+    var responsive = window.matchMedia("(max-width: 450px)");
+    var vue = this;
 
-      if (screen.width < 450) {
-        vue.pagination.rowsPerPage=7;
+    if (screen.width < 450) {
+      vue.pagination.rowsPerPage = 7;
+    }
+
+    responsive.addListener(function(event) {
+      if (event.matches) {
+        vue.pagination.rowsPerPage = 7;
+      } else {
+        vue.pagination.rowsPerPage = 10;
       }
-
-      responsive.addListener(function(event) {
-        if (event.matches) {
-          vue.pagination.rowsPerPage=7;
-        }else{
-          vue.pagination.rowsPerPage=10;
-        }
-      });
+    });
   },
-  computed:{
-    getColumns(){
-      var newArray=[];
-      var role=this.$store.getters["auth/getDataUser"].role;
+  computed: {
+    getColumns() {
+      var newArray = [];
+      var role = this.$store.getters["auth/getDataUser"].role;
       var roots = this.columns.map(function(item) {
-          if(item.role.some(item2 => item2 === role)){
-            newArray.push(item);
-          }
+        if (item.role.some(item2 => item2 === role)) {
+          newArray.push(item);
+        }
       });
       return newArray;
     }
@@ -136,7 +138,7 @@ export default {
           field: row => row.id,
           format: val => `${val}`,
           sortable: true,
-          role: ["Administrador", "Super Admin","God"]
+          role: ["Administrador", "Super Admin", "God"]
         },
         {
           name: "name",
@@ -146,7 +148,7 @@ export default {
           field: row => row.name,
           format: val => `${val}`,
           sortable: true,
-          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "userPhone",
@@ -154,7 +156,7 @@ export default {
           label: "Teléfono",
           field: "userPhone",
           sortable: true,
-          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "requestedTime",
@@ -162,7 +164,7 @@ export default {
           label: "Fecha Solicitud",
           field: "requestedTime",
           sortable: true,
-          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "orderType",
@@ -170,7 +172,7 @@ export default {
           label: "Tipo de Venta",
           field: "orderType",
           sortable: true,
-          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "total",
@@ -178,9 +180,9 @@ export default {
           align: "right",
           field: "total",
           sortable: true,
-          role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         }
-      ] 
+      ]
     };
   },
   methods: {

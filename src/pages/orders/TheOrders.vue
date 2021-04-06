@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-sm" style="background:white">
+  <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
     <q-toolbar class="bg-primary text-white" style="border-radius:50px">
       <q-btn flat round dense icon="delivery_dining" />
       <q-toolbar-title :style="FontSize">

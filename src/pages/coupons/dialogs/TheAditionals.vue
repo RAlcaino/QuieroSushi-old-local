@@ -30,7 +30,9 @@
         style="height:450px;"
         :style="sectionStyle"
       >
-        <p style="width: 95%; font-weight:bold;auto;font-size:16px;text-align:center">
+        <p
+          style="width: 95%; font-weight:bold;auto;font-size:16px;text-align:center"
+        >
           <q-icon
             style="margin-right:5px;padding-bottom:5px;"
             size="20px"
@@ -74,7 +76,7 @@
               >
                 {{ item.qty }} Descatado
               </q-chip>
-              <p class="price-a">${{ item.price }}</p>
+              <p class="price-a">${{ formatNumber(item.price) }}</p>
               <p class="cu-a">IVA incluido</p>
               <input
                 v-model="qtyStandOut[index]"
@@ -128,7 +130,7 @@
               >
                 {{ item.qty }} Subir
               </q-chip>
-              <p class="price-a">${{ item.price }}</p>
+              <p class="price-a">${{ formatNumber(item.price)}}</p>
               <p class="cu-a">${{ item.cu }} c/u</p>
               <input
                 v-model="qtyGoUp[index]"
@@ -148,10 +150,10 @@
         <div
           class="fit row wrap items-start content-start"
           :class="responsiveMobile ? 'justify-center' : 'justify-end'"
-          style="width: 80% !important; height:2% !important"
+          style="width: 80% !important; height:auto !important"
         >
           <p style="font-size:20px; margin-bottom:0">
-            <strong>Total: ${{ getTotal }}</strong>
+            <strong>Total: ${{ formatNumber(getTotal)}}</strong>
           </p>
         </div>
         <q-card-actions align="center">
@@ -173,6 +175,7 @@
 <script>
 export default {
   props: ["localName"],
+  inject:['formatNumber'],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.getPrices();
@@ -258,7 +261,7 @@ export default {
       } else {
         return {
           overflow: "hidden",
-          height: "490px"
+          height: "auto"
         };
       }
     }
@@ -319,7 +322,7 @@ export default {
             }
           })
           .then(response => {
-            //console.log(response.data);
+            console.log(response.data);
             if (response.data.status === "success") {
               var r = response.data.result;
               this.pricesGoUp = r.pricesGoUp;
@@ -385,7 +388,7 @@ export default {
         color: color,
         icon: icon
       });
-    }
+    },
   }
 };
 </script>
@@ -413,6 +416,9 @@ export default {
     font-weight: bold;
     color: gray;
   }
+}
+.padding-btn {
+  padding-bottom: 20px !important;
 }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {

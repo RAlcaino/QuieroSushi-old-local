@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-sm" style="background:white">
+  <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
     <the-aditionals :localName="local.label"></the-aditionals>
     <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
       <q-btn flat round dense icon="confirmation_number" />
@@ -74,7 +74,7 @@
           header
           class="fit row no-wrap justify-between items-start content-center"
         >
-          <div>
+          <div style="padding-top:8px">
             Mis cupones en: <strong>{{ local.label }}</strong>
           </div>
           <q-btn
@@ -84,8 +84,17 @@
             size="sm"
             @click="dialogAditionals()"
           >
-            <q-icon style="margin-right:5px" size="20px" name="add" />
+            <q-icon style="margin-right:5px" size="20px" name="shopping_cart" />
             <div style="font-size:12px">Adicionales</div>
+          </q-btn>
+          <q-btn
+            class="lt-md"
+            color="green"
+            round
+            size="sm"
+            @click="dialogAditionals()"
+          >
+            <q-icon size="20px" name="shopping_cart" />
           </q-btn>
         </q-item-label>
 
@@ -94,12 +103,14 @@
             <q-item-section avatar top>
               <q-toggle
                 v-model="item.status"
+                false-value="pendiente"
+                true-value="activo"
                 color="green"
                 @input="changeStatus(value, item.id)"
               />
             </q-item-section>
 
-            <q-item-section center class="col-2 gt-sm">
+            <q-item-section center class="col-2 gt-xs">
               <img
                 :src="item.image"
                 alt="img-sushi"
@@ -156,7 +167,7 @@
                   <div style="font-size:12px">Editar</div>
                 </q-btn>
                 <q-btn
-                  class="lt-sm"
+                  class="lt-md"
                   size="12px"
                   flat
                   dense
@@ -248,35 +259,35 @@ export default {
         coupons: [
           {
             id: 1,
-            status: false,
+            status: "pendiente",
             title: "Cupon de 50 piezas por $14.000",
             image:
               "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
           },
           {
             id: 2,
-            status: true,
+            status: "activo",
             title: "Cupon de 50 piezas por $20.000",
             image:
               "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
           },
           {
             id: 3,
-            status: false,
+            status: "pendiente",
             title: "Cupon de 10 piezas por $25.000",
             image:
               "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
           },
           {
             id: 4,
-            status: true,
+            status: "activo",
             title: "Cupon de 30 piezas por $50.000",
             image:
               "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
           },
           {
             id: 5,
-            status: true,
+            status: "activo",
             title: "Cupon de 20 piezas por $40.000",
             image:
               "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
@@ -331,7 +342,7 @@ export default {
             }
           })
           .then(response => {
-            //console.log(response.data);
+            console.log(response.data);
             this.hideLoading();
             if (response.data.status === "success") {
               var r = response.data.result;
@@ -436,7 +447,7 @@ export default {
     },
     hideLoading() {
       this.$q.loading.hide();
-    }
+    },
   }
 };
 </script>

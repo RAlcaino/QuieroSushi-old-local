@@ -30,17 +30,15 @@
                 <div v-for="(item, index) in orderDetail.product" :key="index" style="display:flex; justify-content:space-between">
                   <div style="width:60%">
                     <p>
-                      <strong>+</strong>
                       {{ item.quantity }} x
                       {{ item.detail.name }} x 
-                      ${{ item.detail.price }}
+                      ${{ formatNumber(item.detail.price) }}
                     </p>
                   </div>
 
                   <div style="width:30%">
                     <p>
-                      <strong>+ </strong>
-                      {{ " $" + item.quantity * item.detail.price }}
+                      {{ " $" + formatNumber(item.quantity * item.detail.price)}}
                     </p>
                   </div>
                 </div>
@@ -49,15 +47,15 @@
             <div class="tab-overview-footer">
               <p>
                 <strong style="color: #333">Subtotal: </strong> $
-                {{ orderDetail.subtotal }}
+                {{ formatNumber(orderDetail.subtotal) }}
               </p>
               <p>
                 <strong style="color: #333">Costo Despacho: </strong> $
-                {{ orderDetail.deliveryCost }}
+                {{ formatNumber(orderDetail.deliveryCost)}}
               </p>
               <p>
                 <strong style="color: #333">Total: </strong>$
-                {{ orderDetail.total }}
+                {{ formatNumber(orderDetail.total) }}
               </p>
             </div>
           </q-tab-panel>
@@ -121,6 +119,7 @@
 
 <script>
 export default {
+  inject:['formatNumber'],
   mounted() {
     this.bus.$on("more-details", data => {
       this.card = !this.card;

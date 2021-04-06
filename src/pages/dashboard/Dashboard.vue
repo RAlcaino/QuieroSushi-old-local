@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-sm">
+  <q-page class="q-pa-sm" style="padding-bottom:125px">
 
     <card-social icon_position="left" />
 
