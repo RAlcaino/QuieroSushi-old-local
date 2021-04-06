@@ -5,7 +5,7 @@
     >
       <q-card-section
         class="row items-center q-pb-none"
-        style="background:#333; padding: 10px 20px !important; margin-bottom:20px"
+        style="background:#333; padding: 10px 20px !important;"
       >
         <div class="text-h6" style="color: white">
           <q-icon
