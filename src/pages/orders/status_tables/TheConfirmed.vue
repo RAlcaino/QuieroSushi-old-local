@@ -19,21 +19,29 @@
           bordered
         >
           <q-card-section
-            class="fit row wrap justify-between items-center content-center"
+            class="fit row wrap justify-between content-center"
             style="padding:10px 16px 5px 16px;"
           >
             <div
-              class="text-overline fit row wrap justify-between items-center content-center"
+              class="text-overline fit row wrap justify-between content-center"
             >
-              <div style="width:40%;font-size:13px;font-family:'Roboto'">
+              <div
+                class="order-type"
+                style="width:50%;font-size:13px;font-family:'Roboto'"
+              >
                 <q-icon
-                  :name="item.orderType==='retiro'?'takeout_dining':'delivery_dining'"
+                  :name="
+                    item.orderType === 'retiro'
+                      ? 'takeout_dining'
+                      : 'delivery_dining'
+                  "
                   style="font-size:20px; padding-bottom:5px"
                   class="i-icon"
                 />{{ capitalize(item.orderType) }}
               </div>
               <div
-                style="width:40%;font-size:13px;font-family:'Roboto';text-align:right"
+                class="order-date"
+                style="width:50%;font-size:13px;font-family:'Roboto';text-align:right"
               >
                 <q-icon
                   name="event"
@@ -44,30 +52,30 @@
             </div>
           </q-card-section>
           <q-card-section
-            class="fit row wrap justify-around items-center content-center"
+            class="fit row wrap justify-around content-center"
           >
-            <div>
+            <div class="user-info">
               <p style="margin:0; font-weight:bold">
-                {{item.payDetail.user}}
+                {{ item.payDetail.user }}
               </p>
               <p style="margin:0;font-family:'Roboto'">
-               {{item.payDetail.userPhone}}
+                {{ item.payDetail.userPhone }}
               </p>
               <p style="margin:0;font-family:'Roboto'">
-                {{item.payDetail.address}}
+                {{ item.payDetail.address }}
               </p>
             </div>
-            <div>
+            <div class="user-payDetail">
               <p
                 style="margin:0;font-family:'Roboto'; font-weight:bold;text-align:right"
               >
                 Tipo de pago
               </p>
               <p style="margin:0;font-family:'Roboto';text-align:right">
-               {{item.payDetail.pay}}
+                {{ item.payDetail.pay }}
               </p>
               <p style="margin:0;font-family:'Roboto';text-align:right">
-                ${{formatNumber(item.total)}}
+                ${{ formatNumber(item.total) }}
               </p>
             </div>
           </q-card-section>
@@ -90,12 +98,25 @@
           <q-card-actions
             class="fit row no-wrap justify-center items-center content-center"
           >
-            <q-btn @click="doneDialog(item)" rounded size="sm" color="green" style="font-size:10px">
+            <q-btn
+              @click="doneDialog(item)"
+              rounded
+              size="sm"
+              color="green"
+              style="font-size:10px"
+            >
               <template v-if="item.orderType === 'retiro'">
-                Listo para Retiro</template>
+                Listo para Retiro</template
+              >
               <template v-else>En camino</template>
             </q-btn>
-            <q-btn @click="moreDetails(item)" rounded size="sm" color="blue" style="font-size:10px">
+            <q-btn
+              @click="moreDetails(item)"
+              rounded
+              size="sm"
+              color="blue"
+              style="font-size:10px"
+            >
               Detalle
             </q-btn>
           </q-card-actions>

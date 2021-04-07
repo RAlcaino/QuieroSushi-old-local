@@ -22,21 +22,29 @@
           bordered
         >
           <q-card-section
-            class="fit row wrap justify-between items-center content-center"
-            style="padding:10px 16px 5px 16px"
+            class="fit row wrap justify-between content-center"
+            style="padding:10px 16px 5px 16px;"
           >
             <div
-              class="text-overline fit row wrap justify-between items-center content-center"
+              class="text-overline fit row wrap justify-between content-center"
             >
-              <div style="width:40%;font-size:13px;font-family:'Roboto'">
+              <div
+                class="order-type"
+                style="width:50%;font-size:13px;font-family:'Roboto'"
+              >
                 <q-icon
-                  :name="item.orderType==='retiro'?'takeout_dining':'delivery_dining'"
+                  :name="
+                    item.orderType === 'retiro'
+                      ? 'takeout_dining'
+                      : 'delivery_dining'
+                  "
                   style="font-size:20px; padding-bottom:5px"
                   class="i-icon"
                 />{{ capitalize(item.orderType) }}
               </div>
               <div
-                style="width:40%;font-size:13px;font-family:'Roboto';text-align:right"
+                class="order-date"
+                style="width:50%;font-size:13px;font-family:'Roboto';text-align:right"
               >
                 <q-icon
                   name="event"
@@ -47,9 +55,9 @@
             </div>
           </q-card-section>
           <q-card-section
-            class="fit row wrap justify-around items-center content-center"
+            class="fit row wrap justify-around content-center"
           >
-            <div>
+            <div class="user-info">
               <p style="margin:0; font-weight:bold">
                 {{ item.payDetail.user }}
               </p>
@@ -60,7 +68,7 @@
                 {{ item.payDetail.address }}
               </p>
             </div>
-            <div>
+            <div class="user-payDetail">
               <p
                 style="margin:0;font-family:'Roboto'; font-weight:bold;text-align:right"
               >
@@ -110,7 +118,13 @@
             >
               Confirmar
             </q-btn>
-            <q-btn rounded size="sm" color="blue" style="font-size:10px" @click="moreDetailsDialog(item)">
+            <q-btn
+              rounded
+              size="sm"
+              color="blue"
+              style="font-size:10px"
+              @click="moreDetailsDialog(item)"
+            >
               Detalle
             </q-btn>
           </q-card-actions>
@@ -338,10 +352,26 @@ export default {
   border-radius: 15px;
   border: 1px solid rgba(0, 0, 0, 0.3);
 }
+
+.user-info,
+.user-payDetail {
+  width: 50%;
+}
+
 @media screen and (max-width: 600px) {
   .class-card {
     width: 100% !important;
     margin-top: 5% !important;
+  }
+}
+
+@media screen and (max-width: 333px) {
+  .order-type {
+    width: 100% !important;
+  }
+  .order-date {
+    width: 100% !important;
+    text-align: left !important;
   }
 }
 </style>

@@ -18,21 +18,29 @@
           style="border-color:rgba(0,128,0,0.4)"
         >
           <q-card-section
-            class="fit row wrap justify-between items-center content-center"
+            class="fit row wrap justify-between content-center"
             style="padding:10px 16px 5px 16px"
           >
             <div
-              class="text-overline fit row wrap justify-between items-center content-center"
+              class="text-overline fit row wrap justify-between content-center"
             >
-              <div style="width:40%;font-size:13px;font-family:'Roboto'">
+              <div
+                class="order-type"
+                style="width:50%;font-size:13px;font-family:'Roboto'"
+              >
                 <q-icon
-                  :name="item.orderType==='retiro'?'takeout_dining':'delivery_dining'"
+                  :name="
+                    item.orderType === 'retiro'
+                      ? 'takeout_dining'
+                      : 'delivery_dining'
+                  "
                   style="font-size:20px; padding-bottom:5px"
                   class="i-icon"
                 />{{ capitalize(item.orderType) }}
               </div>
               <div
-                style="width:40%;font-size:13px;font-family:'Roboto';text-align:right"
+                class="order-date"
+                style="width:50%;font-size:13px;font-family:'Roboto';text-align:right"
               >
                 <q-icon
                   name="event"
@@ -43,9 +51,9 @@
             </div>
           </q-card-section>
           <q-card-section
-            class="fit row wrap justify-around items-center content-center"
+            class="fit row wrap justify-around content-center"
           >
-            <div>
+            <div class="user-info">
               <p style="margin:0; font-weight:bold">
                 {{ item.payDetail.user }}
               </p>
@@ -56,7 +64,7 @@
                 {{ item.payDetail.address }}
               </p>
             </div>
-            <div>
+            <div class="user-payDetail">
               <p
                 style="margin:0;font-family:'Roboto'; font-weight:bold;text-align:right"
               >
