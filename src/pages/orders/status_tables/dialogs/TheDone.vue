@@ -1,6 +1,11 @@
 <template>
-  <q-dialog v-model="card" persistent>
-    <q-card style="border-radius:10px">
+  <q-dialog
+    v-model="card"
+    persistent
+    transition-show="slide-down"
+    transition-hide="slide-up"
+  >
+    <q-card style="border-radius:10px;">
       <q-card-section class="row items-center">
         <span
           v-if="orderType === 'retiro'"
@@ -9,11 +14,7 @@
         >
           ¿Estas seguro que este pedido esta listo para retiro?
         </span>
-        <span
-          v-else
-          style="font-size:16px"
-          class="q-ml-sm"
-        >
+        <span v-else style="font-size:16px" class="q-ml-sm">
           ¿Estas seguro que este pedido esta en camino a su destino?
         </span>
       </q-card-section>

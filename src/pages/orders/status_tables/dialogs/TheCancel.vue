@@ -1,5 +1,10 @@
 <template>
-  <q-dialog v-model="card" persistent>
+  <q-dialog
+    v-model="card"
+    persistent
+    transition-show="slide-down"
+    transition-hide="slide-up"
+  >
     <q-card style="width: 300px; border-radius:10px">
       <q-card-section class="column items-center">
         <span style="font-size:16px" class="q-ml-sm">

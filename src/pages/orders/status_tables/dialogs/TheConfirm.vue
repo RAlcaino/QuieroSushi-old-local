@@ -32,7 +32,7 @@
                 }}</strong>
               </p>
               <p style="display:flex; flex-direction: column;justify-content:center;align-items:center" >
-                <strong style="color: #333 ">Hora solicitada</strong>
+                <strong style="color: #333 ">Hora esperada del cliente</strong>
                 <strong style="color: #333; font-size:18px">{{ time }}</strong>
               </p>
             </div>
@@ -142,7 +142,7 @@
                 </strong>
               </p>
               <p style="display:flex; flex-direction: column;justify-content:center;align-items:center">
-                <strong style="color: #333">Hora solicitada</strong>
+                <strong style="color: #333">Hora esperada del cliente</strong>
                 <strong style="color: #333; font-size:18px">{{ time }}</strong>
               </p>
             </div>

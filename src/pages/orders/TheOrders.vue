@@ -46,8 +46,8 @@
       </div>
     </div>
 
-    <div class="orders-tab" :class="locals.length > 1 ? '' : 'padding-table'">
-      <q-splitter
+    <div class="orders-tab" style="margin-top:20px">
+      <!--<q-splitter
         v-model="splitterModel"
         style="height: 250px, margin-top: 100px; width: 100%;"
         v-if="!responsiveMobile"
@@ -102,15 +102,16 @@
             </q-tab-panel>
           </q-tab-panels>
         </template>
-      </q-splitter>
+      </q-splitter>-->
 
-      <q-card v-if="responsiveMobile" style="width: 90%;height: 0;">
+      <q-card style="width: 90%;height: 0;">
         <q-tabs
           v-model="tab"
           dense
           class="bg-grey-3"
           align="justify"
           narrow-indicator
+          style="border-radius:15px"
         >
           <q-tab
             class="text-primary"
@@ -132,17 +133,17 @@
           />
         </q-tabs>
         <q-tab-panels v-model="tab" animated>
-          <q-tab-panel name="not-confirmed" style="padding: 0">
+          <q-tab-panel name="not-confirmed" style="padding: 0; overflow:hidden">
             <not-confirmed
               :ordersNotConfirmed="ordersNotConfirmed"
             ></not-confirmed>
           </q-tab-panel>
 
-          <q-tab-panel name="confirmed" style="padding: 0">
+          <q-tab-panel name="confirmed" style="padding: 0; overflow:hidden">
             <the-confirmed :ordersConfirmed="ordersConfirmed"></the-confirmed>
           </q-tab-panel>
 
-          <q-tab-panel name="done" style="padding: 0">
+          <q-tab-panel name="done" style="padding: 0; overflow:hidden">
             <the-done :ordersDone="ordersDone"></the-done>
           </q-tab-panel>
         </q-tab-panels>
@@ -268,7 +269,7 @@ export default {
           }
         },
         {
-          id: 63250,
+          id: 63251,
           status: "not-confirmed",
           finalTimestamp: null,
           finalDate: null,
@@ -303,7 +304,7 @@ export default {
           }
         },
         {
-          id: 63250,
+          id: 63252,
           status: "not-confirmed",
           finalTimestamp: null,
           finalDate: null,
@@ -338,7 +339,7 @@ export default {
           }
         },
         {
-          id: 63250,
+          id: 63253,
           status: "not-confirmed",
           finalTimestamp: null,
           finalDate: null,
@@ -373,7 +374,7 @@ export default {
           }
         },
         {
-          id: 63250,
+          id: 63254,
           status: "not-confirmed",
           finalTimestamp: null,
           finalDate: null,
@@ -408,7 +409,7 @@ export default {
           }
         },
         {
-          id: 63250,
+          id: 63255,
           status: "not-confirmed",
           finalTimestamp: null,
           finalDate: null,
@@ -443,7 +444,7 @@ export default {
           }
         },
         {
-          id: 63250,
+          id: 63256,
           status: "not-confirmed",
           finalTimestamp: null,
           finalDate: null,
@@ -478,7 +479,7 @@ export default {
           }
         },
         {
-          id: 63250,
+          id: 63257,
           status: "not-confirmed",
           finalTimestamp: null,
           finalDate: null,
@@ -513,7 +514,7 @@ export default {
           }
         },
         {
-          id: 63250,
+          id: 63258,
           status: "not-confirmed",
           finalTimestamp: null,
           finalDate: null,
@@ -1239,7 +1240,7 @@ export default {
           }
         },
         {
-          id: 70470,
+          id: 70471,
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
@@ -1338,7 +1339,7 @@ export default {
           }
         },
         {
-          id: 70470,
+          id: 70472,
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
@@ -1437,7 +1438,7 @@ export default {
           }
         },
         {
-          id: 70470,
+          id: 70473,
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
@@ -1536,7 +1537,7 @@ export default {
           }
         },
         {
-          id: 70470,
+          id: 70474,
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
@@ -1635,7 +1636,7 @@ export default {
           }
         },
         {
-          id: 70470,
+          id: 70475,
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
@@ -1734,7 +1735,7 @@ export default {
           }
         },
         {
-          id: 70470,
+          id: 70476,
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
@@ -1833,7 +1834,7 @@ export default {
           }
         },
         {
-          id: 70470,
+          id: 70477,
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
@@ -1932,7 +1933,7 @@ export default {
           }
         },
         {
-          id: 70470,
+          id: 70478,
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
@@ -2208,7 +2209,7 @@ export default {
   flex-direction: row-reverse;
 }
 .dropdown-locals {
-  padding: 16px 16px 0px 16px;
+  padding: 0px 46px 0px 16px;
 }
 @media screen and (max-width: 900px) {
   .dropdown-container {
