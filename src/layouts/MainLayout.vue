@@ -30,7 +30,7 @@
             v-if="$q.screen.gt.sm"
           >
           </q-btn>
-          <q-btn round dense flat color="white" icon="notifications">
+          <!--<q-btn round dense flat color="white" icon="notifications">
             <q-badge color="red" text-color="white" floating>
               5
             </q-badge>
@@ -48,7 +48,7 @@
                 </q-card>
               </q-list>
             </q-menu>
-          </q-btn>
+          </q-btn>-->
 
           <q-btn round dense flat color="white" icon="logout" @click="logout()">
           </q-btn>
@@ -66,8 +66,8 @@
       <q-list>
         <div class="user-sidebar">
           <div class="user-sidebar-border">
-            <q-avatar size="100px">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+            <q-avatar size="90px">
+              <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
             </q-avatar>
             <q-chip
               :color="
@@ -482,7 +482,7 @@ export default {
 .user-sidebar {
   width: 100%;
   height: 200px;
-  background-image: url("https://cdn.quasar.dev/img/mountains.jpg");
+  background-image: url("../assets/background.jpg");
   background-size: cover;
   display: flex;
   justify-content: center;

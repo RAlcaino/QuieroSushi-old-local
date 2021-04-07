@@ -70,7 +70,11 @@ export default {
     toOrders() {
       this.open = false;
       this.stopSound();
-      this.$router.push({ path: "/pedidos" });
+      if (this.$router.currentRoute.fullPath === "/pedidos") {
+        this.bus.$emit('to-one-tab');
+      } else {
+        this.$router.push({ path: "/pedidos" });
+      }
     }
   }
 };

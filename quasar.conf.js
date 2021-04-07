@@ -56,7 +56,8 @@ module.exports = function (ctx) {
         'AppFullscreen',
         'Notify',
         'LoadingBar',
-        'Loading'
+        'Loading',
+        'Dialog'
       ],
       config:{
         loadingBar:{

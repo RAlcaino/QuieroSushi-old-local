@@ -38,13 +38,17 @@
             <q-item clickable @click="doneDialog(props.row)">
               <q-item-section class="i-section">
                 <q-icon name="check_circle" class="i-icon" />
-                <span>Listo</span>
+                <span v-if="props.row.orderType==='retiro'" >Listo para Retiro</span>
+                <span v-else >En camino</span>
               </q-item-section>
             </q-item>
           </base-more-component>
           <q-td v-for="col in props.cols" :key="col.name" :props="props">
             <template v-if="col.name === 'total'">{{
               formatNumber(col.value)
+            }}</template>
+            <template v-else-if="col.name === 'orderType'">{{
+              capitalize(col.value)
             }}</template>
             <template v-else>{{ col.value }}</template>
           </q-td>
@@ -75,7 +79,7 @@ import TheDone from "./dialogs/TheDone.vue";
 
 export default {
   props: ["ordersConfirmed"],
-  inject:['formatNumber'],
+  inject: ["formatNumber","capitalize"],
   components: {
     BaseMoreComponent,
     MoreDetails,
@@ -118,55 +122,63 @@ export default {
       },
       columns: [
         {
-          name: "id",
-          required: true,
-          label: "ID del pedido",
+          name: "confirmationTimestamp",
           align: "left",
-          field: row => row.id,
+          label: "Fecha",
+          field: row => row.confirmationTimestamp,
           format: val => `${val}`,
           sortable: true,
-          role: ["Administrador", "Super Admin", "God"]
+          required: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "name",
-          required: true,
+          align: "center",
           label: "Cliente",
-          align: "left",
           field: row => row.name,
           format: val => `${val}`,
           sortable: true,
-          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
-        },
-        {
-          name: "userPhone",
-          align: "center",
-          label: "Teléfono",
-          field: "userPhone",
-          sortable: true,
-          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
-        },
-        {
-          name: "requestedTime",
-          align: "center",
-          label: "Fecha Solicitud",
-          field: "requestedTime",
-          sortable: true,
+          required: true,
           role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "orderType",
           align: "center",
-          label: "Tipo de Venta",
-          field: "orderType",
+          label: "Tipo",
+          field: row => row.orderType,
+          format: val => `${val}`,
           sortable: true,
+          required: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
+        },
+        {
+          name: "userPhone",
+          align: "center",
+          label: "Télefono",
+          field: row => row.userPhone,
+          format: val => `${val}`,
+          sortable: true,
+          required: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
+        },
+        {
+          name: "userAddress",
+          align: "center",
+          label: "Dirección",
+          field: row => row.userAddress,
+          format: val => `${val}`,
+          sortable: true,
+          required: true,
           role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "total",
-          label: "Total ($)",
           align: "right",
-          field: "total",
+          label: "Total($)",
+          field: row => row.total,
+          format: val => `${val}`,
           sortable: true,
+          required: true,
           role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         }
       ]

@@ -130,7 +130,7 @@
               >
                 {{ item.qty }} Subir
               </q-chip>
-              <p class="price-a">${{ formatNumber(item.price)}}</p>
+              <p class="price-a">${{ formatNumber(item.price) }}</p>
               <p class="cu-a">${{ item.cu }} c/u</p>
               <input
                 v-model="qtyGoUp[index]"
@@ -153,7 +153,7 @@
           style="width: 80% !important; height:auto !important"
         >
           <p style="font-size:20px; margin-bottom:0">
-            <strong>Total: ${{ formatNumber(getTotal)}}</strong>
+            <strong>Total: ${{ formatNumber(getTotal) }}</strong>
           </p>
         </div>
         <q-card-actions align="center">
@@ -175,7 +175,7 @@
 <script>
 export default {
   props: ["localName"],
-  inject:['formatNumber'],
+  inject: ["formatNumber"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.getPrices();
@@ -308,7 +308,7 @@ export default {
           this.pricesStandOut = this.result.pricesStandOut;
           //console.log(this.data);
           this.showNotification(
-            "Precios actualizados",
+            "Precios Actualizados",
             "positive",
             "check_circle"
           );
@@ -328,7 +328,7 @@ export default {
               this.pricesGoUp = r.pricesGoUp;
               this.pricesStandOut = r.pricesStandOut;
               this.showNotification(
-                response.data.message,
+                "Precios Actualizados",
                 "positive",
                 "check_circle"
               );
@@ -388,7 +388,7 @@ export default {
         color: color,
         icon: icon
       });
-    },
+    }
   }
 };
 </script>

@@ -6,12 +6,9 @@
         Pedidos de {{ local.label }}</q-toolbar-title
       >
       <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync()" />
-      <q-btn flat round dense icon="info" class="q-mr-xs" />
     </q-toolbar>
 
-    <div
-      class="dropdown-container"
-    >
+    <div class="dropdown-container" v-if="locals.length > 1">
       <div class="dropdown-locals">
         <q-btn-dropdown
           color="blacklight"
@@ -24,13 +21,24 @@
             <q-item>
               <q-item-section>
                 <q-item-label>
-                  <input v-model="localFilter" type="text" placeholder="Buscar" style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;">
+                  <input
+                    v-model="localFilter"
+                    type="text"
+                    placeholder="Buscar"
+                    style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                  />
                 </q-item-label>
               </q-item-section>
             </q-item>
-            <q-item v-for="item in getLocals" :key="item.value" clickable v-close-popup @click="findOrders(item)">
+            <q-item
+              v-for="item in getLocals"
+              :key="item.value"
+              clickable
+              v-close-popup
+              @click="findOrders(item)"
+            >
               <q-item-section>
-                <q-item-label>{{item.label}}</q-item-label>
+                <q-item-label>{{ item.label }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -38,7 +46,7 @@
       </div>
     </div>
 
-    <div class="orders-tab">
+    <div class="orders-tab" :class="locals.length > 1 ? '' : 'padding-table'">
       <q-splitter
         v-model="splitterModel"
         style="height: 250px, margin-top: 100px; width: 100%;"
@@ -156,15 +164,18 @@ export default {
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+    this.bus.$on("to-one-tab", () => {
+      this.tab = "not-confirmed";
+    });
   },
   mounted() {
     var vue = this;
     //console.log(this.$store.getters["auth/getDataLocals"]);
     var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-      let row={
+      let row = {
         value: item.id,
         label: item.name
-      }
+      };
       vue.locals.push(row);
     });
 
@@ -191,13 +202,15 @@ export default {
         return { fontSize: "18px" };
       }
     },
-    getLocals(){
-      let filteredLocals = this.locals.filter((item) => {
-        return item.label.toLowerCase().includes(this.localFilter.toLowerCase());
-      })
+    getLocals() {
+      let filteredLocals = this.locals.filter(item => {
+        return item.label
+          .toLowerCase()
+          .includes(this.localFilter.toLowerCase());
+      });
       let orderedLocals = filteredLocals.sort((a, b) => {
         return b.label - a.label;
-      })
+      });
       return orderedLocals;
     }
   },
@@ -209,7 +222,7 @@ export default {
         value: null,
         label: ""
       },
-      localFilter:'',
+      localFilter: "",
       selectedLocal: "Seleccionar",
       locals: [],
       prod: null,
@@ -231,7 +244,7 @@ export default {
           },
           requestedTime: "2020-12-09 17:00:00",
           confirmationTimestamp: null,
-          orderType: "retiro",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 0,
           total: 14000,
@@ -248,13 +261,13 @@ export default {
             }
           ],
           payDetail: {
-            user: "QS",
+            user: "Juan Perez",
             userPhone: "992232948",
             pay: "Sodexo",
-            address: ""
+            address: "Una direccion inventada AV"
           }
         },
-                {
+        {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
@@ -266,7 +279,7 @@ export default {
           },
           requestedTime: "2020-12-09 17:00:00",
           confirmationTimestamp: null,
-          orderType: "retiro",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 0,
           total: 14000,
@@ -283,13 +296,13 @@ export default {
             }
           ],
           payDetail: {
-            user: "QS",
+            user: "Juan Perez",
             userPhone: "992232948",
             pay: "Sodexo",
-            address: ""
+            address: "Una direccion inventada AV"
           }
         },
-                {
+        {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
@@ -301,7 +314,7 @@ export default {
           },
           requestedTime: "2020-12-09 17:00:00",
           confirmationTimestamp: null,
-          orderType: "retiro",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 0,
           total: 14000,
@@ -318,13 +331,13 @@ export default {
             }
           ],
           payDetail: {
-            user: "QS",
+            user: "Juan Perez",
             userPhone: "992232948",
             pay: "Sodexo",
-            address: ""
+            address: "Una direccion inventada AV"
           }
         },
-                {
+        {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
@@ -336,7 +349,7 @@ export default {
           },
           requestedTime: "2020-12-09 17:00:00",
           confirmationTimestamp: null,
-          orderType: "retiro",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 0,
           total: 14000,
@@ -353,13 +366,13 @@ export default {
             }
           ],
           payDetail: {
-            user: "QS",
+            user: "Juan Perez",
             userPhone: "992232948",
             pay: "Sodexo",
-            address: ""
+            address: "Una direccion inventada AV"
           }
         },
-                {
+        {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
@@ -371,7 +384,7 @@ export default {
           },
           requestedTime: "2020-12-09 17:00:00",
           confirmationTimestamp: null,
-          orderType: "retiro",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 0,
           total: 14000,
@@ -388,13 +401,13 @@ export default {
             }
           ],
           payDetail: {
-            user: "QS",
+            user: "Juan Perez",
             userPhone: "992232948",
             pay: "Sodexo",
-            address: ""
+            address: "Una direccion inventada AV"
           }
         },
-                {
+        {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
@@ -406,7 +419,7 @@ export default {
           },
           requestedTime: "2020-12-09 17:00:00",
           confirmationTimestamp: null,
-          orderType: "retiro",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 0,
           total: 14000,
@@ -423,13 +436,13 @@ export default {
             }
           ],
           payDetail: {
-            user: "QS",
+            user: "Juan Perez",
             userPhone: "992232948",
             pay: "Sodexo",
-            address: ""
+            address: "Una direccion inventada AV"
           }
         },
-                {
+        {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
@@ -441,7 +454,7 @@ export default {
           },
           requestedTime: "2020-12-09 17:00:00",
           confirmationTimestamp: null,
-          orderType: "retiro",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 0,
           total: 14000,
@@ -458,13 +471,13 @@ export default {
             }
           ],
           payDetail: {
-            user: "QS",
+            user: "Juan Perez",
             userPhone: "992232948",
             pay: "Sodexo",
-            address: ""
+            address: "Una direccion inventada AV"
           }
         },
-                {
+        {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
@@ -476,7 +489,7 @@ export default {
           },
           requestedTime: "2020-12-09 17:00:00",
           confirmationTimestamp: null,
-          orderType: "retiro",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 0,
           total: 14000,
@@ -493,13 +506,13 @@ export default {
             }
           ],
           payDetail: {
-            user: "QS",
+            user: "Juan Perez",
             userPhone: "992232948",
             pay: "Sodexo",
-            address: ""
+            address: "Una direccion inventada AV"
           }
         },
-                {
+        {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
@@ -511,7 +524,7 @@ export default {
           },
           requestedTime: "2020-12-09 17:00:00",
           confirmationTimestamp: null,
-          orderType: "retiro",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 0,
           total: 14000,
@@ -528,10 +541,10 @@ export default {
             }
           ],
           payDetail: {
-            user: "QS",
+            user: "Juan Perez",
             userPhone: "992232948",
             pay: "Sodexo",
-            address: ""
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -546,7 +559,7 @@ export default {
           },
           requestedTime: "2020-12-10 15:53:00",
           confirmationTimestamp: null,
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 28000,
           deliveryCost: 1000,
           total: 29000,
@@ -574,7 +587,7 @@ export default {
             user: "MariaJose",
             userPhone: "992232948",
             pay: "Debito",
-            address: "cruzada moon 632"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -589,7 +602,7 @@ export default {
           },
           requestedTime: "2020-12-18 21:02:00",
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "retiro",
           subtotal: 0,
           deliveryCost: 1000,
           total: 1000,
@@ -616,7 +629,7 @@ export default {
             user: "Alexi Anthoni zamora silva ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Maximiliano Ib\u00e1\u00f1ez 1331 "
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -631,7 +644,7 @@ export default {
           },
           requestedTime: "2020-12-18 21:02:00",
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 0,
           deliveryCost: 1000,
           total: 1000,
@@ -658,7 +671,7 @@ export default {
             user: "Alexi Anthoni zamora silva ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Maximiliano Ib\u00e1\u00f1ez 1331 "
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -673,7 +686,7 @@ export default {
           },
           requestedTime: "2020-12-18 21:04:00",
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 0,
           deliveryCost: 1000,
           total: 1000,
@@ -700,7 +713,7 @@ export default {
             user: "Alexi Anthoni zamora silva ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Maximiliano Ib\u00e1\u00f1ez 1331 "
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -715,7 +728,7 @@ export default {
           },
           requestedTime: "2020-12-19 23:42:00",
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 3000,
           total: 17000,
@@ -750,7 +763,7 @@ export default {
             user: "Ayleen romero ",
             userPhone: "992232948",
             pay: "Debito",
-            address: "Romero 2385"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -765,7 +778,7 @@ export default {
           },
           requestedTime: "2020-12-21 00:01:00",
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 15000,
           deliveryCost: 3000,
           total: 18000,
@@ -808,7 +821,7 @@ export default {
             user: "Mario sandoval ",
             userPhone: "992232948",
             pay: "Debito",
-            address: "Almirante la torre 37"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -823,7 +836,7 @@ export default {
           },
           requestedTime: "2020-12-21 21:18:00",
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1000,
           total: 15000,
@@ -874,7 +887,7 @@ export default {
             user: "Cristina Ocared",
             userPhone: "992232948",
             pay: "Debito",
-            address: "Antonio Ebner 1413"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -890,7 +903,7 @@ export default {
           requestedTime: "2021-01-08 20:50:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 2000,
           total: 16000,
@@ -949,7 +962,7 @@ export default {
             user: "Isabel Lagos",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Gonzalo Bulnes 2514"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -965,7 +978,7 @@ export default {
           requestedTime: "2021-01-09 16:12:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 2000,
           total: 16000,
@@ -1032,7 +1045,7 @@ export default {
             user: "Sara Toledo",
             userPhone: "992232948",
             pay: "Debito",
-            address: "Meza Bell 2851"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1048,7 +1061,7 @@ export default {
           requestedTime: "2021-01-10 22:00:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 15000,
           deliveryCost: 2000,
           total: 17000,
@@ -1123,7 +1136,7 @@ export default {
             user: "Nicolas aravena",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Patricio lynch 1650"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1139,7 +1152,7 @@ export default {
           requestedTime: "2021-01-14 17:48:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1500,
           total: 15500,
@@ -1222,7 +1235,7 @@ export default {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Heriberto rojas 5935"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1238,7 +1251,7 @@ export default {
           requestedTime: "2021-01-14 17:48:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1500,
           total: 15500,
@@ -1321,7 +1334,7 @@ export default {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Heriberto rojas 5935"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1337,7 +1350,7 @@ export default {
           requestedTime: "2021-01-14 17:48:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1500,
           total: 15500,
@@ -1420,7 +1433,7 @@ export default {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Heriberto rojas 5935"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1436,7 +1449,7 @@ export default {
           requestedTime: "2021-01-14 17:48:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1500,
           total: 15500,
@@ -1519,7 +1532,7 @@ export default {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Heriberto rojas 5935"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1535,7 +1548,7 @@ export default {
           requestedTime: "2021-01-14 17:48:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1500,
           total: 15500,
@@ -1618,7 +1631,7 @@ export default {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Heriberto rojas 5935"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1634,7 +1647,7 @@ export default {
           requestedTime: "2021-01-14 17:48:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1500,
           total: 15500,
@@ -1717,7 +1730,7 @@ export default {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Heriberto rojas 5935"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1733,7 +1746,7 @@ export default {
           requestedTime: "2021-01-14 17:48:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1500,
           total: 15500,
@@ -1816,7 +1829,7 @@ export default {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Heriberto rojas 5935"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1832,7 +1845,7 @@ export default {
           requestedTime: "2021-01-14 17:48:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1500,
           total: 15500,
@@ -1915,7 +1928,7 @@ export default {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Heriberto rojas 5935"
+            address: "Una direccion inventada AV"
           }
         },
         {
@@ -1931,7 +1944,7 @@ export default {
           requestedTime: "2021-01-14 17:48:00",
 
           confirmationTimestamp: "2021-12-20 21:02:00",
-          orderType: "despacho",
+          orderType: "delivery",
           subtotal: 14000,
           deliveryCost: 1500,
           total: 15500,
@@ -2014,7 +2027,7 @@ export default {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
             pay: "Efectivo",
-            address: "Heriberto rojas 5935"
+            address: "Una direccion inventada AV"
           }
         }
       ],
@@ -2032,7 +2045,7 @@ export default {
           this.filters();
           this.hideLoading();
           this.showNotification(
-            "Pedidos Obtenidos",
+            "Pedidos Actualizados",
             "positive",
             "check_circle"
           );
@@ -2054,7 +2067,7 @@ export default {
               this.data = response.data.result;
               this.filters();
               this.showNotification(
-                response.data.message,
+                "Pedidos Actualizados",
                 "positive",
                 "check_circle"
               );
@@ -2140,6 +2153,7 @@ export default {
       var roots = this.data.map(function(item) {
         item.name = item.payDetail.user;
         item.userPhone = item.payDetail.userPhone;
+        item.userAddress = item.payDetail.address;
         newArray.push(item);
       });
 
@@ -2162,10 +2176,10 @@ export default {
     hideLoading() {
       this.$q.loading.hide();
     },
-    findOrders(local){
-      this.local.value=local.value;
-      this.local.label=local.label;
-      this.localFilter='';
+    findOrders(local) {
+      this.local.value = local.value;
+      this.local.label = local.label;
+      this.localFilter = "";
       this.sync();
     }
   }
@@ -2179,34 +2193,33 @@ export default {
   justify-content: center;
 }
 .q-tab-panel {
-    padding: 10px 16px;
+  padding: 10px 16px;
 }
 
-  .dropdown-container{
-    padding-top: 3%;
-    display: flex;
-    width: auto;
-    margin: 0 auto;
-    flex-direction: row-reverse;
-  }
-  .dropdown-locals{
-    padding: 16px 16px 0px 16px;
-  }
-@media screen and (max-width:900px) {
-    .dropdown-container{
+.padding-table {
+  padding-top: 3%;
+}
+
+.dropdown-container {
+  padding-top: 3%;
+  display: flex;
+  width: auto;
+  margin: 0 auto;
+  flex-direction: row-reverse;
+}
+.dropdown-locals {
+  padding: 16px 16px 0px 16px;
+}
+@media screen and (max-width: 900px) {
+  .dropdown-container {
     padding-top: 3%;
     display: flex;
     width: 90%;
     margin: 0 auto;
     flex-direction: row-reverse;
   }
-  .dropdown-locals{
+  .dropdown-locals {
     padding: 16px 0;
   }
-
-
-
 }
-
-
 </style>

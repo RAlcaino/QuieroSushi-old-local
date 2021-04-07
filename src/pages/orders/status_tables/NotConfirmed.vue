@@ -57,6 +57,9 @@
             <template v-if="col.name === 'total'">{{
               formatNumber(col.value)
             }}</template>
+            <template v-else-if="col.name === 'orderType'">{{
+              capitalize(col.value)
+            }}</template>
             <template v-else>{{ col.value }}</template>
           </q-td>
         </q-tr>
@@ -87,7 +90,7 @@ import TheCancel from "./dialogs/TheCancel.vue";
 
 export default {
   props: ["ordersNotConfirmed"],
-  inject: ["formatNumber"],
+  inject: ["formatNumber", "capitalize"],
   components: {
     BaseMoreComponent,
     MoreDetails,
@@ -131,55 +134,63 @@ export default {
       },
       columns: [
         {
-          name: "id",
-          required: true,
-          label: "ID del pedido",
+          name: "requestedTime",
           align: "left",
-          field: row => row.id,
+          label: "Fecha",
+          field: row => row.requestedTime,
           format: val => `${val}`,
           sortable: true,
-          role: ["Administrador", "Super Admin", "God"]
+          required: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "name",
-          required: true,
+          align: "center",
           label: "Cliente",
-          align: "left",
           field: row => row.name,
           format: val => `${val}`,
           sortable: true,
-          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
-        },
-        {
-          name: "userPhone",
-          align: "center",
-          label: "Teléfono",
-          field: "userPhone",
-          sortable: true,
-          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
-        },
-        {
-          name: "requestedTime",
-          align: "center",
-          label: "Fecha Solicitud",
-          field: "requestedTime",
-          sortable: true,
+          required: true,
           role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "orderType",
           align: "center",
-          label: "Tipo de Venta",
-          field: "orderType",
+          label: "Tipo",
+          field: row => row.orderType,
+          format: val => `${val}`,
           sortable: true,
+          required: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
+        },
+        {
+          name: "userPhone",
+          align: "center",
+          label: "Télefono",
+          field: row => row.userPhone,
+          format: val => `${val}`,
+          sortable: true,
+          required: true,
+          role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
+        },
+        {
+          name: "userAddress",
+          align: "center",
+          label: "Dirección",
+          field: row => row.userAddress,
+          format: val => `${val}`,
+          sortable: true,
+          required: true,
           role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         },
         {
           name: "total",
-          label: "Total ($)",
           align: "right",
-          field: "total",
+          label: "Total($)",
+          field: row => row.total,
+          format: val => `${val}`,
           sortable: true,
+          required: true,
           role: ["Cajero", "Gerente", "Administrador", "Super Admin", "God"]
         }
       ]

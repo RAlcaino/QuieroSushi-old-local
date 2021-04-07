@@ -15,7 +15,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancelar" color="primary" v-close-popup />
+        <q-btn flat label="Cancelar" color="primary" @click="closeDialog()" />
         <q-btn @click="DoCancel()" flat label="Anular" color="green" />
       </q-card-actions>
     </q-card>
@@ -53,11 +53,11 @@ export default {
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
-          this.showNotification(
+          /*this.showNotification(
             "Pedido #" + this.orderId + " Cancelado",
             "positive",
             "check_circle"
-          );
+          );*/
           this.bus.$emit("sync-orders");
         }, 3000);
       } else {
@@ -74,11 +74,11 @@ export default {
 
             if (response.data.status === "success") {
               this.bus.$emit("sync-orders");
-              this.showNotification(
+              /*this.showNotification(
                 response.data.message,
                 "positive",
                 "check_circle"
-              );
+              );*/
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
@@ -127,7 +127,11 @@ export default {
             }
           });
       }
+      this.closeDialog();
+    },
+    closeDialog() {
       this.card = false;
+      this.cancellationReason = "";
     },
     showNotification: function(message, color, icon) {
       this.$q.notify({

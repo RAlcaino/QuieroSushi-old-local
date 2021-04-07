@@ -14,10 +14,11 @@ export default {
     console.log("app mounted");
     this.init();
   },
-  provide(){
-    return{
-      formatNumber:this.formatNumber
-    }
+  provide() {
+    return {
+      formatNumber: this.formatNumber,
+      capitalize: this.capitalize
+    };
   },
   methods: {
     init() {
@@ -67,6 +68,11 @@ export default {
           "." +
           num.substring(num.length - (4 * i + 3));
       return (sign ? "" : "-") + num;
+    },
+    capitalize(str) {
+      return str.replace(/\w\S*/g, function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      });
     }
   }
 };

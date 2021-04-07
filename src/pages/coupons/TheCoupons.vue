@@ -5,7 +5,6 @@
       <q-btn flat round dense icon="confirmation_number" />
       <q-toolbar-title :style="FontSize"> Cupones</q-toolbar-title>
       <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync()" />
-      <q-btn flat round dense icon="info" class="q-mr-xs" />
     </q-toolbar>
 
     <div
@@ -29,6 +28,7 @@
         </p>
       </div>
       <q-btn-dropdown
+        v-if="locals.length > 1"
         color="blacklight"
         rounded
         outline
@@ -326,7 +326,7 @@ export default {
           //console.log(this.data);
           this.hideLoading();
           this.showNotification(
-            "Cupones Obtenidos",
+            "Cupones Actualizados",
             "positive",
             "check_circle"
           );
@@ -350,7 +350,7 @@ export default {
               this.availableGoUp = r.available.goUp;
               this.availableStandOut = r.available.standOut;
               this.showNotification(
-                response.data.message,
+                "Cupones Actualizados",
                 "positive",
                 "check_circle"
               );
@@ -447,7 +447,7 @@ export default {
     },
     hideLoading() {
       this.$q.loading.hide();
-    },
+    }
   }
 };
 </script>

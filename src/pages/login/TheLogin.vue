@@ -8,20 +8,19 @@
         >
           <q-card-section>
             <q-avatar size="103px" class="absolute-center shadow-10">
-              <img src="profile.svg" />
+              <img src="icons/favicon-128.png" />
             </q-avatar>
           </q-card-section>
           <q-card-section>
             <div class="text-center q-pt-lg">
               <div class="col text-h6 ellipsis">
-                Iniciar Sesión
+                Bienvenido
               </div>
             </div>
           </q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md form-login">
               <q-input
-                filled
                 v-model.lazy="user.email"
                 label="Correo electronico"
                 lazy-rules
@@ -30,7 +29,6 @@
 
               <q-input
                 type="password"
-                filled
                 v-model.lazy="user.password"
                 label="Contraseña"
                 style="width: 80%"
@@ -55,6 +53,8 @@
 
 <script>
 import SecureLS from "secure-ls";
+import { QSpinnerGears } from "quasar";
+
 export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
@@ -65,7 +65,8 @@ export default {
         email: "",
         password: ""
       },
-      prod: null
+      prod: null,
+      dialog: null
     };
   },
   methods: {
@@ -74,85 +75,84 @@ export default {
         return;
       }
       var ls = new SecureLS({ isCompression: false });
-      
+      //this.showCustom();
+      this.showLoading();
       if (!this.prod) {
         //Without backend
         this.$q.loadingBar.start();
         setTimeout(() => {
-          if(this.user.email==='cajero@cajero.com'){
-              ls.set(
+          if (this.user.email === "cajero@cajero.com") {
+            ls.set(
               "token",
               "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJDYWplcm8iLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.cADPBjQxGBIqab2zyqf3XvNyb70p_godxTT3HHSvDqM"
-              );
-          }
-          else if(this.user.email==='gerente@gerente.com'){
-              ls.set(
+            );
+          } else if (this.user.email === "gerente@gerente.com") {
+            ls.set(
               "token",
               "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHZXJlbnRlIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ.4f4WgpFJA_veiJj6hpnMFXSYdvxAHgDrvgGhfLPQVv4"
-              );
-          }
-          else if(this.user.email==='sudo@sudo.com'){
-              ls.set(
+            );
+          } else if (this.user.email === "sudo@sudo.com") {
+            ls.set(
               "token",
               "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJTdXBlciBBZG1pbiIsImd1YXJkX25hbWUiOiJhcGkiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIiwidXBkYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiJ9LCJpYXQiOjE2MTY1MjgzODgsImV4cCI6MTYxNzEzMzE4OH0.F4ldHxzfuGISfFTkTqMrjGyFIU_L36ufYSWckZ8YFvs"
-              );
-          }
-          else if(this.user.email==='admin@admin.com'){
-              ls.set(
+            );
+          } else if (this.user.email === "admin@admin.com") {
+            ls.set(
               "token",
               "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ.HdvKZItN90loQ7GUwFNZrmhrD20LAnueCAYi8Fi2TCY"
-              );
-          }
-          else if(this.user.email==='god@god.com'){
-              ls.set(
+            );
+          } else if (this.user.email === "god@god.com") {
+            ls.set(
               "token",
               "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHb2QiLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.Hk6oKPIksi1Mt5j7izhbRR7SOTzPOkIzU6cnuEPgK2s"
-              );
-          }
-          else{
+            );
+          } else {
+            this.$q.loadingBar.stop();
+            this.hideLoading();
             this.showNotification(
               "Credenciales Incorrectas",
               "negative",
               "error"
             );
-            this.$q.loadingBar.stop();
             return;
           }
 
-          this.showNotification(
+          /*this.showNotification(
             "Inicio de sesión exitoso",
             "positive",
             "check_circle"
-          );
-          let locals=[
-              {
-                id: 129,
-                name: "Sushi Venezuela"
-              },
-              {
-                id: 130,
-                name: "Sushi Chile"
-              },
-              {
-                id: 131,
-                name: "Sushi Colombia"
-              },
-              {
-                id: 132,
-                name: "Sushi EEUU"
-              },
-              {
-                id: 133,
-                name: "Sushi UK"
-              }
+          );*/
+          let locals = [
+            {
+              id: 129,
+              name: "Sushi Venezuela"
+            },
+            {
+              id: 130,
+              name: "Sushi Chile"
+            },
+            {
+              id: 131,
+              name: "Sushi Colombia"
+            },
+            {
+              id: 132,
+              name: "Sushi EEUU"
+            },
+            {
+              id: 133,
+              name: "Sushi UK"
+            }
           ];
-          this.bus.$emit("login",locals);
+          this.bus.$emit("login", locals);
           this.$q.loadingBar.stop();
+          //this.hideCustom();
+          this.hideLoading();
           /*console.log(this.$store.getters['auth/getDataUser']);
             console.log(this.$store.getters['auth/getAvailableMenuOptions']);
             console.log(this.$store.getters['auth/getAllMenuOptions']);
             console.log(this.$store.getters['auth/getAuthenticated']);*/
-          this.$router.push({ path: "/home" });
+          this.$router.push({ path: "/pedidos" });
         }, 3000);
       } else {
         //With backend
@@ -162,22 +162,25 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               ls.set("token", response.data.result.token);
-              this.showNotification(
+              /*this.showNotification(
                 response.data.message,
                 "positive",
                 "check_circle"
-              );
-              this.bus.$emit("login",response.data.result.locals);
+              );*/
+              this.bus.$emit("login", response.data.result.locals);
               /*console.log(this.$store.getters["auth/getDataUser"]);
               console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
               console.log(this.$store.getters["auth/getAllMenuOptions"]);
               console.log(this.$store.getters["auth/getAuthenticated"]);*/
-              this.$router.push({ path: "/home" });
+              this.hideLoading();
+              this.$router.push({ path: "/pedidos" });
             } else {
+              this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
             }
           })
           .catch(error => {
+            this.hideLoading();
             if (error.response) {
               if (error.response.status == 500) {
                 this.showNotification(
@@ -254,6 +257,31 @@ export default {
       }
 
       return flag;
+    },
+    showCustom() {
+      this.dialog = this.$q.dialog({
+        title: "Cargando...",
+        style: { borderRadius: "20px" },
+        progress: {
+          spinner: QSpinnerGears,
+          color: "primary"
+        },
+        persistent: true, // we want the user to not be able to close it
+        ok: false // we want the user to not be able to close it
+      });
+    },
+    hideCustom() {
+      this.dialog.hide();
+    },
+    showLoading() {
+      this.$q.loading.show({
+        spinner: QSpinnerGears,
+        spinnerColor: "white",
+        message: "Cargando..."
+      });
+    },
+    hideLoading() {
+      this.$q.loading.hide();
     }
   }
 };
@@ -261,7 +289,9 @@ export default {
 
 <style>
 .bg-image {
-  background: #333;
+  background-image: url("../../../src/assets/background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .form-login {

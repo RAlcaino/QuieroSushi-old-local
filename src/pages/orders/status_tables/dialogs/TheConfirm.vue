@@ -314,11 +314,11 @@ export default {
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
-          this.showNotification(
+          /*this.showNotification(
             "Pedido #" + this.orderDetail.id + " Confirmado",
             "positive",
             "check_circle"
-          );
+          );*/
           this.bus.$emit("sync-orders");
         }, 3000);
       } else {
@@ -335,11 +335,11 @@ export default {
 
             if (response.data.status === "success") {
               this.bus.$emit("sync-orders");
-              this.showNotification(
+              /*this.showNotification(
                 response.data.message,
                 "positive",
                 "check_circle"
-              );
+              );*/
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
