@@ -11,9 +11,9 @@
         style="padding-left: 20px "
       >
         <q-card
-          v-for="item of ordersConfirmed"
+          v-for="item of getData"
           :key="item.id"
-          class="my-card class-card"
+          class="my-card class-card bg-grey-1"
           style="border-color:rgba(0,0,255,0.4)"
           flat
           bordered
@@ -51,9 +51,7 @@
               </div>
             </div>
           </q-card-section>
-          <q-card-section
-            class="fit row wrap justify-around content-center"
-          >
+          <q-card-section class="fit row wrap justify-around content-center">
             <div class="user-info">
               <p style="margin:0; font-weight:bold">
                 {{ item.payDetail.user }}
@@ -93,7 +91,6 @@
               >
             </div>
           </q-card-section>
-          <q-separator style="background:rgba(0,0,255,0.4);" />
 
           <q-card-actions
             class="fit row no-wrap justify-center items-center content-center"
@@ -122,6 +119,12 @@
           </q-card-actions>
         </q-card>
       </div>
+      <q-pagination
+        v-model="page"
+        :max="getMaxPages"
+        style="padding-top:25px"
+        color="blue"
+      />
     </div>
     <!--<q-table
       :pagination.sync="pagination"
@@ -232,10 +235,21 @@ export default {
         }
       });
       return newArray;
+    },
+    getData() {
+      return this.ordersConfirmed.slice(
+        (this.page - 1) * this.perPage,
+        (this.page - 1) * this.perPage + this.perPage
+      );
+    },
+    getMaxPages() {
+      return Math.round(this.ordersConfirmed.length / 4);
     }
   },
   data() {
     return {
+      page: 1,
+      perPage: 4,
       filter: "",
       loading: false,
       pagination: {
