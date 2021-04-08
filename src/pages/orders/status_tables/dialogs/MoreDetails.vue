@@ -7,8 +7,8 @@
     <q-card class="my-card" style="width: 400px; border-radius:10px;">
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
-          <q-tab label="Resumen" name="one" />
-          <q-tab label="Detalle pedido" name="two" />
+          <q-tab label="Detalle" name="one" />
+          <!--<q-tab label="Detalle pedido" name="two" />-->
         </q-tabs>
 
         <q-separator />
@@ -59,7 +59,7 @@
               </p>
             </div>
           </q-tab-panel>
-          <q-tab-panel
+          <!--<q-tab-panel
             name="two"
             v-if="orderDetail.payDetail"
           >
@@ -104,7 +104,7 @@
                 </q-item-section>
               </q-item>
             </q-list>
-          </q-tab-panel>
+          </q-tab-panel>-->
         </q-tab-panels>
       </q-card-section>
 
@@ -183,7 +183,7 @@ export default {
 
 .tab-overview-footer {
   width: 100%;
-  padding-top: 15px;
+  padding: 15px 0;
   display: flex;
   justify-content: right;
   align-items: right;

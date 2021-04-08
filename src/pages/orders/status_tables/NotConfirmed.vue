@@ -100,15 +100,6 @@
             <q-btn
               rounded
               size="sm"
-              color="primary"
-              style="font-size:10px; margin-right:5px"
-              @click="cancelDialog(item)"
-            >
-              Anular
-            </q-btn>
-            <q-btn
-              rounded
-              size="sm"
               color="green"
               style="font-size:10px"
               @click="confirmDialog(item)"
@@ -124,10 +115,23 @@
             >
               Detalle
             </q-btn>
+            <q-btn
+              rounded
+              size="sm"
+              color="primary"
+              style="font-size:10px; margin-right:5px"
+              @click="cancelDialog(item)"
+            >
+              Anular
+            </q-btn>
           </q-card-actions>
         </q-card>
       </div>
-      <q-pagination v-model="page" :max="getMaxPages" style="padding-top:25px" />
+      <q-pagination
+        v-model="page"
+        :max="getMaxPages"
+        style="padding-top:25px"
+      />
     </div>
     <!--<q-table
       :pagination.sync="pagination"
@@ -255,7 +259,7 @@ export default {
       );
     },
     getMaxPages() {
-      return Math.round(this.ordersNotConfirmed.length/4);
+      return Math.round(this.ordersNotConfirmed.length / 4);
     }
   },
   data() {
