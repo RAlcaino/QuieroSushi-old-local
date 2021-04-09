@@ -175,7 +175,13 @@
 <script>
 export default {
   props: ["localName"],
-  inject: ["formatNumber"],
+  inject: [
+    "formatNumber",
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling"
+  ],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.getPrices();
@@ -238,7 +244,6 @@ export default {
       var vue = this;
       var final = 0;
       var numbers = [];
-      //console.log(this.$store.getters["auth/getDataLocals"]);
       var each = this.pricesGoUp.map(function(item, index) {
         let sum = item.price * vue.qtyGoUp[index];
         numbers.push(sum);
@@ -254,34 +259,25 @@ export default {
       return this.total;
     },
     sectionStyle() {
-      if (this.section === "all") {
+      if (this.section === "all" || this.responsiveMobile) {
         return {
           overflowY: "scroll"
         };
       } else {
         return {
-          overflow: "hidden",
+          overflowY: "hidden",
           height: "auto"
         };
       }
     }
   },
   methods: {
-    showLoading() {
-      this.$q.loading.show({
-        message: "Espere un momento, por favor..."
-      });
-    },
-    hideLoading() {
-      this.$q.loading.hide();
-    },
     resetTotal() {
       this.card = false;
       this.qtyGoUp = [0, 0, 0];
       this.qtyStandOut = [0, 0, 0];
     },
     buy() {
-      //console.log(this.total);
       this.resetTotal();
     },
     responsiveMode() {
@@ -302,11 +298,9 @@ export default {
     },
     getPrices() {
       if (!this.prod) {
-        //console.log(this.$store.getters["routes/getRoute"]("services.prices"));
         setTimeout(() => {
           this.pricesGoUp = this.result.pricesGoUp;
           this.pricesStandOut = this.result.pricesStandOut;
-          //console.log(this.data);
           this.showNotification(
             "Precios Actualizados",
             "positive",
@@ -322,7 +316,6 @@ export default {
             }
           })
           .then(response => {
-            console.log(response.data);
             if (response.data.status === "success") {
               var r = response.data.result;
               this.pricesGoUp = r.pricesGoUp;
@@ -337,57 +330,9 @@ export default {
             }
           })
           .catch(error => {
-            if (error.response) {
-              if (error.response.status == 500) {
-                this.showNotification(
-                  "Ha ocurrido un error con el servidor",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 404) {
-                this.showNotification(
-                  "Ha ocurrido un error de rutas",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 400) {
-                if (typeof error.response.data.message === "object") {
-                  for (var field in error.response.data.message) {
-                    this.showNotification(
-                      error.response.data.message[field],
-                      "negative",
-                      "error"
-                    );
-                  }
-                } else {
-                  this.showNotification(
-                    error.response.data.message,
-                    "negative",
-                    "error"
-                  );
-                }
-              } else if (error.response.status == 401) {
-                this.showNotification(
-                  error.response.data.message,
-                  "negative",
-                  "error"
-                );
-                this.bus.$emit("logout");
-              }
-            } else {
-              this.showNotification(error.message, "negative", "error");
-            }
+            this.errorHandling(error);
           });
       }
-    },
-    showNotification: function(message, color, icon) {
-      this.$q.notify({
-        progress: true,
-        position: "top",
-        message: message,
-        color: color,
-        icon: icon
-      });
     }
   }
 };

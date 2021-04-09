@@ -47,63 +47,6 @@
     </div>
 
     <div class="orders-tab" style="margin-top:20px">
-      <!--<q-splitter
-        v-model="splitterModel"
-        style="height: 250px, margin-top: 100px; width: 100%;"
-        v-if="!responsiveMobile"
-      >
-        <template v-slot:before>
-          <q-tabs v-model="tab" vertical>
-            <q-tab
-              class="text-primary"
-              name="not-confirmed"
-              icon="watch_later"
-              style="outline:none;"
-              :label="responsiveLabels ? '' : 'Sin Confirmar'"
-            />
-            <q-tab
-              class="text-blue"
-              name="confirmed"
-              icon="room_service"
-              style="outline:none;"
-              :label="responsiveLabels ? '' : 'Confirmados'"
-            />
-            <q-tab
-              class="text-green"
-              name="done"
-              icon="check_circle"
-              style="outline:none;"
-              :label="responsiveLabels ? '' : 'Listos'"
-            />
-          </q-tabs>
-        </template>
-
-        <template v-slot:after>
-          <q-tab-panels
-            v-model="tab"
-            animated
-            swipeable
-            vertical
-            transition-prev="jump-up"
-            transition-next="jump-up"
-          >
-            <q-tab-panel name="not-confirmed">
-              <not-confirmed
-                :ordersNotConfirmed="ordersNotConfirmed"
-              ></not-confirmed>
-            </q-tab-panel>
-
-            <q-tab-panel name="confirmed">
-              <the-confirmed :ordersConfirmed="ordersConfirmed"></the-confirmed>
-            </q-tab-panel>
-
-            <q-tab-panel name="done">
-              <the-done :ordersDone="ordersDone"></the-done>
-            </q-tab-panel>
-          </q-tab-panels>
-        </template>
-      </q-splitter>-->
-
       <q-card style="width: 90%;height: 0;">
         <q-tabs
           v-model="tab"
@@ -158,6 +101,7 @@ import TheConfirmed from "./status_tables/TheConfirmed.vue";
 import TheDone from "./status_tables/TheDone.vue";
 
 export default {
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   components: {
     NotConfirmed,
     TheConfirmed,
@@ -171,7 +115,6 @@ export default {
   },
   mounted() {
     var vue = this;
-    //console.log(this.$store.getters["auth/getDataLocals"]);
     var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
       let row = {
         value: item.id,
@@ -182,18 +125,12 @@ export default {
 
     this.local.value = this.$store.getters["auth/getDataLocal"].id;
     this.local.label = this.$store.getters["auth/getDataLocal"].name;
-    /*console.log(this.locals);
-    console.log(this.local);*/
     this.sync();
     this.responsiveMode();
 
     this.bus.$on("sync-orders", () => {
       this.sync();
     });
-
-    /*console.log(this.ordersNotConfirmed);
-    console.log(this.ordersConfirmed);
-    console.log(this.ordersDone);*/
   },
   computed: {
     FontSize() {
@@ -2037,12 +1974,10 @@ export default {
   },
   methods: {
     sync() {
-      //console.log(this.local.value);
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
           this.data = this.response;
-          //console.log(this.data);
           this.filters();
           this.hideLoading();
           this.showNotification(
@@ -2050,6 +1985,7 @@ export default {
             "positive",
             "check_circle"
           );
+          this.bus.$emit("change-flag");
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("orders", {
@@ -2062,7 +1998,6 @@ export default {
             }
           })
           .then(response => {
-            //console.log(response.data);
             this.hideLoading();
             if (response.data.status === "success") {
               this.data = response.data.result;
@@ -2075,60 +2010,14 @@ export default {
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
+            this.bus.$emit("change-flag");
           })
           .catch(error => {
             this.hideLoading();
-            if (error.response) {
-              if (error.response.status == 500) {
-                this.showNotification(
-                  "Ha ocurrido un error con el servidor",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 404) {
-                this.showNotification(
-                  "Ha ocurrido un error de rutas",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 400) {
-                if (typeof error.response.data.message === "object") {
-                  for (var field in error.response.data.message) {
-                    this.showNotification(
-                      error.response.data.message[field],
-                      "negative",
-                      "error"
-                    );
-                  }
-                } else {
-                  this.showNotification(
-                    error.response.data.message,
-                    "negative",
-                    "error"
-                  );
-                }
-              } else if (error.response.status == 401) {
-                this.showNotification(
-                  error.response.data.message,
-                  "negative",
-                  "error"
-                );
-                this.bus.$emit("logout");
-              }
-            } else {
-              this.showNotification(error.message, "negative", "error");
-            }
+            this.bus.$emit("change-flag");
+            this.errorHandling(error);
           });
       }
-    },
-    showNotification: function(message, color, icon) {
-      this.$q.notify({
-        progress: true,
-        position: "top",
-        message: message,
-        color: color,
-        icon: icon
-      });
     },
     responsiveMode() {
       var responsive = window.matchMedia("(max-width: 900px)");
@@ -2150,6 +2039,7 @@ export default {
       });
     },
     filters() {
+      console.log(this.data);
       var newArray = [];
       var roots = this.data.map(function(item) {
         item.name = item.payDetail.user;
@@ -2159,7 +2049,6 @@ export default {
       });
 
       this.data = newArray;
-      //console.log(this.data);
       this.ordersDone = this.data.filter(item => item.status === "done");
       this.ordersConfirmed = this.data.filter(
         item => item.status === "confirmed"
@@ -2167,15 +2056,6 @@ export default {
       this.ordersNotConfirmed = this.data.filter(
         item => item.status === "not-confirmed"
       );
-    },
-
-    showLoading() {
-      this.$q.loading.show({
-        message: "Espere un momento, por favor..."
-      });
-    },
-    hideLoading() {
-      this.$q.loading.hide();
     },
     findOrders(local) {
       this.local.value = local.value;

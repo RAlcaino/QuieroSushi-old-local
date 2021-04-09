@@ -17,7 +17,11 @@ export default {
   provide() {
     return {
       formatNumber: this.formatNumber,
-      capitalize: this.capitalize
+      capitalize: this.capitalize,
+      showNotification: this.showNotification,
+      showLoading: this.showLoading,
+      hideLoading: this.hideLoading,
+      errorHandling: this.errorHandling
     };
   },
   methods: {
@@ -73,6 +77,65 @@ export default {
       return str.replace(/\w\S*/g, function(txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
       });
+    },
+    showNotification: function(message, color, icon) {
+      this.$q.notify({
+        progress: true,
+        position: "top",
+        message: message,
+        color: color,
+        icon: icon
+      });
+    },
+    showLoading() {
+      this.$q.loading.show({
+        message: "Espere un momento, por favor..."
+      });
+    },
+    hideLoading() {
+      this.$q.loading.hide();
+    },
+    errorHandling(error) {
+      if (error.response) {
+        if (error.response.status == 500) {
+          this.showNotification(
+            "Ha ocurrido un error con el servidor",
+            "negative",
+            "error"
+          );
+        } else if (error.response.status == 404) {
+          this.showNotification(
+            "Ha ocurrido un error de rutas",
+            "negative",
+            "error"
+          );
+        } else if (error.response.status == 400) {
+          if (typeof error.response.data.message === "object") {
+            for (var field in error.response.data.message) {
+              this.showNotification(
+                error.response.data.message[field],
+                "negative",
+                "error"
+              );
+            }
+          } else {
+            this.showNotification(
+              error.response.data.message,
+              "negative",
+              "error"
+            );
+          }
+        } else if (error.response.status == 401) {
+          this.showNotification(
+            error.response.data.message,
+            "negative",
+            "error"
+          );
+          this.bus.$emit("logout");
+        }
+      } else {
+        this.showNotification(error.message, "negative", "error");
+      }
     }
   }
 };

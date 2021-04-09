@@ -8,7 +8,6 @@
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
           <q-tab label="Detalle" name="one" />
-          <!--<q-tab label="Detalle pedido" name="two" />-->
         </q-tabs>
 
         <q-separator />
@@ -59,52 +58,6 @@
               </p>
             </div>
           </q-tab-panel>
-          <!--<q-tab-panel
-            name="two"
-            v-if="orderDetail.payDetail"
-          >
-            <q-list>
-              <q-item clickable>
-                <q-item-section avatar>
-                  <q-icon color="blacklight" name="perm_identity" />
-                </q-item-section>
-
-                <q-item-section>
-                  <q-item-label>{{ orderDetail.requestedTime }}</q-item-label>
-                  <q-item-label caption
-                    >{{ orderDetail.payDetail.user }} - tlf:
-                    {{ orderDetail.payDetail.userPhone }}</q-item-label
-                  >
-                </q-item-section>
-              </q-item>
-
-              <q-item clickable>
-                <q-item-section avatar>
-                  <q-icon color="blacklight" name="payment" />
-                </q-item-section>
-
-                <q-item-section>
-                  <q-item-label>Tipo de pago:</q-item-label>
-                  <q-item-label caption>{{
-                    orderDetail.payDetail.pay
-                  }}</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item clickable v-if="orderDetail.orderType!=='retiro'">
-                <q-item-section avatar>
-                  <q-icon color="blacklight" name="location_on" />
-                </q-item-section>
-
-                <q-item-section >
-                  <q-item-label>Dirección de despacho</q-item-label>
-                  <q-item-label caption>{{
-                    orderDetail.payDetail.address
-                  }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-tab-panel>-->
         </q-tab-panels>
       </q-card-section>
 

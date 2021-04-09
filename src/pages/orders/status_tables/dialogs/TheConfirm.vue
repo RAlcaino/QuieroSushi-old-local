@@ -235,6 +235,7 @@
 
 <script>
 export default {
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   created() {
     console.log("confirm created");
     this.prod = this.$store.getters["mode/getMode"];
@@ -307,23 +308,16 @@ export default {
         deliveryTime: +this.deliveryTime,
         preparationTime: +this.preparationTime
       };
-      //console.log(data);
 
       this.showLoading();
 
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
-          /*this.showNotification(
-            "Pedido #" + this.orderDetail.id + " Confirmado",
-            "positive",
-            "check_circle"
-          );*/
           this.bus.$emit("sync-orders");
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("order.confirm");
-        //console.log(url);
         this.$axios
           .put(url, data, {
             headers:{
@@ -331,62 +325,15 @@ export default {
             }
           })
           .then(response => {
-            //console.log(response.data);
-
             if (response.data.status === "success") {
               this.bus.$emit("sync-orders");
-              /*this.showNotification(
-                response.data.message,
-                "positive",
-                "check_circle"
-              );*/
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
           .catch(error => {
             this.hideLoading();
-            if (error.response) {
-              if (error.response.status == 500) {
-                this.showNotification(
-                  "Ha ocurrido un error con el servidor",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 404) {
-                this.showNotification(
-                  "Ha ocurrido un error de rutas",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 400) {
-                if (typeof error.response.data.message === "object") {
-                  for (var field in error.response.data.message) {
-                    this.showNotification(
-                      error.response.data.message[field],
-                      "negative",
-                      "error"
-                    );
-                  }
-                } else {
-                    this.showNotification(
-                      error.response.data.message,
-                      "negative",
-                      "error"
-                    );
-                }
-              }
-              else if(error.response.status == 401){
-                  this.showNotification(
-                    error.response.data.message,
-                    "negative",
-                    "error"
-                  );
-                  this.bus.$emit("logout");
-              }
-            } else {
-              this.showNotification(error.message, "negative", "error");
-            }
+            this.errorHandling(error);
           });
       }
       this.close();
@@ -415,23 +362,6 @@ export default {
       this.final.minutes = date.getMinutes();
       this.final.seconds = date.getSeconds();
     },
-    showNotification: function(message, color, icon) {
-      this.$q.notify({
-        progress: true,
-        position: "top",
-        message: message,
-        color: color,
-        icon: icon
-      });
-    },
-    showLoading() {
-      this.$q.loading.show({
-        message: "Espere un momento, por favor..."
-      });
-    },
-    hideLoading() {
-      this.$q.loading.hide();
-    }
   }
 };
 </script>

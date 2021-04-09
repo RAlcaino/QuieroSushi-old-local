@@ -4,7 +4,7 @@
     <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
       <q-btn flat round dense icon="confirmation_number" />
       <q-toolbar-title :style="FontSize"> Cupones</q-toolbar-title>
-      <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync()" />
+      <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync(true)" />
     </q-toolbar>
 
     <div
@@ -64,7 +64,7 @@
       </q-btn-dropdown>
     </div>
 
-    <div class="fit row no-wrap justify-center items-start content-center">
+    <div class="fit column no-wrap justify-center items-center content-center">
       <q-list
         bordered
         class="rounded-borders"
@@ -98,7 +98,7 @@
           </q-btn>
         </q-item-label>
 
-        <div v-for="(item, index) of data" :key="item.id">
+        <div v-for="(item, index) of getData" :key="item.id">
           <q-item>
             <q-item-section avatar top>
               <q-toggle
@@ -106,7 +106,7 @@
                 false-value="pendiente"
                 true-value="activo"
                 color="green"
-                @input="changeStatus(value, item.id)"
+                @input="changeStatus(item)"
               />
             </q-item-section>
 
@@ -161,7 +161,7 @@
                   color="blue"
                   rounded
                   size="sm"
-                  @click="dialogEdit()"
+                  @click="dialogEdit(item)"
                 >
                   <q-icon style="margin-right:5px" size="20px" name="edit" />
                   <div style="font-size:12px">Editar</div>
@@ -173,13 +173,37 @@
                   dense
                   round
                   icon="more_vert"
-                />
+                >
+                  <q-menu>
+                    <q-list style="min-width: 100px">
+                      <q-item clickable @click="dialogStandOut()" v-close-popup>
+                        <q-item-section>Destacar</q-item-section>
+                      </q-item>
+                      <q-separator />
+                      <q-item clickable @click="dialogGoUp()" v-close-popup>
+                        <q-item-section>Subir</q-item-section>
+                      </q-item>
+                      <q-separator />
+                      <q-item clickable @click="dialogEdit(item)" v-close-popup>
+                        <q-item-section>Editar</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </q-btn>
               </div>
             </q-item-section>
           </q-item>
           <q-separator spaced v-if="data.length !== index + 1" />
         </div>
       </q-list>
+      <q-pagination
+        v-if="data.length > 6"
+        v-model="page"
+        :max="getMaxPages"
+        style="padding-top:25px"
+        color="primary"
+        input
+      />
     </div>
   </q-page>
 </template>
@@ -188,6 +212,7 @@
 import TheAditionals from "./dialogs/TheAditionals.vue";
 
 export default {
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   components: {
     TheAditionals
   },
@@ -196,7 +221,6 @@ export default {
   },
   mounted() {
     var vue = this;
-    //console.log(this.$store.getters["auth/getDataLocals"]);
     var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
       let row = {
         value: item.id,
@@ -207,16 +231,23 @@ export default {
 
     this.local.value = this.$store.getters["auth/getDataLocal"].id;
     this.local.label = this.$store.getters["auth/getDataLocal"].name;
-    /*console.log(this.locals);
-    console.log(this.local);*/
-    this.sync();
+    this.sync(true);
     this.responsiveMode();
 
     this.bus.$on("sync-coupons", () => {
-      this.sync();
+      this.sync(false);
     });
   },
   computed: {
+    getData() {
+      return this.data.slice(
+        (this.page - 1) * this.perPage,
+        (this.page - 1) * this.perPage + this.perPage
+      );
+    },
+    getMaxPages() {
+      return Math.ceil(this.data.length / 6);
+    },
     FontSize() {
       if (this.responsiveMobile) {
         return { fontSize: "15px" };
@@ -238,6 +269,8 @@ export default {
   },
   data() {
     return {
+      page: 1,
+      perPage: 6,
       prod: null,
       responsiveMobile: false,
       value: true,
@@ -291,6 +324,41 @@ export default {
             title: "Cupon de 20 piezas por $40.000",
             image:
               "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
+          },
+          {
+            id: 6,
+            status: "pendiente",
+            title: "Cupon de 50 piezas por $14.000",
+            image:
+              "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
+          },
+          {
+            id: 10,
+            status: "activo",
+            title: "Cupon de 50 piezas por $20.000",
+            image:
+              "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
+          },
+          {
+            id: 11,
+            status: "activo",
+            title: "Cupon de 20 piezas por $40.000",
+            image:
+              "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
+          },
+          {
+            id: 12,
+            status: "pendiente",
+            title: "Cupon de 50 piezas por $14.000",
+            image:
+              "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
+          },
+          {
+            id: 13,
+            status: "activo",
+            title: "Cupon de 50 piezas por $20.000",
+            image:
+              "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
           }
         ]
       }
@@ -313,17 +381,15 @@ export default {
         }
       });
     },
-    sync() {
-      this.showLoading();
+    sync(flag) {
+      if (flag) {
+        this.showLoading();
+      }
       if (!this.prod) {
-        /*console.log(this.$store.getters["routes/getRoute"]("coupons", {
-          localId: this.local.value
-        }));*/
         setTimeout(() => {
           this.data = this.result.coupons;
           this.availableGoUp = this.result.available.goUp;
           this.availableStandOut = this.result.available.standOut;
-          //console.log(this.data);
           this.hideLoading();
           this.showNotification(
             "Cupones Actualizados",
@@ -342,7 +408,6 @@ export default {
             }
           })
           .then(response => {
-            console.log(response.data);
             this.hideLoading();
             if (response.data.status === "success") {
               var r = response.data.result;
@@ -360,52 +425,46 @@ export default {
           })
           .catch(error => {
             this.hideLoading();
-            if (error.response) {
-              if (error.response.status == 500) {
-                this.showNotification(
-                  "Ha ocurrido un error con el servidor",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 404) {
-                this.showNotification(
-                  "Ha ocurrido un error de rutas",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 400) {
-                if (typeof error.response.data.message === "object") {
-                  for (var field in error.response.data.message) {
-                    this.showNotification(
-                      error.response.data.message[field],
-                      "negative",
-                      "error"
-                    );
-                  }
-                } else {
-                  this.showNotification(
-                    error.response.data.message,
-                    "negative",
-                    "error"
-                  );
-                }
-              } else if (error.response.status == 401) {
-                this.showNotification(
-                  error.response.data.message,
-                  "negative",
-                  "error"
-                );
-                this.bus.$emit("logout");
-              }
-            } else {
-              this.showNotification(error.message, "negative", "error");
-            }
+            this.errorHandling(error);
           });
       }
     },
-    changeStatus(value, coupon_id) {
-      console.log(value);
-      console.log(coupon_id);
+    changeStatus(item) {
+      console.log(item.id);
+      console.log(item.status);
+
+      let data = {
+        couponID: item.id,
+        status: item.status
+      };
+
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.sync(false);
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"](
+          "coupon.change.status"
+        );
+        this.$axios
+          .put(url, data, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              this.sync(false);
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.sync(false);
+            this.errorHandling(error);
+          });
+      }
     },
     dialogStandOut() {
       if (this.availableStandOut == 0) {
@@ -424,29 +483,14 @@ export default {
     dialogAditionals() {
       this.bus.$emit("open-aditionals", "all");
     },
-    dialogEdit() {},
+    dialogEdit(item) {
+      console.log(item);
+    },
     findLocal(local) {
       this.local.value = local.value;
       this.local.label = local.label;
       this.localFilter = "";
-      this.sync();
-    },
-    showNotification: function(message, color, icon) {
-      this.$q.notify({
-        progress: true,
-        position: "top",
-        message: message,
-        color: color,
-        icon: icon
-      });
-    },
-    showLoading() {
-      this.$q.loading.show({
-        message: "Espere un momento, por favor..."
-      });
-    },
-    hideLoading() {
-      this.$q.loading.hide();
+      this.sync(true);
     }
   }
 };

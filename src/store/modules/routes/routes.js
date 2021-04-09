@@ -1,5 +1,5 @@
 const state = {
-  urlGlobal: "http://190.202.203.165:5000/api/public/api",
+  urlGlobal: "http://201.210.244.107:5000/api/public/api",
   routes: [
     {
       name: "login",
@@ -24,6 +24,10 @@ const state = {
     {
       name: "coupons",
       link: "/cupones/{localId}"
+    },
+    {
+      name: "coupon.change.status",
+      link: "/cupones/change"
     },
     {
       name: "services.prices",

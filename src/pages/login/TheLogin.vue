@@ -56,6 +56,7 @@ import SecureLS from "secure-ls";
 import { QSpinnerGears } from "quasar";
 
 export default {
+  inject: ["showNotification","errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
   },
@@ -75,7 +76,6 @@ export default {
         return;
       }
       var ls = new SecureLS({ isCompression: false });
-      //this.showCustom();
       this.showLoading();
       if (!this.prod) {
         //Without backend
@@ -116,12 +116,6 @@ export default {
             );
             return;
           }
-
-          /*this.showNotification(
-            "Inicio de sesión exitoso",
-            "positive",
-            "check_circle"
-          );*/
           let locals = [
             {
               id: 129,
@@ -146,12 +140,7 @@ export default {
           ];
           this.bus.$emit("login", locals);
           this.$q.loadingBar.stop();
-          //this.hideCustom();
           this.hideLoading();
-          /*console.log(this.$store.getters['auth/getDataUser']);
-            console.log(this.$store.getters['auth/getAvailableMenuOptions']);
-            console.log(this.$store.getters['auth/getAllMenuOptions']);
-            console.log(this.$store.getters['auth/getAuthenticated']);*/
           this.$router.push({ path: "/pedidos" });
         }, 3000);
       } else {
@@ -162,16 +151,7 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               ls.set("token", response.data.result.token);
-              /*this.showNotification(
-                response.data.message,
-                "positive",
-                "check_circle"
-              );*/
               this.bus.$emit("login", response.data.result.locals);
-              /*console.log(this.$store.getters["auth/getDataUser"]);
-              console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
-              console.log(this.$store.getters["auth/getAllMenuOptions"]);
-              console.log(this.$store.getters["auth/getAuthenticated"]);*/
               this.hideLoading();
               this.$router.push({ path: "/pedidos" });
             } else {
@@ -181,50 +161,9 @@ export default {
           })
           .catch(error => {
             this.hideLoading();
-            if (error.response) {
-              if (error.response.status == 500) {
-                this.showNotification(
-                  "Ha ocurrido un error con el servidor",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 404) {
-                this.showNotification(
-                  "Ha ocurrido un error de rutas",
-                  "negative",
-                  "error"
-                );
-              } else if (error.response.status == 400) {
-                if (typeof error.response.data.message === "object") {
-                  for (var field in error.response.data.message) {
-                    this.showNotification(
-                      error.response.data.message[field],
-                      "negative",
-                      "error"
-                    );
-                  }
-                } else {
-                  this.showNotification(
-                    error.response.data.message,
-                    "negative",
-                    "error"
-                  );
-                }
-              }
-            } else {
-              this.showNotification(error.message, "negative", "error");
-            }
+            this.errorHandling(error);
           });
       }
-    },
-    showNotification: function(message, color, icon) {
-      this.$q.notify({
-        progress: true,
-        position: "top",
-        message: message,
-        color: color,
-        icon: icon
-      });
     },
     validate(user) {
       let flag = false;
@@ -292,6 +231,7 @@ export default {
   background-image: url("../../../src/assets/background.jpg");
   background-size: cover;
   background-repeat: no-repeat;
+  background-position-x: -50px;
 }
 
 .form-login {
