@@ -198,6 +198,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Juan Perez",
             userPhone: "992232948",
@@ -233,6 +238,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Juan Perez",
             userPhone: "992232948",
@@ -268,6 +278,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Juan Perez",
             userPhone: "992232948",
@@ -303,6 +318,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Juan Perez",
             userPhone: "992232948",
@@ -338,6 +358,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Juan Perez",
             userPhone: "992232948",
@@ -373,6 +398,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Juan Perez",
             userPhone: "992232948",
@@ -408,6 +438,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Juan Perez",
             userPhone: "992232948",
@@ -443,6 +478,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Juan Perez",
             userPhone: "992232948",
@@ -478,6 +518,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Juan Perez",
             userPhone: "992232948",
@@ -521,6 +566,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "MariaJose",
             userPhone: "992232948",
@@ -563,6 +613,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Alexi Anthoni zamora silva ",
             userPhone: "992232948",
@@ -605,6 +660,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Alexi Anthoni zamora silva ",
             userPhone: "992232948",
@@ -647,6 +707,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Alexi Anthoni zamora silva ",
             userPhone: "992232948",
@@ -697,6 +762,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Ayleen romero ",
             userPhone: "992232948",
@@ -755,6 +825,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Mario sandoval ",
             userPhone: "992232948",
@@ -821,6 +896,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Cristina Ocared",
             userPhone: "992232948",
@@ -896,6 +976,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Isabel Lagos",
             userPhone: "992232948",
@@ -979,6 +1064,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Sara Toledo",
             userPhone: "992232948",
@@ -1070,6 +1160,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Nicolas aravena",
             userPhone: "992232948",
@@ -1169,6 +1264,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
@@ -1268,6 +1368,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
@@ -1367,6 +1472,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
@@ -1466,6 +1576,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
@@ -1565,6 +1680,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
@@ -1664,6 +1784,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
@@ -1763,6 +1888,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
@@ -1862,6 +1992,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",
@@ -1961,6 +2096,11 @@ export default {
               }
             }
           ],
+          extras: {
+            chopsticks: 1,
+            ginger: 2,
+            wasabi: 3
+          },
           payDetail: {
             user: "Pablo Urz\u00faa Cid ",
             userPhone: "992232948",

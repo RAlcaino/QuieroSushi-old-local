@@ -4,45 +4,49 @@
     transition-show="slide-down"
     transition-hide="slide-up"
   >
-    <q-card class="my-card" style="width: 400px; border-radius:10px;">
+    <q-card class="my-card" style="width: 450px; border-radius:10px;">
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
           <q-tab label="Detalle" name="one" />
         </q-tabs>
 
-        <q-separator />
-
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="one" class="tab-panel" v-if="orderDetail.product">
-            <div class="tab-overview-headers">
-              <p>
-                <strong style="color: #333; padding-left: 25px">Items</strong>
-              </p>
-              <p>
-                <strong style="color: #333;padding-left: 25px "
-                  >Subtotales</strong
-                >
-              </p>
-            </div>
-            <div class="tab-overview">
-              <div class="tab-overview-items">
-                <div v-for="(item, index) in orderDetail.product" :key="index" style="display:flex; justify-content:space-between">
-                  <div style="width:60%">
-                    <p>
-                      {{ item.quantity }} x
-                      {{ item.detail.name }} x 
-                      ${{ formatNumber(item.detail.price) }}
-                    </p>
-                  </div>
-
-                  <div style="width:30%">
-                    <p>
-                      {{ " $" + formatNumber(item.quantity * item.detail.price)}}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <q-list class="list-style">
+              <q-item v-ripple>
+                <q-item-section avatar>
+                  <q-icon style="margin-left:15px" color="green" name="check_circle" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>
+                    Palitos: {{ orderDetail.extras.chopsticks }} | Jengibre:
+                    {{ orderDetail.extras.ginger }} | Wasabi:
+                    {{ orderDetail.extras.wasabi }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-for="(item, index) in orderDetail.product"
+                :key="index"
+                v-ripple
+              >
+                <q-item-section avatar>
+                  <q-icon style="margin-left:15px"  color="green" name="check_circle" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>
+                    {{ item.quantity }} x {{ item.detail.name }} x ${{
+                      formatNumber(item.detail.price)
+                    }}</q-item-label
+                  >
+                  <q-item-label caption>
+                    {{
+                      " $" + formatNumber(item.quantity * item.detail.price)
+                    }}</q-item-label
+                  >
+                </q-item-section>
+              </q-item>
+            </q-list>
             <div class="tab-overview-footer">
               <p>
                 <strong style="color: #333">Subtotal: </strong> $
@@ -50,7 +54,7 @@
               </p>
               <p>
                 <strong style="color: #333">Costo Despacho: </strong> $
-                {{ formatNumber(orderDetail.deliveryCost)}}
+                {{ formatNumber(orderDetail.deliveryCost) }}
               </p>
               <p>
                 <strong style="color: #333">Total: </strong>$
@@ -72,7 +76,7 @@
 
 <script>
 export default {
-  inject:['formatNumber'],
+  inject: ["formatNumber"],
   mounted() {
     this.bus.$on("more-details", data => {
       this.card = !this.card;
@@ -91,7 +95,7 @@ export default {
 
 <style lang="scss">
 .tab-panel {
-  height: 220px !important;
+  height: auto !important;
   overflow: visible !important;
 }
 .tab-overview {
@@ -144,6 +148,16 @@ export default {
   p {
     text-align: right;
     margin-bottom: 0;
+  }
+}
+
+.list-style {
+  margin-left: 35px;
+}
+
+@media screen and (max-width: 600px) {
+  .list-style {
+    margin-left: 0px;
   }
 }
 </style>
