@@ -13,9 +13,13 @@
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="one" class="tab-panel" v-if="orderDetail.product">
             <q-list class="list-style">
-              <q-item v-ripple>
+              <q-item v-ripple style="padding: 8px 0 !important">
                 <q-item-section avatar>
-                  <q-icon style="margin-left:15px" color="green" name="check_circle" />
+                  <q-icon
+                    style="margin-left:15px"
+                    color="green"
+                    name="check_circle"
+                  />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>
@@ -29,9 +33,14 @@
                 v-for="(item, index) in orderDetail.product"
                 :key="index"
                 v-ripple
+                style="padding: 8px 0 !important"
               >
                 <q-item-section avatar>
-                  <q-icon style="margin-left:15px"  color="green" name="check_circle" />
+                  <q-icon
+                    style="margin-left:15px"
+                    color="green"
+                    name="check_circle"
+                  />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>
@@ -152,7 +161,7 @@ export default {
 }
 
 .list-style {
-  margin-left: 35px;
+  margin-left: 50px;
 }
 
 @media screen and (max-width: 600px) {
