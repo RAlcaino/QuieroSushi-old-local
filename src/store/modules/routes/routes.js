@@ -1,5 +1,5 @@
 const state = {
-  urlGlobal: "http://201.210.244.107:5000/api/public/api",
+  urlGlobal: "https://api.panelnuevo.quierosushi.cl/api",
   routes: [
     {
       name: "login",

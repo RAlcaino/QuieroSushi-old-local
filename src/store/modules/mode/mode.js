@@ -1,5 +1,5 @@
 const state = {
-    prod:false,             //TRUE if you wanna test with backend or in a production environment 
+    prod:true,             //TRUE if you wanna test with backend or in a production environment 
                             //otherwise FALSE
 }
 const mutations = {

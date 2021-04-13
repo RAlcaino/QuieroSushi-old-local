@@ -13,7 +13,7 @@
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="one" class="tab-panel" v-if="orderDetail.product">
             <q-list class="list-style">
-              <q-item v-ripple style="padding: 8px 0 !important">
+              <q-item v-if="orderDetail.extras" v-ripple style="padding: 8px 0 !important">
                 <q-item-section avatar>
                   <q-icon
                     style="margin-left:15px"
