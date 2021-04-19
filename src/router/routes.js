@@ -1,5 +1,7 @@
 import jwt_decode from "jwt-decode";
 import SecureLS from "secure-ls";
+import {Store} from "../store/index.js";
+
 var ls = new SecureLS({ isCompression: false });
 
 const routes = [
@@ -22,7 +24,7 @@ const routes = [
         component: () => import('pages/dashboard/Dashboard.vue'),
         beforeEnter:(to,from,next)=>{
           if(isAuthenticated()){
-            if(accessTo('All')){
+            if(accessTo('Home')){
               next();
             }
             else{
@@ -38,7 +40,7 @@ const routes = [
         component: () => import('pages/orders/TheOrders.vue'),
         beforeEnter:(to,from,next)=>{
           if(isAuthenticated()){
-            if(accessTo('All')){
+            if(accessTo('Pedidos')){
               next();
             }
             else{
@@ -54,7 +56,7 @@ const routes = [
         component: () => import('pages/coupons/TheCoupons.vue'),
         beforeEnter:(to,from,next)=>{
           if(isAuthenticated()){
-            if(accessTo('All')){
+            if(accessTo('Cupones')){
               next();
             }
             else{
@@ -103,7 +105,7 @@ const routes = [
     component: () => import('pages/login/TheLogin.vue'),
     beforeEnter:(to,from,next)=>{
       if(isAuthenticated()){
-        next("/home");
+        next("/pedidos");
       }else{
         next();
       }
@@ -129,10 +131,7 @@ if (process.env.MODE !== 'ssr') {
 }
 
 function isAuthenticated(){
-  let token=ls.get('token');
-  
-  if(token!==''){
-    //Check token here 
+  if(Store.getters['auth/getAuthenticated']){
     return true;
   }
   else{
@@ -140,10 +139,9 @@ function isAuthenticated(){
   }
 }
 
-function accessTo(role){
-  let user= jwt_decode(ls.get('token'));
-
-  if(role===user.role.name.trim() || role==='All'){
+function accessTo(option){
+  let availableMenuOptions=Store.getters['auth/getAvailableMenuOptions'];
+  if(availableMenuOptions.some(item => item.label===option)){
     return true;
   }
   else{

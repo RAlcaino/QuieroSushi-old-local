@@ -2120,12 +2120,6 @@ export default {
           this.data = this.response;
           this.filters();
           this.hideLoading();
-          this.showNotification(
-            "Pedidos Actualizados",
-            "positive",
-            "check_circle"
-          );
-          this.bus.$emit("change-flag");
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("orders", {
@@ -2142,19 +2136,12 @@ export default {
             if (response.data.status === "success") {
               this.data = response.data.result;
               this.filters();
-              this.showNotification(
-                "Pedidos Actualizados",
-                "positive",
-                "check_circle"
-              );
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
-            this.bus.$emit("change-flag");
           })
           .catch(error => {
             this.hideLoading();
-            this.bus.$emit("change-flag");
             this.errorHandling(error);
           });
       }
@@ -2179,7 +2166,7 @@ export default {
       });
     },
     filters() {
-      console.log(this.data);
+      //console.log(this.data);
       var newArray = [];
       var roots = this.data.map(function(item) {
         item.name = item.payDetail.user;

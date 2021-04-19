@@ -65,7 +65,17 @@
     </div>
 
     <div class="fit column no-wrap justify-center items-center content-center">
+      <div
+        class="fit column wrap justify-center items-center content-center"
+        v-if="data.length === 0"
+      >
+        <img src="~/assets/icons8-sad.gif" alt="sad" width="130" />
+        <p style="font-size:16px; font-weight:bold;text-align:center">
+          No se encontraron cupones
+        </p>
+      </div>
       <q-list
+        v-if="data.length !== 0"
         bordered
         class="rounded-borders"
         style="width:90%; border-radius:20px"
@@ -391,11 +401,6 @@ export default {
           this.availableGoUp = this.result.available.goUp;
           this.availableStandOut = this.result.available.standOut;
           this.hideLoading();
-          this.showNotification(
-            "Cupones Actualizados",
-            "positive",
-            "check_circle"
-          );
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("coupons", {
@@ -414,11 +419,6 @@ export default {
               this.data = r.coupons;
               this.availableGoUp = r.available.goUp;
               this.availableStandOut = r.available.standOut;
-              this.showNotification(
-                "Cupones Actualizados",
-                "positive",
-                "check_circle"
-              );
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }

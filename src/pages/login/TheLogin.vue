@@ -2,10 +2,7 @@
   <q-layout>
     <q-page-container>
       <q-page class="flex bg-image flex-center">
-        <q-card
-          v-bind:style="$q.screen.lt.sm ? { width: '80%' } : { width: '30%' }"
-          style="border-radius:20px"
-        >
+        <q-card class="card-styles-login" style="border-radius:20px">
           <q-card-section>
             <q-avatar size="103px" class="absolute-center shadow-10">
               <img src="icons/favicon-128.png" />
@@ -56,7 +53,7 @@ import SecureLS from "secure-ls";
 import { QSpinnerGears } from "quasar";
 
 export default {
-  inject: ["showNotification","errorHandling"],
+  inject: ["showNotification", "errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
   },
@@ -72,6 +69,23 @@ export default {
   },
   methods: {
     login() {
+      var availableMenuOptions = [
+        {
+          label: "Home",
+          link: "/home",
+          icon: "home"
+        },
+        {
+          label: "Pedidos",
+          link: "/pedidos",
+          icon: "delivery_dining"
+        },
+        {
+          label: "Cupones",
+          link: "/cupones",
+          icon: "confirmation_number"
+        }
+      ];
       if (this.validate(this.user)) {
         return;
       }
@@ -119,26 +133,35 @@ export default {
           let locals = [
             {
               id: 129,
-              name: "Sushi Venezuela"
+              name: "Sushi Venezuela",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
             },
             {
               id: 130,
-              name: "Sushi Chile"
+              name: "Sushi Chile",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
             },
             {
               id: 131,
-              name: "Sushi Colombia"
+              name: "Sushi Colombia",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
             },
             {
               id: 132,
-              name: "Sushi EEUU"
+              name: "Sushi EEUU",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
             },
             {
               id: 133,
-              name: "Sushi UK"
+              name: "Sushi UK",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
             }
           ];
-          this.bus.$emit("login", locals);
+          let data = {
+            locals: locals,
+            availableMenuOptions: availableMenuOptions
+          };
+          this.bus.$emit("login", data);
           this.$q.loadingBar.stop();
           this.hideLoading();
           this.$router.push({ path: "/pedidos" });
@@ -151,7 +174,12 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               ls.set("token", response.data.result.token);
-              this.bus.$emit("login", response.data.result.locals);
+              let data = {
+                locals: response.data.result.locals,
+                //availableMenuOptions: response.data.result.availableMenuOptions
+                availableMenuOptions: availableMenuOptions
+              };
+              this.bus.$emit("login", data);
               this.hideLoading();
               this.$router.push({ path: "/pedidos" });
             } else {
@@ -239,5 +267,18 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+.card-styles-login {
+  width: 30% !important;
+}
+@media screen and (max-width: 768px) {
+  .card-styles-login {
+    width: 40% !important;
+  }
+}
+@media screen and (max-width: 500px) {
+  .card-styles-login {
+    width: 80% !important;
+  }
 }
 </style>

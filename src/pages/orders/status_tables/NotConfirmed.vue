@@ -11,7 +11,7 @@
     >
       <div
         class="fit column wrap justify-center items-center content-center"
-        v-if="ordersNotConfirmed.length === 0 && flag === true"
+        v-if="ordersNotConfirmed.length === 0"
       >
         <img src="../../../assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size:16px; font-weight:bold;text-align:center">
@@ -137,7 +137,7 @@
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersNotConfirmed.length !== 0"
+        v-if="ordersNotConfirmed.length > 4"
         v-model="page"
         :max="getMaxPages"
         style="padding-top:25px"
@@ -161,11 +161,6 @@ export default {
     MoreDetails,
     TheConfirm,
     TheCancel
-  },
-  mounted() {
-    this.bus.$on("change-flag", () => {
-      this.flag = !this.flag;
-    });
   },
   computed: {
     getData() {

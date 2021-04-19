@@ -67,7 +67,16 @@
         <div class="user-sidebar">
           <div class="user-sidebar-border">
             <q-avatar size="90px">
-              <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
+              <template
+                v-if="this.$store.getters['auth/getDataUser'].role !== 'God'"
+              >
+                <img :src="this.$store.getters['auth/getDataLocal'].image" />
+              </template>
+              <template
+                v-if="this.$store.getters['auth/getDataUser'].role === 'God'"
+              >
+                <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+              </template>
             </q-avatar>
             <q-chip
               :color="
@@ -332,26 +341,25 @@
       bordered
       content-class="bg-sidebar"
     >
-      
-        <div class="fit row no-wrap justify-end items-start content-start">
-          <q-btn
-            round
-            dense
-            flat
-            color="white"
-            icon="cancel"
-            style="font-size:12px; padding: 5px;"
-            @click="rightDrawerOpen = !rightDrawerOpen"
-          >
-          </q-btn>
-        </div>
+      <div class="fit row no-wrap justify-end items-start content-start">
+        <q-btn
+          round
+          dense
+          flat
+          color="white"
+          icon="cancel"
+          style="font-size:12px; padding: 5px;"
+          @click="rightDrawerOpen = !rightDrawerOpen"
+        >
+        </q-btn>
+      </div>
     </q-drawer>
 
     <q-page-container class="bg-white">
       <router-view />
     </q-page-container>
 
-    <div style="position: fixed; right: 0; bottom:0;" >
+    <div style="position: fixed; right: 0; bottom:0;">
       <q-toolbar>
         <div class="fit row no-wrap justify-end items-start content-start">
           <q-btn
@@ -396,7 +404,6 @@ export default {
     } else {
       this.channelName += this.$store.getters["auth/getDataUser"].id;
     }
-
     this.privateChannel = this.Echo.channel(this.channelName);
     this.listenEvent();
   },
@@ -472,7 +479,7 @@ export default {
   background: #333;
 }
 
-.bg-footer{
+.bg-footer {
   background: transparent;
 }
 .bg-sidebar {
@@ -483,6 +490,7 @@ export default {
   width: 100%;
   height: 200px;
   background-image: url("../assets/background.jpg");
+  background-position-x: -20px;
   background-size: cover;
   display: flex;
   justify-content: center;

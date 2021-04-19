@@ -1,33 +1,13 @@
 const state = {
   authenticated: false,
-  godMode:false,
+  godMode: false,
   token: "",
   user: {
     id: null,
     email: "",
     role: "",
-    locals:[]
+    locals: []
   },
-  allMenuOptions: [
-    {
-      label: "Home",
-      link: "/home",
-      icon: "home",
-      role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
-    },
-    {
-      label: "Pedidos",
-      link: "/pedidos",
-      icon: "delivery_dining",
-      role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
-    },
-    {
-      label: "Cupones",
-      link: "/cupones",
-      icon: "confirmation_number",
-      role: ["Cajero", "Gerente", "Administrador", "Super Admin","God"]
-    }
-  ],
   availableMenuOptions: []
 };
 const mutations = {
@@ -40,28 +20,24 @@ const mutations = {
     state.user.role = payload.role.name;
     state.user.locals = payload.locals;
 
-
-    if(payload.role.name.trim()==='God'){
-      state.godMode=true;
+    if (payload.role.name.trim() === "God") {
+      state.godMode = true;
     }
 
     state.token = payload.token;
-    state.availableMenuOptions = state.allMenuOptions.filter(item =>
-        item.role.some(item2 => item2 === payload.role.name.trim())
-    );
+    state.availableMenuOptions=payload.availableMenuOptions;
     state.authenticated = true;
   },
   resetDataUserSesion(state) {
-
-    if(state.user.role==='God'){
-      state.godMode=false;
+    if (state.user.role === "God") {
+      state.godMode = false;
     }
-    
+
     state.user.id = null;
     state.user.email = "";
     state.user.role = "";
     state.user.locals = [];
-    
+
     state.token = "";
     state.availableMenuOptions = [];
     state.authenticated = false;
@@ -69,9 +45,6 @@ const mutations = {
 };
 const actions = {};
 const getters = {
-  getAllMenuOptions: state => {
-    return state.allMenuOptions;
-  },
   getAvailableMenuOptions: state => {
     return state.availableMenuOptions;
   },
@@ -84,7 +57,8 @@ const getters = {
   getDataLocal(state) {
     return {
       id: state.user.locals[0].id,
-      name: state.user.locals[0].name
+      name: state.user.locals[0].name,
+      image: state.user.locals[0].image
     };
   },
   getToken(state) {
@@ -95,7 +69,7 @@ const getters = {
   },
   getDataLocals(state) {
     return state.user.locals;
-  },
+  }
 };
 
 export default {

@@ -39,7 +39,7 @@ export default {
       if (token !== "") {
         let user = jwt_decode(token);
         user.token = token;
-        data.sort(function(a, b) {
+        data.locals.sort(function(a, b) {
           if (a.name > b.name) {
             return 1;
           }
@@ -49,7 +49,8 @@ export default {
           // a must be equal to b
           return 0;
         });
-        user.locals = data;
+        user.locals = data.locals;
+        user.availableMenuOptions=data.availableMenuOptions;
         this.$store.commit("auth/setDataUserSesion", user);
       }
     },

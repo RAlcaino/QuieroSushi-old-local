@@ -127,7 +127,7 @@
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersConfirmed.length !== 0"
+        v-if="ordersConfirmed.length > 4"
         v-model="page"
         :max="getMaxPages"
         style="padding-top:25px"

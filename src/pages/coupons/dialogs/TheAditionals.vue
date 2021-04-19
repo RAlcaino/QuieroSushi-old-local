@@ -301,11 +301,6 @@ export default {
         setTimeout(() => {
           this.pricesGoUp = this.result.pricesGoUp;
           this.pricesStandOut = this.result.pricesStandOut;
-          this.showNotification(
-            "Precios Actualizados",
-            "positive",
-            "check_circle"
-          );
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("services.prices");
@@ -320,11 +315,6 @@ export default {
               var r = response.data.result;
               this.pricesGoUp = r.pricesGoUp;
               this.pricesStandOut = r.pricesStandOut;
-              this.showNotification(
-                "Precios Actualizados",
-                "positive",
-                "check_circle"
-              );
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
