@@ -7,26 +7,37 @@
     <q-card class="my-card" style="width: 450px; border-radius:10px;">
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
-          <q-tab label="Detalle" name="one" />
+          <q-tab
+            name="one"
+          >
+            <strong >N° Pedido: {{ orderDetail.id }}</strong>
+          </q-tab>
         </q-tabs>
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="one" class="tab-panel" v-if="orderDetail.product">
-            <q-list class="list-style">
-              <q-item v-if="orderDetail.extras" v-ripple style="padding: 8px 0 !important">
+            <q-list class="list-style" style="border-bottom: 1.2px dotted #000">
+              <q-item
+                v-if="orderDetail.extras"
+                v-ripple
+                style="padding: 8px 0 !important"
+              >
                 <q-item-section avatar>
-                  <q-icon
-                    style="margin-left:15px"
-                    color="green"
-                    name="check_circle"
+                  <img
+                    src="~assets/salsas.jpg"
+                    width="50"
+                    style="border-radius:10%"
                   />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>
+                  <q-item-label
+                    style="text-align: left;color:#333; margin:0;font-weight:bold; font-size: 14px"
+                  >
                     Palitos: {{ orderDetail.extras.chopsticks }} | Jengibre:
                     {{ orderDetail.extras.ginger }} | Wasabi:
                     {{ orderDetail.extras.wasabi }}
                   </q-item-label>
+                  <q-item-label caption> Incluido</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -36,40 +47,80 @@
                 style="padding: 8px 0 !important"
               >
                 <q-item-section avatar>
-                  <q-icon
-                    style="margin-left:15px"
-                    color="green"
-                    name="check_circle"
+                  <img
+                    :src="item.detail.image"
+                    width="50"
+                    style="border-radius:10%"
                   />
                 </q-item-section>
-                <q-item-section>
-                  <q-item-label>
-                    {{ item.quantity }} x {{ item.detail.name }} x ${{
-                      formatNumber(item.detail.price)
-                    }}</q-item-label
+                <q-item-section
+                  class="fit row wrap justify-between items-start content-start"
+                  style="flex-direction: row !important"
+                >
+                  <q-item-label
+                    style="width: 60%; font-weight:bold;font-size: 14px; color: #333"
                   >
+                    {{ item.quantity }} x {{ item.detail.name }}
+                  </q-item-label>
+                  <q-item-label
+                    style="width: 40%; text-align: right; margin:0;font-weight:bold; color:#ff2d2d; font-size: 14px"
+                  >
+                    {{ " $" + formatNumber(item.quantity * item.detail.price) }}
+                  </q-item-label>
                   <q-item-label caption>
                     {{
-                      " $" + formatNumber(item.quantity * item.detail.price)
+                      " $" + formatNumber(item.detail.price) + " C/U"
                     }}</q-item-label
                   >
                 </q-item-section>
               </q-item>
             </q-list>
             <div class="tab-overview-footer">
-              <p>
-                <strong style="color: #333">Subtotal: </strong> $
-                {{ formatNumber(orderDetail.subtotal) }}
+              <p style="font-size:14px">
+                <strong style="color: #333;">Subtotal: </strong> ${{ formatNumber(orderDetail.subtotal) }}
               </p>
-              <p>
-                <strong style="color: #333">Costo Despacho: </strong> $
-                {{ formatNumber(orderDetail.deliveryCost) }}
+              <p style="font-size:14px">
+                <strong style="color: #333;">Costo Despacho: </strong> ${{ formatNumber(orderDetail.deliveryCost) }}
               </p>
-              <p>
-                <strong style="color: #333">Total: </strong>$
-                {{ formatNumber(orderDetail.total) }}
+              <p style="font-size:14px">
+                <strong style="color: #333;">Total: </strong> <span style="color:#ff2d2d; font-weight:bold">${{ formatNumber(orderDetail.total) }}</span>
               </p>
             </div>
+            <q-list
+              v-if="orderDetail.status !== 'not-confirmed'"
+              class="list-style"
+            >
+              <q-item v-ripple style="padding: 8px 0 !important">
+                <q-item-section avatar>
+                  <q-icon color="green" name="room_service" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label
+                    style="text-align: left;color:#333; margin:0;font-weight:bold; font-size: 14px"
+                  >
+                    Pedido confirmado en
+                  </q-item-label>
+                  <q-item-label caption>
+                    Sushi White
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item v-ripple style="padding: 8px 0 !important">
+                <q-item-section avatar>
+                  <q-icon color="primary" name="room" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label
+                    style="text-align: left;color:#333; margin:0;font-weight:bold; font-size: 14px"
+                  >
+                    Despacho a
+                  </q-item-label>
+                  <q-item-label caption>
+                    Av. Cristobal Colon 5001
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
           </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
@@ -161,7 +212,7 @@ export default {
 }
 
 .list-style {
-  margin-left: 50px;
+  margin-left: 20px;
 }
 
 @media screen and (max-width: 600px) {

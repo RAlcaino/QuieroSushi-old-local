@@ -71,8 +71,10 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
+              this.hideLoading();
               this.bus.$emit("sync-orders");
             } else {
+              this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
             }
           })

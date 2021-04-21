@@ -57,6 +57,14 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
   },
+  mounted(){
+    var vue=this;
+    window.addEventListener('keyup', function(event) {
+      if (event.keyCode === 13) { 
+        vue.login();
+      }
+    });
+  },
   data() {
     return {
       user: {
@@ -176,8 +184,8 @@ export default {
               ls.set("token", response.data.result.token);
               let data = {
                 locals: response.data.result.locals,
-                //availableMenuOptions: response.data.result.availableMenuOptions
-                availableMenuOptions: availableMenuOptions
+                availableMenuOptions: response.data.result.availableMenuOptions
+                //availableMenuOptions: availableMenuOptions
               };
               this.bus.$emit("login", data);
               this.hideLoading();

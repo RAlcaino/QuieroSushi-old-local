@@ -12,7 +12,8 @@ module.exports = function (ctx) {
       'apex',
       'bus',
       'echo',
-      'bell'
+      'bell',
+      'unix'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css

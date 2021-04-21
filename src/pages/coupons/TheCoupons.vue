@@ -4,12 +4,19 @@
     <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
       <q-btn flat round dense icon="confirmation_number" />
       <q-toolbar-title :style="FontSize"> Cupones</q-toolbar-title>
-      <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync(true)" />
+      <q-btn
+        flat
+        round
+        dense
+        icon="sync"
+        class="q-mr-xs"
+        @click="sync(false)"
+      />
     </q-toolbar>
 
     <div
-      style="padding-top:25px; width: 90% !important; margin:0 auto;"
-      class="fit row wrap justify-between items-start content-start"
+      style="padding-top:25px; margin:0 auto;margin-left: 80px;"
+      class="fit row wrap justify-between items-start content-start container-q-select"
     >
       <div class="labels-available">
         <p style="margin-bottom:0; text-align:left">
@@ -27,55 +34,83 @@
           />Subir: <strong>{{ availableGoUp }}</strong> disponibles
         </p>
       </div>
-      <q-btn-dropdown
-        v-if="locals.length > 1"
-        color="blacklight"
-        rounded
-        outline
-        label="Sucursales"
-        icon="store"
-        class="dropdown-style"
-      >
-        <q-list>
-          <q-item>
-            <q-item-section>
-              <q-item-label>
+      <div class="c-q-select-responsive" v-if="locals.length > 1">
+        <q-select
+          rounded
+          outlined
+          dense
+          :options="localsFilter"
+          :options-dense="true"
+          hide-hint
+          v-model="localSelected"
+          @input="change"
+          @popup-hide="allData()"
+          class="q-select-coupon"
+          :virtual-scroll-sticky-size-start="80"
+        >
+          <template v-slot:prepend>
+            <q-icon name="store" />
+          </template>
+          <template v-slot:before-options>
+            <q-item>
+              <q-item-section class="text-grey">
                 <input
                   v-model="localFilter"
+                  @input="filterFn(localFilter)"
                   type="text"
                   placeholder="Buscar"
                   style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
                 />
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            v-for="item in getLocals"
-            :key="item.value"
-            clickable
-            v-close-popup
-            @click="findLocal(item)"
-          >
-            <q-item-section>
-              <q-item-label>{{ item.label }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
+              </q-item-section>
+            </q-item>
+          </template>
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-grey">
+                Sin Resultados
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+      </div>
     </div>
 
     <div class="fit column no-wrap justify-center items-center content-center">
       <div
+        style="margin-top:100px"
         class="fit column wrap justify-center items-center content-center"
-        v-if="data.length === 0"
+        v-if="data.length === 0 && searching === false"
       >
         <img src="~/assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size:16px; font-weight:bold;text-align:center">
           No se encontraron cupones
         </p>
       </div>
+      <div
+        style="margin-top:100px;border-radius:100%; overflow:hidden"
+        class="fit column wrap justify-center items-center content-center"
+        v-if="flag === true"
+      >
+        <img
+          src="~/assets/maki-roll.gif"
+          alt="sad"
+          width="130"
+          style="border-radius:100%"
+        />
+      </div>
       <q-list
-        v-if="data.length !== 0"
+        v-if="data.length !== 0 && searching === false"
         bordered
         class="rounded-borders"
         style="width:90%; border-radius:20px"
@@ -207,7 +242,7 @@
         </div>
       </q-list>
       <q-pagination
-        v-if="data.length > 6"
+        v-if="data.length > 6 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top:25px"
@@ -234,14 +269,27 @@ export default {
     var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
       let row = {
         value: item.id,
-        label: item.name
+        label: item.name,
+        image: item.image
       };
       vue.locals.push(row);
     });
 
-    this.local.value = this.$store.getters["auth/getDataLocal"].id;
-    this.local.label = this.$store.getters["auth/getDataLocal"].name;
-    this.sync(true);
+    this.localsFilter = this.locals;
+    if (this.$store.getters["auth/getDataLocal"].id == -1) {
+      this.localSelected.label = this.$store.getters["auth/getDataLocals"][0].name;
+      this.localSelected.value = this.$store.getters["auth/getDataLocals"][0].id;
+      this.localSelected.image = this.$store.getters["auth/getDataLocals"][0].image;
+      this.local.value = this.localSelected.value;
+      this.local.label = this.localSelected.label;
+    } else {
+      this.localSelected.label = this.$store.getters["auth/getDataLocal"].name;
+      this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+      this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
+      this.local.value = this.localSelected.value;
+      this.local.label = this.localSelected.label;
+    }
+    this.sync(false);
     this.responsiveMode();
 
     this.bus.$on("sync-coupons", () => {
@@ -279,6 +327,8 @@ export default {
   },
   data() {
     return {
+      searching: false,
+      flag: false,
       page: 1,
       perPage: 6,
       prod: null,
@@ -371,6 +421,12 @@ export default {
               "https://media.istockphoto.com/photos/hot-crispy-deep-fried-sushi-rolls-picture-id1006373634"
           }
         ]
+      },
+      localsFilter: [],
+      localSelected: {
+        label: null,
+        value: null,
+        image: null
       }
     };
   },
@@ -394,13 +450,21 @@ export default {
     sync(flag) {
       if (flag) {
         this.showLoading();
+      } else {
+        this.flag = true;
+        this.searching = true;
       }
       if (!this.prod) {
         setTimeout(() => {
           this.data = this.result.coupons;
           this.availableGoUp = this.result.available.goUp;
           this.availableStandOut = this.result.available.standOut;
-          this.hideLoading();
+          if (flag) {
+            this.hideLoading();
+          } else {
+            this.flag = false;
+            this.searching = false;
+          }
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("coupons", {
@@ -413,7 +477,12 @@ export default {
             }
           })
           .then(response => {
-            this.hideLoading();
+            if (flag) {
+              this.hideLoading();
+            } else {
+              this.flag = false;
+              this.searching = false;
+            }
             if (response.data.status === "success") {
               var r = response.data.result;
               this.data = r.coupons;
@@ -424,7 +493,12 @@ export default {
             }
           })
           .catch(error => {
-            this.hideLoading();
+            if (flag) {
+              this.hideLoading();
+            } else {
+              this.flag = false;
+              this.searching = false;
+            }
             this.errorHandling(error);
           });
       }
@@ -441,7 +515,7 @@ export default {
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
-          this.sync(false);
+          this.sync(true);
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"](
@@ -455,13 +529,13 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-              this.sync(false);
+              this.sync(true);
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
           .catch(error => {
-            this.sync(false);
+            this.sync(true);
             this.errorHandling(error);
           });
       }
@@ -486,17 +560,56 @@ export default {
     dialogEdit(item) {
       console.log(item);
     },
-    findLocal(local) {
+    findOrders(local) {
       this.local.value = local.value;
       this.local.label = local.label;
       this.localFilter = "";
-      this.sync(true);
+      this.sync(false);
+      this.$store.commit("auth/setCurrentLocal", {
+        id: local.value,
+        name: local.label,
+        image: local.image
+      });
+    },
+    filterFn(val) {
+      if (val === "") {
+        this.localsFilter = this.locals;
+        return;
+      }
+
+      const needle = val.toLowerCase();
+      this.localsFilter = this.locals.filter(
+        v => v.label.toLowerCase().indexOf(needle) > -1
+      );
+    },
+    change(val) {
+      if (val !== null) {
+        console.log(val);
+        this.local = val;
+        this.sync(false);
+        this.$store.commit("auth/setCurrentLocal", {
+          id: val.value,
+          name: val.label,
+          image: val.image
+        });
+      }
+    },
+    allData() {
+      this.localsFilter = this.locals;
+      this.localFilter = "";
     }
   }
 };
 </script>
 
 <style lang="scss">
+.container-q-select {
+  width: 90% !important;
+}
+
+.q-select-coupon {
+  margin-right: 46px;
+}
 @media screen and (max-width: 500px) {
   .labels-available {
     width: 100%;
@@ -507,6 +620,17 @@ export default {
   .dropdown-style {
     margin: 0 auto !important;
     margin-bottom: 20px !important;
+  }
+  .container-q-select {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .c-q-select-responsive {
+    margin: 0 auto !important;
+  }
+  .q-select-coupon {
+    margin-right: 0;
+    margin-bottom: 15px;
   }
 }
 </style>

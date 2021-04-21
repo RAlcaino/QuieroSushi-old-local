@@ -2,48 +2,69 @@
   <q-page class="q-pa-sm" style="background:white;">
     <q-toolbar class="bg-primary text-white" style="border-radius:50px">
       <q-btn flat round dense icon="delivery_dining" />
-      <q-toolbar-title :style="FontSize">
-        Pedidos de {{ local.label }}</q-toolbar-title
-      >
-      <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync()" />
+      <q-toolbar-title :style="FontSize"> Pedidos</q-toolbar-title>
+      <q-btn
+        flat
+        round
+        dense
+        icon="sync"
+        class="q-mr-xs"
+        @click="sync(false)"
+      />
     </q-toolbar>
-
     <div class="dropdown-container" v-if="locals.length > 1">
-      <div class="dropdown-locals">
-        <q-btn-dropdown
-          color="blacklight"
-          rounded
-          outline
-          label="Sucursales"
-          icon="store"
-        >
-          <q-list>
-            <q-item>
-              <q-item-section>
-                <q-item-label>
-                  <input
-                    v-model="localFilter"
-                    type="text"
-                    placeholder="Buscar"
-                    style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
-                  />
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item
-              v-for="item in getLocals"
-              :key="item.value"
-              clickable
-              v-close-popup
-              @click="findOrders(item)"
-            >
-              <q-item-section>
-                <q-item-label>{{ item.label }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-      </div>
+      <q-select
+        rounded
+        outlined
+        dense
+        :options="localsFilter"
+        :options-dense="true"
+        hide-hint
+        v-model="localSelected"
+        @input="change"
+        @popup-hide="allData()"
+        style="margin-right:46px;"
+        :virtual-scroll-sticky-size-start="80"
+        class="q-select-responsive"
+      >
+        <template v-slot:prepend>
+          <q-icon name="store" />
+        </template>
+        <template v-slot:before-options>
+          <q-item>
+            <q-item-section class="text-grey">
+              <input
+                v-model="localFilter"
+                @input="filterFn(localFilter)"
+                type="text"
+                placeholder="Buscar"
+                style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+              />
+            </q-item-section>
+          </q-item>
+          <q-item clickable @click="allOrders()">
+            <q-item-section>Todos</q-item-section>
+          </q-item>
+        </template>
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey">
+              <input
+                v-model="localFilter"
+                @input="filterFn(localFilter)"
+                type="text"
+                placeholder="Buscar"
+                style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+              />
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section class="text-grey">
+              Sin Resultados
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
     </div>
 
     <div class="orders-tab" style="margin-top:20px">
@@ -118,18 +139,24 @@ export default {
     var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
       let row = {
         value: item.id,
-        label: item.name
+        label: item.name,
+        image: item.image
       };
       vue.locals.push(row);
     });
 
+    this.localsFilter = this.locals;
+    this.localSelected.label = this.$store.getters["auth/getDataLocal"].name;
+    this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+    this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
+
     this.local.value = this.$store.getters["auth/getDataLocal"].id;
     this.local.label = this.$store.getters["auth/getDataLocal"].name;
-    this.sync();
+    this.sync(false);
     this.responsiveMode();
 
     this.bus.$on("sync-orders", () => {
-      this.sync();
+      this.sync(false);
     });
   },
   computed: {
@@ -174,6 +201,7 @@ export default {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -214,6 +242,7 @@ export default {
           id: 63251,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -254,6 +283,7 @@ export default {
           id: 63252,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -294,6 +324,7 @@ export default {
           id: 63253,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -334,6 +365,7 @@ export default {
           id: 63254,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -374,6 +406,7 @@ export default {
           id: 63255,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -414,6 +447,7 @@ export default {
           id: 63256,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -454,6 +488,7 @@ export default {
           id: 63257,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -494,6 +529,7 @@ export default {
           id: 63258,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -533,6 +569,7 @@ export default {
         {
           id: 63371,
           status: "not-confirmed",
+          unixTermino: 1618467275,
           finalTimestamp: null,
           finalDate: null,
           local: {
@@ -582,6 +619,7 @@ export default {
           id: 65131,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -629,6 +667,7 @@ export default {
           id: 65132,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -676,6 +715,7 @@ export default {
           id: 65133,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -723,6 +763,7 @@ export default {
           id: 65505,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -778,6 +819,7 @@ export default {
           id: 65707,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -841,6 +883,7 @@ export default {
           id: 65853,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -912,6 +955,7 @@ export default {
           id: 69420,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -992,6 +1036,7 @@ export default {
           id: 69553,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -1081,6 +1126,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1177,6 +1223,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1281,6 +1328,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1385,6 +1433,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1489,6 +1538,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1593,6 +1643,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1697,6 +1748,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1801,6 +1853,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618467275,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1905,6 +1958,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618467275,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -2009,6 +2063,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618467275,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -2109,21 +2164,37 @@ export default {
           }
         }
       ],
-      data: []
+      data: [],
+      originalData: [],
+      localsFilter: [],
+      localSelected: {
+        label: null,
+        value: null,
+        image: null
+      }
     };
   },
   methods: {
-    sync() {
-      this.showLoading();
+    sync(flag) {
+      if (flag) {
+        this.showLoading();
+      } else {
+        this.bus.$emit("start-loader");
+      }
       if (!this.prod) {
         setTimeout(() => {
           this.data = this.response;
+          this.originalData = this.data;
           this.filters();
-          this.hideLoading();
+          if (flag) {
+            this.hideLoading();
+          } else {
+            this.bus.$emit("end-loader");
+          }
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("orders", {
-          localId: this.local.value
+          userId: this.$store.getters["auth/getDataUser"].id
         });
         this.$axios
           .get(url, {
@@ -2132,16 +2203,25 @@ export default {
             }
           })
           .then(response => {
-            this.hideLoading();
+            if (flag) {
+              this.hideLoading();
+            } else {
+              this.bus.$emit("end-loader");
+            }
             if (response.data.status === "success") {
               this.data = response.data.result;
+              this.originalData = this.data;
               this.filters();
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
           .catch(error => {
-            this.hideLoading();
+            if (flag) {
+              this.hideLoading();
+            } else {
+              this.bus.$emit("end-loader");
+            }
             this.errorHandling(error);
           });
       }
@@ -2165,8 +2245,31 @@ export default {
         }
       });
     },
+    /*last24hr() {
+      var vue=this;
+      let today = new Date();
+      let oneDay = 24 * 60 * 60 * 1000;
+      let yesterday = new Date(today.getTime() - oneDay);
+      console.log(today);
+      console.log(this.unix(today));
+      console.log(yesterday);
+      console.log(this.unix(yesterday));
+      console.log(this.data);
+      this.data = this.data.filter(function(item) {
+        if (
+          item.unixTermino >= vue.unix(yesterday) &&
+          item.unixTermino <= vue.unix(today)
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      this.filters();
+    },*/
     filters() {
       //console.log(this.data);
+      var vue = this;
       var newArray = [];
       var roots = this.data.map(function(item) {
         item.name = item.payDetail.user;
@@ -2176,6 +2279,11 @@ export default {
       });
 
       this.data = newArray;
+      if (vue.local.value !== -1) {
+        this.data = this.originalData.filter(
+          item => item.local.id_local === vue.local.value
+        );
+      }
       this.ordersDone = this.data.filter(item => item.status === "done");
       this.ordersConfirmed = this.data.filter(
         item => item.status === "confirmed"
@@ -2188,7 +2296,58 @@ export default {
       this.local.value = local.value;
       this.local.label = local.label;
       this.localFilter = "";
-      this.sync();
+      this.sync(false);
+      this.$store.commit("auth/setCurrentLocal", {
+        id: local.value,
+        name: local.label,
+        image: local.image
+      });
+    },
+    filterFn(val) {
+      if (val === "") {
+        this.localsFilter = this.locals;
+        return;
+      }
+
+      const needle = val.toLowerCase();
+      this.localsFilter = this.locals.filter(
+        v => v.label.toLowerCase().indexOf(needle) > -1
+      );
+    },
+    change(val) {
+      var vue = this;
+      if (val !== null) {
+        this.local = val;
+        this.data = this.originalData.filter(
+          item => item.local.id_local === vue.local.value
+        );
+        console.log(this.data);
+        this.filters();
+        this.$store.commit("auth/setCurrentLocal", {
+          id: val.value,
+          name: val.label,
+          image: val.image
+        });
+      }
+    },
+    allData() {
+      this.localsFilter = this.locals;
+      this.localFilter = "";
+    },
+    allOrders() {
+      this.data = this.originalData;
+      this.localSelected = {
+        value: -1,
+        label: "Todos",
+        image: null
+      };
+      this.local = this.localSelected;
+      this.filters();
+      this.$store.commit("auth/setCurrentLocal", {
+        id: this.localSelected.value,
+        name: this.localSelected.label,
+        image: this.localSelected.image
+      });
     }
   }
 };
@@ -2222,12 +2381,17 @@ export default {
   .dropdown-container {
     padding-top: 3%;
     display: flex;
+    justify-content: center;
     width: 90%;
     margin: 0 auto;
-    flex-direction: row-reverse;
+    flex-direction: row;
   }
   .dropdown-locals {
     padding: 16px 0;
+  }
+  .q-select-responsive {
+    margin-left: 60px;
+    margin-top: 10px;
   }
 }
 </style>

@@ -3,12 +3,17 @@ const state = {
   godMode: false,
   token: "",
   user: {
-    id: null,
+    id: 0,
     email: "",
     role: "",
     locals: []
   },
-  availableMenuOptions: []
+  availableMenuOptions: [],
+  currentLocal:{
+    id:null,
+    name:null,
+    image:null
+  }
 };
 const mutations = {
   setAvailableMenuOptions(state, payload) {
@@ -19,6 +24,15 @@ const mutations = {
     state.user.email = payload.email;
     state.user.role = payload.role.name;
     state.user.locals = payload.locals;
+
+    if(payload.locals.length>1){
+      state.currentLocal.id=-1,
+      state.currentLocal.name="Todos",
+      state.currentLocal.image=null
+    }else{
+      state.currentLocal=payload.locals[0];
+    }
+    console.log()
 
     if (payload.role.name.trim() === "God") {
       state.godMode = true;
@@ -41,7 +55,15 @@ const mutations = {
     state.token = "";
     state.availableMenuOptions = [];
     state.authenticated = false;
-  }
+    this.currentLocal={
+      id:null,
+      name:null,
+      image:null
+    }
+  },
+  setCurrentLocal(state, payload) {
+    state.currentLocal=payload;
+  },
 };
 const actions = {};
 const getters = {
@@ -56,9 +78,9 @@ const getters = {
   },
   getDataLocal(state) {
     return {
-      id: state.user.locals[0].id,
-      name: state.user.locals[0].name,
-      image: state.user.locals[0].image
+      id: state.currentLocal.id,
+      name: state.currentLocal.name,
+      image: state.currentLocal.image
     };
   },
   getToken(state) {
