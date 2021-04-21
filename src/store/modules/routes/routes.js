@@ -1,7 +1,7 @@
 const state = {
-  //urlGlobal: "https://api.panelnuevo.quierosushi.cl/api",
+  urlGlobal: "https://api.panelnuevo.quierosushi.cl/api",
   //urlGlobal: "http://127.0.0.1:8000/api",
-  urlGlobal: "http://190.79.241.72:5000/api/public/api",
+  //urlGlobal: "http://190.79.241.72:5000/api/public/api",
   routes: [
     {
       name: "login",
