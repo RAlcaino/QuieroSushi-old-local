@@ -14,6 +14,7 @@
     </q-toolbar>
     <div class="dropdown-container" v-if="locals.length > 1">
       <q-select
+        ref="select"
         rounded
         outlined
         dense
@@ -22,7 +23,7 @@
         hide-hint
         v-model="localSelected"
         @input="change"
-        @popup-hide="allData()"
+        @popup-hide="allLocals()"
         style="margin-right:46px;"
         :virtual-scroll-sticky-size-start="80"
         class="q-select-responsive"
@@ -42,7 +43,7 @@
               />
             </q-item-section>
           </q-item>
-          <q-item clickable @click="allOrders()">
+          <q-item dense clickable @click="allOrders()">
             <q-item-section>Todos</q-item-section>
           </q-item>
         </template>
@@ -100,6 +101,7 @@
           <q-tab-panel name="not-confirmed" style="padding: 0; overflow:hidden">
             <not-confirmed
               :ordersNotConfirmed="ordersNotConfirmed"
+              :refresh="refresh"
             ></not-confirmed>
           </q-tab-panel>
 
@@ -132,6 +134,8 @@ export default {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("to-one-tab", () => {
       this.tab = "not-confirmed";
+      this.refresh = true;
+      this.sync(false);
     });
   },
   mounted() {
@@ -139,19 +143,30 @@ export default {
     var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
       let row = {
         value: item.id,
-        label: item.name,
-        image: item.image
+        label: item.name + ", " + item.commune,
+        image: item.image,
+        commune: item.commune,
+        name: item.name
       };
       vue.locals.push(row);
     });
 
     this.localsFilter = this.locals;
-    this.localSelected.label = this.$store.getters["auth/getDataLocal"].name;
     this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
     this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
+    this.localSelected.commune = this.$store.getters[
+      "auth/getDataLocal"
+    ].commune;
+    this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
 
-    this.local.value = this.$store.getters["auth/getDataLocal"].id;
-    this.local.label = this.$store.getters["auth/getDataLocal"].name;
+    if (this.localSelected.value !== -1) {
+      this.localSelected.label =
+        this.localSelected.name + ", " + this.localSelected.commune;
+    } else {
+      this.localSelected.label = this.localSelected.name;
+    }
+    this.local.value = this.localSelected.value;
+    this.local.label = this.localSelected.label;
     this.sync(false);
     this.responsiveMode();
 
@@ -187,6 +202,7 @@ export default {
         value: null,
         label: ""
       },
+      refresh: false,
       localFilter: "",
       selectedLocal: "Seleccionar",
       locals: [],
@@ -2170,7 +2186,9 @@ export default {
       localSelected: {
         label: null,
         value: null,
-        image: null
+        image: null,
+        commune: null,
+        name: null
       }
     };
   },
@@ -2190,6 +2208,7 @@ export default {
             this.hideLoading();
           } else {
             this.bus.$emit("end-loader");
+            this.refresh = false;
           }
         }, 3000);
       } else {
@@ -2203,12 +2222,13 @@ export default {
             }
           })
           .then(response => {
-            if (flag) {
-              this.hideLoading();
-            } else {
-              this.bus.$emit("end-loader");
-            }
             if (response.data.status === "success") {
+              if (flag) {
+                this.hideLoading();
+              } else {
+                this.bus.$emit("end-loader");
+                this.refresh = false;
+              }
               this.data = response.data.result;
               this.originalData = this.data;
               this.filters();
@@ -2221,6 +2241,7 @@ export default {
               this.hideLoading();
             } else {
               this.bus.$emit("end-loader");
+              this.refresh = false;
             }
             this.errorHandling(error);
           });
@@ -2292,17 +2313,6 @@ export default {
         item => item.status === "not-confirmed"
       );
     },
-    findOrders(local) {
-      this.local.value = local.value;
-      this.local.label = local.label;
-      this.localFilter = "";
-      this.sync(false);
-      this.$store.commit("auth/setCurrentLocal", {
-        id: local.value,
-        name: local.label,
-        image: local.image
-      });
-    },
     filterFn(val) {
       if (val === "") {
         this.localsFilter = this.locals;
@@ -2321,32 +2331,39 @@ export default {
         this.data = this.originalData.filter(
           item => item.local.id_local === vue.local.value
         );
-        console.log(this.data);
         this.filters();
         this.$store.commit("auth/setCurrentLocal", {
           id: val.value,
-          name: val.label,
-          image: val.image
+          name: val.name,
+          image: val.image,
+          commune: val.commune
         });
       }
     },
-    allData() {
+    allLocals() {
       this.localsFilter = this.locals;
       this.localFilter = "";
     },
     allOrders() {
+      this.$refs.select.hidePopup();
       this.data = this.originalData;
       this.localSelected = {
         value: -1,
         label: "Todos",
-        image: null
+        name: "Todos",
+        image:
+          this.$store.getters["auth/getDataUser"].id === -1
+            ? "icons/favicon-128.png"
+            : this.$store.getters["auth/getDataLocals"][0].image,
+        commune: ""
       };
       this.local = this.localSelected;
       this.filters();
       this.$store.commit("auth/setCurrentLocal", {
         id: this.localSelected.value,
-        name: this.localSelected.label,
-        image: this.localSelected.image
+        name: this.localSelected.name,
+        image: this.localSelected.image,
+        commune: this.localSelected.commune
       });
     }
   }

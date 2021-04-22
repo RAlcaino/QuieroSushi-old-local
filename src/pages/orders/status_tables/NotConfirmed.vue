@@ -169,11 +169,12 @@
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersNotConfirmed.length > 4 && searching === false"
+        v-if="ordersNotConfirmed.length > 8 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top:25px"
         input
+        @input="callEvent"
       />
     </div>
   </div>
@@ -186,7 +187,7 @@ import TheConfirm from "./dialogs/TheConfirm.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
 
 export default {
-  props: ["ordersNotConfirmed"],
+  props: ["ordersNotConfirmed","refresh"],
   inject: ["formatNumber", "capitalize"],
   components: {
     BaseMoreComponent,
@@ -195,6 +196,9 @@ export default {
     TheCancel
   },
   created() {
+    this.flag = this.refresh;
+    this.searching = this.refresh;
+
     this.bus.$on("start-loader", () => {
       this.flag = true;
       this.searching = true;
@@ -212,13 +216,13 @@ export default {
       );
     },
     getMaxPages() {
-      return Math.ceil(this.ordersNotConfirmed.length / 4);
+      return Math.ceil(this.ordersNotConfirmed.length / 8);
     }
   },
   data() {
     return {
       page: 1,
-      perPage: 4,
+      perPage: 8,
       filter: "",
       flag: false,
       searching: false
@@ -237,6 +241,9 @@ export default {
     },
     cancelDialog(row) {
       this.bus.$emit("the-cancel", row);
+    },
+    callEvent(val){
+      this.bus.$emit("scroll-up");
     }
   }
 };

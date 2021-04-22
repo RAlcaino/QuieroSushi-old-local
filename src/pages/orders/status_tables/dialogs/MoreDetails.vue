@@ -86,41 +86,6 @@
                 <strong style="color: #333;">Total: </strong> <span style="color:#ff2d2d; font-weight:bold">${{ formatNumber(orderDetail.total) }}</span>
               </p>
             </div>
-            <q-list
-              v-if="orderDetail.status !== 'not-confirmed'"
-              class="list-style"
-            >
-              <q-item v-ripple style="padding: 8px 0 !important">
-                <q-item-section avatar>
-                  <q-icon color="green" name="room_service" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label
-                    style="text-align: left;color:#333; margin:0;font-weight:bold; font-size: 14px"
-                  >
-                    Pedido confirmado en
-                  </q-item-label>
-                  <q-item-label caption>
-                    Sushi White
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item v-ripple style="padding: 8px 0 !important">
-                <q-item-section avatar>
-                  <q-icon color="primary" name="room" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label
-                    style="text-align: left;color:#333; margin:0;font-weight:bold; font-size: 14px"
-                  >
-                    Despacho a
-                  </q-item-label>
-                  <q-item-label caption>
-                    Av. Cristobal Colon 5001
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
           </q-tab-panel>
         </q-tab-panels>
       </q-card-section>

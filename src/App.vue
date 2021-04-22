@@ -7,9 +7,15 @@
 <script>
 import jwt_decode from "jwt-decode";
 import SecureLS from "secure-ls";
+import $ from 'jquery';
 
 export default {
   name: "App",
+  created(){
+    this.bus.$on("scroll-up",()=>{
+      $('html, body').animate({scrollTop:0}, 'slow');
+    });
+  },
   mounted() {
     console.log("app mounted");
     this.init();

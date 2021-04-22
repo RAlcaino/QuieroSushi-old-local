@@ -12,7 +12,8 @@ const state = {
   currentLocal:{
     id:null,
     name:null,
-    image:null
+    image:null,
+    commune:null
   }
 };
 const mutations = {
@@ -26,14 +27,17 @@ const mutations = {
     state.user.locals = payload.locals;
 
     if(payload.locals.length>1){
-      state.currentLocal.id=-1,
-      state.currentLocal.name="Todos",
-      state.currentLocal.image=null
+      state.currentLocal.id=-1;
+      state.currentLocal.name="Todos";
+      if(state.user.id===-1){
+        state.currentLocal.image="icons/favicon-128.png";
+      }else{
+        state.currentLocal.image=payload.locals[0].image;
+      }
+      state.currentLocal.commune=null;
     }else{
       state.currentLocal=payload.locals[0];
     }
-    console.log()
-
     if (payload.role.name.trim() === "God") {
       state.godMode = true;
     }
@@ -58,7 +62,8 @@ const mutations = {
     this.currentLocal={
       id:null,
       name:null,
-      image:null
+      image:null,
+      commune:null
     }
   },
   setCurrentLocal(state, payload) {
@@ -80,7 +85,8 @@ const getters = {
     return {
       id: state.currentLocal.id,
       name: state.currentLocal.name,
-      image: state.currentLocal.image
+      image: state.currentLocal.image,
+      commune: state.currentLocal.commune
     };
   },
   getToken(state) {

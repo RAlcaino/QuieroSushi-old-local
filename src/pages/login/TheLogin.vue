@@ -126,7 +126,7 @@ export default {
           } else if (this.user.email === "god@god.com") {
             ls.set(
               "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHb2QiLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.Hk6oKPIksi1Mt5j7izhbRR7SOTzPOkIzU6cnuEPgK2s"
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6LTEsImVtYWlsIjoiZGFuaWVsIiwicm9sZSI6eyJpZCI6MSwibmFtZSI6IkdvZCIsImd1YXJkX25hbWUiOiJhcGkiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIiwidXBkYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiJ9LCJpYXQiOjE2MTY1MjgzODgsImV4cCI6MTYxNzEzMzE4OH0.ikYg6IeS9yOXbvZTYAFu2dqBS6zmVfFJfHWn-hgviAo"
             );
           } else {
             this.$q.loadingBar.stop();
@@ -142,27 +142,32 @@ export default {
             {
               id: 129,
               name: "Sushi Venezuela",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Los Santos"
             },
             {
               id: 130,
               name: "Sushi Chile",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Vice City"
             },
             {
               id: 131,
               name: "Sushi Colombia",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "San Andreas"
             },
             {
               id: 132,
               name: "Sushi EEUU",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Liberty City"
             },
             {
               id: 133,
               name: "Sushi UK",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg"
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "La Paz"
             }
           ];
           let data = {

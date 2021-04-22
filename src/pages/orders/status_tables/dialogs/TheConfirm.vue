@@ -237,7 +237,6 @@
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   created() {
-    console.log("confirm created");
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-confirm", data => {
       this.card = !this.card;

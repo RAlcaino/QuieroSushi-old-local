@@ -147,12 +147,13 @@
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersDone.length > 4 && searching === false"
+        v-if="ordersDone.length > 8 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top:25px"
         color="green"
         input
+        @input="callEvent"
       />
     </div>
   </div>
@@ -187,13 +188,13 @@ export default {
       );
     },
     getMaxPages() {
-      return Math.ceil(this.ordersDone.length / 4);
+      return Math.ceil(this.ordersDone.length / 8);
     }
   },
   data() {
     return {
       page: 1,
-      perPage: 4,
+      perPage: 8,
       filter: "",
       flag: false,
       searching: false
@@ -206,6 +207,9 @@ export default {
   methods: {
     moreDetails(row) {
       this.bus.$emit("more-details", row);
+    },
+    callEvent(val) {
+      this.bus.$emit("scroll-up");
     }
   }
 };

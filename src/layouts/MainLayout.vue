@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="lHh Lpr lFf" class="absolute-full">
     <modal-new-order></modal-new-order>
     <q-header class="bg-header">
       <q-toolbar>
@@ -67,16 +67,7 @@
         <div class="user-sidebar">
           <div class="user-sidebar-border">
             <q-avatar size="90px">
-              <template
-                v-if="this.$store.getters['auth/getDataUser'].role !== 'God'"
-              >
-                <img :src="this.$store.getters['auth/getDataLocal'].image" />
-              </template>
-              <template
-                v-if="this.$store.getters['auth/getDataUser'].role === 'God'"
-              >
-                <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-              </template>
+              <img :src="this.$store.getters['auth/getDataLocal'].image" />
             </q-avatar>
             <q-chip
               :color="
@@ -397,7 +388,7 @@ export default {
       this.bell.loop(false);
     });
     this.prod = this.$store.getters["mode/getMode"];
-    this.channelName = "Private-qs-venta-";
+    this.channelName = "Private-";
 
     if (this.$store.getters["auth/getGodMode"]) {
       this.channelName += "-1";
