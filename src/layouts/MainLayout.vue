@@ -21,6 +21,16 @@
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn
+            v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
+            round
+            dense
+            flat
+            color="white"
+            icon="download"
+            @click="install()"
+          >
+          </q-btn>
+          <q-btn
             round
             dense
             flat
@@ -458,6 +468,17 @@ export default {
           vue.bell.loop(true);
           vue.bell.play();
           vue.bus.$emit("new-order", data);
+        }
+      });
+    },
+    async install() {
+      var dialog = this.$store.getters["auth/getInstallPromptEvent"];
+      dialog.prompt();
+      dialog.userChoice.then(choiceResult => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the A2HS prompt");
+        } else {
+          console.log("User dismissed the A2HS prompt");
         }
       });
     }

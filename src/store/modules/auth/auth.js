@@ -14,7 +14,8 @@ const state = {
     name:null,
     image:null,
     commune:null
-  }
+  },
+  installPromptEvent:null
 };
 const mutations = {
   setAvailableMenuOptions(state, payload) {
@@ -64,10 +65,13 @@ const mutations = {
       name:null,
       image:null,
       commune:null
-    }
+    };
   },
   setCurrentLocal(state, payload) {
     state.currentLocal=payload;
+  },
+  setInstallPromptEvent(state, payload) {
+    state.installPromptEvent=payload;
   },
 };
 const actions = {};
@@ -97,7 +101,10 @@ const getters = {
   },
   getDataLocals(state) {
     return state.user.locals;
-  }
+  },
+  getInstallPromptEvent(state) {
+    return state.installPromptEvent;
+  },
 };
 
 export default {

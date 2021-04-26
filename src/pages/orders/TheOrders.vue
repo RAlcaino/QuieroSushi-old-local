@@ -136,6 +136,7 @@ export default {
       this.bus.$emit("scroll-up");
       this.tab = "not-confirmed";
       this.refresh = true;
+      this.allOrders();
       this.sync(false);
     });
   },

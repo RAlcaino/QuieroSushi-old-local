@@ -1,5 +1,5 @@
 <template>
-  <q-layout>
+  <q-layout style="position: relative; overflow:hidden">
     <q-page-container>
       <q-page class="flex bg-image flex-center">
         <q-card class="card-styles-login" style="border-radius:20px">
@@ -45,6 +45,22 @@
         </q-card>
       </q-page>
     </q-page-container>
+    <div
+      v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
+      style="position: absolute; bottom:20px;right:20px;"
+      lass="fit row no-wrap justify-end items-start content-start"
+    >
+      <q-btn
+        round
+        dense
+        flat
+        color="white"
+        icon="download"
+        style="font-size:15px; padding: 5px; margin-bottom:10px; background:#ff2d2d;"
+        @click="install()"
+      >
+      </q-btn>
+    </div>
   </q-layout>
 </template>
 
@@ -57,10 +73,10 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
   },
-  mounted(){
-    var vue=this;
-    window.addEventListener('keyup', function(event) {
-      if (event.keyCode === 13) { 
+  mounted() {
+    var vue = this;
+    window.addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
         vue.login();
       }
     });
@@ -262,6 +278,17 @@ export default {
     },
     hideLoading() {
       this.$q.loading.hide();
+    },
+    async install() {
+      var dialog = this.$store.getters["auth/getInstallPromptEvent"];
+      dialog.prompt();
+      dialog.userChoice.then(choiceResult => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the A2HS prompt");
+        } else {
+          console.log("User dismissed the A2HS prompt");
+        }
+      });
     }
   }
 };

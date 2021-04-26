@@ -7,18 +7,40 @@
 <script>
 import jwt_decode from "jwt-decode";
 import SecureLS from "secure-ls";
-import $ from 'jquery';
+import $ from "jquery";
 
 export default {
   name: "App",
-  created(){
-    this.bus.$on("scroll-up",()=>{
-      $('html, body').animate({scrollTop:0}, 'slow');
+  created() {
+    var vue = this;
+    this.bus.$on("scroll-up", () => {
+      $("html, body").animate({ scrollTop: 0 }, "slow");
+    });
+    window.addEventListener("beforeinstallprompt", event => {
+      // Prevent Chrome <= 67 from automatically showing the prompt
+      event.preventDefault();
+      // Stash the event so it can be triggered later.
+      vue.installPromptEvent = event;
+      vue.$store.commit("auth/setInstallPromptEvent", event);
+    });
+    window.addEventListener("appinstalled", () => {
+      vue.$store.commit("auth/setInstallPromptEvent", null);
+      vue.showNotification(
+        "¡El acceso directo está en su escritorio!",
+        "positive",
+        "check_circle"
+      );
+      console.log("PWA was installed");
     });
   },
   mounted() {
     console.log("app mounted");
     this.init();
+  },
+  data() {
+    return {
+      installPromptEvent: null
+    };
   },
   provide() {
     return {
@@ -27,7 +49,8 @@ export default {
       showNotification: this.showNotification,
       showLoading: this.showLoading,
       hideLoading: this.hideLoading,
-      errorHandling: this.errorHandling
+      errorHandling: this.errorHandling,
+      installPromptEvent: this.installPromptEvent
     };
   },
   methods: {
@@ -56,7 +79,7 @@ export default {
           return 0;
         });
         user.locals = data.locals;
-        user.availableMenuOptions=data.availableMenuOptions;
+        user.availableMenuOptions = data.availableMenuOptions;
         this.$store.commit("auth/setDataUserSesion", user);
       }
     },

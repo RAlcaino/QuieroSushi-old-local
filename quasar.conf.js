@@ -73,7 +73,7 @@ module.exports = function (ctx) {
     build: {
       scopeHoisting: true,
       vueRouterMode: 'history', // available values: 'hash', 'history'
-      showProgress: true,
+      showProgress: false,
       gzip: false,
       analyze: false,
       // Options below are automatically set depending on the env, set them if you want to override
@@ -114,13 +114,13 @@ module.exports = function (ctx) {
         theme_color: '#027be3',
         icons: [
           {
-            'src': 'icons/favicon-128.png',
-            'sizes': '128x128',
+            'src': 'icons/android-chrome-192x192.png',
+            'sizes': '192x192',
             'type': 'image/png'
           },
           {
-            'src': 'icons/favicon-196x196.png',
-            'sizes': '196x196',
+            'src': 'icons/android-chrome-512x512.png',
+            'sizes': '512x512',
             'type': 'image/png'
           },
         ]
