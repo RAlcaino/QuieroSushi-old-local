@@ -133,6 +133,7 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("to-one-tab", () => {
+      this.bus.$emit("scroll-up");
       this.tab = "not-confirmed";
       this.refresh = true;
       this.sync(false);
