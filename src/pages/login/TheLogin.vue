@@ -202,6 +202,7 @@ export default {
           .post(url, this.user)
           .then(response => {
             if (response.data.status === "success") {
+              console.log(response.data.result);
               ls.set("token", response.data.result.token);
               let data = {
                 locals: response.data.result.locals,

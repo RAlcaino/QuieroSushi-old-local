@@ -187,6 +187,17 @@ export default {
     TheDone
   },
   created() {
+    this.bus.$on("reset-page", () => {
+      if(this.page!==1){
+        this.flag = true;
+        this.searching = true;
+        setTimeout(() => {
+          this.flag = false;
+          this.searching = false;
+        },500);
+      }
+      this.page = 1;
+    });
     this.bus.$on("start-loader", () => {
       this.flag = true;
       this.searching = true;

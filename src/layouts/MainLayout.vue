@@ -398,7 +398,7 @@ export default {
       this.bell.loop(false);
     });
     this.prod = this.$store.getters["mode/getMode"];
-    this.channelName = "Private-";
+    this.channelName = "Private-qs-venta-";
 
     if (this.$store.getters["auth/getGodMode"]) {
       this.channelName += "-1";

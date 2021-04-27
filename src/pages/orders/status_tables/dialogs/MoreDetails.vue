@@ -10,7 +10,8 @@
           <q-tab
             name="one"
           >
-            <strong >N° Pedido: {{ orderDetail.id }}</strong>
+            <strong v-if="$store.getters['auth/getDataUser'].role === 'God'">N° Pedido: {{ orderDetail.id }}</strong>
+            <strong v-else>Detalle</strong>
           </q-tab>
         </q-tabs>
 

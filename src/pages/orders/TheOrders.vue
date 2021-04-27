@@ -12,62 +12,70 @@
         @click="sync(false)"
       />
     </q-toolbar>
-    <div class="dropdown-container" v-if="locals.length > 1">
-      <q-select
-        ref="select"
-        rounded
-        outlined
-        dense
-        :options="localsFilter"
-        :options-dense="true"
-        hide-hint
-        v-model="localSelected"
-        @input="change"
-        @popup-hide="allLocals()"
-        style="margin-right:46px;"
-        :virtual-scroll-sticky-size-start="80"
-        class="q-select-responsive"
-      >
-        <template v-slot:prepend>
-          <q-icon name="store" />
-        </template>
-        <template v-slot:before-options>
-          <q-item>
-            <q-item-section class="text-grey">
-              <input
-                v-model="localFilter"
-                @input="filterFn(localFilter)"
-                type="text"
-                placeholder="Buscar"
-                style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
-              />
-            </q-item-section>
-          </q-item>
-          <q-item dense clickable @click="allOrders()">
-            <q-item-section>Todos</q-item-section>
-          </q-item>
-        </template>
-        <template v-slot:no-option>
-          <q-item>
-            <q-item-section class="text-grey">
-              <input
-                v-model="localFilter"
-                @input="filterFn(localFilter)"
-                type="text"
-                placeholder="Buscar"
-                style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
-              />
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section class="text-grey">
-              Sin Resultados
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
-    </div>
 
+    <div
+      class="fit row wrap justify-between items-center content-center mobile-styles-o"
+      style="margin: 20px 0"
+    >
+      <div class="input-style-o">
+        <q-input dense rounded outlined label="Buscar" v-model="search" @focus="resetPage()" />
+      </div>
+      <div v-if="locals.length > 1">
+        <q-select
+          ref="select"
+          rounded
+          outlined
+          dense
+          :options="localsFilter"
+          :options-dense="true"
+          hide-hint
+          v-model="localSelected"
+          @input="change"
+          @popup-hide="allLocals()"
+          style="margin-right:46px;"
+          :virtual-scroll-sticky-size-start="80"
+          class="q-select-responsive"
+        >
+          <template v-slot:prepend>
+            <q-icon name="store" />
+          </template>
+          <template v-slot:before-options>
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item dense clickable @click="allOrders()">
+              <q-item-section>Todos</q-item-section>
+            </q-item>
+          </template>
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-grey">
+                Sin Resultados
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+      </div>
+    </div>
     <div class="orders-tab" style="margin-top:20px">
       <q-card style="width: 90%;height: 0;">
         <q-tabs
@@ -100,17 +108,19 @@
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="not-confirmed" style="padding: 0; overflow:hidden">
             <not-confirmed
-              :ordersNotConfirmed="ordersNotConfirmed"
+              :ordersNotConfirmed="getOrdersNotConfirmed"
               :refresh="refresh"
             ></not-confirmed>
           </q-tab-panel>
 
           <q-tab-panel name="confirmed" style="padding: 0; overflow:hidden">
-            <the-confirmed :ordersConfirmed="ordersConfirmed"></the-confirmed>
+            <the-confirmed
+              :ordersConfirmed="getOrdersConfirmed"
+            ></the-confirmed>
           </q-tab-panel>
 
           <q-tab-panel name="done" style="padding: 0; overflow:hidden">
-            <the-done :ordersDone="ordersDone"></the-done>
+            <the-done :ordersDone="getOrdersDone"></the-done>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -136,6 +146,7 @@ export default {
       this.bus.$emit("scroll-up");
       this.tab = "not-confirmed";
       this.refresh = true;
+      this.search="";
       this.allOrders();
       this.sync(false);
     });
@@ -177,6 +188,42 @@ export default {
     });
   },
   computed: {
+    getOrdersConfirmed() {
+      var vue=this;
+      if (this.search !== "") {
+        return this.ordersConfirmed.filter(function(item){
+          if(vue.conditionsToFilter(item,vue.search)){
+            return true;
+          }
+        });
+      } else {
+        return this.ordersConfirmedOriginal;
+      }
+    },
+    getOrdersNotConfirmed() {
+      var vue=this;
+      if (this.search !== "") {
+        return this.ordersNotConfirmed.filter(function(item){
+          if(vue.conditionsToFilter(item,vue.search)){
+            return true;
+          }
+        });
+      } else {
+        return this.ordersNotConfirmed;
+      }
+    },
+    getOrdersDone() {
+      var vue=this;
+      if (this.search !== "") {
+        return this.ordersDone.filter(function(item){
+          if(vue.conditionsToFilter(item,vue.search)){
+            return true;
+          }
+        });
+      } else {
+        return this.ordersDoneOriginal;
+      }
+    },
     FontSize() {
       if (this.responsiveMobile) {
         return { fontSize: "15px" };
@@ -214,6 +261,10 @@ export default {
       ordersDone: [],
       ordersConfirmed: [],
       ordersNotConfirmed: [],
+      ordersDoneOriginal: [],
+      ordersConfirmedOriginal: [],
+      ordersNotConfirmedOriginal: [],
+      search: "",
       response: [
         {
           id: 63250,
@@ -2314,6 +2365,10 @@ export default {
       this.ordersNotConfirmed = this.data.filter(
         item => item.status === "not-confirmed"
       );
+
+      this.ordersDoneOriginal = this.ordersDone;
+      this.ordersConfirmedOriginal = this.ordersConfirmed;
+      this.ordersNotConfirmedOriginal = this.ordersNotConfirmed;
     },
     filterFn(val) {
       if (val === "") {
@@ -2347,7 +2402,9 @@ export default {
       this.localFilter = "";
     },
     allOrders() {
-      this.$refs.select.hidePopup();
+      if(this.$refs.select!==undefined){
+        this.$refs.select.hidePopup();
+      }
       this.data = this.originalData;
       this.localSelected = {
         value: -1,
@@ -2367,6 +2424,20 @@ export default {
         image: this.localSelected.image,
         commune: this.localSelected.commune
       });
+    },
+    conditionsToFilter(item,value){
+          if(item.id.toString().toLowerCase().indexOf(value) > -1 ||
+             item.payDetail.user.toString().toLowerCase().indexOf(value) > -1 ||
+             item.payDetail.userPhone.toString().toLowerCase().indexOf(value) > -1 ||
+             item.payDetail.pay.toString().toLowerCase().indexOf(value) > -1 ||
+             item.payDetail.address.toString().toLowerCase().indexOf(value) > -1 ||
+             item.local.name.toString().toLowerCase().indexOf(value) > -1 ||
+             item.local.commune.toString().toLowerCase().indexOf(value) > -1 ){
+            return true;
+          }
+    },
+    resetPage(){
+      this.bus.$emit("reset-page");
     }
   }
 };
@@ -2396,6 +2467,11 @@ export default {
 .dropdown-locals {
   padding: 0px 46px 0px 16px;
 }
+
+.input-style-o {
+  margin-left: 50px;
+  margin-top: 5px;
+}
 @media screen and (max-width: 900px) {
   .dropdown-container {
     padding-top: 3%;
@@ -2411,6 +2487,15 @@ export default {
   .q-select-responsive {
     margin-left: 60px;
     margin-top: 10px;
+  }
+}
+@media screen and (max-width: 450px) {
+  .input-style-o {
+    margin-top: 0px !important;
+    margin-left: 5px !important;
+  }
+  .mobile-styles-o {
+    justify-content: center !important;
   }
 }
 </style>

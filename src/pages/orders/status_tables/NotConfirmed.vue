@@ -83,14 +83,14 @@
                     name="store"
                     style="font-size:20px; padding-bottom:5px"
                     class="i-icon"
-                  />{{item.local.name}}
+                  />{{ item.local.name }}
                 </div>
                 <div>
                   <q-icon
                     name="room"
                     style="font-size:20px; padding-bottom:5px;"
                     class="i-icon"
-                  />{{item.local.commune}}
+                  />{{ item.local.commune }}
                 </div>
               </div>
             </div>
@@ -187,7 +187,7 @@ import TheConfirm from "./dialogs/TheConfirm.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
 
 export default {
-  props: ["ordersNotConfirmed","refresh"],
+  props: ["ordersNotConfirmed", "refresh"],
   inject: ["formatNumber", "capitalize"],
   components: {
     BaseMoreComponent,
@@ -198,7 +198,17 @@ export default {
   created() {
     this.flag = this.refresh;
     this.searching = this.refresh;
-
+    this.bus.$on("reset-page", () => {
+      if(this.page!==1){
+        this.flag = true;
+        this.searching = true;
+        setTimeout(() => {
+          this.flag = false;
+          this.searching = false;
+        },500);
+      }
+      this.page = 1;
+    });
     this.bus.$on("start-loader", () => {
       this.flag = true;
       this.searching = true;
@@ -242,7 +252,7 @@ export default {
     cancelDialog(row) {
       this.bus.$emit("the-cancel", row);
     },
-    callEvent(val){
+    callEvent(val) {
       this.bus.$emit("scroll-up");
     }
   }
