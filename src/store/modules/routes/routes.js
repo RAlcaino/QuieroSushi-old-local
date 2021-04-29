@@ -35,6 +35,10 @@ const state = {
       name: "services.prices",
       link: "/servicios/prices"
     },
+    {
+      name: "locals.update",
+      link: "/locales/update/{localId}"
+    },
   ]
 };
 const mutations = {};

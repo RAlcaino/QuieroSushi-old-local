@@ -1,6 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="absolute-full">
     <modal-new-order></modal-new-order>
+    <modal-setting></modal-setting>
     <q-header class="bg-header">
       <q-toolbar>
         <q-btn
@@ -28,6 +29,15 @@
             color="white"
             icon="download"
             @click="install()"
+          >
+          </q-btn>
+          <q-btn
+            round
+            dense
+            flat
+            color="white"
+            icon="settings"
+            @click="openSettings()"
           >
           </q-btn>
           <q-btn
@@ -383,6 +393,7 @@
 import EssentialLink from "components/EssentialLink";
 import Messages from "./Messages";
 import ModalNewOrder from "../components/modals/ModalNewOrder.vue";
+import ModalSetting from "../components/modals/ModalSetting.vue";
 
 export default {
   name: "MainLayout",
@@ -390,7 +401,8 @@ export default {
   components: {
     Messages,
     EssentialLink,
-    ModalNewOrder
+    ModalNewOrder,
+    ModalSetting
   },
   created() {
     this.bus.$on("stop-bell", () => {
@@ -481,6 +493,9 @@ export default {
           console.log("User dismissed the A2HS prompt");
         }
       });
+    },
+    openSettings(){
+      this.bus.$emit('open-settings');
     }
   }
 };
