@@ -159,31 +159,46 @@ export default {
               id: 129,
               name: "Sushi Venezuela",
               image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "Los Santos"
+              commune: "Los Santos",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
             },
             {
               id: 130,
               name: "Sushi Chile",
               image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "Vice City"
+              commune: "Vice City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
             },
             {
               id: 131,
               name: "Sushi Colombia",
               image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "San Andreas"
+              commune: "San Andreas",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
             },
             {
               id: 132,
               name: "Sushi EEUU",
               image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "Liberty City"
+              commune: "Liberty City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
             },
             {
               id: 133,
               name: "Sushi UK",
               image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "La Paz"
+              commune: "La Paz",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
             }
           ];
           let data = {

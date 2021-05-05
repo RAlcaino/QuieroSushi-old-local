@@ -365,8 +365,28 @@
         </q-btn>
       </div>
     </q-drawer>
-
     <q-page-container class="bg-white">
+      <q-banner v-if="flag===null" dense inline-actions class="text-white bg-deep-orange">
+        El carrito de algunos locales estan <strong>encendidos</strong> y otros <strong>apagados</strong>
+        <template v-slot:action>
+          <q-btn flat color="white" @click="change(-1,1)" :label="'apagar restantes'" />
+          <q-btn flat color="white" @click="change(-1,0)" :label="'encender restantes'" />
+        </template>
+      </q-banner>
+      <q-banner v-if="flag===1 " else dense inline-actions class="text-white bg-green">
+        El carrito de todos los locales estan <strong>encendidos</strong
+        >
+        <template v-slot:action>
+          <q-btn flat color="white" @click="change(-1,1)" :label="'apagar todos'" />
+        </template>
+      </q-banner>
+      <q-banner v-if="flag===0 " else dense inline-actions class="text-white bg-primary">
+        El carrito de todos los locales estan <strong>apagados</strong
+        >
+        <template v-slot:action>
+          <q-btn flat color="white" @click="change(-1,0)" :label="'encender todos'" />
+        </template>
+      </q-banner>
       <router-view />
     </q-page-container>
 
@@ -396,6 +416,7 @@ import ModalNewOrder from "../components/modals/ModalNewOrder.vue";
 import ModalSetting from "../components/modals/ModalSetting.vue";
 
 export default {
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   name: "MainLayout",
 
   components: {
@@ -405,6 +426,10 @@ export default {
     ModalSetting
   },
   created() {
+    this.flag=this.$store.getters["auth/getCartsStatus"];
+    this.bus.$on("refresh-cartstatus", () => {
+      this.flag=this.$store.getters["auth/getCartsStatus"];
+    });
     this.bus.$on("stop-bell", () => {
       this.modalOpen = false;
       this.bell.loop(false);
@@ -444,7 +469,8 @@ export default {
       prod: null,
       privateChannel: null,
       channelName: "",
-      modalOpen: false
+      modalOpen: false,
+      flag:1
     };
   },
   methods: {
@@ -494,9 +520,148 @@ export default {
         }
       });
     },
-    openSettings(){
-      this.bus.$emit('open-settings');
-    }
+    openSettings() {
+      this.bus.$emit("open-settings");
+    },
+    change(flag, currentStatus) {
+      var newStatus=null;
+      if(currentStatus===1){
+        newStatus=0;
+      }else{
+        newStatus=1;
+      }
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+          this.getLocals();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("locals.update", {
+          localId: flag
+        });
+        console.log(url);
+        this.$axios
+          .put(
+            url,
+            {
+              status:newStatus
+            },
+            {
+              headers: {
+                Authorization: this.$store.getters["auth/getToken"]
+              }
+            }
+          )
+          .then(response => {
+            if (response.data.status === "success") {
+              console.log(response.data);
+              this.getLocals();
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.localsFilter = this.locals;
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    },
+    getLocals(){
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+          let locals = [
+            {
+              id: 129,
+              name: "Sushi Venezuela",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Los Santos",
+              cartStatus: 1,
+              deliveryTime: 27,
+              preparationTime: 27
+            },
+            {
+              id: 130,
+              name: "Sushi Chile",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Vice City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            },
+            {
+              id: 131,
+              name: "Sushi Colombia",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "San Andreas",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            },
+            {
+              id: 132,
+              name: "Sushi EEUU",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Liberty City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            },
+            {
+              id: 133,
+              name: "Sushi UK",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "La Paz",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            }
+          ];
+            this.$store.commit("auth/setLocals", locals);
+            this.flag=this.$store.getters["auth/getCartsStatus"];
+            this.bus.$emit("sync-locals-settings");
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("locals.get");
+        this.$axios
+          .get(
+            url,
+            {
+              headers: {
+                Authorization: this.$store.getters["auth/getToken"]
+              }
+            }
+          )
+          .then(response => {
+            var vue=this;
+            this.hideLoading();
+            if (response.data.status === "success") {
+              var locals=response.data.result.sort(function(a, b) {
+                if (a.name > b.name) {
+                  return 1;
+                }
+                if (a.name < b.name) {
+                  return -1;
+                }
+                // a must be equal to b
+                return 0;
+              });
+              this.$store.commit("auth/setLocals", locals);
+              this.bus.$emit("sync-locals-settings");
+              this.flag=this.$store.getters["auth/getCartsStatus"];
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.localsFilter = this.locals;
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    },
   }
 };
 </script>

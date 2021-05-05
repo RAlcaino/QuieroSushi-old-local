@@ -152,34 +152,9 @@ export default {
     });
   },
   mounted() {
-    var vue = this;
-    var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-      let row = {
-        value: item.id,
-        label: item.name + ", " + item.commune,
-        image: item.image,
-        commune: item.commune,
-        name: item.name
-      };
-      vue.locals.push(row);
-    });
-
+    this.initLocals();
     this.localsFilter = this.locals;
-    this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-    this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
-    this.localSelected.commune = this.$store.getters[
-      "auth/getDataLocal"
-    ].commune;
-    this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
 
-    if (this.localSelected.value !== -1) {
-      this.localSelected.label =
-        this.localSelected.name + ", " + this.localSelected.commune;
-    } else {
-      this.localSelected.label = this.localSelected.name;
-    }
-    this.local.value = this.localSelected.value;
-    this.local.label = this.localSelected.label;
     this.sync(false);
     this.responsiveMode();
 
@@ -2241,7 +2216,8 @@ export default {
         value: null,
         image: null,
         commune: null,
-        name: null
+        name: null,
+        cartStatus:null
       }
     };
   },
@@ -2393,7 +2369,8 @@ export default {
           id: val.value,
           name: val.name,
           image: val.image,
-          commune: val.commune
+          commune: val.commune,
+          cartStatus:val.cartStatus
         });
       }
     },
@@ -2414,7 +2391,8 @@ export default {
           this.$store.getters["auth/getDataUser"].id === -1
             ? "icons/favicon-128.png"
             : this.$store.getters["auth/getDataLocals"][0].image,
-        commune: ""
+        commune: null,
+        cartStatus:null
       };
       this.local = this.localSelected;
       this.filters();
@@ -2422,7 +2400,8 @@ export default {
         id: this.localSelected.value,
         name: this.localSelected.name,
         image: this.localSelected.image,
-        commune: this.localSelected.commune
+        commune: this.localSelected.commune,
+        cartStatus:this.localSelected.cartStatus
       });
     },
     conditionsToFilter(item,value){
@@ -2438,6 +2417,47 @@ export default {
     },
     resetPage(){
       this.bus.$emit("reset-page");
+    },
+    initLocals(){
+      var vue = this;
+      vue.locals=[];
+      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+        let row = {
+          value: item.id,
+          label: item.name + ", " + item.commune,
+          image: item.image,
+          commune: item.commune,
+          name: item.name,
+          cartStatus:item.cartStatus
+        };
+          vue.locals.push(row);
+          vue.locals.sort(function(a, b) {
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+      });
+        this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+        this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
+        this.localSelected.commune = this.$store.getters[
+          "auth/getDataLocal"
+        ].commune;
+        this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
+        this.localSelected.cartStatus = this.$store.getters["auth/getDataLocal"].cartStatus;
+
+        if (this.localSelected.value !== -1) {
+          this.localSelected.label =
+            this.localSelected.name + ", " + this.localSelected.commune;
+        } else {
+          this.localSelected.label = this.localSelected.name;
+        }
+        this.local.value = this.localSelected.value;
+        this.local.label = this.localSelected.label;
     }
   }
 };

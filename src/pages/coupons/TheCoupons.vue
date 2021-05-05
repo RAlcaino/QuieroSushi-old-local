@@ -265,42 +265,9 @@ export default {
     this.prod = this.$store.getters["mode/getMode"];
   },
   mounted() {
-    var vue = this;
-    var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-      let row = {
-        value: item.id,
-        label: item.name + ', ' +item.commune,
-        image: item.image,
-        commune: item.commune,
-        name: item.name
-      };
-      vue.locals.push(row);
-    });
-
+    this.initLocals();
     this.localsFilter = this.locals;
-    if (this.$store.getters["auth/getDataLocal"].id == -1) {
-      this.localSelected.value = this.$store.getters["auth/getDataLocals"][0].id;
-      this.localSelected.image = this.$store.getters["auth/getDataLocals"][0].image;
-      this.localSelected.commune = this.$store.getters["auth/getDataLocals"][0].commune;
-      this.localSelected.name = this.$store.getters["auth/getDataLocals"][0].name;
-      this.localSelected.label = this.localSelected.name
-                              + ', ' 
-                              +this.localSelected.commune;
 
-      this.local.value = this.localSelected.value;
-      this.local.label = this.localSelected.label;
-    } else {
-      this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-      this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
-      this.localSelected.commune = this.$store.getters["auth/getDataLocal"].commune;
-      this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
-      this.localSelected.label = this.localSelected.name
-                              + ', ' 
-                              +this.localSelected.commune;
-
-      this.local.value = this.localSelected.value;
-      this.local.label = this.localSelected.label;
-    }
     this.sync(false);
     this.responsiveMode();
 
@@ -440,7 +407,8 @@ export default {
         value: null,
         image: null,
         commune:null,
-        name:null
+        name:null,
+        cartStatus:null
       }
     };
   },
@@ -590,13 +558,73 @@ export default {
           id: val.value,
           name: val.name,
           image: val.image,
-          commune: val.commune
+          commune: val.commune,
+          cartStatus:val.cartStatus
         });
       }
     },
     allLocals() {
       this.localsFilter = this.locals;
       this.localFilter = "";
+    },
+    initLocals(){
+      var vue = this;
+      vue.locals=[];
+      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+        let row = {
+          value: item.id,
+          label: item.name + ", " + item.commune,
+          image: item.image,
+          commune: item.commune,
+          name: item.name,
+          cartStatus:item.cartStatus
+        };
+          vue.locals.push(row);
+          vue.locals.sort(function(a, b) {
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+      });
+
+      if (this.$store.getters["auth/getDataLocal"].id == -1) {
+      this.localSelected.value = this.$store.getters["auth/getDataLocals"][0].id;
+      this.localSelected.image = this.$store.getters["auth/getDataLocals"][0].image;
+      this.localSelected.commune = this.$store.getters["auth/getDataLocals"][0].commune;
+      this.localSelected.name = this.$store.getters["auth/getDataLocals"][0].name;
+      this.localSelected.label = this.localSelected.name
+                              + ', ' 
+                              +this.localSelected.commune;
+      this.localSelected.cartStatus = this.$store.getters["auth/getDataLocals"][0].cartStatus;
+
+      this.local.value = this.localSelected.value;
+      this.local.label = this.localSelected.label;
+        this.$store.commit("auth/setCurrentLocal", {
+        id: this.localSelected.value,
+        name: this.localSelected.name,
+        image: this.localSelected.image,
+        commune: this.localSelected.commune,
+        cartStatus:this.localSelected.cartStatus
+      });
+    } else {
+      this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+      this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
+      this.localSelected.commune = this.$store.getters["auth/getDataLocal"].commune;
+      this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
+      this.localSelected.label = this.localSelected.name
+                              + ', ' 
+                              +this.localSelected.commune;
+                      
+      this.localSelected.cartStatus = this.$store.getters["auth/getDataLocal"].cartStatus;
+      this.local.value = this.localSelected.value;
+      this.local.label = this.localSelected.label;
+    }
+
     }
   }
 };

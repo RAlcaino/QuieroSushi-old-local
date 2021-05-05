@@ -278,6 +278,32 @@ export default {
       this.qtyStandOut = [0, 0, 0];
     },
     buy() {
+      var vue=this;
+      var itemsToBuy=[];
+      var each = this.pricesGoUp.map(function(item, index) {
+        if(vue.qtyGoUp[index]!==0){
+          let service= {
+            name: 'Paquete de '+item.qty + ' subir',
+            price:item.price,
+            qty: +vue.qtyGoUp[index]
+          }
+          itemsToBuy.push(service);
+        }
+      });
+      var each = this.pricesStandOut.map(function(item, index) {
+        if(vue.qtyStandOut[index]!==0){
+          let service= {
+            name: 'Paquete de '+item.qty + ' destacados',
+            price:item.price,
+            qty:+vue.qtyStandOut[index]
+          }
+          itemsToBuy.push(service);
+        }
+      });
+      this.$router.push({ name: "checkout", params:{
+        data: itemsToBuy,
+        total: vue.getTotal
+      } });
       this.resetTotal();
     },
     responsiveMode() {

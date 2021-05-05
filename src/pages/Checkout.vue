@@ -1,195 +1,61 @@
 <template>
-  <q-page class="q-pa-sm bg-white">
-    <div class="row q-col-gutter-sm">
-      <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
-        <q-stepper
-          v-model="step"
-          header-nav
-          ref="stepper"
-          color="primary"
-          animated
-        >
-          <q-step
-            :name="1"
-            title="Shipping address"
-            icon="shopping_cart"
-            :done="step > 1"
-            :header-nav="step > 1"
-          >
-            <div class="row">
-              <div class="col-6">
-                <q-item>
-                  <q-input dense outlined class="full-width" v-model="address_detail.first_name" label="First Name *"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-input dense outlined class="full-width" v-model="address_detail.last_name" label="Last Name *"/>
-                </q-item>
-              </div>
-              <div class="col-12">
-                <q-item>
-                  <q-input dense autogrow outlined v-model="address_detail.address_line_1" class="full-width"
-                           label="Address line 1 *"/>
-                </q-item>
-              </div>
-              <div class="col-12">
-                <q-item>
-                  <q-input dense autogrow outlined v-model="address_detail.address_line_2" class="full-width"
-                           label="Address line 2 *"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-input dense outlined class="full-width" v-model="address_detail.city" label="City *"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-input dense outlined class="full-width" v-model="address_detail.state" label="State"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-input dense outlined class="full-width" v-model="address_detail.zip_code" label="Zip Code"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-input dense outlined class="full-width" v-model="address_detail.country" label="Country *"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-checkbox dense outlined class="full-width" v-model="address_detail.checkbox"
-                              label="Use this address for payment details"/>
-                </q-item>
-              </div>
+  <q-page class="q-pa-sm bg-white" style="´padding: 30px">
+    <div
+      v-if="data !== undefined"
+      class="row q-col-gutter-sm"
+      style="justify-content:center; align-item:center;"
+    >
+      <q-card
+        class="rounded-borders"
+        style=" border-radius:15px; padding: 10px; width: 500px; margin-top:80px;"
+      >
+        <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+          <div class="row">
+            <div class="col-12">
+              <q-item-label header style="text-align:center" class="text-h6"
+                >Resumen</q-item-label
+              >
+              <q-item
+                v-for="service of data"
+                :key="service.name"
+                class="full-width"
+              >
+                <q-item-section>
+                  <q-item-label lines="1">{{ service.name }}</q-item-label>
+                  <q-item-label caption
+                    >Cantidad: {{ service.qty }}</q-item-label
+                  >
+                </q-item-section>
+                <q-item-section side>
+                  $ {{ formatNumber(service.price) }}
+                </q-item-section>
+                <q-separator></q-separator>
+              </q-item>
+
+              <q-item class="full-width" style="border-top: 3px dotted #ff2d2d">
+                <q-item-section>
+                  <q-item-label lines="1">Total</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  $ {{ formatNumber(total) }}
+                </q-item-section>
+              </q-item>
             </div>
-
-            <q-stepper-navigation>
-              <q-btn rounded @click="() => { done1 = true; step = 2 }" class="float-right q-mr-md q-mb-md" color="blue"
-                     label="Next"/>
-            </q-stepper-navigation>
-          </q-step>
-
-          <q-step
-            :name="2"
-            title="Payment details"
-            icon="shopping_cart"
-            :done="step > 2"
-            :header-nav="step > 2"
+          </div>
+        </div>
+        <q-card-actions align="center">
+          <q-btn
+            @click="pay()"
+            size="sm"
+            style="font-size:12px;padding: 0px 15px !important; margin-bottom:20px"
+            rounded
+            color="green"
           >
-
-            <div class="row">
-              <div class="col-6">
-                <q-item>
-                  <q-input dense outlined class="full-width" v-model="card_detail.name" label="Name on Card*"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-input dense outlined class="full-width" v-model="address_detail.card_number"
-                           label="Card Number *"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-input dense autogrow outlined v-model="address_detail.expiry_date" class="full-width"
-                           label="Expiry Date *"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-input dense autogrow outlined v-model="address_detail.cvv" class="full-width" label="CVV *"/>
-                </q-item>
-              </div>
-              <div class="col-6">
-                <q-item>
-                  <q-checkbox dense outlined class="full-width" v-model="address_detail.checkbox"
-                              label="Remember credit card details for next time"/>
-                </q-item>
-              </div>
-            </div>
-
-            <q-stepper-navigation>
-              <q-btn rounded @click="() => { done2 = true; step = 3 }" class="float-right q-mr-md q-mb-md" color="blue"
-                     label="Next"/>
-              <q-btn flat @click="step = 1" color="primary" flat rounded label="Back" class="q-mr-sm float-right"/>
-            </q-stepper-navigation>
-          </q-step>
-
-          <q-step
-            :name="3"
-            title="Review your order"
-            icon="shopping_cart"
-            :header-nav="step > 3"
+            Pagar</q-btn
           >
-            <div class="row">
-              <div class="col-12">
-                <q-item-label header class="text-h6">Order summary</q-item-label>
-                <q-item class="full-width">
-                  <q-item-section>
-                    <q-item-label lines="1">Product 1</q-item-label>
-                    <q-item-label caption>Caption</q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    $10.99
-                  </q-item-section>
-                </q-item>
-                <q-separator></q-separator>
-                <q-item class="full-width">
-                  <q-item-section>
-                    <q-item-label lines="1">Product 2</q-item-label>
-                    <q-item-label caption>Caption Product 2</q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    $19.99
-                  </q-item-section>
-                </q-item>
-                <q-separator></q-separator>
-                <q-item class="full-width">
-                  <q-item-section>
-                    <q-item-label lines="1">Product 3</q-item-label>
-                    <q-item-label caption>Caption Product 3</q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    $78.99
-                  </q-item-section>
-                </q-item>
-                <q-separator></q-separator>
-                <q-item class="full-width">
-                  <q-item-section>
-                    <q-item-label lines="1">Product 4</q-item-label>
-                    <q-item-label caption>Caption Product 4</q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    $178.99
-                  </q-item-section>
-                </q-item>
-                <q-separator></q-separator>
-
-                <q-item class="full-width">
-                  <q-item-section>
-                    <q-item-label lines="1">Shipping</q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    Free
-                  </q-item-section>
-                </q-item>
-                <q-separator></q-separator>
-                <q-item class="full-width" style="border-top: 3px dotted blue">
-                  <q-item-section>
-                    <q-item-label lines="1">Total</q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    $288.96
-                  </q-item-section>
-                </q-item>
-              </div>
-            </div>
-
-            <q-card class="rounded-borders">
+        </q-card-actions>
+      </q-card>
+      <!--<q-card class="rounded-borders">
               <q-card-section horizontal>
                 <q-card-section class="col-5 q-pt-xs">
                   <div class="text-h6 text-center">Shipping</div>
@@ -208,103 +74,72 @@
 
 
               </q-card-section>
-            </q-card>
-
-            <q-stepper-navigation>
-
-              <q-btn rounded @click="done3 = true" class="float-right q-mr-md q-mb-md" color="blue"
-                     label="Place Order"/>
-              <q-btn flat @click="step = 2" color="primary" flat rounded label="Back" class="q-mr-sm float-right"/>
-            </q-stepper-navigation>
-          </q-step>
-        </q-stepper>
-      </div>
-      <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-        <q-card class="bg-grey-2">
-          <q-card-section class="text-center text-h6 text-black ">
-            <q-icon name="shopping_cart" class="q-mr-sm"/>
-            Order Summary
-          </q-card-section>
-          <q-card-section horizontal>
-            <q-card-section class="col-5 flex flex-center">
-              <q-img height="80px"
-                     class="rounded-borders"
-                     src="https://cdn.quasar.dev/img/parallax2.jpg"
-              />
-            </q-card-section>
-            <q-card-section class="">
-              <div class="text-subtitle2 q-mt-sm">Product 1</div>
-              <div class="text-subtitle2  q-mb-xs">$10.99</div>
-            </q-card-section>
-          </q-card-section>
-          <q-separator/>
-          <q-card-section horizontal class="q-pa-none">
-            <q-card-section class="col-5 flex flex-center">
-              <q-img height="80px"
-                     class="rounded-borders"
-                     src="https://cdn.quasar.dev/img/parallax2.jpg"
-              />
-            </q-card-section>
-            <q-card-section class="">
-              <div class="text-subtitle2 q-mt-md">Product 2</div>
-              <div class="text-subtitle2  q-mb-xs">$19.99</div>
-            </q-card-section>
-          </q-card-section><q-separator/>
-          <q-card-section horizontal class="q-pa-none">
-            <q-card-section class="col-5 flex flex-center">
-              <q-img height="80px"
-                     class="rounded-borders"
-                     src="https://cdn.quasar.dev/img/parallax2.jpg"
-              />
-            </q-card-section>
-            <q-card-section class="">
-              <div class="text-subtitle2 q-mt-md">Product 3</div>
-              <div class="text-subtitle2 q-mb-xs">$78.99</div>
-            </q-card-section>
-          </q-card-section><q-separator/>
-          <q-card-section horizontal class="q-pa-none">
-            <q-card-section class="col-5 flex flex-center">
-              <q-img height="80px"
-                     class="rounded-borders"
-                     src="https://cdn.quasar.dev/img/parallax2.jpg"
-              />
-            </q-card-section>
-            <q-card-section class="">
-              <div class="text-subtitle2 q-mt-md">Product 4
-              </div>
-              <div class="text-subtitle2 q-mb-xs">$178.99
-              </div>
-            </q-card-section>
-          </q-card-section>
-
-          <q-separator></q-separator>
-          <q-card-section class="row">
-            <div class="  col-12 text-h6 full-width">
-              <div class="float-right q-mr-md">
-                Total : <span class="text-blue">$288.96</span></div>
-            </div>
-          </q-card-section>
-
-        </q-card>
-      </div>
+            </q-card>-->
     </div>
-
   </q-page>
 </template>
 
 <script>
-    export default {
-        name: "Checkout",
-        data() {
-            return {
-                step: 1,
-                address_detail: {},
-                card_detail: {}
-            }
-        }
+export default {
+  name: "Checkout",
+  props: ["data", "total"],
+  inject: ["formatNumber", "showLoading", "hideLoading", "errorHandling"],
+  created() {
+    this.prod = this.$store.getters["mode/getMode"];
+    var vue = this;
+    if (this.data === undefined) {
+      vue.$router.push({ path: "/cupones" });
     }
+    console.log(this.data);
+    console.log(this.total);
+  },
+  data() {
+    return {
+      step: 1,
+      address_detail: {},
+      card_detail: {},
+      prod:null
+    };
+  },
+  methods: {
+    pay() {
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+          window.open("https://www.google.com");
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("get.url.pay");
+        this.$axios
+          .post(
+            url,
+            {
+              amount: this.total,
+              commerceOrder: Math.round(Math.random() * (99999999999999 - 1) + 1)
+            },
+            {
+              headers: {
+                Authorization: this.$store.getters["auth/getToken"]
+              }
+            }
+          )
+          .then(response => {
+            if (response.data.status === "success") {
+              this.hideLoading();
+              window.open(response.data.result);
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    }
+  }
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

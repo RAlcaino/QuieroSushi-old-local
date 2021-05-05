@@ -100,7 +100,7 @@
                 {{ item.payDetail.userPhone }}
               </p>
               <p style="margin:0;font-family:'Roboto'">
-                {{ item.payDetail.address }}
+                {{ item.payDetail.address }}, {{ item.payDetail.userCommune }}
               </p>
             </div>
             <div class="user-payDetail">

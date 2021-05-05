@@ -13,7 +13,8 @@ const state = {
     id:null,
     name:null,
     image:null,
-    commune:null
+    commune:null,
+    cartStatus:null
   },
   installPromptEvent:null
 };
@@ -64,7 +65,8 @@ const mutations = {
       id:null,
       name:null,
       image:null,
-      commune:null
+      commune:null,
+      cartStatus:null
     };
   },
   setCurrentLocal(state, payload) {
@@ -72,6 +74,9 @@ const mutations = {
   },
   setInstallPromptEvent(state, payload) {
     state.installPromptEvent=payload;
+  },
+  setLocals(state, payload) {
+    state.user.locals=payload;
   },
 };
 const actions = {};
@@ -86,11 +91,13 @@ const getters = {
     return state.authenticated;
   },
   getDataLocal(state) {
+    console.log(state.currentLocal);
     return {
       id: state.currentLocal.id,
       name: state.currentLocal.name,
       image: state.currentLocal.image,
-      commune: state.currentLocal.commune
+      commune: state.currentLocal.commune,
+      cartStatus: state.currentLocal.cartStatus
     };
   },
   getToken(state) {
@@ -105,6 +112,28 @@ const getters = {
   getInstallPromptEvent(state) {
     return state.installPromptEvent;
   },
+  getCartsStatus(state){
+    let contON=0;
+    let contOFF=0;
+    let cartsLength=state.user.locals.length;
+
+    for (let index = 0; index < state.user.locals.length; index++) {
+      const element = state.user.locals[index];
+      if(element.cartStatus===1){
+        contON++;
+      }else{
+        contOFF++;
+      } 
+    }
+    console.log(contOFF);
+    if(cartsLength===contON){
+      return 1;
+    }else if(cartsLength===contOFF){
+      return 0;
+    }else{
+      return null;
+    }
+  }
 };
 
 export default {

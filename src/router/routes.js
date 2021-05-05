@@ -67,6 +67,8 @@ const routes = [
           }
         }
       },
+      {name:'checkout' ,path: '/checkout', component: () => import('pages/Checkout.vue'), props:true},
+      
       
       
       
@@ -81,7 +83,7 @@ const routes = [
       {path: '/Cards', component: () => import('pages/Cards.vue')},
       {path: '/Tables', component: () => import('pages/Tables.vue')},
       {path: '/Contact', component: () => import('pages/Contact.vue')},
-      {path: '/Checkout', component: () => import('pages/Checkout.vue')},
+      {path: '/checkout', component: () => import('pages/Checkout.vue')},
       {path: '/Calendar', component: () => import('pages/Calendar.vue')},
       {path: '/Pagination', component: () => import('pages/Pagination.vue')},
       {path: '/Taskboard', component: () => import('pages/TaskBoard.vue')},

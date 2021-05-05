@@ -71,7 +71,7 @@
             </q-item>
           </template>
         </q-select>
-        <div style="margin-left: 15px">
+        <div v-if="localSelected.value!==-1" style="margin-left: 15px">
           <strong>Carrito:</strong>
           <q-toggle
             :false-value="0"
@@ -80,6 +80,27 @@
             v-model="cartStatus"
             color="green"
           />
+        </div>
+        <div v-else style="display:flex;flex-direction:column; justify-content:center; align-items:center">
+          <div style="margin-bottom:8px">
+            <strong> Carrito </strong>
+          </div>
+          <div style="display:flex;justify-content:center; align-items:center">
+            <q-btn
+            rounded
+            color="primary"
+            label="Apagar todos"
+            style="font-size: 11px !important"
+            @click=" save(0)"
+          />
+          <q-btn
+            rounded
+            color="green"
+            label="Encender todos"
+            style="font-size: 11px !important; margin-left: 5px;"
+            @click=" save(1)"
+          />
+          </div>
         </div>
       </q-card-section>
       <q-card-section
@@ -131,8 +152,7 @@
           color="green"
           label="Guardar"
           style="font-size: 11px !important"
-          v-close-popup
-          @click="save()"
+          @click="save(2)"
         />
         <q-btn
           rounded
@@ -152,21 +172,14 @@ export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
-    var vue = this;
-    var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-      let row = {
-        value: item.id,
-        label: item.name + ", " + item.commune,
-        image: item.image,
-        commune: item.commune,
-        name: item.name,
-        deliveryTime: item.deliveryTime,
-        preparationTime: item.preparationTime,
-        cart: item.cartStatus
-      };
-      vue.locals.push(row);
-    });
+    this.initLocals();
     this.localsFilter = this.locals;
+
+    this.bus.$on("sync-locals-settings", () => {
+      this.initLocals();
+      this.localsFilter = this.locals;
+    });
+    
     this.bus.$on("open-settings", () => {
       this.open = true;
     });
@@ -190,7 +203,7 @@ export default {
       prod: null,
       deliveryTime: 0,
       preparationTime: 0,
-      cartStatus: 0
+      cartStatus: null
     };
   },
   methods: {
@@ -218,7 +231,7 @@ export default {
     },
     reset() {
       this.preparationTime = 0;
-      this.cartStatus = 0;
+      this.cartStatus = null;
       this.deliveryTime = 0;
       this.localSelected = {
         label: "Todos",
@@ -228,7 +241,7 @@ export default {
         name: null,
         preparationTime: 0,
         deliveryTime: 0,
-        cart: 0
+        cart: null
       };
     },
     allOrders() {
@@ -237,25 +250,37 @@ export default {
       }
       this.reset();
     },
-    save() {
+    save(flag) {
+      if(flag===1){
+        this.cartStatus=1;
+      }else if(flag===0){
+        this.cartStatus=0;
+      }
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
+          this.getLocals();
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("locals.update", {
           localId: this.localSelected.value
         });
-        console.log(url);
-        this.$axios
-          .put(
-            url,
-            {
+        if(flag===1 || flag===0){
+          var object={
+              status: this.cartStatus,
+          }
+        }else{
+          var object={
               status: this.cartStatus,
               deliveryTime: +this.deliveryTime,
               preparationTime: +this.preparationTime
-            },
+          }
+        }
+        this.$axios
+          .put(
+            url,
+            object,
             {
               headers: {
                 Authorization: this.$store.getters["auth/getToken"]
@@ -263,11 +288,9 @@ export default {
             }
           )
           .then(response => {
-            this.hideLoading();
             if (response.data.status === "success") {
               console.log(response.data);
-              this.open = false;
-              this.reset();
+              this.getLocals();
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
@@ -281,6 +304,142 @@ export default {
     },
     changeStatus(){
       console.log(this.cartStatus);
+    },
+    getLocals(){
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+          let locals = [
+            {
+              id: 129,
+              name: "Sushi Venezuela",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Los Santos",
+              cartStatus: 1,
+              deliveryTime: 27,
+              preparationTime: 27
+            },
+            {
+              id: 130,
+              name: "Sushi Chile",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Vice City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            },
+            {
+              id: 131,
+              name: "Sushi Colombia",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "San Andreas",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            },
+            {
+              id: 132,
+              name: "Sushi EEUU",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Liberty City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            },
+            {
+              id: 133,
+              name: "Sushi UK",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "La Paz",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            }
+          ];
+            this.$store.commit("auth/setLocals", locals);
+            this.bus.$emit("refresh-cartstatus");
+            this.bus.$emit("sync-locals-settings");
+        }, 3000);
+      } else {
+        var vue=this;
+        var url = this.$store.getters["routes/getRoute"]("locals.get");
+        this.$axios
+          .get(
+            url,
+            {
+              headers: {
+                Authorization: this.$store.getters["auth/getToken"]
+              }
+            }
+          )
+          .then(response => {
+            this.hideLoading();
+            if (response.data.status === "success") {
+              var locals=response.data.result.sort(function(a, b) {
+                if (a.name > b.name) {
+                  return 1;
+                }
+                if (a.name < b.name) {
+                  return -1;
+                }
+                // a must be equal to b
+                return 0;
+              });
+              this.$store.commit("auth/setLocals", locals);
+              this.bus.$emit("sync-locals-settings");
+              this.bus.$emit("refresh-cartstatus");
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          
+          .catch(error => {
+            this.localsFilter = this.locals;
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    },
+    initLocals(){
+      var vue = this;
+      vue.locals=[];
+      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+      let row = {
+        value: item.id,
+        label: item.name + ", " + item.commune,
+        image: item.image,
+        commune: item.commune,
+        name: item.name,
+        deliveryTime: item.deliveryTime,
+        preparationTime: item.preparationTime,
+        cart: item.cartStatus
+      };
+      vue.locals.push(row);
+      vue.locals.sort(function(a, b) {
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+      });
+        /*this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+        this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
+        this.localSelected.commune = this.$store.getters[
+          "auth/getDataLocal"
+        ].commune;
+        this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
+        this.localSelected.cartStatus = this.$store.getters["auth/getDataLocal"].cartStatus;
+
+        if (this.localSelected.value !== -1) {
+          this.localSelected.label =
+            this.localSelected.name + ", " + this.localSelected.commune;
+        } else {
+          this.localSelected.label = this.localSelected.name;
+        }*/
     }
   }
 };
