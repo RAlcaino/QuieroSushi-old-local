@@ -77,6 +77,9 @@
               </q-item>
             </q-list>
             <div class="tab-overview-footer">
+              <p v-if="item.discount!==0" style="font-size:14px">
+                <strong style="color: green;">Descuento incluido</strong>
+              </p>
               <p style="font-size:14px">
                 <strong style="color: #333;">Subtotal: </strong> ${{ formatNumber(orderDetail.subtotal) }}
               </p>
@@ -86,6 +89,31 @@
               <p style="font-size:14px">
                 <strong style="color: #333;">Total: </strong> <span style="color:#ff2d2d; font-weight:bold">${{ formatNumber(orderDetail.total) }}</span>
               </p>
+            </div>
+            <div class="tab-overview-footer">
+              <q-list>
+                <q-item v-if="item.payDetail.address2!==null">
+                  <q-item-section avatar>
+                    <q-icon name="room" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Dirección del cliente</q-item-label>
+                    <q-item-label caption>{{item.payDetail.address2}}</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-separator spaced inset />
+
+                <q-item v-if="item.aditionalMessage!==null">
+                    <q-item-section avatar>
+                    <q-icon name="message" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Mensaje del cliente</q-item-label>
+                    <q-item-label caption>{{item.aditionalMessage}}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
             </div>
           </q-tab-panel>
         </q-tab-panels>

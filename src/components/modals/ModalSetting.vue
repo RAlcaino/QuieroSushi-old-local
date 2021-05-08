@@ -19,6 +19,7 @@
       </q-card-section>
       <q-card-section class="card-section-modal-new-o">
         <q-select
+          v-if="localsFilter.length > 1"
           ref="select"
           rounded
           outlined
@@ -71,6 +72,15 @@
             </q-item>
           </template>
         </q-select>
+        <div v-if="localsFilter.length===1" style="margin-bottom:15px">
+              <q-icon
+                style="margin-right:5px;padding-bottom:5px;"
+                size="20px"
+                name="store"
+                color="blacklight"
+              />
+            <strong>{{localSelected.label}}</strong>
+        </div>
         <div v-if="localSelected.value!==-1" style="margin-left: 15px">
           <strong>Carrito:</strong>
           <q-toggle
@@ -81,7 +91,7 @@
             color="green"
           />
         </div>
-        <div v-else style="display:flex;flex-direction:column; justify-content:center; align-items:center">
+        <div v-if="localSelected.value===-1 && localsFilter.length > 1" style="display:flex;flex-direction:column; justify-content:center; align-items:center">
           <div style="margin-bottom:8px">
             <strong> Carrito </strong>
           </div>
@@ -230,19 +240,23 @@ export default {
       this.localFilter = "";
     },
     reset() {
-      this.preparationTime = 0;
-      this.cartStatus = null;
-      this.deliveryTime = 0;
-      this.localSelected = {
-        label: "Todos",
-        value: -1,
-        image: null,
-        commune: null,
-        name: null,
-        preparationTime: 0,
-        deliveryTime: 0,
-        cart: null
-      };
+      if(this.$store.getters["auth/getDataLocals"].length!==1){
+        this.preparationTime = 0;
+        this.cartStatus = null;
+        this.deliveryTime = 0;
+        this.localSelected = {
+          label: "Todos",
+          value: -1,
+          image: null,
+          commune: null,
+          name: null,
+          preparationTime: 0,
+          deliveryTime: 0,
+          cart: null
+        };
+      }else{
+        this.bus.$emit("sync-locals-settings");
+      }
     },
     allOrders() {
       if (this.$refs.select !== undefined) {
@@ -401,32 +415,33 @@ export default {
       }
     },
     initLocals(){
-      var vue = this;
-      vue.locals=[];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-      let row = {
-        value: item.id,
-        label: item.name + ", " + item.commune,
-        image: item.image,
-        commune: item.commune,
-        name: item.name,
-        deliveryTime: item.deliveryTime,
-        preparationTime: item.preparationTime,
-        cart: item.cartStatus
-      };
-      vue.locals.push(row);
-      vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
-        /*this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+          var vue = this;
+          vue.locals=[];
+          var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+          let row = {
+            value: item.id,
+            label: item.name + ", " + item.commune,
+            image: item.image,
+            commune: item.commune,
+            name: item.name,
+            deliveryTime: item.deliveryTime,
+            preparationTime: item.preparationTime,
+            cart: item.cartStatus
+          };
+          vue.locals.push(row);
+          vue.locals.sort(function(a, b) {
+              if (a.name > b.name) {
+                return 1;
+              }
+              if (a.name < b.name) {
+                return -1;
+              }
+              // a must be equal to b
+              return 0;
+            });
+          });
+      if(this.$store.getters["auth/getDataLocals"].length===1){
+        this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
         this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
         this.localSelected.commune = this.$store.getters[
           "auth/getDataLocal"
@@ -439,7 +454,14 @@ export default {
             this.localSelected.name + ", " + this.localSelected.commune;
         } else {
           this.localSelected.label = this.localSelected.name;
-        }*/
+        }
+
+        this.cartStatus=this.$store.getters["auth/getDataLocals"][0].cartStatus;
+        this.deliveryTime=this.$store.getters["auth/getDataLocals"][0].deliveryTime;
+        this.preparationTime=this.$store.getters["auth/getDataLocals"][0].preparationTime;
+      }
+
+      
     }
   }
 };

@@ -367,21 +367,21 @@
     </q-drawer>
     <q-page-container class="bg-white">
       <q-banner v-if="flag===null" dense inline-actions class="text-white bg-deep-orange">
-        El carrito de algunos locales estan <strong>encendidos</strong> y otros <strong>apagados</strong>
+        Algunos locales están <strong>cerrados</strong>
         <template v-slot:action>
           <q-btn flat color="white" @click="change(-1,1)" :label="'apagar restantes'" />
           <q-btn flat color="white" @click="change(-1,0)" :label="'encender restantes'" />
         </template>
       </q-banner>
       <q-banner v-if="flag===1 " else dense inline-actions class="text-white bg-green">
-        El carrito de todos los locales estan <strong>encendidos</strong
+        Todos los locales están <strong>abiertos</strong
         >
         <template v-slot:action>
           <q-btn flat color="white" @click="change(-1,1)" :label="'apagar todos'" />
         </template>
       </q-banner>
       <q-banner v-if="flag===0 " else dense inline-actions class="text-white bg-primary">
-        El carrito de todos los locales estan <strong>apagados</strong
+        Todos los locales están <strong>cerrados</strong
         >
         <template v-slot:action>
           <q-btn flat color="white" @click="change(-1,0)" :label="'encender todos'" />
