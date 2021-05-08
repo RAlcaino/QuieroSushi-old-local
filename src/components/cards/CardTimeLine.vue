@@ -13,7 +13,7 @@
         </q-item>
       </q-card-section>
       <q-card-section class="">
-        <q-timeline :layout="layout" :side="side" color="secondary">
+        <q-timeline  color="secondary">
 
           <q-timeline-entry
             v-for="(timeline, index) in timeline_list"

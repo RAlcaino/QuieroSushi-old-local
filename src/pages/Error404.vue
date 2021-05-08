@@ -1,23 +1,17 @@
 <template>
   <div class="fixed-center text-center">
-    <p>
-      <img
-        src="~assets/sad.svg"
-        style="width:30vw;max-width:150px;"
+    <img src="~assets/icons8-sad.gif" style="width:200px;" />
+    <p class="text-faded" style="font-size:16px">
+      Lo sentimos, no se encontro la página que esta buscando...<strong
+        >(404)</strong
       >
     </p>
-    <p class="text-faded">Sorry, nothing here...<strong>(404)</strong></p>
-    <q-btn
-      color="secondary"
-      style="width:200px;"
-      to="/"
-      label="Go back"
-    />
+    <q-btn rounded color="primary" style="width:200px;" to="/" label="Volver" />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Error404'
-}
+  name: "Error404"
+};
 </script>

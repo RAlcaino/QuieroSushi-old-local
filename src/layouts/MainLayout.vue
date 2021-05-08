@@ -1,5 +1,7 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="lHh Lpr lFf" class="absolute-full">
+    <modal-new-order></modal-new-order>
+    <modal-setting></modal-setting>
     <q-header class="bg-header">
       <q-toolbar>
         <q-btn
@@ -11,37 +13,64 @@
           aria-label="Menu"
         />
         <q-toolbar-title>
-          <img src="../assets/brand/logo-qs-400x72-white.png" alt="QuieroSushi.cl Panel" width="50%">
+          <img
+            src="../assets/brand/logo-qs-400x72-white.png"
+            alt="QuieroSushi.cl Panel"
+            :style="responsiveMode"
+          />
         </q-toolbar-title>
-        <q-space/>
+        <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
-                 @click="$q.fullscreen.toggle()"
-                 v-if="$q.screen.gt.sm">
+          <q-btn
+            v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
+            round
+            dense
+            flat
+            color="white"
+            icon="download"
+            @click="install()"
+          >
           </q-btn>
-          <q-btn round dense flat color="white" icon="fab fa-github" type="a" href="https://github.com/pratik227/quasar-admin" target="_blank">
+          <q-btn
+            round
+            dense
+            flat
+            color="white"
+            icon="settings"
+            @click="openSettings()"
+          >
           </q-btn>
-          <q-btn round dense flat icon="fas fa-heart" style="color:#9d4182 !important;" type="a" href="https://github.com/sponsors/pratik227" target="_blank">
+          <q-btn
+            round
+            dense
+            flat
+            color="white"
+            :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
+            @click="$q.fullscreen.toggle()"
+            v-if="$q.screen.gt.sm"
+          >
           </q-btn>
-          <q-btn round dense flat color="white" icon="notifications">
+          <!--<q-btn round dense flat color="white" icon="notifications">
             <q-badge color="red" text-color="white" floating>
               5
             </q-badge>
-            <q-menu
-            >
+            <q-menu>
               <q-list style="min-width: 100px">
                 <messages></messages>
                 <q-card class="text-center no-shadow no-border">
-                  <q-btn label="View All" style="max-width: 120px !important;" flat dense
-                         class="text-indigo-8"></q-btn>
+                  <q-btn
+                    label="View All"
+                    style="max-width: 120px !important;"
+                    flat
+                    dense
+                    class="text-indigo-8"
+                  ></q-btn>
                 </q-card>
               </q-list>
             </q-menu>
-          </q-btn>
-          <q-btn round flat>
-            <q-avatar size="26px">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-            </q-avatar>
+          </q-btn>-->
+
+          <q-btn round dense flat color="white" icon="logout" @click="logout()">
           </q-btn>
         </div>
       </q-toolbar>
@@ -52,21 +81,51 @@
       show-if-above
       bordered
       content-class="bg-sidebar text-white"
+      :width="230"
     >
-      <q-list >
+      <q-list>
         <div class="user-sidebar">
           <div class="user-sidebar-border">
-            <q-avatar size="100px">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+            <q-avatar size="90px">
+              <img :src="this.$store.getters['auth/getDataLocal'].image" />
             </q-avatar>
-            <q-chip color="primary" text-color="white">
-              Gabriel Romero
+            <q-chip
+              :color="
+                this.$store.getters['auth/getDataUser'].role === 'God'
+                  ? 'green'
+                  : 'primary'
+              "
+              text-color="white"
+            >
+              {{
+                this.$store.getters["auth/getDataUser"].role === "God"
+                  ? "Acceso Total"
+                  : this.$store.getters["auth/getDataUser"].role
+              }}
             </q-chip>
-            <q-chip color="green" text-color="white">
-              Online
+            <q-chip
+              v-if="this.$store.getters['auth/getDataUser'].role !== 'God'"
+              color="green"
+              text-color="white"
+              icon="store"
+            >
+              {{ this.$store.getters["auth/getDataLocal"].name }}
             </q-chip>
           </div>
         </div>
+        <div v-for="option in optionsAvailable" :key="option.label">
+          <q-item :to="option.link" active-class="q-item-no-link-highlighting">
+            <q-item-section avatar>
+              <q-icon :name="option.icon" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ option.label }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-separator color="grey-11" inset />
+        </div>
+
+        <!--
         <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
@@ -85,7 +144,7 @@
           </q-item-section>
         </q-item>
         <q-separator color="grey-11" inset/>
-        <!--
+
         <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-icon name="dashboard"/>
@@ -286,64 +345,360 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container class="bg-grey-2">
-      <router-view/>
+    <q-drawer
+      :width="250"
+      v-model="rightDrawerOpen"
+      side="right"
+      bordered
+      content-class="bg-sidebar"
+    >
+      <div class="fit row no-wrap justify-end items-start content-start">
+        <q-btn
+          round
+          dense
+          flat
+          color="white"
+          icon="cancel"
+          style="font-size:12px; padding: 5px;"
+          @click="rightDrawerOpen = !rightDrawerOpen"
+        >
+        </q-btn>
+      </div>
+    </q-drawer>
+    <q-page-container class="bg-white">
+      <q-banner v-if="flag===null" dense inline-actions class="text-white bg-deep-orange">
+        Algunos locales están <strong>cerrados</strong>
+        <template v-slot:action>
+          <q-btn flat color="white" @click="change(-1,1)" :label="'apagar restantes'" />
+          <q-btn flat color="white" @click="change(-1,0)" :label="'encender restantes'" />
+        </template>
+      </q-banner>
+      <q-banner v-if="flag===1 " else dense inline-actions class="text-white bg-green">
+        Todos los locales están <strong>abiertos</strong
+        >
+        <template v-slot:action>
+          <q-btn flat color="white" @click="change(-1,1)" :label="'apagar todos'" />
+        </template>
+      </q-banner>
+      <q-banner v-if="flag===0 " else dense inline-actions class="text-white bg-primary">
+        Todos los locales están <strong>cerrados</strong
+        >
+        <template v-slot:action>
+          <q-btn flat color="white" @click="change(-1,0)" :label="'encender todos'" />
+        </template>
+      </q-banner>
+      <router-view />
     </q-page-container>
+
+    <div style="position: fixed; right: 0; bottom:0;">
+      <q-toolbar>
+        <div class="fit row no-wrap justify-end items-start content-start">
+          <q-btn
+            round
+            dense
+            flat
+            color="white"
+            icon="chat"
+            style="font-size:15px; padding: 5px; margin-bottom:10px; background:#333;"
+            @click="rightDrawerOpen = !rightDrawerOpen"
+          >
+          </q-btn>
+        </div>
+      </q-toolbar>
+    </div>
   </q-layout>
 </template>
 
 <script>
-    import EssentialLink from 'components/EssentialLink'
-    import Messages from "./Messages";
+import EssentialLink from "components/EssentialLink";
+import Messages from "./Messages";
+import ModalNewOrder from "../components/modals/ModalNewOrder.vue";
+import ModalSetting from "../components/modals/ModalSetting.vue";
 
-    export default {
-        name: 'MainLayout',
+export default {
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  name: "MainLayout",
 
-        components: {
-            Messages,
-            EssentialLink
-        },
+  components: {
+    Messages,
+    EssentialLink,
+    ModalNewOrder,
+    ModalSetting
+  },
+  created() {
+    this.flag=this.$store.getters["auth/getCartsStatus"];
+    this.bus.$on("refresh-cartstatus", () => {
+      this.flag=this.$store.getters["auth/getCartsStatus"];
+    });
+    this.bus.$on("stop-bell", () => {
+      this.modalOpen = false;
+      this.bell.loop(false);
+    });
+    this.prod = this.$store.getters["mode/getMode"];
+    this.channelName = "Private-qs-venta-";
 
-        data() {
-            return {
-                leftDrawerOpen: false,
-            }
-        }
+    if (this.$store.getters["auth/getGodMode"]) {
+      this.channelName += "-1";
+    } else {
+      this.channelName += this.$store.getters["auth/getDataUser"].id;
     }
+    this.privateChannel = this.Echo.channel(this.channelName);
+    this.listenEvent();
+  },
+  mounted() {
+    console.log("main layout mounted");
+    console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
+    this.optionsAvailable = this.$store.getters["auth/getAvailableMenuOptions"];
+    this.modeResponsive();
+  },
+  computed: {
+    responsiveMode() {
+      if (this.responsiveMobile) {
+        return { width: "100%", paddingTop: "10px" };
+      } else {
+        return { width: "50%", paddingTop: "5px" };
+      }
+    }
+  },
+  data() {
+    return {
+      leftDrawerOpen: false,
+      rightDrawerOpen: false,
+      optionsAvailable: [],
+      responsiveMobile: false,
+      prod: null,
+      privateChannel: null,
+      channelName: "",
+      modalOpen: false,
+      flag:1
+    };
+  },
+  methods: {
+    logout() {
+      this.optionsAvailable = [];
+      this.privateChannel = this.Echo.leaveChannel(this.channelName);
+      this.channelName = "";
+      this.bus.$emit("logout");
+    },
+    modeResponsive() {
+      var responsive = window.matchMedia("(max-width: 500px)");
+      var vue = this;
+
+      if (screen.width < 500) {
+        vue.responsiveMobile = true;
+      }
+
+      responsive.addListener(function(event) {
+        if (event.matches) {
+          vue.responsiveMobile = true;
+        } else {
+          vue.responsiveMobile = false;
+        }
+      });
+    },
+    listenEvent() {
+      var vue = this;
+      this.privateChannel.listen(".PedidoNuevo", function(data) {
+        if (vue.modalOpen) {
+          vue.bus.$emit("sync-new-order", data);
+        } else {
+          vue.modalOpen = true;
+          vue.bell.loop(true);
+          vue.bell.play();
+          vue.bus.$emit("new-order", data);
+        }
+      });
+    },
+    async install() {
+      var dialog = this.$store.getters["auth/getInstallPromptEvent"];
+      dialog.prompt();
+      dialog.userChoice.then(choiceResult => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the A2HS prompt");
+        } else {
+          console.log("User dismissed the A2HS prompt");
+        }
+      });
+    },
+    openSettings() {
+      this.bus.$emit("open-settings");
+    },
+    change(flag, currentStatus) {
+      var newStatus=null;
+      if(currentStatus===1){
+        newStatus=0;
+      }else{
+        newStatus=1;
+      }
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+          this.getLocals();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("locals.update", {
+          localId: flag
+        });
+        console.log(url);
+        this.$axios
+          .put(
+            url,
+            {
+              status:newStatus
+            },
+            {
+              headers: {
+                Authorization: this.$store.getters["auth/getToken"]
+              }
+            }
+          )
+          .then(response => {
+            if (response.data.status === "success") {
+              console.log(response.data);
+              this.getLocals();
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.localsFilter = this.locals;
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    },
+    getLocals(){
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+          let locals = [
+            {
+              id: 129,
+              name: "Sushi Venezuela",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Los Santos",
+              cartStatus: 1,
+              deliveryTime: 27,
+              preparationTime: 27
+            },
+            {
+              id: 130,
+              name: "Sushi Chile",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Vice City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            },
+            {
+              id: 131,
+              name: "Sushi Colombia",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "San Andreas",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            },
+            {
+              id: 132,
+              name: "Sushi EEUU",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Liberty City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            },
+            {
+              id: 133,
+              name: "Sushi UK",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "La Paz",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            }
+          ];
+            this.$store.commit("auth/setLocals", locals);
+            this.flag=this.$store.getters["auth/getCartsStatus"];
+            this.bus.$emit("sync-locals-settings");
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("locals.get");
+        this.$axios
+          .get(
+            url,
+            {
+              headers: {
+                Authorization: this.$store.getters["auth/getToken"]
+              }
+            }
+          )
+          .then(response => {
+            var vue=this;
+            this.hideLoading();
+            if (response.data.status === "success") {
+              var locals=response.data.result.sort(function(a, b) {
+                if (a.name > b.name) {
+                  return 1;
+                }
+                if (a.name < b.name) {
+                  return -1;
+                }
+                // a must be equal to b
+                return 0;
+              });
+              this.$store.commit("auth/setLocals", locals);
+              this.bus.$emit("sync-locals-settings");
+              this.flag=this.$store.getters["auth/getCartsStatus"];
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.localsFilter = this.locals;
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    },
+  }
+};
 </script>
 
 <style lang="scss">
-  .bg-header{
-    background: #333;
-  }
-  .bg-sidebar{
-    background: #ff2d2d;
-  }
+.bg-header {
+  background: #333;
+}
 
-  .user-sidebar{
-    width: 100%;
-    height: 200px;
-    background-image: url('https://cdn.quasar.dev/img/mountains.jpg');
-    background-size: cover;
+.bg-footer {
+  background: transparent;
+}
+.bg-sidebar {
+  background: #ff2d2d;
+}
+
+.user-sidebar {
+  width: 100%;
+  height: 200px;
+  background-image: url("../assets/background.jpg");
+  background-position-x: -20px;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+
+  .user-sidebar-border {
+    width: 95%;
+    height: 95%;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 10px;
-
-    .user-sidebar-border{
-      width: 95%;
-      height: 95%;
-      display: flex;
-      justify-content: space-around;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      border-radius: 10px;
-      border: 1px solid rgba($color: #fff, $alpha: 0.7);
-    }
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba($color: #fff, $alpha: 0.7);
   }
+}
 </style>
-
-
-
-

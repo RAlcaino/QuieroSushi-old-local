@@ -1,0 +1,85 @@
+const state = {
+  urlGlobal: "https://api.panelnuevo.quierosushi.cl/api",
+  //urlGlobal: "http://127.0.0.1:8000/api",
+  //urlGlobal: "http://190.79.241.72:5000/api/public/api",
+  
+  routes: [
+    {
+      name: "login",
+      link: "/login"
+    },
+    {
+      name: "orders",
+      link: "/pedidos/{userId}"
+    },
+    {
+      name: "order.confirm",
+      link: "/pedidos/confirm"
+    },
+    {
+      name: "order.cancel",
+      link: "/pedidos/cancel"
+    },
+    {
+      name: "order.done",
+      link: "/pedidos/done"
+    },
+    {
+      name: "coupons",
+      link: "/cupones/{localId}"
+    },
+    {
+      name: "coupon.change.status",
+      link: "/cupones/change"
+    },
+    {
+      name: "services.prices",
+      link: "/servicios/prices"
+    },
+    {
+      name: "locals.update",
+      link: "/locales/update/{localId}"
+    },
+    {
+      name: "locals.get",
+      link: "/locales/get"
+    },
+    {
+      name: "get.url.pay",
+      link: "/servicios/pay"
+    },
+  ]
+};
+const mutations = {};
+const actions = {};
+const getters = {
+  getRoutes: state => {
+    return state.routes;
+  },
+  getRoute: state => (name, params) => {
+    let route = state.routes.find(route => route.name === name);
+    if (params != undefined) {
+      var routeFormmater = "";
+      var count = 0;
+      for (var key in params) {
+        if (count == 0) {
+          routeFormmater = route.link.replace("{" + key + "}", params[key]);
+        } else {
+          routeFormmater = routeFormmater.replace("{" + key + "}", params[key]);
+        }
+        count++;
+      }
+
+      return state.urlGlobal + routeFormmater;
+    }
+    return state.urlGlobal + route.link;
+  }
+};
+
+export default {
+  namespaced: true,
+  state,
+  mutations,
+  actions,
+  getters
+};
