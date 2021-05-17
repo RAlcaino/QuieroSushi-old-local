@@ -30,7 +30,7 @@
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"
-          class="q-select-coupon q-select-s"
+          class="q-select-s"
           style="margin-bottom: 15px;"
           :virtual-scroll-sticky-size-start="80"
         >

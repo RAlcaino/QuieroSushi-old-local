@@ -366,27 +366,86 @@
       </div>
     </q-drawer>
     <q-page-container class="bg-white">
-      <q-banner v-if="flag===null" dense inline-actions class="text-white bg-deep-orange">
-        Algunos locales están <strong>cerrados</strong>
-        <template v-slot:action>
-          <q-btn flat color="white" @click="change(-1,1)" :label="'apagar restantes'" />
-          <q-btn flat color="white" @click="change(-1,0)" :label="'encender restantes'" />
-        </template>
-      </q-banner>
-      <q-banner v-if="flag===1 " else dense inline-actions class="text-white bg-green">
-        Todos los locales están <strong>abiertos</strong
+      <template v-if="$store.getters['auth/getDataLocals'].length > 1 && $store.getters['auth/getDataUser'].role!=='God'">
+        <q-banner
+          v-if="flag === null"
+          dense
+          inline-actions
+          class="text-white bg-deep-orange"
         >
-        <template v-slot:action>
-          <q-btn flat color="white" @click="change(-1,1)" :label="'apagar todos'" />
-        </template>
-      </q-banner>
-      <q-banner v-if="flag===0 " else dense inline-actions class="text-white bg-primary">
-        Todos los locales están <strong>cerrados</strong
+          Algunos locales están <strong>cerrados</strong>
+          <template v-slot:action>
+            <q-btn
+              flat
+              color="white"
+              @click="change(-1, 1)"
+              :label="'apagar restantes'"
+            />
+            <q-btn
+              flat
+              color="white"
+              @click="change(-1, 0)"
+              :label="'encender restantes'"
+            />
+          </template>
+        </q-banner>
+        <q-banner
+          v-if="flag === 1"
+          else
+          dense
+          inline-actions
+          class="text-white bg-green"
         >
-        <template v-slot:action>
-          <q-btn flat color="white" @click="change(-1,0)" :label="'encender todos'" />
-        </template>
-      </q-banner>
+          Todos los locales están <strong>abiertos</strong>
+          <template v-slot:action>
+            <q-btn
+              flat
+              color="white"
+              @click="change(-1, 1)"
+              :label="'apagar todos'"
+            />
+          </template>
+        </q-banner>
+        <q-banner
+          v-if="flag === 0"
+          else
+          dense
+          inline-actions
+          class="text-white bg-primary"
+        >
+          Todos los locales están <strong>cerrados</strong>
+          <template v-slot:action>
+            <q-btn
+              flat
+              color="white"
+              @click="change(-1, 0)"
+              :label="'encender todos'"
+            />
+          </template>
+        </q-banner>
+      </template>
+      <template v-if="$store.getters['auth/getDataLocals'].length == 1 && $store.getters['auth/getDataUser'].role!=='God'">
+        <q-banner dense inline-actions 
+          :class="$store.getters['auth/getDataLocal'].cartStatus==0?'text-white bg-primary':'text-white bg-green'">
+          El local {{ $store.getters["auth/getDataLocal"].name }} está
+          <strong v-if="$store.getters['auth/getDataLocal'].cartStatus == 0">
+            cerrado
+          </strong>
+          <strong v-else>
+            abierto
+          </strong>
+          <template v-slot:action>
+            <q-btn
+              flat
+              color="white"
+              @click="
+                change($store.getters['auth/getDataLocal'].id, $store.getters['auth/getDataLocal'].cartStatus)
+              "
+              :label="$store.getters['auth/getDataLocal'].cartStatus==0?'encender':'apagar'"
+            />
+          </template>
+        </q-banner>
+      </template>
       <router-view />
     </q-page-container>
 
@@ -426,9 +485,9 @@ export default {
     ModalSetting
   },
   created() {
-    this.flag=this.$store.getters["auth/getCartsStatus"];
+    this.flag = this.$store.getters["auth/getCartsStatus"];
     this.bus.$on("refresh-cartstatus", () => {
-      this.flag=this.$store.getters["auth/getCartsStatus"];
+      this.flag = this.$store.getters["auth/getCartsStatus"];
     });
     this.bus.$on("stop-bell", () => {
       this.modalOpen = false;
@@ -470,7 +529,7 @@ export default {
       privateChannel: null,
       channelName: "",
       modalOpen: false,
-      flag:1
+      flag: 1
     };
   },
   methods: {
@@ -524,11 +583,11 @@ export default {
       this.bus.$emit("open-settings");
     },
     change(flag, currentStatus) {
-      var newStatus=null;
-      if(currentStatus===1){
-        newStatus=0;
-      }else{
-        newStatus=1;
+      var newStatus = null;
+      if (currentStatus === 1) {
+        newStatus = 0;
+      } else {
+        newStatus = 1;
       }
       this.showLoading();
       if (!this.prod) {
@@ -545,7 +604,7 @@ export default {
           .put(
             url,
             {
-              status:newStatus
+              status: newStatus
             },
             {
               headers: {
@@ -568,7 +627,7 @@ export default {
           });
       }
     },
-    getLocals(){
+    getLocals() {
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -619,26 +678,23 @@ export default {
               preparationTime: 30
             }
           ];
-            this.$store.commit("auth/setLocals", locals);
-            this.flag=this.$store.getters["auth/getCartsStatus"];
-            this.bus.$emit("sync-locals-settings");
+          this.$store.commit("auth/setLocals", locals);
+          this.flag = this.$store.getters["auth/getCartsStatus"];
+          this.bus.$emit("sync-locals-settings");
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("locals.get");
         this.$axios
-          .get(
-            url,
-            {
-              headers: {
-                Authorization: this.$store.getters["auth/getToken"]
-              }
+          .get(url, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
             }
-          )
+          })
           .then(response => {
-            var vue=this;
+            var vue = this;
             this.hideLoading();
             if (response.data.status === "success") {
-              var locals=response.data.result.sort(function(a, b) {
+              var locals = response.data.result.sort(function(a, b) {
                 if (a.name > b.name) {
                   return 1;
                 }
@@ -650,7 +706,11 @@ export default {
               });
               this.$store.commit("auth/setLocals", locals);
               this.bus.$emit("sync-locals-settings");
-              this.flag=this.$store.getters["auth/getCartsStatus"];
+              this.flag = this.$store.getters["auth/getCartsStatus"];
+
+              if(this.$store.getters['auth/getDataLocals'].length === 1){
+                this.$store.commit("auth/setCurrentLocal", locals[0]);
+              }
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
@@ -661,7 +721,7 @@ export default {
             this.errorHandling(error);
           });
       }
-    },
+    }
   }
 };
 </script>

@@ -77,7 +77,7 @@
               </q-item>
             </q-list>
             <div class="tab-overview-footer">
-              <p v-if="item.discount!==0" style="font-size:14px">
+              <p v-if="orderDetail.discount!==0" style="font-size:14px">
                 <strong style="color: green;">Descuento incluido</strong>
               </p>
               <p style="font-size:14px">
@@ -92,25 +92,29 @@
             </div>
             <div class="tab-overview-footer">
               <q-list>
-                <q-item v-if="item.payDetail.address2!==null">
+                <!--<q-item v-if="orderDetail.payDetail.address.trim()!==''">
                   <q-item-section avatar>
                     <q-icon name="room" color="primary" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label>Dirección del cliente</q-item-label>
-                    <q-item-label caption>{{item.payDetail.address2}}</q-item-label>
+                    <q-item-label>Dirección completa del cliente</q-item-label>
+                    <q-item-label caption>{{ orderDetail.payDetail.address.trim()}}. 
+                      <template v-if="orderDetail.payDetail.address2!=''">
+                      <span v-if="orderDetail.payDetail.address2.search('dpto')==-1">Dpto/Ubicacion:</span> {{orderDetail.payDetail.address2.trim()}}. 
+                      </template>
+                      {{orderDetail.payDetail.userCommune.trim()}}</q-item-label>
                   </q-item-section>
                 </q-item>
 
-                <q-separator spaced inset />
+                <q-separator v-if="orderDetail.aditionalMessage!==''" spaced inset ></q-separator>-->
 
-                <q-item v-if="item.aditionalMessage!==null">
+                <q-item v-if="orderDetail.aditionalMessage!==''">
                     <q-item-section avatar>
                     <q-icon name="message" color="primary" />
                   </q-item-section>
                   <q-item-section>
                     <q-item-label>Mensaje del cliente</q-item-label>
-                    <q-item-label caption>{{item.aditionalMessage}}</q-item-label>
+                    <q-item-label caption>{{orderDetail.aditionalMessage}}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>

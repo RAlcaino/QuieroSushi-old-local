@@ -281,24 +281,24 @@ export default {
       var vue=this;
       var itemsToBuy=[];
       var each = this.pricesGoUp.map(function(item, index) {
-        if(vue.qtyGoUp[index]!==0){
+        //if(vue.qtyGoUp[index]!==0){
           let service= {
             name: 'Paquete de '+item.qty + ' subir',
             price:item.price,
-            qty: +vue.qtyGoUp[index]
+            qty: +vue.qtyGoUp[index]*item.qty
           }
           itemsToBuy.push(service);
-        }
+        //}
       });
       var each = this.pricesStandOut.map(function(item, index) {
-        if(vue.qtyStandOut[index]!==0){
+        //if(vue.qtyStandOut[index]!==0){
           let service= {
             name: 'Paquete de '+item.qty + ' destacados',
             price:item.price,
-            qty:+vue.qtyStandOut[index]
+            qty:+vue.qtyStandOut[index]*item.qty
           }
           itemsToBuy.push(service);
-        }
+        //}
       });
       this.$router.push({ name: "checkout", params:{
         data: itemsToBuy,

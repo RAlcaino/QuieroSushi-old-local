@@ -16,7 +16,7 @@
                 >Resumen</q-item-label
               >
               <q-item
-                v-for="service of data"
+                v-for="service of getData"
                 :key="service.name"
                 class="full-width"
               >
@@ -83,7 +83,7 @@
 export default {
   name: "Checkout",
   props: ["data", "total"],
-  inject: ["formatNumber", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification","formatNumber", "showLoading", "hideLoading", "errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     var vue = this;
@@ -101,6 +101,11 @@ export default {
       prod:null
     };
   },
+  computed:{
+    getData(){
+      return this.data.filter(item => item.qty!=0);
+    }
+  },
   methods: {
     pay() {
       this.showLoading();
@@ -115,8 +120,10 @@ export default {
           .post(
             url,
             {
+              idLocal: this.$store.getters['auth/getDataLocal'].id,
               amount: this.total,
-              commerceOrder: Math.round(Math.random() * (99999999999999 - 1) + 1)
+              commerceOrder: Math.round(Math.random() * (99999999999999 - 1) + 1),
+              detail: this.data
             },
             {
               headers: {
@@ -127,7 +134,7 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               this.hideLoading();
-              window.open(response.data.result);
+              window.location.href=response.data.result;
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }

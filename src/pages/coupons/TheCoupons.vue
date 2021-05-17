@@ -253,6 +253,7 @@
   </q-page>
 </template>
 
+
 <script>
 import TheAditionals from "./dialogs/TheAditionals.vue";
 

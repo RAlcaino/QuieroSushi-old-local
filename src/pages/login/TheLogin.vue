@@ -95,9 +95,14 @@ export default {
     login() {
       var availableMenuOptions = [
         {
+          label: "Mi perfil",
+          link: "/perfil",
+          icon: "person"
+        },
+        {
           label: "Home",
           link: "/home",
-          icon: "home"
+          icon: "dashboard"
         },
         {
           label: "Pedidos",
@@ -108,7 +113,12 @@ export default {
           label: "Cupones",
           link: "/cupones",
           icon: "confirmation_number"
-        }
+        },
+        {
+          label: "Usuarios",
+          link: "/administrar-usuarios",
+          icon: "group"
+        },
       ];
       if (this.validate(this.user)) {
         return;
@@ -315,7 +325,7 @@ export default {
   background-image: url("../../../src/assets/background.jpg");
   background-size: cover;
   background-repeat: no-repeat;
-  background-position-x: -50px;
+  /*background-position-x: -50px;*/
 }
 
 .form-login {

@@ -52,7 +52,7 @@
                     style="width: 100px;"
                     type="number"
                   >
-                    <template v-slot:append>
+                    <template v-slot:prepend>
                       <q-icon name="query_builder" />
                     </template>
                   </q-input>
@@ -81,7 +81,7 @@
                     type="number"
                     v-model="deliveryTime"
                   >
-                    <template v-slot:append>
+                    <template v-slot:prepend>
                       <q-icon name="moped" />
                     </template>
                   </q-input>
