@@ -165,7 +165,7 @@ export default {
             return;
           }
           let locals = [
-            {
+            /*{
               id: 129,
               name: "Sushi Venezuela",
               image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
@@ -209,7 +209,7 @@ export default {
               cartStatus: 0,
               deliveryTime: 10,
               preparationTime: 30
-            }
+            }*/
           ];
           let data = {
             locals: locals,

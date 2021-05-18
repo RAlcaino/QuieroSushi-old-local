@@ -2,6 +2,7 @@
   <q-layout view="lHh Lpr lFf" class="absolute-full">
     <modal-new-order></modal-new-order>
     <modal-setting></modal-setting>
+    <modal-debt :open="$store.getters['auth/getDataUser'].debt"></modal-debt>
     <q-header class="bg-header">
       <q-toolbar>
         <q-btn
@@ -473,6 +474,7 @@ import EssentialLink from "components/EssentialLink";
 import Messages from "./Messages";
 import ModalNewOrder from "../components/modals/ModalNewOrder.vue";
 import ModalSetting from "../components/modals/ModalSetting.vue";
+import ModalDebt from "../components/modals/ModalDebt.vue";
 
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
@@ -482,7 +484,8 @@ export default {
     Messages,
     EssentialLink,
     ModalNewOrder,
-    ModalSetting
+    ModalSetting,
+    ModalDebt
   },
   created() {
     this.flag = this.$store.getters["auth/getCartsStatus"];
@@ -531,6 +534,11 @@ export default {
       modalOpen: false,
       flag: 1
     };
+  },
+  provide(){
+    return{
+      logout: this.logout
+    }
   },
   methods: {
     logout() {

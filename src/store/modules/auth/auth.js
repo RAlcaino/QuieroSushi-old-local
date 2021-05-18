@@ -6,7 +6,8 @@ const state = {
     id: 0,
     email: "",
     role: "",
-    locals: []
+    locals: [],
+    debt:false
   },
   availableMenuOptions: [],
   currentLocal:{
@@ -28,18 +29,23 @@ const mutations = {
     state.user.role = payload.role.name;
     state.user.locals = payload.locals;
 
-    if(payload.locals.length>1){
-      state.currentLocal.id=-1;
-      state.currentLocal.name="Todos";
-      if(state.user.id===-1){
-        state.currentLocal.image="icons/favicon-128.png";
-      }else{
-        state.currentLocal.image=payload.locals[0].image;
-      }
-      state.currentLocal.commune=null;
+    if (payload.locals.length===0) {
+      state.user.debt=true;
     }else{
-      state.currentLocal=payload.locals[0];
+      if(payload.locals.length>1){
+        state.currentLocal.id=-1;
+        state.currentLocal.name="Todos";
+        if(state.user.id===-1){
+          state.currentLocal.image="icons/favicon-128.png";
+        }else{
+          state.currentLocal.image=payload.locals[0].image;
+        }
+        state.currentLocal.commune=null;
+      }else{
+        state.currentLocal=payload.locals[0];
+      }
     }
+
     if (payload.role.name.trim() === "God") {
       state.godMode = true;
     }
@@ -57,6 +63,7 @@ const mutations = {
     state.user.email = "";
     state.user.role = "";
     state.user.locals = [];
+    state.user.debt=false;
 
     state.token = "";
     state.availableMenuOptions = [];
