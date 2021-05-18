@@ -2,6 +2,7 @@
   <q-layout view="lHh Lpr lFf" class="absolute-full">
     <modal-new-order></modal-new-order>
     <modal-setting></modal-setting>
+    <modal-block></modal-block>
     <modal-debt :open="$store.getters['auth/getDataUser'].debt"></modal-debt>
     <q-header class="bg-header">
       <q-toolbar>
@@ -475,6 +476,7 @@ import Messages from "./Messages";
 import ModalNewOrder from "../components/modals/ModalNewOrder.vue";
 import ModalSetting from "../components/modals/ModalSetting.vue";
 import ModalDebt from "../components/modals/ModalDebt.vue";
+import ModalBlock from "../components/modals/ModalBlock.vue";
 
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
@@ -485,7 +487,8 @@ export default {
     EssentialLink,
     ModalNewOrder,
     ModalSetting,
-    ModalDebt
+    ModalDebt,
+    ModalBlock
   },
   created() {
     this.flag = this.$store.getters["auth/getCartsStatus"];
@@ -498,13 +501,17 @@ export default {
     });
     this.prod = this.$store.getters["mode/getMode"];
     this.channelName = "Private-qs-venta-";
+    this.channelNameBlock = "Private-bloqueo-";
 
     if (this.$store.getters["auth/getGodMode"]) {
       this.channelName += "-1";
+      this.channelNameBlock += "-1";
     } else {
       this.channelName += this.$store.getters["auth/getDataUser"].id;
+      this.channelNameBlock += this.$store.getters["auth/getDataUser"].id;
     }
     this.privateChannel = this.Echo.channel(this.channelName);
+    this.privateChannelBlock = this.Echo2.channel(this.channelNameBlock);
     this.listenEvent();
   },
   mounted() {
@@ -530,7 +537,9 @@ export default {
       responsiveMobile: false,
       prod: null,
       privateChannel: null,
+      privateChannelBlock: null,
       channelName: "",
+      channelNameBlock: "",
       modalOpen: false,
       flag: 1
     };
@@ -544,7 +553,9 @@ export default {
     logout() {
       this.optionsAvailable = [];
       this.privateChannel = this.Echo.leaveChannel(this.channelName);
+      this.privateChannelBlock = this.Echo2.leaveChannel(this.channelNameBlock);
       this.channelName = "";
+      this.channelNameBlock = "";
       this.bus.$emit("logout");
     },
     modeResponsive() {
@@ -574,6 +585,9 @@ export default {
           vue.bell.play();
           vue.bus.$emit("new-order", data);
         }
+      });
+      this.privateChannelBlock.listen(".Notificacion", function(data) {
+          vue.bus.$emit("modal-block", data);
       });
     },
     async install() {
