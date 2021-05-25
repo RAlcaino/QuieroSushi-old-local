@@ -23,12 +23,6 @@
           style="font-size: 11px !important"
           @click="logout()"
         />
-        <q-btn
-          rounded
-          color="green"
-          label="Pagar"
-          style="font-size: 11px !important"
-        />
       </q-card-actions>
     </q-card>
   </q-dialog>

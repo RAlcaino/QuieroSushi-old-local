@@ -98,7 +98,6 @@ const getters = {
     return state.authenticated;
   },
   getDataLocal(state) {
-    console.log(state.currentLocal);
     return {
       id: state.currentLocal.id,
       name: state.currentLocal.name,
@@ -132,7 +131,6 @@ const getters = {
         contOFF++;
       } 
     }
-    console.log(contOFF);
     if(cartsLength===contON){
       return 1;
     }else if(cartsLength===contOFF){

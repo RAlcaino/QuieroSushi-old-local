@@ -368,7 +368,12 @@
       </div>
     </q-drawer>
     <q-page-container class="bg-white">
-      <template v-if="$store.getters['auth/getDataLocals'].length > 1 && $store.getters['auth/getDataUser'].role!=='God'">
+      <template
+        v-if="
+          $store.getters['auth/getDataLocals'].length > 1 &&
+            $store.getters['auth/getDataUser'].role !== 'God'
+        "
+      >
         <q-banner
           v-if="flag === null"
           dense
@@ -426,9 +431,21 @@
           </template>
         </q-banner>
       </template>
-      <template v-if="$store.getters['auth/getDataLocals'].length == 1 && $store.getters['auth/getDataUser'].role!=='God'">
-        <q-banner dense inline-actions 
-          :class="$store.getters['auth/getDataLocal'].cartStatus==0?'text-white bg-primary':'text-white bg-green'">
+      <template
+        v-if="
+          $store.getters['auth/getDataLocals'].length == 1 &&
+            $store.getters['auth/getDataUser'].role !== 'God'
+        "
+      >
+        <q-banner
+          dense
+          inline-actions
+          :class="
+            $store.getters['auth/getDataLocal'].cartStatus == 0
+              ? 'text-white bg-primary'
+              : 'text-white bg-green'
+          "
+        >
           El local {{ $store.getters["auth/getDataLocal"].name }} está
           <strong v-if="$store.getters['auth/getDataLocal'].cartStatus == 0">
             cerrado
@@ -441,9 +458,16 @@
               flat
               color="white"
               @click="
-                change($store.getters['auth/getDataLocal'].id, $store.getters['auth/getDataLocal'].cartStatus)
+                change(
+                  $store.getters['auth/getDataLocal'].id,
+                  $store.getters['auth/getDataLocal'].cartStatus
+                )
               "
-              :label="$store.getters['auth/getDataLocal'].cartStatus==0?'encender':'apagar'"
+              :label="
+                $store.getters['auth/getDataLocal'].cartStatus == 0
+                  ? 'encender'
+                  : 'apagar'
+              "
             />
           </template>
         </q-banner>
@@ -491,6 +515,10 @@ export default {
     ModalBlock
   },
   created() {
+    this.updateTime();
+    setInterval(() => {
+      this.updateTime();
+    }, 1000);
     this.flag = this.$store.getters["auth/getCartsStatus"];
     this.bus.$on("refresh-cartstatus", () => {
       this.flag = this.$store.getters["auth/getCartsStatus"];
@@ -544,12 +572,22 @@ export default {
       flag: 1
     };
   },
-  provide(){
-    return{
+  provide() {
+    return {
       logout: this.logout
-    }
+    };
   },
   methods: {
+    updateTime() {
+      let date = new Date();
+      let currentHour = date.getHours();
+      let currentMinute = date.getMinutes();
+      let currentSecond = date.getSeconds();
+      if (currentHour === 5 && currentMinute === 0 && currentSecond === 0) {
+        console.log("Son las 5:00am");
+        this.getLocals(true);
+      }
+    },
     logout() {
       this.optionsAvailable = [];
       this.privateChannel = this.Echo.leaveChannel(this.channelName);
@@ -587,7 +625,7 @@ export default {
         }
       });
       this.privateChannelBlock.listen(".Notificacion", function(data) {
-          vue.bus.$emit("modal-block", data);
+        vue.bus.$emit("modal-block", data);
       });
     },
     async install() {
@@ -615,7 +653,7 @@ export default {
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
-          this.getLocals();
+          this.getLocals(false);
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("locals.update", {
@@ -637,7 +675,7 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               console.log(response.data);
-              this.getLocals();
+              this.getLocals(false);
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
@@ -649,7 +687,10 @@ export default {
           });
       }
     },
-    getLocals() {
+    getLocals(flag) {
+      if(flag){
+        this.showLoading();
+      }
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -730,8 +771,12 @@ export default {
               this.bus.$emit("sync-locals-settings");
               this.flag = this.$store.getters["auth/getCartsStatus"];
 
-              if(this.$store.getters['auth/getDataLocals'].length === 1){
+              if (this.$store.getters["auth/getDataLocals"].length === 1) {
                 this.$store.commit("auth/setCurrentLocal", locals[0]);
+              }
+
+              if(flag){
+                window.location.reload();
               }
             } else {
               this.showNotification(response.data.message, "negative", "error");
