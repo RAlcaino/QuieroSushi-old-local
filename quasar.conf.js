@@ -13,7 +13,8 @@ module.exports = function (ctx) {
       'bus',
       'echo',
       'bell',
-      'unix'
+      'unix',
+      'env'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css

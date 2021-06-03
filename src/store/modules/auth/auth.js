@@ -7,17 +7,20 @@ const state = {
     email: "",
     role: "",
     locals: [],
-    debt:false
+    debt: false
   },
   availableMenuOptions: [],
-  currentLocal:{
-    id:null,
-    name:null,
-    image:null,
-    commune:null,
-    cartStatus:null
+  currentLocal: {
+    id: null,
+    name: null,
+    image: null,
+    commune: null,
+    cartStatus: null
   },
-  installPromptEvent:null
+  installPromptEvent: null,
+  comunas: [],
+  regiones: [],
+  ciudades: [],
 };
 const mutations = {
   setAvailableMenuOptions(state, payload) {
@@ -29,20 +32,20 @@ const mutations = {
     state.user.role = payload.role.name;
     state.user.locals = payload.locals;
 
-    if (payload.locals.length===0) {
-      state.user.debt=true;
-    }else{
-      if(payload.locals.length>1){
-        state.currentLocal.id=-1;
-        state.currentLocal.name="Todos";
-        if(state.user.id===-1){
-          state.currentLocal.image="icons/favicon-128.png";
-        }else{
-          state.currentLocal.image=payload.locals[0].image;
+    if (payload.locals.length === 0) {
+      state.user.debt = true;
+    } else {
+      if (payload.locals.length > 1) {
+        state.currentLocal.id = -1;
+        state.currentLocal.name = "Todos";
+        if (state.user.id === -1) {
+          state.currentLocal.image = "icons/favicon-128.png";
+        } else {
+          state.currentLocal.image = payload.locals[0].image;
         }
-        state.currentLocal.commune=null;
-      }else{
-        state.currentLocal=payload.locals[0];
+        state.currentLocal.commune = null;
+      } else {
+        state.currentLocal = payload.locals[0];
       }
     }
 
@@ -51,7 +54,7 @@ const mutations = {
     }
 
     state.token = payload.token;
-    state.availableMenuOptions=payload.availableMenuOptions;
+    state.availableMenuOptions = payload.availableMenuOptions;
     state.authenticated = true;
   },
   resetDataUserSesion(state) {
@@ -63,28 +66,64 @@ const mutations = {
     state.user.email = "";
     state.user.role = "";
     state.user.locals = [];
-    state.user.debt=false;
+    state.user.debt = false;
 
     state.token = "";
     state.availableMenuOptions = [];
     state.authenticated = false;
-    this.currentLocal={
-      id:null,
-      name:null,
-      image:null,
-      commune:null,
-      cartStatus:null
+    this.currentLocal = {
+      id: null,
+      name: null,
+      image: null,
+      commune: null,
+      cartStatus: null
     };
   },
   setCurrentLocal(state, payload) {
-    state.currentLocal=payload;
+    state.currentLocal = payload;
   },
   setInstallPromptEvent(state, payload) {
-    state.installPromptEvent=payload;
+    state.installPromptEvent = payload;
   },
   setLocals(state, payload) {
-    state.user.locals=payload;
+    state.user.locals = payload;
   },
+  setToken(state, payload) {
+    state.token = payload;
+  },
+  setZones(state, payload) {
+    state.comunas = [];
+    state.ciudades = [];
+    state.regiones = [];
+
+    var eachComunes = payload.comunas.map(function(item) {
+      let row = {
+        value: item.id,
+        label: item.nombre,
+        id_ciudad: item.id_ciudad,
+        id_region: item.id_region
+      };
+      state.comunas.push(row);
+    });
+
+
+    var eachCities = payload.ciudades.map(function(item) {
+      let row = {
+        value: item.id,
+        label: item.nombre,
+        id_region: item.id_region
+      };
+      state.ciudades.push(row);
+    });
+
+    var eachRegions = payload.region.map(function(item) {
+      let row = {
+        value: item.id,
+        label: item.nombre
+      };
+      state.regiones.push(row);
+    });
+  }
 };
 const actions = {};
 const getters = {
@@ -118,26 +157,33 @@ const getters = {
   getInstallPromptEvent(state) {
     return state.installPromptEvent;
   },
-  getCartsStatus(state){
-    let contON=0;
-    let contOFF=0;
-    let cartsLength=state.user.locals.length;
+  getCartsStatus(state) {
+    let contON = 0;
+    let contOFF = 0;
+    let cartsLength = state.user.locals.length;
 
     for (let index = 0; index < state.user.locals.length; index++) {
       const element = state.user.locals[index];
-      if(element.cartStatus===1){
+      if (element.cartStatus === 1) {
         contON++;
-      }else{
+      } else {
         contOFF++;
-      } 
+      }
     }
-    if(cartsLength===contON){
+    if (cartsLength === contON) {
       return 1;
-    }else if(cartsLength===contOFF){
+    } else if (cartsLength === contOFF) {
       return 0;
-    }else{
+    } else {
       return null;
     }
+  },
+  getZones(state) {
+    return {
+      cities: state.ciudades,
+      comunes: state.comunas,
+      regions: state.regiones
+    };
   }
 };
 

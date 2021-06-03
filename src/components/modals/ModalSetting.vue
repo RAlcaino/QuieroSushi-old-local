@@ -72,16 +72,16 @@
             </q-item>
           </template>
         </q-select>
-        <div v-if="localsFilter.length===1" style="margin-bottom:15px">
-              <q-icon
-                style="margin-right:5px;padding-bottom:5px;"
-                size="20px"
-                name="store"
-                color="blacklight"
-              />
-            <strong>{{localSelected.label}}</strong>
+        <div v-if="localsFilter.length === 1" style="margin-bottom:15px">
+          <q-icon
+            style="margin-right:5px;padding-bottom:5px;"
+            size="20px"
+            name="store"
+            color="blacklight"
+          />
+          <strong>{{ localSelected.label }}</strong>
         </div>
-        <div v-if="localSelected.value!==-1" style="margin-left: 15px">
+        <div v-if="localSelected.value !== -1" style="margin-left: 15px">
           <strong>Carrito:</strong>
           <q-toggle
             :false-value="0"
@@ -89,27 +89,31 @@
             icon="shopping_cart"
             v-model="cartStatus"
             color="green"
+            @input="changeStatus()"
           />
         </div>
-        <div v-if="localSelected.value===-1 && localsFilter.length > 1" style="display:flex;flex-direction:column; justify-content:center; align-items:center">
+        <div
+          v-if="localSelected.value === -1 && localsFilter.length > 1"
+          style="display:flex;flex-direction:column; justify-content:center; align-items:center"
+        >
           <div style="margin-bottom:8px">
             <strong> Carrito </strong>
           </div>
           <div style="display:flex;justify-content:center; align-items:center">
             <q-btn
-            rounded
-            color="primary"
-            label="Apagar todos"
-            style="font-size: 11px !important"
-            @click=" save(0)"
-          />
-          <q-btn
-            rounded
-            color="green"
-            label="Encender todos"
-            style="font-size: 11px !important; margin-left: 5px;"
-            @click=" save(1)"
-          />
+              rounded
+              color="primary"
+              label="Apagar todos"
+              style="font-size: 11px !important"
+              @click="save(0)"
+            />
+            <q-btn
+              rounded
+              color="green"
+              label="Encender todos"
+              style="font-size: 11px !important; margin-left: 5px;"
+              @click="save(1)"
+            />
           </div>
         </div>
       </q-card-section>
@@ -189,7 +193,7 @@ export default {
       this.initLocals();
       this.localsFilter = this.locals;
     });
-    
+
     this.bus.$on("open-settings", () => {
       this.open = true;
     });
@@ -240,7 +244,7 @@ export default {
       this.localFilter = "";
     },
     reset() {
-      if(this.$store.getters["auth/getDataLocals"].length!==1){
+      if (this.$store.getters["auth/getDataLocals"].length !== 1) {
         this.preparationTime = 0;
         this.cartStatus = null;
         this.deliveryTime = 0;
@@ -254,7 +258,7 @@ export default {
           deliveryTime: 0,
           cart: null
         };
-      }else{
+      } else {
         this.bus.$emit("sync-locals-settings");
       }
     },
@@ -265,10 +269,10 @@ export default {
       this.reset();
     },
     save(flag) {
-      if(flag===1){
-        this.cartStatus=1;
-      }else if(flag===0){
-        this.cartStatus=0;
+      if (flag === 1) {
+        this.cartStatus = 1;
+      } else if (flag === 0) {
+        this.cartStatus = 0;
       }
       this.showLoading();
       if (!this.prod) {
@@ -280,27 +284,23 @@ export default {
         var url = this.$store.getters["routes/getRoute"]("locals.update", {
           localId: this.localSelected.value
         });
-        if(flag===1 || flag===0){
-          var object={
-              status: this.cartStatus,
-          }
-        }else{
-          var object={
-              status: this.cartStatus,
-              deliveryTime: +this.deliveryTime,
-              preparationTime: +this.preparationTime
-          }
+        if (flag === 1 || flag === 0) {
+          var object = {
+            status: this.cartStatus
+          };
+        } else {
+          var object = {
+            status: this.cartStatus,
+            deliveryTime: +this.deliveryTime,
+            preparationTime: +this.preparationTime
+          };
         }
         this.$axios
-          .put(
-            url,
-            object,
-            {
-              headers: {
-                Authorization: this.$store.getters["auth/getToken"]
-              }
+          .put(url, object, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
             }
-          )
+          })
           .then(response => {
             if (response.data.status === "success") {
               console.log(response.data);
@@ -316,10 +316,47 @@ export default {
           });
       }
     },
-    changeStatus(){
-      console.log(this.cartStatus);
+    changeStatus() {
+      /*console.log(this.localSelected.value);
+      console.log(this.cartStatus);*/
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+          this.getLocals();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("locals.update", {
+          localId: this.localSelected.value
+        });
+        console.log(url);
+        this.$axios
+          .put(
+            url,
+            {
+              status: this.cartStatus
+            },
+            {
+              headers: {
+                Authorization: this.$store.getters["auth/getToken"]
+              }
+            }
+          )
+          .then(response => {
+            if (response.data.status === "success") {
+              this.getLocals();
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.localsFilter = this.locals;
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
     },
-    getLocals(){
+    getLocals() {
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -370,26 +407,23 @@ export default {
               preparationTime: 30
             }
           ];
-            this.$store.commit("auth/setLocals", locals);
-            this.bus.$emit("refresh-cartstatus");
-            this.bus.$emit("sync-locals-settings");
+          this.$store.commit("auth/setLocals", locals);
+          this.bus.$emit("refresh-cartstatus");
+          this.bus.$emit("sync-locals-settings");
         }, 3000);
       } else {
-        var vue=this;
+        var vue = this;
         var url = this.$store.getters["routes/getRoute"]("locals.get");
         this.$axios
-          .get(
-            url,
-            {
-              headers: {
-                Authorization: this.$store.getters["auth/getToken"]
-              }
+          .get(url, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
             }
-          )
+          })
           .then(response => {
             this.hideLoading();
             if (response.data.status === "success") {
-              var locals=response.data.result.sort(function(a, b) {
+              var locals = response.data.result.sort(function(a, b) {
                 if (a.name > b.name) {
                   return 1;
                 }
@@ -399,6 +433,7 @@ export default {
                 // a must be equal to b
                 return 0;
               });
+              //console.log(locals);
               this.$store.commit("auth/setLocals", locals);
               this.bus.$emit("sync-locals-settings");
               this.bus.$emit("refresh-cartstatus");
@@ -406,7 +441,7 @@ export default {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
-          
+
           .catch(error => {
             this.localsFilter = this.locals;
             this.hideLoading();
@@ -414,40 +449,44 @@ export default {
           });
       }
     },
-    initLocals(){
-          var vue = this;
-          vue.locals=[];
-          var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-          let row = {
-            value: item.id,
-            label: item.name + ", " + item.commune,
-            image: item.image,
-            commune: item.commune,
-            name: item.name,
-            deliveryTime: item.deliveryTime,
-            preparationTime: item.preparationTime,
-            cart: item.cartStatus
-          };
-          vue.locals.push(row);
-          vue.locals.sort(function(a, b) {
-              if (a.name > b.name) {
-                return 1;
-              }
-              if (a.name < b.name) {
-                return -1;
-              }
-              // a must be equal to b
-              return 0;
-            });
-          });
-      if(this.$store.getters["auth/getDataLocals"].length===1){
+    initLocals() {
+      var vue = this;
+      vue.locals = [];
+      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+        let row = {
+          value: item.id,
+          label: item.name + ", " + item.commune,
+          image: item.image,
+          commune: item.commune,
+          name: item.name,
+          deliveryTime: item.deliveryTime,
+          preparationTime: item.preparationTime,
+          cart: item.cartStatus
+        };
+        vue.locals.push(row);
+        vue.locals.sort(function(a, b) {
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+      });
+      if (this.$store.getters["auth/getDataLocals"].length === 1) {
         this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-        this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
+        this.localSelected.image = this.$store.getters[
+          "auth/getDataLocal"
+        ].image;
         this.localSelected.commune = this.$store.getters[
           "auth/getDataLocal"
         ].commune;
         this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
-        this.localSelected.cartStatus = this.$store.getters["auth/getDataLocal"].cartStatus;
+        this.localSelected.cartStatus = this.$store.getters[
+          "auth/getDataLocal"
+        ].cartStatus;
 
         if (this.localSelected.value !== -1) {
           this.localSelected.label =
@@ -456,12 +495,16 @@ export default {
           this.localSelected.label = this.localSelected.name;
         }
 
-        this.cartStatus=this.$store.getters["auth/getDataLocals"][0].cartStatus;
-        this.deliveryTime=this.$store.getters["auth/getDataLocals"][0].deliveryTime;
-        this.preparationTime=this.$store.getters["auth/getDataLocals"][0].preparationTime;
+        this.cartStatus = this.$store.getters[
+          "auth/getDataLocals"
+        ][0].cartStatus;
+        this.deliveryTime = this.$store.getters[
+          "auth/getDataLocals"
+        ][0].deliveryTime;
+        this.preparationTime = this.$store.getters[
+          "auth/getDataLocals"
+        ][0].preparationTime;
       }
-
-      
     }
   }
 };

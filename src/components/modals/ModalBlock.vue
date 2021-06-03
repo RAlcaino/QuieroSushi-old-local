@@ -38,14 +38,12 @@ export default {
       console.log(data);
       this.open = true;
       this.message = data.mensaje;
-      this.blockType = data.tipoBloqueo;
     });
   },
   data() {
     return {
       open: false,
       message: "",
-      blockType: "",
       prod:""
     };
   },

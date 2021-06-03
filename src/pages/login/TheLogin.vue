@@ -48,7 +48,6 @@
     <div
       v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
       style="position: absolute; bottom:20px;right:20px;"
-      lass="fit row no-wrap justify-end items-start content-start"
     >
       <q-btn
         round
@@ -60,6 +59,12 @@
         @click="install()"
       >
       </q-btn>
+    </div>
+    <div
+      v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
+      style="position: absolute; bottom:20px;left:20px;"
+    >
+      <p style="color:white"> v{{this.$store.getters["mode/getVersion"]}}</p>
     </div>
   </q-layout>
 </template>
@@ -227,12 +232,12 @@ export default {
           .post(url, this.user)
           .then(response => {
             if (response.data.status === "success") {
-              console.log(response.data.result);
+              //console.log(response.data.result);
               ls.set("token", response.data.result.token);
               let data = {
                 locals: response.data.result.locals,
-                availableMenuOptions: response.data.result.availableMenuOptions
-                //availableMenuOptions: availableMenuOptions
+                //availableMenuOptions: response.data.result.availableMenuOptions
+                availableMenuOptions: availableMenuOptions
               };
               this.bus.$emit("login", data);
               this.hideLoading();

@@ -3,6 +3,7 @@
     <modal-new-order></modal-new-order>
     <modal-setting></modal-setting>
     <modal-block></modal-block>
+    <modal-sync-page></modal-sync-page>
     <modal-debt :open="$store.getters['auth/getDataUser'].debt"></modal-debt>
     <q-header class="bg-header">
       <q-toolbar>
@@ -89,29 +90,29 @@
         <div class="user-sidebar">
           <div class="user-sidebar-border">
             <q-avatar size="90px">
-              <img :src="this.$store.getters['auth/getDataLocal'].image" />
+              <img :src="$store.getters['auth/getDataLocal'].image" />
             </q-avatar>
             <q-chip
               :color="
-                this.$store.getters['auth/getDataUser'].role === 'God'
+                $store.getters['auth/getDataUser'].role === 'God'
                   ? 'green'
                   : 'primary'
               "
               text-color="white"
             >
               {{
-                this.$store.getters["auth/getDataUser"].role === "God"
+                $store.getters["auth/getDataUser"].role === "God"
                   ? "Acceso Total"
-                  : this.$store.getters["auth/getDataUser"].role
+                  : $store.getters["auth/getDataUser"].role
               }}
             </q-chip>
             <q-chip
-              v-if="this.$store.getters['auth/getDataUser'].role !== 'God'"
+              v-if="$store.getters['auth/getDataUser'].role !== 'God'"
               color="green"
               text-color="white"
               icon="store"
             >
-              {{ this.$store.getters["auth/getDataLocal"].name }}
+              {{ $store.getters["auth/getDataLocal"].name }}
             </q-chip>
           </div>
         </div>
@@ -125,6 +126,12 @@
             </q-item-section>
           </q-item>
           <q-separator color="grey-11" inset />
+        </div>
+        <div
+          v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
+          style="position: absolute; bottom:0px;left:15px;"
+        >
+        <p> v{{this.$store.getters["mode/getVersion"]}}</p>
         </div>
 
         <!--
@@ -501,6 +508,8 @@ import ModalNewOrder from "../components/modals/ModalNewOrder.vue";
 import ModalSetting from "../components/modals/ModalSetting.vue";
 import ModalDebt from "../components/modals/ModalDebt.vue";
 import ModalBlock from "../components/modals/ModalBlock.vue";
+import ModalSyncPage from "../components/modals/ModalSyncPage.vue";
+import SecureLS from "secure-ls";
 
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
@@ -512,7 +521,8 @@ export default {
     ModalNewOrder,
     ModalSetting,
     ModalDebt,
-    ModalBlock
+    ModalBlock,
+    ModalSyncPage
   },
   created() {
     this.updateTime();
@@ -521,7 +531,12 @@ export default {
     }, 1000);
     this.flag = this.$store.getters["auth/getCartsStatus"];
     this.bus.$on("refresh-cartstatus", () => {
-      this.flag = this.$store.getters["auth/getCartsStatus"];
+      if(this.$store.getters['auth/getDataLocals'].length>1){
+        this.flag = this.$store.getters["auth/getCartsStatus"];
+      }else if(this.$store.getters['auth/getDataLocals'].length===1){
+        this.$store.commit("auth/setCurrentLocal", this.$store.getters['auth/getDataLocals'][0]);
+      }
+
     });
     this.bus.$on("stop-bell", () => {
       this.modalOpen = false;
@@ -529,7 +544,7 @@ export default {
     });
     this.prod = this.$store.getters["mode/getMode"];
     this.channelName = "Private-qs-venta-";
-    this.channelNameBlock = "Private-bloqueo-";
+    this.channelNameBlock = "Private-notificacion-";
 
     if (this.$store.getters["auth/getGodMode"]) {
       this.channelName += "-1";
@@ -547,6 +562,7 @@ export default {
     console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
     this.optionsAvailable = this.$store.getters["auth/getAvailableMenuOptions"];
     this.modeResponsive();
+    this.getZones();
   },
   computed: {
     responsiveMode() {
@@ -583,9 +599,9 @@ export default {
       let currentHour = date.getHours();
       let currentMinute = date.getMinutes();
       let currentSecond = date.getSeconds();
-      if (currentHour === 5 && currentMinute === 0 && currentSecond === 0) {
+      if (currentHour === 5 && currentMinute === 0  && currentSecond === 0) {
         console.log("Son las 5:00am");
-        this.getLocals(true);
+        this.refreshToken();
       }
     },
     logout() {
@@ -625,7 +641,11 @@ export default {
         }
       });
       this.privateChannelBlock.listen(".Notificacion", function(data) {
-        vue.bus.$emit("modal-block", data);
+        if(data.tipo==='Bloqueo'){
+          vue.bus.$emit("modal-block", data);
+        }else if(data.tipo==='Actualizacion'){
+          vue.bus.$emit("modal-sync-page", data);   
+        }
       });
     },
     async install() {
@@ -681,16 +701,12 @@ export default {
             }
           })
           .catch(error => {
-            this.localsFilter = this.locals;
             this.hideLoading();
             this.errorHandling(error);
           });
       }
     },
     getLocals(flag) {
-      if(flag){
-        this.showLoading();
-      }
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -772,7 +788,21 @@ export default {
               this.flag = this.$store.getters["auth/getCartsStatus"];
 
               if (this.$store.getters["auth/getDataLocals"].length === 1) {
+                /*let test={
+                  cartStatus: 0,
+                  commune: "San Miguel",
+                  deliveryTime: 5,
+                  id: 1913,
+                  image: "http://quierosushi.cl/locales/umeshu-sushi478.jpg",
+                  name: "Umeshu Sushi",
+                  preparationTime: 20
+                }*/
                 this.$store.commit("auth/setCurrentLocal", locals[0]);
+              }else{
+                if(vue.$store.getters["auth/getDataLocal"].id!==-1){
+                  let currentLocal= locals.find(item=>item.id===vue.$store.getters["auth/getDataLocal"].id);
+                  this.$store.commit("auth/setCurrentLocal",currentLocal);
+                }
               }
 
               if(flag){
@@ -783,12 +813,63 @@ export default {
             }
           })
           .catch(error => {
-            this.localsFilter = this.locals;
             this.hideLoading();
             this.errorHandling(error);
           });
       }
-    }
+    },
+    refreshToken() {
+      var ls = new SecureLS({ isCompression: false });
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.getLocals(true);
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("refresh.token");
+        this.$axios
+          .post(url, {},{
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              ls.set("token", response.data.result);
+              this.$store.commit("auth/setToken", response.data.result);
+              this.getLocals(true);
+              
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    },
+    getZones() {
+        var url = this.$store.getters["routes/getRoute"]("get.zones");
+        this.$axios
+          .get(url,{
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              this.$store.commit("auth/setZones", response.data.result);     
+              console.log(this.$store.getters["auth/getZones"]);       
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.errorHandling(error);
+          });
+    },
+    
   }
 };
 </script>

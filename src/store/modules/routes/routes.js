@@ -1,8 +1,8 @@
 const state = {
-  urlGlobal: "https://api.panelnuevo.quierosushi.cl/api", //PRO
+  //urlGlobal: "https://api.panelnuevo.quierosushi.cl/api", //PRO
   //urlGlobal: "http://127.0.0.1:8000/api",                 //LOCAL
-  //urlGlobal: "http://190.202.217.126:5000/api/public/api",  // ANY PUBLIC IP
-  //urlGlobal: "https://dev.api.panelnuevo.quierosushi.cl/api", // DEV
+  //urlGlobal: "http://190.77.145.42:5000/api/public/api",  // ANY PUBLIC IP
+  urlGlobal: "https://dev.api.panelnuevo.quierosushi.cl/api", // DEV
 
   routes: [
     {
@@ -48,6 +48,18 @@ const state = {
     {
       name: "get.url.pay",
       link: "/servicios/pay"
+    },
+    {
+      name: "refresh.token",
+      link: "/refresh"
+    },
+    {
+      name: "resource.local",
+      link: "/locals/{localId}"
+    },
+    {
+      name: "get.zones",
+      link: "/zonas"
     },
   ]
 };
