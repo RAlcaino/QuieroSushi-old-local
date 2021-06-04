@@ -188,12 +188,20 @@
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                   <p style="margin-left:10px; color: rgba(0,0,0,0.6)">Mapa</p>
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7845.882278920427!2d-66.90553655635158!3d10.505302380691653!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c2a592cbaaa7315%3A0x8e251652cf41fb4f!2sLa%20Candelaria%2C%20Caracas%2C%20Distrito%20Capital!5e0!3m2!1ses-419!2sve!4v1622000302055!5m2!1ses-419!2sve"
-                    style="border:0; border-radius: 15px; width: 100%; height:226px"
-                    allowfullscreen=""
-                    loading="lazy"
-                  ></iframe>
+                  <GmapMap
+                    :center="{ lat: +dataLocal.lat, lng: +dataLocal.lng }"
+                    :zoom="16"
+                    map-type-id="terrain"
+                    style="width: 100%; height: 226px; border-radius:10px;"
+                  >
+                    <GmapMarker
+                      v-for="(marker, index) in markers"
+                      :key="index"
+                      :position="marker"
+                      :clickable="true"
+                      :draggable="true"
+                    />
+                  </GmapMap>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -472,6 +480,7 @@ export default {
         id: null,
         label: ""
       },
+      markers: [],
       apiKey: this.apiKeyGoogle,
       baseUrl:
         "https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={apikeyGoogle}"
@@ -535,7 +544,9 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               this.mapperResponse(response.data.result);
+              this.getMarkers();
               this.hideLoading();
+              
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
@@ -743,10 +754,10 @@ export default {
           this.$axios
             .get(url)
             .then(response => {
-              let location=response.data.results[0].geometry.location;
-              this.dataLocal.lat=location.lat;
-              this.dataLocal.lng=location.lng;
-              console.log(this.dataLocal.lat, this.dataLocal.lng);
+              let location = response.data.results[0].geometry.location;
+              this.dataLocal.lat = location.lat;
+              this.dataLocal.lng = location.lng;
+              this.getMarkers();
             })
             .catch(error => {
               this.errorHandling(error);
@@ -755,6 +766,14 @@ export default {
       } else {
         console.log("falta informacion");
       }
+    },
+    getMarkers() {
+      this.markers = [];
+      let marker = {
+        lat: +this.dataLocal.lat,
+        lng: +this.dataLocal.lng
+      };
+      this.markers.push(marker);
     }
   }
 };
