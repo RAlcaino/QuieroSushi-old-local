@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf" class="absolute-full">
+  <q-layout view="lHh Lpr lFf">
     <modal-new-order></modal-new-order>
     <modal-setting></modal-setting>
     <modal-block></modal-block>
@@ -128,7 +128,6 @@
           <q-separator color="grey-11" inset />
         </div>
         <div
-          v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
           style="position: absolute; bottom:0px;left:15px;"
         >
         <p> v{{this.$store.getters["mode/getVersion"]}}</p>

@@ -26,7 +26,7 @@ const state = {
       link: "/pedidos/done"
     },
     {
-      name: "coupons",
+      name: "resource.coupons",
       link: "/cupones/{localId}"
     },
     {
@@ -60,6 +60,14 @@ const state = {
     {
       name: "get.zones",
       link: "/zonas"
+    },
+    {
+      name: "coupon.stand.out",
+      link: "/goUpHigh"
+    },
+    {
+      name: "coupon.go.up",
+      link: "/goUpCoupon"
     },
   ]
 };

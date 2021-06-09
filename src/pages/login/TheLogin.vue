@@ -61,7 +61,6 @@
       </q-btn>
     </div>
     <div
-      v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
       style="position: absolute; bottom:20px;left:20px;"
     >
       <p style="color:white"> v{{this.$store.getters["mode/getVersion"]}}</p>
@@ -236,8 +235,8 @@ export default {
               ls.set("token", response.data.result.token);
               let data = {
                 locals: response.data.result.locals,
-                //availableMenuOptions: response.data.result.availableMenuOptions
-                availableMenuOptions: availableMenuOptions
+                availableMenuOptions: response.data.result.availableMenuOptions
+                //availableMenuOptions: availableMenuOptions
               };
               this.bus.$emit("login", data);
               this.hideLoading();

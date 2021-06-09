@@ -91,6 +91,11 @@ const mutations = {
   setToken(state, payload) {
     state.token = payload;
   },
+  setLocalName(state, payload) {
+    let index= state.user.locals.findIndex(item=> item.id===payload.id);
+    state.user.locals[index].name=payload.nombre;
+    state.user.locals[index].commune=payload.comuna.label;
+  },
   setZones(state, payload) {
     state.comunas = [];
     state.ciudades = [];

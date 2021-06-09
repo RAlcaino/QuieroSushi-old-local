@@ -55,8 +55,9 @@
             />Destacar tus cupones
           </p>
           <p style="width: 100%; height:5%;font-size:13.5px; color:grey">
-            Haz que tu cupón suba a la primera posición de la página principal y
-            de la comuna donde está tu local.
+            Cada destacado equivale a 1 dia completo en la sección superior de
+            nuestra página principal y de la comuna donde esté tu local del
+            cupón que escojas.
           </p>
           <div
             class="fit row wrap justify-around items-start content-start responsive-a"
@@ -89,9 +90,8 @@
           <p
             style="width: 100%; height:5%;font-size:13.5px; color:grey; text-align:center"
           >
-            Cada destacado equivale a 1 dia completo en la sección superior de
-            nuestra página principal y de la comuna donde esté tu local del
-            cupón que escojas.
+            Haz que tu cupón suba a la primera posición de la página principal y
+            de la comuna donde está tu local.
           </p>
         </div>
         <div

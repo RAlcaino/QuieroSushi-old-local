@@ -38,19 +38,7 @@
                   </q-avatar>
                 </q-item-section>
               </q-item>
-
-              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <q-item-section>
-                  <q-input
-                    outlined
-                    rounded
-                    dense
-                    v-model="dataLocal.local"
-                    label="N° Local"
-                  />
-                </q-item-section>
-              </q-item>
-              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
                     color
@@ -62,14 +50,15 @@
                   />
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
                     outlined
                     rounded
                     dense
+                    :maxlength="9"
                     v-model="dataLocal.telefono_callcenter"
-                    label="Teléfono Principal"
+                    label="Teléfono (+56)"
                   />
                 </q-item-section>
               </q-item>
@@ -80,7 +69,8 @@
                     rounded
                     dense
                     v-model="dataLocal.telefono_emp"
-                    label="Teléfono Whatsapp"
+                    :maxlength="9"
+                    label="Teléfono notificaciones (+56)"
                   />
                 </q-item-section>
               </q-item>
@@ -91,18 +81,8 @@
                     rounded
                     dense
                     v-model="dataLocal.telefono"
-                    label="Teléfono Secundario"
-                  />
-                </q-item-section>
-              </q-item>
-              <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <q-item-section>
-                  <q-input
-                    type="textarea"
-                    outlined
-                    rounded
-                    v-model="dataLocal.horario"
-                    label="Horario de Atención"
+                    :maxlength="9"
+                    label="Teléfono notificaciones pago (+56)"
                   />
                 </q-item-section>
               </q-item>
@@ -185,6 +165,17 @@
                   <q-icon size="20px" name="my_location" />
                 </q-btn>
               </q-item>
+              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <q-item-section>
+                  <q-input
+                    outlined
+                    rounded
+                    dense
+                    v-model="dataLocal.local"
+                    label="N° Local"
+                  />
+                </q-item-section>
+              </q-item>
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                   <p style="margin-left:10px; color: rgba(0,0,0,0.6)">Mapa</p>
@@ -199,7 +190,6 @@
                       :key="index"
                       :position="marker"
                       :clickable="true"
-                      :draggable="true"
                     />
                   </GmapMap>
                 </q-item-section>
@@ -213,6 +203,104 @@
               dense
               class="text-capitalize bg-primary text-white"
               @click="updateLocal(true)"
+              >Guardar
+            </q-btn>
+          </q-card-actions>
+        </q-card>
+        <q-card
+          class="card-bg"
+          style="width:100%; height: auto; margin-top:15px"
+        >
+          <q-card-section class="text-h6 ">
+            <div class="text-h6 ">
+              <q-icon style="padding-bottom:4px" name="schedule"></q-icon>
+              Horarios
+            </div>
+          </q-card-section>
+          <q-card-section class="q-pa-sm">
+            <q-list class="row" style="justify-content:center">
+              <div
+                class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+                style="text-align:right"
+              >
+                <div v-for="dia in dataLocal.semana" :key="dia.dia_semana" style="display: flex;margin-bottom:10px;">
+                  <p
+                    style="width: 25%; margin:0; padding-top:10px; margin-right: 10px;"
+                  >
+                    {{dia.label}}:
+                  </p>
+                  <q-input
+                    color
+                    outlined
+                    rounded
+                    dense
+                    v-model="dia.hora_apertura"
+                    mask="fulltime" :rules="['fulltime']"
+                    class="input-schedule" style="margin-right:10px"
+                    label="Hora apertura"
+                  >
+                    <template v-slot:append>
+                      <q-icon name="access_time" class="cursor-pointer">
+                        <q-popup-proxy
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-time v-model="dia.hora_apertura" format24h with-seconds>
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-time>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                  <q-input
+                    color
+                    outlined
+                    rounded
+                    dense
+                    v-model="dia.hora_cierre"
+                    mask="fulltime" :rules="['fulltime']"
+                    
+                    class="input-schedule"
+                    label="Hora cierre"
+                  >
+                    <template v-slot:append>
+                      <q-icon name="access_time" class="cursor-pointer">
+                        <q-popup-proxy
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-time v-model="dia.hora_cierre" format24h with-seconds>
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-time>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
+              </div>
+            </q-list>
+          </q-card-section>
+          <q-card-actions align="center">
+            <q-btn
+              style="margin-bottom:10px"
+              rounded
+              dense
+              class="text-capitalize bg-primary text-white"
+              @click="updateSchedule()"
               >Guardar
             </q-btn>
           </q-card-actions>
@@ -246,7 +334,8 @@
                   dense
                   outlined
                   rounded
-                  v-model="dataLocal.telefono"
+                  v-model="dataLocal.telefono_dueno"
+                  :maxlength="9"
                   label="Teléfono"
                 />
               </q-item-section>
@@ -427,6 +516,7 @@ export default {
       locals: [],
       localSelected: null,
       dataLocal: {
+        id: null,
         imagen: "",
         nombre: "",
         direccion: "",
@@ -449,9 +539,11 @@ export default {
         telefono_dueno: "",
         nombre_legal: "",
         rut_legal: "",
-        tipo_constitucion: ""
+        tipo_constitucion: "",
+        semana:null
       },
       dataLocalOriginal: {
+        id: null,
         imagen: "",
         nombre: "",
         direccion: "",
@@ -474,12 +566,14 @@ export default {
         telefono_dueno: "",
         nombre_legal: "",
         rut_legal: "",
-        tipo_constitucion: ""
+        tipo_constitucion: "",
+        semana:null
       },
       region: {
         id: null,
         label: ""
       },
+      time: "10:56:00",
       markers: [],
       apiKey: this.apiKeyGoogle,
       baseUrl:
@@ -546,7 +640,7 @@ export default {
               this.mapperResponse(response.data.result);
               this.getMarkers();
               this.hideLoading();
-              
+              console.log(this.dataLocal);
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
@@ -566,28 +660,7 @@ export default {
     },
     init() {
       var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
+      this.formatLocals();
       this.localSelected = vue.locals[0];
       this.getDataLocal();
     },
@@ -614,6 +687,11 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
+              this.$store.commit("auth/setLocalName", this.dataLocal);
+              this.formatLocals();
+              this.localSelected = this.locals.find(
+                item => item.value === this.localSelected.value
+              );
               this.hideLoading();
             } else {
               this.hideLoading();
@@ -636,11 +714,8 @@ export default {
         comuna: this.dataLocal.comuna.label,
         telefono: this.dataLocal.telefono,
         telefono_callcenter: this.dataLocal.telefono_callcenter,
-        horario: this.dataLocal.horario,
         ciudad: this.dataLocal.ciudad.label,
-        region: {
-          id: this.dataLocal.region.value
-        },
+        region: this.dataLocal.region.value,
         telefono_emp: this.dataLocal.telefono_emp
       };
 
@@ -667,6 +742,7 @@ export default {
       return data;
     },
     mapperResponse(data) {
+      this.dataLocal.id = data.id_local;
       this.dataLocal.imagen = data.imagen;
       this.dataLocal.nombre = data.nombre;
       this.dataLocal.direccion = data.direccion;
@@ -695,9 +771,11 @@ export default {
       this.dataLocal.nombre_legal = data.nombre_legal;
       this.dataLocal.rut_legal = data.rut_legal;
       this.dataLocal.tipo_constitucion = data.tipo_constitucion;
+      this.dataLocal.semana = data.semana;
 
       //-----
 
+      this.dataLocalOriginal.id = data.id_local;
       this.dataLocalOriginal.imagen = data.imagen;
       this.dataLocalOriginal.nombre = data.nombre;
       this.dataLocalOriginal.direccion = data.direccion;
@@ -726,6 +804,7 @@ export default {
       this.dataLocalOriginal.nombre_legal = data.nombre_legal;
       this.dataLocalOriginal.rut_legal = data.rut_legal;
       this.dataLocalOriginal.tipo_constitucion = data.tipo_constitucion;
+      this.dataLocalOriginal.semana = data.semana;
     },
     getLocation() {
       if (
@@ -774,6 +853,75 @@ export default {
         lng: +this.dataLocal.lng
       };
       this.markers.push(marker);
+    },
+    formatLocals() {
+      var vue = this;
+      vue.locals = [];
+      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+        let row = {
+          value: item.id,
+          label: item.name + ", " + item.commune,
+          image: item.image,
+          commune: item.commune,
+          name: item.name,
+          cartStatus: item.cartStatus
+        };
+        vue.locals.push(row);
+        vue.locals.sort(function(a, b) {
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+      });
+    },
+    updateSchedule() {
+      let week=this.dataLocal.semana;
+      let weekWithoutLabel=[];
+      let eachday=week.map(function(item){
+        let day={
+          dia_semana:item.dia_semana,
+          hora_apertura:item.hora_apertura,
+          hora_cierre:item.hora_cierre
+        }
+        weekWithoutLabel.push(day);
+      });
+      let data={
+        semana:weekWithoutLabel
+      }
+      console.log(data);
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("resource.local", {
+          localId: this.localSelected.value
+        });
+        this.$axios
+          .put(url, data, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+               this.hideLoading();
+            } else {
+              this.hideLoading();
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
     }
   }
 };
@@ -783,5 +931,14 @@ export default {
 .card-bg {
   background-color: white;
   border-radius: 10px;
+}
+.input-schedule {
+  width: 25%;
+}
+
+@media screen and (max-width: 500px) {
+  .input-schedule {
+    width: 30%;
+  }
 }
 </style>
