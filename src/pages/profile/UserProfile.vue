@@ -57,7 +57,7 @@
                     rounded
                     dense
                     :maxlength="9"
-                    v-model="dataLocal.telefono_callcenter"
+                    v-model="dataLocal.telefono"
                     label="Teléfono (+56)"
                   />
                 </q-item-section>
@@ -68,7 +68,7 @@
                     outlined
                     rounded
                     dense
-                    v-model="dataLocal.telefono_emp"
+                    v-model="dataLocal.telefono_notificaciones"
                     :maxlength="9"
                     label="Teléfono notificaciones (+56)"
                   />
@@ -80,7 +80,7 @@
                     outlined
                     rounded
                     dense
-                    v-model="dataLocal.telefono"
+                    v-model="dataLocal.telefono_notificaciones_pagos"
                     :maxlength="9"
                     label="Teléfono notificaciones pago (+56)"
                   />
@@ -201,7 +201,7 @@
               style="margin-bottom:10px"
               rounded
               dense
-              class="text-capitalize bg-primary text-white"
+              class="text-capitalize bg-green text-white"
               @click="updateLocal(true)"
               >Guardar
             </q-btn>
@@ -223,20 +223,38 @@
                 class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                 style="text-align:right"
               >
-                <div v-for="dia in dataLocal.semana" :key="dia.dia_semana" style="display: flex;margin-bottom:10px;">
+                <div
+                  v-for="dia in dataLocal.semana"
+                  :key="dia.dia_semana"
+                  style="display: flex;margin-bottom:10px; justify-content:center; flex-wrap:wrap;"
+                >
+                  <div>
+                    <q-chip
+                      clickable
+                      @click="dia.estado = !dia.estado"
+                      :color="dia.estado == true ? 'green' : 'primary'"
+                      text-color="white"
+                      :icon="dia.estado == true ? 'lock_open' : 'lock'"
+                    >
+                      {{ dia.estado == true ? "Abierto" : "Cerrado" }}
+                    </q-chip>
+                  </div>
                   <p
-                    style="width: 25%; margin:0; padding-top:10px; margin-right: 10px;"
+                    style="font-weight:bold; width: 15%; margin:0; padding-top:10px; margin-right: 10px;"
                   >
-                    {{dia.label}}:
+                    {{ dia.label }}:
                   </p>
                   <q-input
+                    :disable="!dia.estado"
                     color
                     outlined
                     rounded
                     dense
                     v-model="dia.hora_apertura"
-                    mask="fulltime" :rules="['fulltime']"
-                    class="input-schedule" style="margin-right:10px"
+                    mask="fulltime"
+                    :rules="['fulltime']"
+                    class="input-schedule"
+                    style="margin-right:10px"
                     label="Hora apertura"
                   >
                     <template v-slot:append>
@@ -245,11 +263,15 @@
                           transition-show="scale"
                           transition-hide="scale"
                         >
-                          <q-time v-model="dia.hora_apertura" format24h with-seconds>
+                          <q-time
+                            v-model="dia.hora_apertura"
+                            format24h
+                            with-seconds
+                          >
                             <div class="row items-center justify-end">
                               <q-btn
                                 v-close-popup
-                                label="Close"
+                                label="Cerrar"
                                 color="primary"
                                 flat
                               />
@@ -260,13 +282,14 @@
                     </template>
                   </q-input>
                   <q-input
+                    :disable="!dia.estado"
                     color
                     outlined
                     rounded
                     dense
                     v-model="dia.hora_cierre"
-                    mask="fulltime" :rules="['fulltime']"
-                    
+                    mask="fulltime"
+                    :rules="['fulltime']"
                     class="input-schedule"
                     label="Hora cierre"
                   >
@@ -276,11 +299,15 @@
                           transition-show="scale"
                           transition-hide="scale"
                         >
-                          <q-time v-model="dia.hora_cierre" format24h with-seconds>
+                          <q-time
+                            v-model="dia.hora_cierre"
+                            format24h
+                            with-seconds
+                          >
                             <div class="row items-center justify-end">
                               <q-btn
                                 v-close-popup
-                                label="Close"
+                                label="Cerrar"
                                 color="primary"
                                 flat
                               />
@@ -299,7 +326,7 @@
               style="margin-bottom:10px"
               rounded
               dense
-              class="text-capitalize bg-primary text-white"
+              class="text-capitalize bg-green text-white"
               @click="updateSchedule()"
               >Guardar
             </q-btn>
@@ -434,7 +461,7 @@
               style="margin-bottom:10px"
               rounded
               dense
-              class="text-capitalize bg-primary text-white"
+              class="text-capitalize bg-green text-white"
               @click="updateLocal(false)"
               >Guardar
             </q-btn>
@@ -451,6 +478,8 @@
             <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <q-item-section>
                 <q-input
+                  :error-message="''"
+                  :error="false"
                   type="password"
                   dense
                   outlined
@@ -463,6 +492,8 @@
             <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <q-item-section>
                 <q-input
+                  :error-message="alertDifferentPassword===true?'Las contraseñas no son iguales':''"
+                  :error="alertDifferentPassword"
                   type="password"
                   dense
                   outlined
@@ -475,6 +506,8 @@
             <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <q-item-section>
                 <q-input
+                  :error-message="alertDifferentPassword===true?'Las contraseñas no son iguales':''"
+                  :error="alertDifferentPassword"
                   type="password"
                   dense
                   outlined
@@ -487,10 +520,12 @@
           </q-card-section>
           <q-card-actions align="center">
             <q-btn
+              :disable="validationPassword"
               style="margin-bottom:10px; margin-top:8px"
               rounded
               dense
-              class="text-capitalize bg-primary text-white"
+              @click="setPassword()"
+              class="text-capitalize bg-green text-white"
               >Guardar
             </q-btn>
           </q-card-actions>
@@ -506,12 +541,8 @@ export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   data() {
     return {
-      user_details: {},
       password_dict: {},
       mapData: "",
-      model: null,
-      options: ["Google", "Facebook", "Twitter", "Apple", "Oracle"],
-      shape: null,
       prod: null,
       locals: [],
       localSelected: null,
@@ -540,7 +571,9 @@ export default {
         nombre_legal: "",
         rut_legal: "",
         tipo_constitucion: "",
-        semana:null
+        semana: null,
+        telefono_notificaciones:null,
+        telefono_notificaciones_pagos:""
       },
       dataLocalOriginal: {
         id: null,
@@ -567,7 +600,9 @@ export default {
         nombre_legal: "",
         rut_legal: "",
         tipo_constitucion: "",
-        semana:null
+        semana: null,
+        telefono_notificaciones:null,
+        telefono_notificaciones_pagos:""
       },
       region: {
         id: null,
@@ -616,6 +651,51 @@ export default {
         this.dataLocal.ciudad = citiesFiltered[0];
       }
       return citiesFiltered;
+    },
+    validationPassword() {
+      let condition2=false;
+
+      let condition1 =
+        this.password_dict.current_password === undefined ||
+        this.password_dict.current_password === "" ||
+        this.password_dict.new_password === undefined ||
+        this.password_dict.new_password === "" ||
+        this.password_dict.confirm_new_password === undefined ||
+        this.password_dict.confirm_new_password === "";
+
+      if(this.password_dict.new_password !== undefined &&
+        this.password_dict.new_password !== "" && 
+        this.password_dict.confirm_new_password !== undefined &&
+        this.password_dict.confirm_new_password !== ""){
+          if(this.password_dict.new_password===this.password_dict.confirm_new_password){
+            condition2=false;
+          }else{
+            condition2=true;
+          }
+
+      }else{
+        condition2=false;
+      }
+
+      if (condition1 || condition2) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    alertDifferentPassword(){
+      if(this.password_dict.new_password !== undefined &&
+        this.password_dict.new_password !== "" && 
+        this.password_dict.confirm_new_password !== undefined &&
+        this.password_dict.confirm_new_password !== ""){
+          if(this.password_dict.new_password!==this.password_dict.confirm_new_password){
+            return true;
+          }else{
+            return false;
+          }
+      }else{
+        return false;
+      }
     }
   },
   methods: {
@@ -640,7 +720,6 @@ export default {
               this.mapperResponse(response.data.result);
               this.getMarkers();
               this.hideLoading();
-              console.log(this.dataLocal);
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
@@ -713,10 +792,10 @@ export default {
         lng: this.dataLocal.lng,
         comuna: this.dataLocal.comuna.label,
         telefono: this.dataLocal.telefono,
-        telefono_callcenter: this.dataLocal.telefono_callcenter,
+        telefono_notificaciones: parseInt(this.dataLocal.telefono_notificaciones),
+        telefono_notificaciones_pagos: this.dataLocal.telefono_notificaciones_pagos,
         ciudad: this.dataLocal.ciudad.label,
-        region: this.dataLocal.region.value,
-        telefono_emp: this.dataLocal.telefono_emp
+        region: this.dataLocal.region.value
       };
 
       return data;
@@ -754,6 +833,8 @@ export default {
       );
       this.dataLocal.telefono = data.telefono;
       this.dataLocal.telefono_callcenter = data.telefono_callcenter;
+      this.dataLocal.telefono_notificaciones = data.telefono_notificaciones.toString();
+      this.dataLocal.telefono_notificaciones_pagos = data.telefono_notificaciones_pagos;
       this.dataLocal.horario = data.horario;
       this.dataLocal.ciudad = this.$store.getters["auth/getZones"].cities.find(
         item => item.value === data.ciudad.id
@@ -771,7 +852,7 @@ export default {
       this.dataLocal.nombre_legal = data.nombre_legal;
       this.dataLocal.rut_legal = data.rut_legal;
       this.dataLocal.tipo_constitucion = data.tipo_constitucion;
-      this.dataLocal.semana = data.semana;
+      this.dataLocal.semana = this.weekStructure(data.semana);
 
       //-----
 
@@ -787,6 +868,8 @@ export default {
       ].comunes.find(item => item.value === data.comuna.id);
       this.dataLocalOriginal.telefono = data.telefono;
       this.dataLocalOriginal.telefono_callcenter = data.telefono_callcenter;
+      this.dataLocalOriginal.telefono_notificaciones = data.telefono_notificaciones.toString();
+      this.dataLocalOriginal.telefono_notificaciones_pagos = data.telefono_notificaciones_pagos;
       this.dataLocalOriginal.horario = data.horario;
       this.dataLocalOriginal.ciudad = this.$store.getters[
         "auth/getZones"
@@ -804,7 +887,7 @@ export default {
       this.dataLocalOriginal.nombre_legal = data.nombre_legal;
       this.dataLocalOriginal.rut_legal = data.rut_legal;
       this.dataLocalOriginal.tipo_constitucion = data.tipo_constitucion;
-      this.dataLocalOriginal.semana = data.semana;
+      this.dataLocalOriginal.semana = this.weekStructure(data.semana);
     },
     getLocation() {
       if (
@@ -825,7 +908,6 @@ export default {
         var finalAddress = address.trim().replace(/ /g, "+");
         var url = this.baseUrl.replace("{address}", finalAddress);
         url = url.replace("{apikeyGoogle}", this.apiKey);
-        console.log(url);
 
         if (!this.prod) {
           setTimeout(() => {}, 3000);
@@ -880,20 +962,21 @@ export default {
       });
     },
     updateSchedule() {
-      let week=this.dataLocal.semana;
-      let weekWithoutLabel=[];
-      let eachday=week.map(function(item){
-        let day={
-          dia_semana:item.dia_semana,
-          hora_apertura:item.hora_apertura,
-          hora_cierre:item.hora_cierre
+      let week = this.dataLocal.semana;
+      let weekWithoutLabel = [];
+      let eachday = week.map(function(item) {
+        if (item.estado) {
+          let day = {
+            dia_semana: item.dia_semana,
+            hora_apertura: item.hora_apertura,
+            hora_cierre: item.hora_cierre
+          };
+          weekWithoutLabel.push(day);
         }
-        weekWithoutLabel.push(day);
       });
-      let data={
-        semana:weekWithoutLabel
-      }
-      console.log(data);
+      let data = {
+        semana: weekWithoutLabel
+      };
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
@@ -911,7 +994,96 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-               this.hideLoading();
+              this.hideLoading();
+            } else {
+              this.hideLoading();
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    },
+    weekStructure(semana) {
+      let week = [];
+      let eachday = semana.map(function(item) {
+        let day = {
+          dia_semana: item.dia_semana,
+          hora_apertura: item.hora_apertura,
+          hora_cierre: item.hora_cierre,
+          label: item.label,
+          estado: true
+        };
+        week.push(day);
+      });
+
+      for (let index = 0; index < 7; index++) {
+        if (week[index] == undefined) {
+          week.push({
+            dia_semana: index,
+            hora_apertura: "00:00:00",
+            hora_cierre: "00:00:00",
+            label: this.weekDay(index),
+            estado: false
+          });
+        }
+      }
+
+      week.sort(function(a, b) {
+        if (a.dia_semana > b.dia_semana) {
+          return 1;
+        }
+        if (a.dia_semana < b.dia_semana) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      });
+      return week;
+    },
+    weekDay(day) {
+      if (day === 0) {
+        return "Domingo";
+      } else if (day === 1) {
+        return "Lunes";
+      } else if (day === 2) {
+        return "Martes";
+      } else if (day === 3) {
+        return "Miercoles";
+      } else if (day === 4) {
+        return "Jueves";
+      } else if (day === 5) {
+        return "Viernes";
+      } else if (day === 6) {
+        return "Sabado";
+      }
+    },
+    setPassword() {
+      let data={
+        contrasena_actual:this.password_dict.current_password,
+        contrasena_nueva:this.password_dict.new_password
+      };
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("change.password", {
+          userId: this.$store.getters["auth/getDataUser"].id
+        });
+        this.$axios
+          .put(url, data, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              this.password_dict={};
+              this.hideLoading();
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");

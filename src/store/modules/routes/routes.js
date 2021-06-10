@@ -69,6 +69,10 @@ const state = {
       name: "coupon.go.up",
       link: "/goUpCoupon"
     },
+    {
+      name: "change.password",
+      link: "/usuarios/{userId}"
+    },
   ]
 };
 const mutations = {};
