@@ -303,7 +303,9 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-              console.log(response.data);
+              if(this.$router.currentRoute.name==="cupones"){
+                this.bus.$emit("sync-coupons");
+              }
               this.getLocals();
             } else {
               this.showNotification(response.data.message, "negative", "error");
@@ -344,6 +346,9 @@ export default {
           )
           .then(response => {
             if (response.data.status === "success") {
+              if(this.$router.currentRoute.name==="cupones"){
+                this.bus.$emit("sync-coupons");
+              }
               this.getLocals();
             } else {
               this.showNotification(response.data.message, "negative", "error");

@@ -1,6 +1,7 @@
 <template>
   <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
     <the-aditionals :localName="local.label"></the-aditionals>
+    <the-edit></the-edit>
     <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
       <q-btn flat round dense icon="confirmation_number" />
       <q-toolbar-title :style="FontSize"> Cupones</q-toolbar-title>
@@ -261,14 +262,19 @@
 
 <script>
 import TheAditionals from "./dialogs/TheAditionals.vue";
+import TheEdit from "./dialogs/TheEdit.vue";
 
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   components: {
-    TheAditionals
+    TheAditionals,
+    TheEdit
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+    this.bus.$on("sync-coupons",()=>{
+      this.sync();
+    });
   },
   mounted() {
     this.initLocals();
@@ -558,7 +564,7 @@ export default {
     },
     dialogStandOut(item) {
       if (this.availableStandOut == 0) {
-        this.bus.$emit("open-aditionals", "just-one");
+        this.bus.$emit("open-aditionals", "");
       } else {
         this.showLoading();
         if (!this.prod) {
@@ -595,7 +601,7 @@ export default {
     },
     dialogGoUp(item) {
       if (this.availableGoUp == 0) {
-        this.bus.$emit("open-aditionals", "just-two");
+        this.bus.$emit("open-aditionals");
       } else {
         this.showLoading();
         if (!this.prod) {
@@ -631,10 +637,10 @@ export default {
       }
     },
     dialogAditionals() {
-      this.bus.$emit("open-aditionals", "all");
+      this.bus.$emit("open-aditionals");
     },
     dialogEdit(item) {
-      console.log(item);
+      this.bus.$emit("open-edit-coupon",item);
     },
     filterFn(val) {
       if (val === "") {

@@ -41,7 +41,6 @@
           />{{ localName }}
         </p>
         <div
-          v-if="section === 'just-one' || section === 'all'"
           style="width: 95%; border-radius:15px; border: 1px solid rgba(0,0,0,0.3);margin-bottom:20px;padding: 20px;"
         >
           <p
@@ -94,7 +93,6 @@
           </p>
         </div>
         <div
-          v-if="section === 'just-two' || section === 'all'"
           style="width: 95%; border-radius:15px; border: 1px solid rgba(0,0,0,0.3);margin-bottom:20px; padding: 20px;"
         >
           <p
@@ -184,9 +182,8 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.getPrices();
-    this.bus.$on("open-aditionals", data => {
+    this.bus.$on("open-aditionals", () => {
       this.card = true;
-      this.section = data;
     });
   },
   mounted() {
@@ -196,7 +193,6 @@ export default {
     return {
       card: false,
       prod: null,
-      section: "",
       responsiveMobile: false,
       pricesGoUp: [],
       pricesStandOut: [],
@@ -258,16 +254,9 @@ export default {
       return this.total;
     },
     sectionStyle() {
-      if (this.section === "all" || this.responsiveMobile) {
         return {
           overflowY: "scroll"
         };
-      } else {
-        return {
-          overflowY: "hidden",
-          height: "auto"
-        };
-      }
     }
   },
   methods: {

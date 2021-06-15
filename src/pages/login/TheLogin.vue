@@ -99,9 +99,9 @@ export default {
     login() {
       var availableMenuOptions = [
         {
-          label: "Mi perfil",
-          link: "/perfil",
-          icon: "person"
+          label: "Mis Locales",
+          link: "/locales",
+          icon: "store"
         },
         {
           label: "Home",
@@ -235,8 +235,8 @@ export default {
               ls.set("token", response.data.result.token);
               let data = {
                 locals: response.data.result.locals,
-                availableMenuOptions: response.data.result.availableMenuOptions
-                //availableMenuOptions: availableMenuOptions
+                //availableMenuOptions: response.data.result.availableMenuOptions
+                availableMenuOptions: availableMenuOptions
               };
               this.bus.$emit("login", data);
               this.hideLoading();

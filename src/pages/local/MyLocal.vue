@@ -251,8 +251,6 @@
                     rounded
                     dense
                     v-model="dia.hora_apertura"
-                    mask="fulltime"
-                    :rules="['fulltime']"
                     class="input-schedule"
                     style="margin-right:10px"
                     label="Hora apertura"
@@ -266,7 +264,6 @@
                           <q-time
                             v-model="dia.hora_apertura"
                             format24h
-                            with-seconds
                           >
                             <div class="row items-center justify-end">
                               <q-btn
@@ -288,8 +285,6 @@
                     rounded
                     dense
                     v-model="dia.hora_cierre"
-                    mask="fulltime"
-                    :rules="['fulltime']"
                     class="input-schedule"
                     label="Hora cierre"
                   >
@@ -302,7 +297,6 @@
                           <q-time
                             v-model="dia.hora_cierre"
                             format24h
-                            with-seconds
                           >
                             <div class="row items-center justify-end">
                               <q-btn
@@ -536,6 +530,7 @@
 </template>
 
 <script>
+import CardItemVue from 'src/components/cards/CardItem.vue';
 export default {
   name: "UserProfile",
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
@@ -1007,12 +1002,14 @@ export default {
       }
     },
     weekStructure(semana) {
+
       let week = [];
-      let eachday = semana.map(function(item) {
+      let result=this.uniqueDayWeek(semana);
+      let eachday = result.map(function(item) {
         let day = {
           dia_semana: item.dia_semana,
-          hora_apertura: item.hora_apertura,
-          hora_cierre: item.hora_cierre,
+          hora_apertura: item.hora_apertura.substr(0,5),
+          hora_cierre: item.hora_cierre.substr(0,5),
           label: item.label,
           estado: true
         };
@@ -1020,11 +1017,11 @@ export default {
       });
 
       for (let index = 0; index < 7; index++) {
-        if (week[index] == undefined) {
+        if (!week.some(el=>el.dia_semana===index)) {
           week.push({
             dia_semana: index,
-            hora_apertura: "00:00:00",
-            hora_cierre: "00:00:00",
+            hora_apertura: "00:00",
+            hora_cierre: "00:00",
             label: this.weekDay(index),
             estado: false
           });
@@ -1094,6 +1091,23 @@ export default {
             this.errorHandling(error);
           });
       }
+    },
+    uniqueDayWeek(week){
+      const uniqueWeek = [];
+
+      for(var i = 0; i < week.length; i++) {
+      
+        const item = week[i];
+      
+        if(uniqueWeek.length!==0){
+          if(!uniqueWeek.some(el=>el.dia_semana===item.dia_semana)) {
+            uniqueWeek.push(item);
+          }
+        }else{
+           uniqueWeek.push(item);
+        }
+      }
+      return uniqueWeek;
     }
   }
 };

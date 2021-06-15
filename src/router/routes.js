@@ -50,6 +50,7 @@ const routes = [
         }
       },
       {
+        name:"cupones",
         path: "/cupones",
         component: () => import("pages/coupons/TheCoupons.vue"),
         beforeEnter: (to, from, next) => {
@@ -78,12 +79,12 @@ const routes = [
         }
       },
       {
-        name: "profile",
-        path: "/perfil",
-        component: () => import("src/pages/profile/UserProfile.vue"),
+        name: "local",
+        path: "/locales",
+        component: () => import("src/pages/local/MyLocal.vue"),
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
-            if (accessTo("Mi perfil")) {
+            if (accessTo("Mis Locales")) {
               next();
             } else {
               next("/404");
@@ -111,10 +112,6 @@ const routes = [
       },
       /* Template Paths - It could be useful*/
       { path: "/Dashboard2", component: () => import("pages/Dashboard2.vue") },
-      {
-        path: "/Profile",
-        component: () => import("src/pages/profile/UserProfile.vue")
-      },
       { path: "/Map", component: () => import("pages/Map.vue") },
       { path: "/MapMarker", component: () => import("pages/MapMarker.vue") },
       { path: "/StreetView", component: () => import("pages/StreetView.vue") },
