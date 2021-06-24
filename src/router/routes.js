@@ -1,158 +1,230 @@
 import jwt_decode from "jwt-decode";
 import SecureLS from "secure-ls";
+import { Store } from "../store/index.js";
+
 var ls = new SecureLS({ isCompression: false });
 
 const routes = [
   {
-    path: '/',
-    beforeEnter:(to,from,next)=>{
-      if(isAuthenticated()){
+    path: "/",
+    beforeEnter: (to, from, next) => {
+      if (isAuthenticated()) {
         next("/pedidos");
-      }else{
+      } else {
         next("/login");
       }
     }
   },
   {
-    path: '/home',
-    component: () => import('layouts/MainLayout.vue'),
+    path: "/home",
+    component: () => import("layouts/MainLayout.vue"),
     children: [
-      { 
-        path: '', 
-        component: () => import('pages/dashboard/Dashboard.vue'),
-        beforeEnter:(to,from,next)=>{
-          if(isAuthenticated()){
-            if(accessTo('All')){
+      {
+        path: "",
+        component: () => import("pages/dashboard/Dashboard.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("Home")) {
               next();
-            }
-            else{
+            } else {
               next("/404");
             }
-          }else{
+          } else {
             next("/login");
           }
         }
       },
-      { 
-        path: '/pedidos', 
-        component: () => import('pages/orders/TheOrders.vue'),
-        beforeEnter:(to,from,next)=>{
-          if(isAuthenticated()){
-            if(accessTo('All')){
+      {
+        path: "/pedidos",
+        component: () => import("pages/orders/TheOrders.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("Pedidos")) {
               next();
-            }
-            else{
+            } else {
               next("/404");
             }
-          }else{
+          } else {
             next("/login");
           }
         }
       },
-      { 
-        path: '/cupones', 
-        component: () => import('pages/coupons/TheCoupons.vue'),
-        beforeEnter:(to,from,next)=>{
-          if(isAuthenticated()){
-            if(accessTo('All')){
+      {
+        name: "cupones",
+        path: "/cupones",
+        component: () => import("pages/coupons/TheCoupons.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("Cupones")) {
               next();
-            }
-            else{
+            } else {
               next("/404");
             }
-          }else{
+          } else {
             next("/login");
           }
         }
       },
-      
-      
-      
+      {
+        name: "checkout",
+        path: "/checkout",
+        component: () => import("src/pages/payment/Checkout.vue"),
+        props: true,
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            next();
+          } else {
+            next("/login");
+          }
+        }
+      },
+      {
+        name: "local",
+        path: "/locales",
+        component: () => import("src/pages/local/MyLocal.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("Mis Locales")) {
+              next();
+            } else {
+              next("/404");
+            }
+          } else {
+            next("/login");
+          }
+        }
+      },
+      {
+        name: "admin-users",
+        path: "/administrar-usuarios",
+        component: () => import("src/pages/cruds/users/UsersPage.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("Usuarios")) {
+              next();
+            } else {
+              next("/404");
+            }
+          } else {
+            next("/login");
+          }
+        }
+      },
+      {
+        name: "orders-stadistics",
+        path: "/ventas",
+        component: () => import("src/pages/ordersStadistics/ordersStadistics.vue"),
+        /*beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("Ventas")) {
+              next();
+            } else {
+              next("/404");
+            }
+          } else {
+            next("/login");
+          }
+        }*/
+      },
       /* Template Paths - It could be useful*/
-      {path: '/Dashboard2', component: () => import('pages/Dashboard2.vue')},
-      {path: '/Profile', component: () => import('pages/UserProfile.vue')},
-      {path: '/Map', component: () => import('pages/Map.vue')},
-      {path: '/MapMarker', component: () => import('pages/MapMarker.vue')},
-      {path: '/StreetView', component: () => import('pages/StreetView.vue')},
-      {path: '/TreeTable', component: () => import('pages/TreeTable.vue')},
-      {path: '/Charts', component: () => import('pages/Charts.vue')},
-      {path: '/Cards', component: () => import('pages/Cards.vue')},
-      {path: '/Tables', component: () => import('pages/Tables.vue')},
-      {path: '/Contact', component: () => import('pages/Contact.vue')},
-      {path: '/Checkout', component: () => import('pages/Checkout.vue')},
-      {path: '/Calendar', component: () => import('pages/Calendar.vue')},
-      {path: '/Pagination', component: () => import('pages/Pagination.vue')},
-      {path: '/Taskboard', component: () => import('pages/TaskBoard.vue')},
-      {path: '/Ecommerce', component: () => import('pages/ProductCatalogues.vue')},
+      { path: "/Dashboard2", component: () => import("pages/Dashboard2.vue") },
+      { path: "/Map", component: () => import("pages/Map.vue") },
+      { path: "/MapMarker", component: () => import("pages/MapMarker.vue") },
+      { path: "/StreetView", component: () => import("pages/StreetView.vue") },
+      { path: "/TreeTable", component: () => import("pages/TreeTable.vue") },
+      { path: "/Charts", component: () => import("pages/Charts.vue") },
+      { path: "/Cards", component: () => import("pages/Cards.vue") },
+      { path: "/Tables", component: () => import("pages/Tables.vue") },
+      { path: "/Contact", component: () => import("pages/Contact.vue") },
+      { path: "/Calendar", component: () => import("pages/Calendar.vue") },
+      { path: "/Pagination", component: () => import("pages/Pagination.vue") },
+      { path: "/Taskboard", component: () => import("pages/TaskBoard.vue") },
+      {
+        path: "/Ecommerce",
+        component: () => import("pages/ProductCatalogues.vue")
+      }
     ]
   },
   {
-    path: '/Lock',
-    component: () => import('pages/LockScreen.vue')
+    path: "/Lock",
+    component: () => import("pages/LockScreen.vue")
   },
   {
-    path: '/mantenimiento',
-    component: () => import('pages/Maintenance.vue')
+    path: "/mantenimiento",
+    component: () => import("pages/Maintenance.vue")
   },
   {
-    path: '/Pricing',
-    component: () => import('pages/Pricing.vue')
+    path: "/Pricing",
+    component: () => import("pages/Pricing.vue")
   },
   {
-    path: '/login',
-    component: () => import('pages/login/TheLogin.vue'),
-    beforeEnter:(to,from,next)=>{
-      if(isAuthenticated()){
-        next("/home");
-      }else{
+    path: "/login",
+    component: () => import("pages/login/TheLogin.vue"),
+    beforeEnter: (to, from, next) => {
+      if (isAuthenticated()) {
+        next("/pedidos");
+      } else {
         next();
       }
     }
-
   },
   {
-    path: '/Mail',
-    component: () => import('layouts/Mail.vue')
+    name: "payment-sucess",
+    path: "/pago-exito",
+    component: () => import("src/pages/payment/TheConfirm.vue"),
+    beforeEnter: (to, from, next) => {
+      if (isAuthenticated()) {
+        next();
+      } else {
+        next("/login");
+      }
+    }
   },
   {
-    path: '/Lock-2',
-    component: () => import('pages/LockScreen-2.vue')
+    name: "payment-error",
+    path: "/pago-error",
+    component: () => import("src/pages/payment/TheError.vue"),
+    beforeEnter: (to, from, next) => {
+      if (isAuthenticated()) {
+        next();
+      } else {
+        next("/login");
+      }
+    }
+  },
+  {
+    path: "/Mail",
+    component: () => import("layouts/Mail.vue")
+  },
+  {
+    path: "/Lock-2",
+    component: () => import("pages/LockScreen-2.vue")
   }
-]
+];
 
 // Always leave this as last one
-if (process.env.MODE !== 'ssr') {
+if (process.env.MODE !== "ssr") {
   routes.push({
-    path: '*',
-    component: () => import('pages/Error404.vue')
-  })
+    path: "*",
+    component: () => import("pages/Error404.vue")
+  });
 }
 
-function isAuthenticated(){
-  let token=ls.get('token');
-  
-  if(token!==''){
-    //Check token here 
+function isAuthenticated() {
+  if (Store.getters["auth/getAuthenticated"]) {
     return true;
-  }
-  else{
+  } else {
     return false;
   }
 }
 
-function accessTo(role){
-  let user= jwt_decode(ls.get('token'));
-
-  if(role===user.role.name.trim() || role==='All'){
+function accessTo(option) {
+  let availableMenuOptions = Store.getters["auth/getAvailableMenuOptions"];
+  if (availableMenuOptions.some(item => item.label === option)) {
     return true;
-  }
-  else{
+  } else {
     return false;
   }
 }
 
-
- 
-
-
-export default routes
+export default routes;

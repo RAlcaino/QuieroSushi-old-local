@@ -7,26 +7,38 @@
     <q-card class="my-card" style="width: 450px; border-radius:10px;">
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
-          <q-tab label="Detalle" name="one" />
+          <q-tab
+            name="one"
+          >
+            <strong v-if="$store.getters['auth/getDataUser'].role === 'God'">N° Pedido: {{ orderDetail.id }}</strong>
+            <strong v-else>Detalle</strong>
+          </q-tab>
         </q-tabs>
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="one" class="tab-panel" v-if="orderDetail.product">
-            <q-list class="list-style">
-              <q-item v-if="orderDetail.extras" v-ripple style="padding: 8px 0 !important">
+            <q-list class="list-style" style="border-bottom: 1.2px dotted #000">
+              <q-item
+                v-if="orderDetail.extras"
+                v-ripple
+                style="padding: 8px 0 !important"
+              >
                 <q-item-section avatar>
-                  <q-icon
-                    style="margin-left:15px"
-                    color="green"
-                    name="check_circle"
+                  <img
+                    src="~assets/salsas.jpg"
+                    width="50"
+                    style="border-radius:10%"
                   />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>
+                  <q-item-label
+                    style="text-align: left;color:#333; margin:0;font-weight:bold; font-size: 14px"
+                  >
                     Palitos: {{ orderDetail.extras.chopsticks }} | Jengibre:
                     {{ orderDetail.extras.ginger }} | Wasabi:
                     {{ orderDetail.extras.wasabi }}
                   </q-item-label>
+                  <q-item-label caption> Incluido</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -36,39 +48,76 @@
                 style="padding: 8px 0 !important"
               >
                 <q-item-section avatar>
-                  <q-icon
-                    style="margin-left:15px"
-                    color="green"
-                    name="check_circle"
+                  <img
+                    :src="item.detail.image"
+                    width="50"
+                    style="border-radius:10%"
                   />
                 </q-item-section>
-                <q-item-section>
-                  <q-item-label>
-                    {{ item.quantity }} x {{ item.detail.name }} x ${{
-                      formatNumber(item.detail.price)
-                    }}</q-item-label
+                <q-item-section
+                  class="fit row wrap justify-between items-start content-start"
+                  style="flex-direction: row !important"
+                >
+                  <q-item-label
+                    style="width: 60%; font-weight:bold;font-size: 14px; color: #333"
                   >
+                    {{ item.quantity }} x {{ item.detail.name }}
+                  </q-item-label>
+                  <q-item-label
+                    style="width: 40%; text-align: right; margin:0;font-weight:bold; color:#ff2d2d; font-size: 14px"
+                  >
+                    {{ " $" + formatNumber(item.quantity * item.detail.price) }}
+                  </q-item-label>
                   <q-item-label caption>
                     {{
-                      " $" + formatNumber(item.quantity * item.detail.price)
+                      " $" + formatNumber(item.detail.price) + " C/U"
                     }}</q-item-label
                   >
                 </q-item-section>
               </q-item>
             </q-list>
             <div class="tab-overview-footer">
-              <p>
-                <strong style="color: #333">Subtotal: </strong> $
-                {{ formatNumber(orderDetail.subtotal) }}
+              <p v-if="orderDetail.discount!==0" style="font-size:14px">
+                <strong style="color: green;">Descuento incluido</strong>
               </p>
-              <p>
-                <strong style="color: #333">Costo Despacho: </strong> $
-                {{ formatNumber(orderDetail.deliveryCost) }}
+              <p style="font-size:14px">
+                <strong style="color: #333;">Subtotal: </strong> ${{ formatNumber(orderDetail.subtotal) }}
               </p>
-              <p>
-                <strong style="color: #333">Total: </strong>$
-                {{ formatNumber(orderDetail.total) }}
+              <p style="font-size:14px">
+                <strong style="color: #333;">Costo Despacho: </strong> ${{ formatNumber(orderDetail.deliveryCost) }}
               </p>
+              <p style="font-size:14px">
+                <strong style="color: #333;">Total: </strong> <span style="color:#ff2d2d; font-weight:bold">${{ formatNumber(orderDetail.total) }}</span>
+              </p>
+            </div>
+            <div class="tab-overview-footer">
+              <q-list>
+                <!--<q-item v-if="orderDetail.payDetail.address.trim()!==''">
+                  <q-item-section avatar>
+                    <q-icon name="room" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Dirección completa del cliente</q-item-label>
+                    <q-item-label caption>{{ orderDetail.payDetail.address.trim()}}. 
+                      <template v-if="orderDetail.payDetail.address2!=''">
+                      <span v-if="orderDetail.payDetail.address2.search('dpto')==-1">Dpto/Ubicacion:</span> {{orderDetail.payDetail.address2.trim()}}. 
+                      </template>
+                      {{orderDetail.payDetail.userCommune.trim()}}</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-separator v-if="orderDetail.aditionalMessage!==''" spaced inset ></q-separator>-->
+
+                <q-item v-if="orderDetail.aditionalMessage!==''">
+                    <q-item-section avatar>
+                    <q-icon name="message" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Mensaje del cliente</q-item-label>
+                    <q-item-label caption>{{orderDetail.aditionalMessage}}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
             </div>
           </q-tab-panel>
         </q-tab-panels>
@@ -161,7 +210,7 @@ export default {
 }
 
 .list-style {
-  margin-left: 50px;
+  margin-left: 20px;
 }
 
 @media screen and (max-width: 600px) {

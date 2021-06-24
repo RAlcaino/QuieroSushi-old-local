@@ -1,41 +1,94 @@
 const state = {
-  urlGlobal: "https://api.panelnuevo.quierosushi.cl/api",
-  routes: [
-    {
-      name: "login",
-      link: "/login"
-    },
-    {
-      name: "orders",
-      link: "/pedidos/{localId}"
-    },
-    {
-      name: "order.confirm",
-      link: "/pedidos/confirm"
-    },
-    {
-      name: "order.cancel",
-      link: "/pedidos/cancel"
-    },
-    {
-      name: "order.done",
-      link: "/pedidos/done"
-    },
-    {
-      name: "coupons",
-      link: "/cupones/{localId}"
-    },
-    {
-      name: "coupon.change.status",
-      link: "/cupones/change"
-    },
-    {
-      name: "services.prices",
-      link: "/servicios/prices"
-    },
-  ]
+  urlGlobal: "",
+  routes: []
 };
-const mutations = {};
+const mutations = {
+  setLinks(state) {
+    state.urlGlobal = process.env.API_URL; 
+    state.routes = [
+      {
+        name: "login",
+        link: "/login"
+      },
+      {
+        name: "orders",
+        link: "/pedidos/{userId}"
+      },
+      {
+        name: "order.confirm",
+        link: "/pedidos/confirm"
+      },
+      {
+        name: "order.cancel",
+        link: "/pedidos/cancel"
+      },
+      {
+        name: "order.done",
+        link: "/pedidos/done"
+      },
+      {
+        name: "resource.coupons",
+        link: "/cupones/{localId}"
+      },
+      {
+        name: "coupon.change.status",
+        link: "/cupones/change"
+      },
+      {
+        name: "services.prices",
+        link: "/servicios/prices"
+      },
+      {
+        name: "locals.update",
+        link: "/locales/update/{localId}"
+      },
+      {
+        name: "locals.get",
+        link: "/locales/get"
+      },
+      {
+        name: "get.url.pay",
+        link: "/servicios/pay"
+      },
+      {
+        name: "refresh.token",
+        link: "/refresh"
+      },
+      {
+        name: "resource.local",
+        link: "/locals/{localId}"
+      },
+      {
+        name: "get.zones",
+        link: "/zonas"
+      },
+      {
+        name: "coupon.stand.out",
+        link: "/goUpHigh"
+      },
+      {
+        name: "coupon.go.up",
+        link: "/goUpCoupon"
+      },
+      {
+        name: "change.password",
+        link: "/usuarios/{userId}"
+      },
+      {
+        name: "get.titles",
+        link: "/title"
+      },
+      {
+        name: "refresh.session",
+        link: "/refresh/session"
+      },
+      {
+        name: "orders.history",
+        link: "/history"
+      },
+    ];
+  }
+};
 const actions = {};
 const getters = {
   getRoutes: state => {

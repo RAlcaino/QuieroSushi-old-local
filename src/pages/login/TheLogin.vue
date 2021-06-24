@@ -1,11 +1,8 @@
 <template>
-  <q-layout>
+  <q-layout style="position: relative; overflow:hidden">
     <q-page-container>
       <q-page class="flex bg-image flex-center">
-        <q-card
-          v-bind:style="$q.screen.lt.sm ? { width: '80%' } : { width: '30%' }"
-          style="border-radius:20px"
-        >
+        <q-card class="card-styles-login" style="border-radius:20px">
           <q-card-section>
             <q-avatar size="103px" class="absolute-center shadow-10">
               <img src="icons/favicon-128.png" />
@@ -48,6 +45,26 @@
         </q-card>
       </q-page>
     </q-page-container>
+    <div
+      v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
+      style="position: absolute; bottom:20px;right:20px;"
+    >
+      <q-btn
+        round
+        dense
+        flat
+        color="white"
+        icon="download"
+        style="font-size:15px; padding: 5px; margin-bottom:10px; background:#ff2d2d;"
+        @click="install()"
+      >
+      </q-btn>
+    </div>
+    <div
+      style="position: absolute; bottom:20px;left:20px;"
+    >
+      <p style="color:white"> v{{this.$store.getters["mode/getVersion"]}}</p>
+    </div>
   </q-layout>
 </template>
 
@@ -56,9 +73,17 @@ import SecureLS from "secure-ls";
 import { QSpinnerGears } from "quasar";
 
 export default {
-  inject: ["showNotification","errorHandling"],
+  inject: ["showNotification", "errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+  },
+  mounted() {
+    var vue = this;
+    window.addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+        vue.login();
+      }
+    });
   },
   data() {
     return {
@@ -72,6 +97,33 @@ export default {
   },
   methods: {
     login() {
+      var availableMenuOptions = [
+        {
+          label: "Mis Locales",
+          link: "/locales",
+          icon: "store"
+        },
+        {
+          label: "Home",
+          link: "/home",
+          icon: "dashboard"
+        },
+        {
+          label: "Pedidos",
+          link: "/pedidos",
+          icon: "delivery_dining"
+        },
+        {
+          label: "Cupones",
+          link: "/cupones",
+          icon: "confirmation_number"
+        },
+        {
+          label: "Usuarios",
+          link: "/administrar-usuarios",
+          icon: "group"
+        },
+      ];
       if (this.validate(this.user)) {
         return;
       }
@@ -104,7 +156,7 @@ export default {
           } else if (this.user.email === "god@god.com") {
             ls.set(
               "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHb2QiLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.Hk6oKPIksi1Mt5j7izhbRR7SOTzPOkIzU6cnuEPgK2s"
+              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6LTEsImVtYWlsIjoiZGFuaWVsIiwicm9sZSI6eyJpZCI6MSwibmFtZSI6IkdvZCIsImd1YXJkX25hbWUiOiJhcGkiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIiwidXBkYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiJ9LCJpYXQiOjE2MTY1MjgzODgsImV4cCI6MTYxNzEzMzE4OH0.ikYg6IeS9yOXbvZTYAFu2dqBS6zmVfFJfHWn-hgviAo"
             );
           } else {
             this.$q.loadingBar.stop();
@@ -117,28 +169,57 @@ export default {
             return;
           }
           let locals = [
-            {
+            /*{
               id: 129,
-              name: "Sushi Venezuela"
+              name: "Sushi Venezuela",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Los Santos",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
             },
             {
               id: 130,
-              name: "Sushi Chile"
+              name: "Sushi Chile",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Vice City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
             },
             {
               id: 131,
-              name: "Sushi Colombia"
+              name: "Sushi Colombia",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "San Andreas",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
             },
             {
               id: 132,
-              name: "Sushi EEUU"
+              name: "Sushi EEUU",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "Liberty City",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
             },
             {
               id: 133,
-              name: "Sushi UK"
-            }
+              name: "Sushi UK",
+              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
+              commune: "La Paz",
+              cartStatus: 0,
+              deliveryTime: 10,
+              preparationTime: 30
+            }*/
           ];
-          this.bus.$emit("login", locals);
+          let data = {
+            locals: locals,
+            availableMenuOptions: availableMenuOptions
+          };
+          this.bus.$emit("login", data);
           this.$q.loadingBar.stop();
           this.hideLoading();
           this.$router.push({ path: "/pedidos" });
@@ -150,8 +231,14 @@ export default {
           .post(url, this.user)
           .then(response => {
             if (response.data.status === "success") {
+              //console.log(response.data.result);
               ls.set("token", response.data.result.token);
-              this.bus.$emit("login", response.data.result.locals);
+              let data = {
+                locals: response.data.result.locals,
+                availableMenuOptions: response.data.result.availableMenuOptions
+                //availableMenuOptions: availableMenuOptions
+              };
+              this.bus.$emit("login", data);
               this.hideLoading();
               this.$router.push({ path: "/pedidos" });
             } else {
@@ -221,6 +308,17 @@ export default {
     },
     hideLoading() {
       this.$q.loading.hide();
+    },
+    async install() {
+      var dialog = this.$store.getters["auth/getInstallPromptEvent"];
+      dialog.prompt();
+      dialog.userChoice.then(choiceResult => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the A2HS prompt");
+        } else {
+          console.log("User dismissed the A2HS prompt");
+        }
+      });
     }
   }
 };
@@ -231,7 +329,7 @@ export default {
   background-image: url("../../../src/assets/background.jpg");
   background-size: cover;
   background-repeat: no-repeat;
-  background-position-x: -50px;
+  /*background-position-x: -50px;*/
 }
 
 .form-login {
@@ -239,5 +337,18 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+.card-styles-login {
+  width: 30% !important;
+}
+@media screen and (max-width: 768px) {
+  .card-styles-login {
+    width: 40% !important;
+  }
+}
+@media screen and (max-width: 500px) {
+  .card-styles-login {
+    width: 80% !important;
+  }
 }
 </style>

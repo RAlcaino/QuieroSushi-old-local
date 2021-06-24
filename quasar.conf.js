@@ -12,7 +12,9 @@ module.exports = function (ctx) {
       'apex',
       'bus',
       'echo',
-      'bell'
+      'bell',
+      'unix',
+      'maps',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -71,13 +73,15 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       scopeHoisting: true,
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
-      showProgress: true,
+      vueRouterMode: 'history', // available values: 'hash', 'history'
+      showProgress: false,
       gzip: false,
       analyze: false,
       // Options below are automatically set depending on the env, set them if you want to override
       // extractCSS: false,
-
+      
+      webpackManifest: true,
+      minify:true,
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
       extendWebpack (cfg) {
       }
@@ -102,7 +106,7 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
-      workboxOptions: {}, // only for GenerateSW
+      workboxOptions: { skipWaiting: true, clientsClaim: true }, // only for GenerateSW
       manifest: {
         name: 'QuieroSushi',
         short_name: 'QuieroSushi',
@@ -113,13 +117,13 @@ module.exports = function (ctx) {
         theme_color: '#027be3',
         icons: [
           {
-            'src': 'icons/favicon-128.png',
-            'sizes': '128x128',
+            'src': 'icons/android-chrome-192x192.png',
+            'sizes': '192x192',
             'type': 'image/png'
           },
           {
-            'src': 'icons/favicon-196x196.png',
-            'sizes': '196x196',
+            'src': 'icons/android-chrome-512x512.png',
+            'sizes': '512x512',
             'type': 'image/png'
           },
         ]

@@ -47,6 +47,14 @@ export default {
   },
   methods: {
     DoCancel() {
+      if (this.cancellationReason === "") {
+        this.showNotification(
+          "El motivo de anulación es obligatorio",
+          "negative",
+          "error"
+        );
+        return;
+      }
       let data = {
         orderID: this.orderId,
         canceledTimestamp: this.currentTimestamp(),
@@ -71,17 +79,19 @@ export default {
             console.log(response.data);
 
             if (response.data.status === "success") {
+              this.hideLoading();
               this.bus.$emit("sync-orders");
             } else {
+              this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
             }
+            this.closeDialog();
           })
           .catch(error => {
             this.hideLoading();
             this.errorHandling(error);
           });
       }
-      this.closeDialog();
     },
     closeDialog() {
       this.card = false;

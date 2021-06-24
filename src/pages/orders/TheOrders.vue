@@ -2,50 +2,80 @@
   <q-page class="q-pa-sm" style="background:white;">
     <q-toolbar class="bg-primary text-white" style="border-radius:50px">
       <q-btn flat round dense icon="delivery_dining" />
-      <q-toolbar-title :style="FontSize">
-        Pedidos de {{ local.label }}</q-toolbar-title
-      >
-      <q-btn flat round dense icon="sync" class="q-mr-xs" @click="sync()" />
+      <q-toolbar-title :style="FontSize"> Pedidos</q-toolbar-title>
+      <q-btn
+        flat
+        round
+        dense
+        icon="sync"
+        class="q-mr-xs"
+        @click="sync(false)"
+      />
     </q-toolbar>
 
-    <div class="dropdown-container" v-if="locals.length > 1">
-      <div class="dropdown-locals">
-        <q-btn-dropdown
-          color="blacklight"
+    <div
+      class="fit row wrap justify-between items-center content-center mobile-styles-o"
+      style="margin: 20px 0"
+    >
+      <div class="input-style-o">
+        <q-input dense rounded outlined label="Buscar" v-model="search" @focus="resetPage()" />
+      </div>
+      <div v-if="locals.length > 1">
+        <q-select
+          ref="select"
           rounded
-          outline
-          label="Sucursales"
-          icon="store"
+          outlined
+          dense
+          :options="localsFilter"
+          :options-dense="true"
+          hide-hint
+          v-model="localSelected"
+          @input="change"
+          @popup-hide="allLocals()"
+          style="margin-right:46px;"
+          :virtual-scroll-sticky-size-start="80"
+          class="q-select-responsive"
         >
-          <q-list>
+          <template v-slot:prepend>
+            <q-icon name="store" />
+          </template>
+          <template v-slot:before-options>
             <q-item>
-              <q-item-section>
-                <q-item-label>
-                  <input
-                    v-model="localFilter"
-                    type="text"
-                    placeholder="Buscar"
-                    style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
-                  />
-                </q-item-label>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
               </q-item-section>
             </q-item>
-            <q-item
-              v-for="item in getLocals"
-              :key="item.value"
-              clickable
-              v-close-popup
-              @click="findOrders(item)"
-            >
-              <q-item-section>
-                <q-item-label>{{ item.label }}</q-item-label>
+            <q-item dense clickable @click="allOrders()">
+              <q-item-section>Todos</q-item-section>
+            </q-item>
+          </template>
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
               </q-item-section>
             </q-item>
-          </q-list>
-        </q-btn-dropdown>
+            <q-item>
+              <q-item-section class="text-grey">
+                Sin Resultados
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
       </div>
     </div>
-
     <div class="orders-tab" style="margin-top:20px">
       <q-card style="width: 90%;height: 0;">
         <q-tabs
@@ -78,16 +108,19 @@
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="not-confirmed" style="padding: 0; overflow:hidden">
             <not-confirmed
-              :ordersNotConfirmed="ordersNotConfirmed"
+              :ordersNotConfirmed="getOrdersNotConfirmed"
+              :refresh="refresh"
             ></not-confirmed>
           </q-tab-panel>
 
           <q-tab-panel name="confirmed" style="padding: 0; overflow:hidden">
-            <the-confirmed :ordersConfirmed="ordersConfirmed"></the-confirmed>
+            <the-confirmed
+              :ordersConfirmed="getOrdersConfirmed"
+            ></the-confirmed>
           </q-tab-panel>
 
           <q-tab-panel name="done" style="padding: 0; overflow:hidden">
-            <the-done :ordersDone="ordersDone"></the-done>
+            <the-done :ordersDone="getOrdersDone"></the-done>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -110,29 +143,62 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("to-one-tab", () => {
+      this.bus.$emit("scroll-up");
       this.tab = "not-confirmed";
+      this.refresh = true;
+      this.search="";
+      this.allOrders();
+      this.sync(false);
     });
   },
   mounted() {
-    var vue = this;
-    var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-      let row = {
-        value: item.id,
-        label: item.name
-      };
-      vue.locals.push(row);
-    });
+    this.initLocals();
+    this.localsFilter = this.locals;
 
-    this.local.value = this.$store.getters["auth/getDataLocal"].id;
-    this.local.label = this.$store.getters["auth/getDataLocal"].name;
-    this.sync();
+    this.sync(false);
     this.responsiveMode();
 
     this.bus.$on("sync-orders", () => {
-      this.sync();
+      this.sync(false);
     });
   },
   computed: {
+    getOrdersConfirmed() {
+      var vue=this;
+      if (this.search !== "") {
+        return this.ordersConfirmed.filter(function(item){
+          if(vue.conditionsToFilter(item,vue.search)){
+            return true;
+          }
+        });
+      } else {
+        return this.ordersConfirmedOriginal;
+      }
+    },
+    getOrdersNotConfirmed() {
+      var vue=this;
+      if (this.search !== "") {
+        return this.ordersNotConfirmed.filter(function(item){
+          if(vue.conditionsToFilter(item,vue.search)){
+            return true;
+          }
+        });
+      } else {
+        return this.ordersNotConfirmed;
+      }
+    },
+    getOrdersDone() {
+      var vue=this;
+      if (this.search !== "") {
+        return this.ordersDone.filter(function(item){
+          if(vue.conditionsToFilter(item,vue.search)){
+            return true;
+          }
+        });
+      } else {
+        return this.ordersDoneOriginal;
+      }
+    },
     FontSize() {
       if (this.responsiveMobile) {
         return { fontSize: "15px" };
@@ -160,6 +226,7 @@ export default {
         value: null,
         label: ""
       },
+      refresh: false,
       localFilter: "",
       selectedLocal: "Seleccionar",
       locals: [],
@@ -169,11 +236,16 @@ export default {
       ordersDone: [],
       ordersConfirmed: [],
       ordersNotConfirmed: [],
+      ordersDoneOriginal: [],
+      ordersConfirmedOriginal: [],
+      ordersNotConfirmedOriginal: [],
+      search: "",
       response: [
         {
           id: 63250,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -214,6 +286,7 @@ export default {
           id: 63251,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -254,6 +327,7 @@ export default {
           id: 63252,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -294,6 +368,7 @@ export default {
           id: 63253,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -334,6 +409,7 @@ export default {
           id: 63254,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -374,6 +450,7 @@ export default {
           id: 63255,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -414,6 +491,7 @@ export default {
           id: 63256,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -454,6 +532,7 @@ export default {
           id: 63257,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -494,6 +573,7 @@ export default {
           id: 63258,
           status: "not-confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -533,6 +613,7 @@ export default {
         {
           id: 63371,
           status: "not-confirmed",
+          unixTermino: 1618467275,
           finalTimestamp: null,
           finalDate: null,
           local: {
@@ -582,6 +663,7 @@ export default {
           id: 65131,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -629,6 +711,7 @@ export default {
           id: 65132,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -676,6 +759,7 @@ export default {
           id: 65133,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -723,6 +807,7 @@ export default {
           id: 65505,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -778,6 +863,7 @@ export default {
           id: 65707,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618467275,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -841,6 +927,7 @@ export default {
           id: 65853,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -912,6 +999,7 @@ export default {
           id: 69420,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -992,6 +1080,7 @@ export default {
           id: 69553,
           status: "confirmed",
           finalTimestamp: null,
+          unixTermino: 1618985675,
           finalDate: null,
           local: {
             id_local: 1912,
@@ -1081,6 +1170,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1177,6 +1267,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1281,6 +1372,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1385,6 +1477,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1489,6 +1582,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1593,6 +1687,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1697,6 +1792,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618985675,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1801,6 +1897,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618467275,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -1905,6 +2002,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618467275,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -2009,6 +2107,7 @@ export default {
           status: "done",
           finalTimestamp: "2021-01-14 18:48:00",
           finalDate: "2021-01-14",
+          unixTermino: 1618467275,
           local: {
             id_local: 1912,
             preparationTime: 30,
@@ -2109,27 +2208,41 @@ export default {
           }
         }
       ],
-      data: []
+      data: [],
+      originalData: [],
+      localsFilter: [],
+      localSelected: {
+        label: null,
+        value: null,
+        image: null,
+        commune: null,
+        name: null,
+        cartStatus:null
+      }
     };
   },
   methods: {
-    sync() {
-      this.showLoading();
+    sync(flag) {
+      if (flag) {
+        this.showLoading();
+      } else {
+        this.bus.$emit("start-loader");
+      }
       if (!this.prod) {
         setTimeout(() => {
           this.data = this.response;
+          this.originalData = this.data;
           this.filters();
-          this.hideLoading();
-          this.showNotification(
-            "Pedidos Actualizados",
-            "positive",
-            "check_circle"
-          );
-          this.bus.$emit("change-flag");
+          if (flag) {
+            this.hideLoading();
+          } else {
+            this.bus.$emit("end-loader");
+            this.refresh = false;
+          }
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("orders", {
-          localId: this.local.value
+          userId: this.$store.getters["auth/getDataUser"].id
         });
         this.$axios
           .get(url, {
@@ -2138,23 +2251,27 @@ export default {
             }
           })
           .then(response => {
-            this.hideLoading();
             if (response.data.status === "success") {
+              if (flag) {
+                this.hideLoading();
+              } else {
+                this.bus.$emit("end-loader");
+                this.refresh = false;
+              }
               this.data = response.data.result;
+              this.originalData = this.data;
               this.filters();
-              this.showNotification(
-                "Pedidos Actualizados",
-                "positive",
-                "check_circle"
-              );
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
-            this.bus.$emit("change-flag");
           })
           .catch(error => {
-            this.hideLoading();
-            this.bus.$emit("change-flag");
+            if (flag) {
+              this.hideLoading();
+            } else {
+              this.bus.$emit("end-loader");
+              this.refresh = false;
+            }
             this.errorHandling(error);
           });
       }
@@ -2178,8 +2295,31 @@ export default {
         }
       });
     },
-    filters() {
+    /*last24hr() {
+      var vue=this;
+      let today = new Date();
+      let oneDay = 24 * 60 * 60 * 1000;
+      let yesterday = new Date(today.getTime() - oneDay);
+      console.log(today);
+      console.log(this.unix(today));
+      console.log(yesterday);
+      console.log(this.unix(yesterday));
       console.log(this.data);
+      this.data = this.data.filter(function(item) {
+        if (
+          item.unixTermino >= vue.unix(yesterday) &&
+          item.unixTermino <= vue.unix(today)
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      this.filters();
+    },*/
+    filters() {
+      //console.log(this.data);
+      var vue = this;
       var newArray = [];
       var roots = this.data.map(function(item) {
         item.name = item.payDetail.user;
@@ -2189,6 +2329,11 @@ export default {
       });
 
       this.data = newArray;
+      if (vue.local.value !== -1) {
+        this.data = this.originalData.filter(
+          item => item.local.id_local === vue.local.value
+        );
+      }
       this.ordersDone = this.data.filter(item => item.status === "done");
       this.ordersConfirmed = this.data.filter(
         item => item.status === "confirmed"
@@ -2196,12 +2341,123 @@ export default {
       this.ordersNotConfirmed = this.data.filter(
         item => item.status === "not-confirmed"
       );
+
+      this.ordersDoneOriginal = this.ordersDone;
+      this.ordersConfirmedOriginal = this.ordersConfirmed;
+      this.ordersNotConfirmedOriginal = this.ordersNotConfirmed;
     },
-    findOrders(local) {
-      this.local.value = local.value;
-      this.local.label = local.label;
+    filterFn(val) {
+      if (val === "") {
+        this.localsFilter = this.locals;
+        return;
+      }
+
+      const needle = val.toLowerCase();
+      this.localsFilter = this.locals.filter(
+        v => v.label.toLowerCase().indexOf(needle) > -1
+      );
+    },
+    change(val) {
+      var vue = this;
+      if (val !== null) {
+        this.local = val;
+        this.data = this.originalData.filter(
+          item => item.local.id_local === vue.local.value
+        );
+        this.filters();
+        this.$store.commit("auth/setCurrentLocal", {
+          id: val.value,
+          name: val.name,
+          image: val.image,
+          commune: val.commune,
+          cartStatus:val.cartStatus
+        });
+      }
+    },
+    allLocals() {
+      this.localsFilter = this.locals;
       this.localFilter = "";
-      this.sync();
+    },
+    allOrders() {
+      if(this.$refs.select!==undefined){
+        this.$refs.select.hidePopup();
+      }
+      this.data = this.originalData;
+      this.localSelected = {
+        value: -1,
+        label: "Todos",
+        name: "Todos",
+        image:
+          this.$store.getters["auth/getDataUser"].id === -1
+            ? "icons/favicon-128.png"
+            : this.$store.getters["auth/getDataLocals"][0].image,
+        commune: null,
+        cartStatus:null
+      };
+      this.local = this.localSelected;
+      this.filters();
+      this.$store.commit("auth/setCurrentLocal", {
+        id: this.localSelected.value,
+        name: this.localSelected.name,
+        image: this.localSelected.image,
+        commune: this.localSelected.commune,
+        cartStatus:this.localSelected.cartStatus
+      });
+    },
+    conditionsToFilter(item,value){
+          if(item.id.toString().toLowerCase().indexOf(value) > -1 ||
+             item.payDetail.user.toString().toLowerCase().indexOf(value) > -1 ||
+             item.payDetail.userPhone.toString().toLowerCase().indexOf(value) > -1 ||
+             item.payDetail.pay.toString().toLowerCase().indexOf(value) > -1 ||
+             item.payDetail.address.toString().toLowerCase().indexOf(value) > -1 ||
+             item.local.name.toString().toLowerCase().indexOf(value) > -1 ||
+             item.local.commune.toString().toLowerCase().indexOf(value) > -1 ){
+            return true;
+          }
+    },
+    resetPage(){
+      this.bus.$emit("reset-page");
+    },
+    initLocals(){
+      var vue = this;
+      vue.locals=[];
+      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+        let row = {
+          value: item.id,
+          label: item.name + ", " + item.commune,
+          image: item.image,
+          commune: item.commune,
+          name: item.name,
+          cartStatus:item.cartStatus
+        };
+          vue.locals.push(row);
+          vue.locals.sort(function(a, b) {
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+      });
+        this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+        this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
+        this.localSelected.commune = this.$store.getters[
+          "auth/getDataLocal"
+        ].commune;
+        this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
+        this.localSelected.cartStatus = this.$store.getters["auth/getDataLocal"].cartStatus;
+
+        if (this.localSelected.value !== -1) {
+          this.localSelected.label =
+            this.localSelected.name + ", " + this.localSelected.commune;
+        } else {
+          this.localSelected.label = this.localSelected.name;
+        }
+        this.local.value = this.localSelected.value;
+        this.local.label = this.localSelected.label;
     }
   }
 };
@@ -2231,16 +2487,35 @@ export default {
 .dropdown-locals {
   padding: 0px 46px 0px 16px;
 }
+
+.input-style-o {
+  margin-left: 50px;
+  margin-top: 5px;
+}
 @media screen and (max-width: 900px) {
   .dropdown-container {
     padding-top: 3%;
     display: flex;
+    justify-content: center;
     width: 90%;
     margin: 0 auto;
-    flex-direction: row-reverse;
+    flex-direction: row;
   }
   .dropdown-locals {
     padding: 16px 0;
+  }
+  .q-select-responsive {
+    margin-left: 60px;
+    margin-top: 10px;
+  }
+}
+@media screen and (max-width: 450px) {
+  .input-style-o {
+    margin-top: 0px !important;
+    margin-left: 5px !important;
+  }
+  .mobile-styles-o {
+    justify-content: center !important;
   }
 }
 </style>

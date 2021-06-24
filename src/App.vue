@@ -7,12 +7,42 @@
 <script>
 import jwt_decode from "jwt-decode";
 import SecureLS from "secure-ls";
+import $ from "jquery";
 
 export default {
   name: "App",
+  created() {
+    this.$store.commit("routes/setLinks");
+	  this.$store.commit("mode/setVersion");
+    var vue = this;
+    this.bus.$on("scroll-up", () => {
+      $("html, body").animate({ scrollTop: 0 }, "slow");
+    });
+    window.addEventListener("beforeinstallprompt", event => {
+      // Prevent Chrome <= 67 from automatically showing the prompt
+      event.preventDefault();
+      // Stash the event so it can be triggered later.
+      vue.installPromptEvent = event;
+      vue.$store.commit("auth/setInstallPromptEvent", event);
+    });
+    window.addEventListener("appinstalled", () => {
+      vue.$store.commit("auth/setInstallPromptEvent", null);
+      vue.showNotification(
+        "¡El acceso directo está en su escritorio!",
+        "positive",
+        "check_circle"
+      );
+      console.log("PWA was installed");
+    });
+  },
   mounted() {
     console.log("app mounted");
     this.init();
+  },
+  data() {
+    return {
+      installPromptEvent: null
+    };
   },
   provide() {
     return {
@@ -21,7 +51,8 @@ export default {
       showNotification: this.showNotification,
       showLoading: this.showLoading,
       hideLoading: this.hideLoading,
-      errorHandling: this.errorHandling
+      errorHandling: this.errorHandling,
+      installPromptEvent: this.installPromptEvent
     };
   },
   methods: {
@@ -39,7 +70,7 @@ export default {
       if (token !== "") {
         let user = jwt_decode(token);
         user.token = token;
-        data.sort(function(a, b) {
+        data.locals.sort(function(a, b) {
           if (a.name > b.name) {
             return 1;
           }
@@ -49,7 +80,8 @@ export default {
           // a must be equal to b
           return 0;
         });
-        user.locals = data;
+        user.locals = data.locals;
+        user.availableMenuOptions = data.availableMenuOptions;
         this.$store.commit("auth/setDataUserSesion", user);
       }
     },
