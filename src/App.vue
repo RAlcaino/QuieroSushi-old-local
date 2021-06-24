@@ -12,6 +12,8 @@ import $ from "jquery";
 export default {
   name: "App",
   created() {
+    this.$store.commit("routes/setLinks");
+	  this.$store.commit("mode/setVersion");
     var vue = this;
     this.bus.$on("scroll-up", () => {
       $("html, body").animate({ scrollTop: 0 }, "slow");

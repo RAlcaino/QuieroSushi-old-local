@@ -41,7 +41,6 @@
           />{{ localName }}
         </p>
         <div
-          v-if="section === 'just-one' || section === 'all'"
           style="width: 95%; border-radius:15px; border: 1px solid rgba(0,0,0,0.3);margin-bottom:20px;padding: 20px;"
         >
           <p
@@ -55,8 +54,7 @@
             />Destacar tus cupones
           </p>
           <p style="width: 100%; height:5%;font-size:13.5px; color:grey">
-            Haz que tu cupón suba a la primera posición de la página principal y
-            de la comuna donde está tu local.
+            Haz que tus cupones se destaquen en nuestro portal y aumenten su visibilidad.
           </p>
           <div
             class="fit row wrap justify-around items-start content-start responsive-a"
@@ -95,7 +93,6 @@
           </p>
         </div>
         <div
-          v-if="section === 'just-two' || section === 'all'"
           style="width: 95%; border-radius:15px; border: 1px solid rgba(0,0,0,0.3);margin-bottom:20px; padding: 20px;"
         >
           <p
@@ -109,8 +106,8 @@
             />Subir tus cupones
           </p>
           <p style="width: 100%; height:5%;font-size:13.5px; color:grey">
-            Haz que tus cupones se destaquen en nuestro portal y aumente su
-            visibilidad.
+            Haz que tu cupón suba a la primera posición de la página principal y
+            de la comuna donde está tu local.
           </p>
           <div
             class="fit row wrap justify-around items-start content-start responsive-a"
@@ -185,9 +182,8 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.getPrices();
-    this.bus.$on("open-aditionals", data => {
+    this.bus.$on("open-aditionals", () => {
       this.card = true;
-      this.section = data;
     });
   },
   mounted() {
@@ -197,7 +193,6 @@ export default {
     return {
       card: false,
       prod: null,
-      section: "",
       responsiveMobile: false,
       pricesGoUp: [],
       pricesStandOut: [],
@@ -259,16 +254,9 @@ export default {
       return this.total;
     },
     sectionStyle() {
-      if (this.section === "all" || this.responsiveMobile) {
         return {
           overflowY: "scroll"
         };
-      } else {
-        return {
-          overflowY: "hidden",
-          height: "auto"
-        };
-      }
     }
   },
   methods: {
@@ -281,24 +269,26 @@ export default {
       var vue=this;
       var itemsToBuy=[];
       var each = this.pricesGoUp.map(function(item, index) {
-        if(vue.qtyGoUp[index]!==0){
+        //if(vue.qtyGoUp[index]!==0){
           let service= {
             name: 'Paquete de '+item.qty + ' subir',
             price:item.price,
-            qty: +vue.qtyGoUp[index]
+            qty: +vue.qtyGoUp[index]*item.qty,
+            qtyPackage: +vue.qtyGoUp[index]
           }
           itemsToBuy.push(service);
-        }
+        //}
       });
       var each = this.pricesStandOut.map(function(item, index) {
-        if(vue.qtyStandOut[index]!==0){
+        //if(vue.qtyStandOut[index]!==0){
           let service= {
             name: 'Paquete de '+item.qty + ' destacados',
             price:item.price,
-            qty:+vue.qtyStandOut[index]
+            qty:+vue.qtyStandOut[index]*item.qty,
+            qtyPackage:+vue.qtyStandOut[index]
           }
           itemsToBuy.push(service);
-        }
+        //}
       });
       this.$router.push({ name: "checkout", params:{
         data: itemsToBuy,

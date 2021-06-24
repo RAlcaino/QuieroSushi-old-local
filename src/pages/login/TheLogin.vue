@@ -48,7 +48,6 @@
     <div
       v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
       style="position: absolute; bottom:20px;right:20px;"
-      lass="fit row no-wrap justify-end items-start content-start"
     >
       <q-btn
         round
@@ -60,6 +59,11 @@
         @click="install()"
       >
       </q-btn>
+    </div>
+    <div
+      style="position: absolute; bottom:20px;left:20px;"
+    >
+      <p style="color:white"> v{{this.$store.getters["mode/getVersion"]}}</p>
     </div>
   </q-layout>
 </template>
@@ -95,9 +99,14 @@ export default {
     login() {
       var availableMenuOptions = [
         {
+          label: "Mis Locales",
+          link: "/locales",
+          icon: "store"
+        },
+        {
           label: "Home",
           link: "/home",
-          icon: "home"
+          icon: "dashboard"
         },
         {
           label: "Pedidos",
@@ -108,7 +117,12 @@ export default {
           label: "Cupones",
           link: "/cupones",
           icon: "confirmation_number"
-        }
+        },
+        {
+          label: "Usuarios",
+          link: "/administrar-usuarios",
+          icon: "group"
+        },
       ];
       if (this.validate(this.user)) {
         return;
@@ -155,7 +169,7 @@ export default {
             return;
           }
           let locals = [
-            {
+            /*{
               id: 129,
               name: "Sushi Venezuela",
               image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
@@ -199,7 +213,7 @@ export default {
               cartStatus: 0,
               deliveryTime: 10,
               preparationTime: 30
-            }
+            }*/
           ];
           let data = {
             locals: locals,
@@ -217,7 +231,7 @@ export default {
           .post(url, this.user)
           .then(response => {
             if (response.data.status === "success") {
-              console.log(response.data.result);
+              //console.log(response.data.result);
               ls.set("token", response.data.result.token);
               let data = {
                 locals: response.data.result.locals,
@@ -315,7 +329,7 @@ export default {
   background-image: url("../../../src/assets/background.jpg");
   background-size: cover;
   background-repeat: no-repeat;
-  background-position-x: -50px;
+  /*background-position-x: -50px;*/
 }
 
 .form-login {

@@ -1,6 +1,7 @@
 <template>
   <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
     <the-aditionals :localName="local.label"></the-aditionals>
+    <the-edit></the-edit>
     <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
       <q-btn flat round dense icon="confirmation_number" />
       <q-toolbar-title :style="FontSize"> Cupones</q-toolbar-title>
@@ -148,11 +149,13 @@
             <q-item-section avatar top>
               <q-toggle
                 v-model="item.status"
-                false-value="pendiente"
-                true-value="activo"
                 color="green"
                 @input="changeStatus(item)"
               />
+            </q-item-section>
+
+            <q-item-section v-if="$store.getters['auth/getDataUser'].role === 'God'" center class="col-1 gt-xs">
+              <p style="margin-bottom:5px; font-weight:bold">#{{item.id}}</p>
             </q-item-section>
 
             <q-item-section center class="col-2 gt-xs">
@@ -178,7 +181,7 @@
                   color="amber-14"
                   rounded
                   size="sm"
-                  @click="dialogStandOut()"
+                  @click="dialogStandOut(item)"
                 >
                   <q-icon
                     style="margin-right:5px"
@@ -192,7 +195,7 @@
                   color="primary"
                   rounded
                   size="sm"
-                  @click="dialogGoUp()"
+                  @click="dialogGoUp(item)"
                 >
                   <q-icon
                     style="margin-right:5px"
@@ -221,11 +224,15 @@
                 >
                   <q-menu>
                     <q-list style="min-width: 100px">
-                      <q-item clickable @click="dialogStandOut()" v-close-popup>
+                      <q-item
+                        clickable
+                        @click="dialogStandOut(item)"
+                        v-close-popup
+                      >
                         <q-item-section>Destacar</q-item-section>
                       </q-item>
                       <q-separator />
-                      <q-item clickable @click="dialogGoUp()" v-close-popup>
+                      <q-item clickable @click="dialogGoUp(item)" v-close-popup>
                         <q-item-section>Subir</q-item-section>
                       </q-item>
                       <q-separator />
@@ -255,14 +262,19 @@
 
 <script>
 import TheAditionals from "./dialogs/TheAditionals.vue";
+import TheEdit from "./dialogs/TheEdit.vue";
 
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   components: {
-    TheAditionals
+    TheAditionals,
+    TheEdit
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+    this.bus.$on("sync-coupons",()=>{
+      this.sync();
+    });
   },
   mounted() {
     this.initLocals();
@@ -406,9 +418,9 @@ export default {
         label: null,
         value: null,
         image: null,
-        commune:null,
-        name:null,
-        cartStatus:null
+        commune: null,
+        name: null,
+        cartStatus: null
       }
     };
   },
@@ -449,7 +461,7 @@ export default {
           }
         }, 3000);
       } else {
-        var url = this.$store.getters["routes/getRoute"]("coupons", {
+        var url = this.$store.getters["routes/getRoute"]("resource.coupons", {
           localId: this.local.value
         });
         this.$axios
@@ -468,6 +480,21 @@ export default {
             if (response.data.status === "success") {
               var r = response.data.result;
               this.data = r.coupons;
+              var vue = this;
+              var tempData = [];
+              let map = this.data.map(function(item) {
+                let row = {
+                  id: item.id,
+                  image: item.image,
+                  status: vue.realStatus(item.status),
+                  title: item.title,
+                  pieces: item.pieces,
+                  price: item.price,
+                  discounted: item.discounted
+                };
+                tempData.push(row);
+              });
+              this.data = tempData;
               this.availableGoUp = r.available.goUp;
               this.availableStandOut = r.available.standOut;
             } else {
@@ -485,11 +512,27 @@ export default {
           });
       }
     },
+    realStatus(status) {
+      if (status === "pendiente") {
+        return false;
+      }
+      if (status === "activo" || status === "cerrado") {
+        return true;
+      }
+    },
     changeStatus(item) {
       let data = {
-        couponID: item.id,
-        status: item.status
+        estado: ''
       };
+      if (item.status == true) {
+        if(this.$store.getters["auth/getDataLocal"].cartStatus==0){
+          data.estado='cerrado'
+        }else{
+          data.estado='activo'
+        }
+      } else {
+        data.estado='pendiente' 
+      }
 
       this.showLoading();
       if (!this.prod) {
@@ -497,9 +540,9 @@ export default {
           this.sync(true);
         }, 3000);
       } else {
-        var url = this.$store.getters["routes/getRoute"](
-          "coupon.change.status"
-        );
+        var url = this.$store.getters["routes/getRoute"]("resource.coupons", {
+          localId: item.id
+        });
         this.$axios
           .put(url, data, {
             headers: {
@@ -519,25 +562,85 @@ export default {
           });
       }
     },
-    dialogStandOut() {
+    dialogStandOut(item) {
       if (this.availableStandOut == 0) {
-        this.bus.$emit("open-aditionals", "just-one");
+        this.bus.$emit("open-aditionals", "");
       } else {
-        //do something
+        this.showLoading();
+        if (!this.prod) {
+          setTimeout(() => {
+            this.sync(true);
+          }, 3000);
+        } else {
+          var url = this.$store.getters["routes/getRoute"]("coupon.stand.out");
+          this.$axios
+            .post(
+              url,
+              {
+                id_local: this.localSelected.value,
+                id_cupon: item.id
+              },
+              {
+                headers: {
+                  Authorization: this.$store.getters["auth/getToken"]
+                }
+              }
+            )
+            .then(response => {
+              if (response) {
+                this.hideLoading();
+                this.sync(true);
+              }
+            })
+            .catch(error => {
+              this.sync(true);
+              this.errorHandling(error);
+            });
+        }
       }
     },
-    dialogGoUp() {
+    dialogGoUp(item) {
       if (this.availableGoUp == 0) {
-        this.bus.$emit("open-aditionals", "just-two");
+        this.bus.$emit("open-aditionals");
       } else {
-        //do something
+        this.showLoading();
+        if (!this.prod) {
+          setTimeout(() => {
+            this.sync(true);
+          }, 3000);
+        } else {
+          var url = this.$store.getters["routes/getRoute"]("coupon.go.up");
+          this.$axios
+            .post(
+              url,
+              {
+                id_local: this.localSelected.value,
+                id_cupon: item.id
+              },
+              {
+                headers: {
+                  Authorization: this.$store.getters["auth/getToken"]
+                }
+              }
+            )
+            .then(response => {
+              if (response) {
+                this.hideLoading();
+                this.sync(true);
+              }
+            })
+            .catch(error => {
+              this.sync(true);
+              this.errorHandling(error);
+            });
+        }
       }
     },
     dialogAditionals() {
-      this.bus.$emit("open-aditionals", "all");
+      this.bus.$emit("open-aditionals");
     },
     dialogEdit(item) {
-      console.log(item);
+      this.bus.$emit("open-edit-coupon",item);
     },
     filterFn(val) {
       if (val === "") {
@@ -559,7 +662,7 @@ export default {
           name: val.name,
           image: val.image,
           commune: val.commune,
-          cartStatus:val.cartStatus
+          cartStatus: val.cartStatus
         });
       }
     },
@@ -567,9 +670,9 @@ export default {
       this.localsFilter = this.locals;
       this.localFilter = "";
     },
-    initLocals(){
+    initLocals() {
       var vue = this;
-      vue.locals=[];
+      vue.locals = [];
       var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
         let row = {
           value: item.id,
@@ -577,10 +680,10 @@ export default {
           image: item.image,
           commune: item.commune,
           name: item.name,
-          cartStatus:item.cartStatus
+          cartStatus: item.cartStatus
         };
-          vue.locals.push(row);
-          vue.locals.sort(function(a, b) {
+        vue.locals.push(row);
+        vue.locals.sort(function(a, b) {
           if (a.name > b.name) {
             return 1;
           }
@@ -593,38 +696,51 @@ export default {
       });
 
       if (this.$store.getters["auth/getDataLocal"].id == -1) {
-      this.localSelected.value = this.$store.getters["auth/getDataLocals"][0].id;
-      this.localSelected.image = this.$store.getters["auth/getDataLocals"][0].image;
-      this.localSelected.commune = this.$store.getters["auth/getDataLocals"][0].commune;
-      this.localSelected.name = this.$store.getters["auth/getDataLocals"][0].name;
-      this.localSelected.label = this.localSelected.name
-                              + ', ' 
-                              +this.localSelected.commune;
-      this.localSelected.cartStatus = this.$store.getters["auth/getDataLocals"][0].cartStatus;
+        this.localSelected.value = this.$store.getters[
+          "auth/getDataLocals"
+        ][0].id;
+        this.localSelected.image = this.$store.getters[
+          "auth/getDataLocals"
+        ][0].image;
+        this.localSelected.commune = this.$store.getters[
+          "auth/getDataLocals"
+        ][0].commune;
+        this.localSelected.name = this.$store.getters[
+          "auth/getDataLocals"
+        ][0].name;
+        this.localSelected.label =
+          this.localSelected.name + ", " + this.localSelected.commune;
+        this.localSelected.cartStatus = this.$store.getters[
+          "auth/getDataLocals"
+        ][0].cartStatus;
 
-      this.local.value = this.localSelected.value;
-      this.local.label = this.localSelected.label;
+        this.local.value = this.localSelected.value;
+        this.local.label = this.localSelected.label;
         this.$store.commit("auth/setCurrentLocal", {
-        id: this.localSelected.value,
-        name: this.localSelected.name,
-        image: this.localSelected.image,
-        commune: this.localSelected.commune,
-        cartStatus:this.localSelected.cartStatus
-      });
-    } else {
-      this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-      this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
-      this.localSelected.commune = this.$store.getters["auth/getDataLocal"].commune;
-      this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
-      this.localSelected.label = this.localSelected.name
-                              + ', ' 
-                              +this.localSelected.commune;
-                      
-      this.localSelected.cartStatus = this.$store.getters["auth/getDataLocal"].cartStatus;
-      this.local.value = this.localSelected.value;
-      this.local.label = this.localSelected.label;
-    }
+          id: this.localSelected.value,
+          name: this.localSelected.name,
+          image: this.localSelected.image,
+          commune: this.localSelected.commune,
+          cartStatus: this.localSelected.cartStatus
+        });
+      } else {
+        this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+        this.localSelected.image = this.$store.getters[
+          "auth/getDataLocal"
+        ].image;
+        this.localSelected.commune = this.$store.getters[
+          "auth/getDataLocal"
+        ].commune;
+        this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
+        this.localSelected.label =
+          this.localSelected.name + ", " + this.localSelected.commune;
 
+        this.localSelected.cartStatus = this.$store.getters[
+          "auth/getDataLocal"
+        ].cartStatus;
+        this.local.value = this.localSelected.value;
+        this.local.label = this.localSelected.label;
+      }
     }
   }
 };

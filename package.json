@@ -25,11 +25,13 @@
     "vue-apexcharts": "^1.5.2",
     "vue-echarts-v3": "^2.0.1",
     "vue-i18n": "^8.24.2",
+    "vue2-google-maps": "^0.10.7",
     "vuedraggable": "^2.23.2",
     "vuex-persistedstate": "^4.0.0-beta.3"
   },
   "devDependencies": {
     "@quasar/app": "^2.2.3",
+    "@quasar/quasar-app-extension-dotenv": "^1.1.0",
     "@quasar/quasar-app-extension-qcalendar": "^3.3.1",
     "quasar-app-extension-qhierarchy": "^0.0.5",
     "workbox-webpack-plugin": "^5.1.4"

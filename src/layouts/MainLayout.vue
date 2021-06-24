@@ -1,7 +1,10 @@
 <template>
-  <q-layout view="lHh Lpr lFf" class="absolute-full">
+  <q-layout view="lHh Lpr lFf">
     <modal-new-order></modal-new-order>
     <modal-setting></modal-setting>
+    <modal-block></modal-block>
+    <modal-sync-page></modal-sync-page>
+    <modal-debt :open="$store.getters['auth/getDataUser'].debt"></modal-debt>
     <q-header class="bg-header">
       <q-toolbar>
         <q-btn
@@ -21,6 +24,11 @@
         </q-toolbar-title>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
+          <div>
+            <p style="margin:0">
+              {{ currentHour }}:{{ currentMinute }}:{{ currentSecond }}
+            </p>
+          </div>
           <q-btn
             v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
             round
@@ -87,29 +95,29 @@
         <div class="user-sidebar">
           <div class="user-sidebar-border">
             <q-avatar size="90px">
-              <img :src="this.$store.getters['auth/getDataLocal'].image" />
+              <img :src="$store.getters['auth/getDataLocal'].image" />
             </q-avatar>
             <q-chip
               :color="
-                this.$store.getters['auth/getDataUser'].role === 'God'
+                $store.getters['auth/getDataUser'].role === 'God'
                   ? 'green'
                   : 'primary'
               "
               text-color="white"
             >
               {{
-                this.$store.getters["auth/getDataUser"].role === "God"
+                $store.getters["auth/getDataUser"].role === "God"
                   ? "Acceso Total"
-                  : this.$store.getters["auth/getDataUser"].role
+                  : $store.getters["auth/getDataUser"].role
               }}
             </q-chip>
             <q-chip
-              v-if="this.$store.getters['auth/getDataUser'].role !== 'God'"
+              v-if="$store.getters['auth/getDataUser'].role !== 'God'"
               color="green"
               text-color="white"
               icon="store"
             >
-              {{ this.$store.getters["auth/getDataLocal"].name }}
+              {{ $store.getters["auth/getDataLocal"].name }}
             </q-chip>
           </div>
         </div>
@@ -123,6 +131,9 @@
             </q-item-section>
           </q-item>
           <q-separator color="grey-11" inset />
+        </div>
+        <div style="position: absolute; bottom:0px;left:15px;">
+          <p>v{{ this.$store.getters["mode/getVersion"] }}</p>
         </div>
 
         <!--
@@ -366,27 +377,110 @@
       </div>
     </q-drawer>
     <q-page-container class="bg-white">
-      <q-banner v-if="flag===null" dense inline-actions class="text-white bg-deep-orange">
-        Algunos locales están <strong>cerrados</strong>
-        <template v-slot:action>
-          <q-btn flat color="white" @click="change(-1,1)" :label="'apagar restantes'" />
-          <q-btn flat color="white" @click="change(-1,0)" :label="'encender restantes'" />
-        </template>
-      </q-banner>
-      <q-banner v-if="flag===1 " else dense inline-actions class="text-white bg-green">
-        Todos los locales están <strong>abiertos</strong
+      <template
+        v-if="
+          $store.getters['auth/getDataLocals'].length > 1 &&
+            $store.getters['auth/getDataUser'].role !== 'God'
+        "
+      >
+        <q-banner
+          v-if="flag === null"
+          dense
+          inline-actions
+          class="text-white bg-deep-orange"
         >
-        <template v-slot:action>
-          <q-btn flat color="white" @click="change(-1,1)" :label="'apagar todos'" />
-        </template>
-      </q-banner>
-      <q-banner v-if="flag===0 " else dense inline-actions class="text-white bg-primary">
-        Todos los locales están <strong>cerrados</strong
+          Algunos locales están <strong>cerrados</strong>
+          <template v-slot:action>
+            <q-btn
+              flat
+              color="white"
+              @click="change(-1, 1)"
+              :label="'apagar restantes'"
+            />
+            <q-btn
+              flat
+              color="white"
+              @click="change(-1, 0)"
+              :label="'encender restantes'"
+            />
+          </template>
+        </q-banner>
+        <q-banner
+          v-if="flag === 1"
+          else
+          dense
+          inline-actions
+          class="text-white bg-green"
         >
-        <template v-slot:action>
-          <q-btn flat color="white" @click="change(-1,0)" :label="'encender todos'" />
-        </template>
-      </q-banner>
+          Todos los locales están <strong>abiertos</strong>
+          <template v-slot:action>
+            <q-btn
+              flat
+              color="white"
+              @click="change(-1, 1)"
+              :label="'apagar todos'"
+            />
+          </template>
+        </q-banner>
+        <q-banner
+          v-if="flag === 0"
+          else
+          dense
+          inline-actions
+          class="text-white bg-primary"
+        >
+          Todos los locales están <strong>cerrados</strong>
+          <template v-slot:action>
+            <q-btn
+              flat
+              color="white"
+              @click="change(-1, 0)"
+              :label="'encender todos'"
+            />
+          </template>
+        </q-banner>
+      </template>
+      <template
+        v-if="
+          $store.getters['auth/getDataLocals'].length == 1 &&
+            $store.getters['auth/getDataUser'].role !== 'God'
+        "
+      >
+        <q-banner
+          dense
+          inline-actions
+          :class="
+            $store.getters['auth/getDataLocal'].cartStatus == 0
+              ? 'text-white bg-primary'
+              : 'text-white bg-green'
+          "
+        >
+          El local {{ $store.getters["auth/getDataLocal"].name }} está
+          <strong v-if="$store.getters['auth/getDataLocal'].cartStatus == 0">
+            cerrado
+          </strong>
+          <strong v-else>
+            abierto
+          </strong>
+          <template v-slot:action>
+            <q-btn
+              flat
+              color="white"
+              @click="
+                change(
+                  $store.getters['auth/getDataLocal'].id,
+                  $store.getters['auth/getDataLocal'].cartStatus
+                )
+              "
+              :label="
+                $store.getters['auth/getDataLocal'].cartStatus == 0
+                  ? 'encender'
+                  : 'apagar'
+              "
+            />
+          </template>
+        </q-banner>
+      </template>
       <router-view />
     </q-page-container>
 
@@ -414,6 +508,10 @@ import EssentialLink from "components/EssentialLink";
 import Messages from "./Messages";
 import ModalNewOrder from "../components/modals/ModalNewOrder.vue";
 import ModalSetting from "../components/modals/ModalSetting.vue";
+import ModalDebt from "../components/modals/ModalDebt.vue";
+import ModalBlock from "../components/modals/ModalBlock.vue";
+import ModalSyncPage from "../components/modals/ModalSyncPage.vue";
+import SecureLS from "secure-ls";
 
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
@@ -423,12 +521,26 @@ export default {
     Messages,
     EssentialLink,
     ModalNewOrder,
-    ModalSetting
+    ModalSetting,
+    ModalDebt,
+    ModalBlock,
+    ModalSyncPage
   },
   created() {
-    this.flag=this.$store.getters["auth/getCartsStatus"];
+    this.updateTime();
+    setInterval(() => {
+      this.updateTime();
+    }, 1000);
+    this.flag = this.$store.getters["auth/getCartsStatus"];
     this.bus.$on("refresh-cartstatus", () => {
-      this.flag=this.$store.getters["auth/getCartsStatus"];
+      if (this.$store.getters["auth/getDataLocals"].length > 1) {
+        this.flag = this.$store.getters["auth/getCartsStatus"];
+      } else if (this.$store.getters["auth/getDataLocals"].length === 1) {
+        this.$store.commit(
+          "auth/setCurrentLocal",
+          this.$store.getters["auth/getDataLocals"][0]
+        );
+      }
     });
     this.bus.$on("stop-bell", () => {
       this.modalOpen = false;
@@ -436,20 +548,26 @@ export default {
     });
     this.prod = this.$store.getters["mode/getMode"];
     this.channelName = "Private-qs-venta-";
+    this.channelNameBlock = "Private-notificacion-";
 
     if (this.$store.getters["auth/getGodMode"]) {
       this.channelName += "-1";
+      this.channelNameBlock += "-1";
     } else {
       this.channelName += this.$store.getters["auth/getDataUser"].id;
+      this.channelNameBlock += this.$store.getters["auth/getDataUser"].id;
     }
     this.privateChannel = this.Echo.channel(this.channelName);
+    this.privateChannelBlock = this.Echo2.channel(this.channelNameBlock);
     this.listenEvent();
   },
   mounted() {
     console.log("main layout mounted");
-    console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
+    //console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
     this.optionsAvailable = this.$store.getters["auth/getAvailableMenuOptions"];
     this.modeResponsive();
+    this.getZones();
+    this.getTitles();
   },
   computed: {
     responsiveMode() {
@@ -468,16 +586,44 @@ export default {
       responsiveMobile: false,
       prod: null,
       privateChannel: null,
+      privateChannelBlock: null,
       channelName: "",
+      channelNameBlock: "",
       modalOpen: false,
-      flag:1
+      flag: 1,
+      currentHour: null,
+      currentMinute: null,
+      currentSecond: null,
+      fiveAm: false
+    };
+  },
+  provide() {
+    return {
+      logout: this.logout,
+      refreshToken: this.refreshToken
     };
   },
   methods: {
+    updateTime() {
+      let date = new Date();
+      this.currentHour = date.getHours();
+      this.currentMinute = date.getMinutes();
+      this.currentSecond = date.getSeconds();
+      if (
+        this.currentHour === 5 &&
+        this.currentMinute === 0 &&
+        this.currentSecond === 0
+      ) {
+        console.log("Son las 5:00am");
+        this.refreshToken();
+      }
+    },
     logout() {
       this.optionsAvailable = [];
       this.privateChannel = this.Echo.leaveChannel(this.channelName);
+      this.privateChannelBlock = this.Echo2.leaveChannel(this.channelNameBlock);
       this.channelName = "";
+      this.channelNameBlock = "";
       this.bus.$emit("logout");
     },
     modeResponsive() {
@@ -508,6 +654,13 @@ export default {
           vue.bus.$emit("new-order", data);
         }
       });
+      this.privateChannelBlock.listen(".Notificacion", function(data) {
+        if (data.tipo === "Bloqueo") {
+          vue.bus.$emit("modal-block", data);
+        } else if (data.tipo === "Actualizacion") {
+          vue.bus.$emit("modal-sync-page", data);
+        }
+      });
     },
     async install() {
       var dialog = this.$store.getters["auth/getInstallPromptEvent"];
@@ -524,28 +677,27 @@ export default {
       this.bus.$emit("open-settings");
     },
     change(flag, currentStatus) {
-      var newStatus=null;
-      if(currentStatus===1){
-        newStatus=0;
-      }else{
-        newStatus=1;
+      var newStatus = null;
+      if (currentStatus === 1) {
+        newStatus = 0;
+      } else {
+        newStatus = 1;
       }
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
-          this.getLocals();
+          this.getLocals(false);
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("locals.update", {
           localId: flag
         });
-        console.log(url);
         this.$axios
           .put(
             url,
             {
-              status:newStatus
+              status: newStatus
             },
             {
               headers: {
@@ -555,20 +707,21 @@ export default {
           )
           .then(response => {
             if (response.data.status === "success") {
-              console.log(response.data);
-              this.getLocals();
+              if (this.$router.currentRoute.name === "cupones") {
+                this.bus.$emit("sync-coupons");
+              }
+              this.getLocals(false);
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
           .catch(error => {
-            this.localsFilter = this.locals;
             this.hideLoading();
             this.errorHandling(error);
           });
       }
     },
-    getLocals(){
+    getLocals(flag) {
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -619,26 +772,23 @@ export default {
               preparationTime: 30
             }
           ];
-            this.$store.commit("auth/setLocals", locals);
-            this.flag=this.$store.getters["auth/getCartsStatus"];
-            this.bus.$emit("sync-locals-settings");
+          this.$store.commit("auth/setLocals", locals);
+          this.flag = this.$store.getters["auth/getCartsStatus"];
+          this.bus.$emit("sync-locals-settings");
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("locals.get");
         this.$axios
-          .get(
-            url,
-            {
-              headers: {
-                Authorization: this.$store.getters["auth/getToken"]
-              }
+          .get(url, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
             }
-          )
+          })
           .then(response => {
-            var vue=this;
+            var vue = this;
             this.hideLoading();
             if (response.data.status === "success") {
-              var locals=response.data.result.sort(function(a, b) {
+              var locals = response.data.result.sort(function(a, b) {
                 if (a.name > b.name) {
                   return 1;
                 }
@@ -650,18 +800,140 @@ export default {
               });
               this.$store.commit("auth/setLocals", locals);
               this.bus.$emit("sync-locals-settings");
-              this.flag=this.$store.getters["auth/getCartsStatus"];
+              this.flag = this.$store.getters["auth/getCartsStatus"];
+
+              if (this.$store.getters["auth/getDataLocals"].length === 1) {
+                /*let test={
+                  cartStatus: 0,
+                  commune: "San Miguel",
+                  deliveryTime: 5,
+                  id: 1913,
+                  image: "http://quierosushi.cl/locales/umeshu-sushi478.jpg",
+                  name: "Umeshu Sushi",
+                  preparationTime: 20
+                }*/
+                this.$store.commit("auth/setCurrentLocal", locals[0]);
+              } else {
+                if (vue.$store.getters["auth/getDataLocal"].id !== -1) {
+                  let currentLocal = locals.find(
+                    item =>
+                      item.id === vue.$store.getters["auth/getDataLocal"].id
+                  );
+                  this.$store.commit("auth/setCurrentLocal", currentLocal);
+                }
+              }
+
+              if (flag) {
+                window.location.reload();
+              } else {
+                this.hideLoading();
+              }
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
           .catch(error => {
-            this.localsFilter = this.locals;
             this.hideLoading();
             this.errorHandling(error);
           });
       }
     },
+    refreshToken() {
+      var ls = new SecureLS({ isCompression: false });
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.getLocals(true);
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("refresh.token");
+        this.$axios
+          .get(url, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              ls.set("token", response.data.result.token);
+              this.$store.commit("auth/setToken", response.data.result.token);
+              this.$store.commit(
+                "auth/setAvailableMenuOptions",
+                response.data.result.availableMenuOptions
+              );
+              this.getLocals(true);
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    },
+    getZones() {
+      var url = this.$store.getters["routes/getRoute"]("get.zones");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.$store.commit("auth/setZones", response.data.result);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    getTitles() {
+      var url = this.$store.getters["routes/getRoute"]("get.titles");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.$store.commit("auth/setTitles", response.data.result);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    getHistory() {
+      var url = this.$store.getters["routes/getRoute"]("orders.history");
+      this.$axios
+        .post(
+          url,
+          {startDate:"2021/04/10",
+          finalDate:"2021/04/15"},
+          {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          }
+        )
+        .then(response => {
+          if (response.data.status === "success") {
+            console.log(response.data);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    }
   }
 };
 </script>

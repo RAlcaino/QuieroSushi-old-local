@@ -95,7 +95,7 @@
               </div>
             </div>
           </q-card-section>
-          <q-card-section class="fit row wrap justify-around content-center">
+          <q-card-section style="display:flex; flex-direction:row; justify-content: space-between;">
             <div class="user-info">
               <p style="margin:0; font-weight:bold">
                 {{ item.payDetail.user }}
@@ -104,7 +104,11 @@
                 {{ item.payDetail.userPhone }}
               </p>
               <p style="margin:0;font-family:'Roboto'">
-                {{ item.payDetail.address }}, {{ item.payDetail.userCommune }}
+                      {{ item.payDetail.address.trim()}}. 
+                      <template v-if="item.payDetail.address2!=''">
+                      <span v-if="item.payDetail.address2.search('dpto')==-1">Dpto/Ubicacion:</span> {{item.payDetail.address2.trim()}}. 
+                      </template>
+                      {{item.payDetail.userCommune.trim()}}
               </p>
             </div>
             <div class="user-payDetail">
@@ -276,9 +280,11 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
-.user-info,
+.user-info{
+  width: auto;
+}
 .user-payDetail {
-  width: 50%;
+  width: 30%;
 }
 
 @media screen and (max-width: 600px) {
