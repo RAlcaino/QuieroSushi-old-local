@@ -4,11 +4,7 @@ const state = {
 };
 const mutations = {
   setLinks(state) {
-    //state.urlGlobal="https://api.panelnuevo.quierosushi.cl/api"; //PRO
-    //state.urlGlobal= "http://127.0.0.1:8000/api";               //LOCAL
-    //state.urlGlobal= "http://190.77.145.42:5000/api/public/api";  // ANY PUBLIC IP
-    //state.urlGlobal= "https://dev.api.panelnuevo.quierosushi.cl/api"; // DEV
-    state.urlGlobal = "https://api.devqs.tk/api"; // DEV 2
+    state.urlGlobal = process.env.API_URL; 
     state.routes = [
       {
         name: "login",
@@ -85,6 +81,10 @@ const mutations = {
       {
         name: "refresh.session",
         link: "/refresh/session"
+      },
+      {
+        name: "orders.history",
+        link: "/history"
       },
     ];
   }

@@ -50,7 +50,7 @@ const routes = [
         }
       },
       {
-        name:"cupones",
+        name: "cupones",
         path: "/cupones",
         component: () => import("pages/coupons/TheCoupons.vue"),
         beforeEnter: (to, from, next) => {
@@ -109,6 +109,22 @@ const routes = [
             next("/login");
           }
         }
+      },
+      {
+        name: "orders-stadistics",
+        path: "/ventas",
+        component: () => import("src/pages/ordersStadistics/ordersStadistics.vue"),
+        /*beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("Ventas")) {
+              next();
+            } else {
+              next("/404");
+            }
+          } else {
+            next("/login");
+          }
+        }*/
       },
       /* Template Paths - It could be useful*/
       { path: "/Dashboard2", component: () => import("pages/Dashboard2.vue") },

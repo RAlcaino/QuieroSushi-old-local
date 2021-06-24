@@ -605,7 +605,7 @@ export default {
       },
       time: "10:56:00",
       markers: [],
-      apiKey: this.apiKeyGoogle,
+      apiKey: process.env.API_GOOGLE,
       baseUrl:
         "https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={apikeyGoogle}"
     };

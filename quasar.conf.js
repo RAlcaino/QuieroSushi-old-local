@@ -14,8 +14,7 @@ module.exports = function (ctx) {
       'echo',
       'bell',
       'unix',
-      'env',
-      'maps'
+      'maps',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
