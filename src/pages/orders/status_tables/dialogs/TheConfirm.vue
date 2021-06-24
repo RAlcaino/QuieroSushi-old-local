@@ -1,5 +1,4 @@
 <template>
-
   <q-dialog
     v-model="card"
     transition-show="slide-down"
@@ -15,14 +14,15 @@
         <q-separator />
 
         <q-tab-panels v-model="tab" animated>
-
           <q-tab-panel
             name="one"
             class="tab-panel-c"
             v-if="orderDetail.product"
           >
-            <div class="tab-overview-headers-c">
-              <p style="display:flex; flex-direction: column; justify-content:center;align-items:center">
+            <div class="tab-overview-headers-c" style="margn">
+              <p
+                style="display:flex; flex-direction: column; justify-content:center;align-items:center"
+              >
                 <strong style="color: #333"
                   >Hora actual
                   <div class="live-c"></div
@@ -31,7 +31,9 @@
                   currentTime
                 }}</strong>
               </p>
-              <p style="display:flex; flex-direction: column;justify-content:center;align-items:center" >
+              <p
+                style="display:flex; flex-direction: column;justify-content:center;align-items:center"
+              >
                 <strong style="color: #333 ">Hora esperada</strong>
                 <strong style="color: #333; font-size:18px">{{ time }}</strong>
               </p>
@@ -39,35 +41,80 @@
 
             <q-separator />
 
+            <div class="tab-alerts-c" v-if="orderDetail.soon !== null">
+              <strong style="color: #333; text-align:center">
+                <div class="live-c"></div>
+                Alertas
+                <div class="live-c"></div>
+              </strong>
+              <p
+                v-if="orderDetail.soon === 1"
+                style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+              >
+                - Intenta dar tu mejor tiempo. El cliente lo necesita lo antes
+                posible.
+              </p>
+              <p
+                v-if="orderDetail.soon === 0"
+                style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+              >
+                - Intenta no cambiar los tiempos. El cliente lo necesita a esa
+                hora.
+              </p>
+              <p
+                v-if="
+                  orderDetail.soon === 0 &&
+                    (preparationTime > minPreparationTime ||
+                      deliveryTime > minDeliveryTime)
+                "
+                style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+              >
+                - Usted esta cambiando el horario de preferencia del cliente.
+              </p>
+            </div>
+
+            <q-separator v-if="orderDetail.soon !== null" />
+
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
                 <strong style="color: #333; text-align:center">
                   Tiempo de preparación
                 </strong>
-                <p style="display:flex; flex-direction: row; justify-content:center;align-items:center">
+                <div
+                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
+                >
                   <q-input
                     v-model="preparationTime"
                     color="primary"
                     label="Minutos"
                     style="width: 100px;"
                     type="number"
+                    :min="orderDetail.soon === 0 ? minPreparationTime : 0"
                   >
                     <template v-slot:prepend>
                       <q-icon name="query_builder" />
                     </template>
                   </q-input>
+                </div>
+                <p
+                  style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+                  v-if="preparationTime > 60"
+                >
+                  Usted está dando {{ preparationTime }} minutos en tiempo de
+                  cocina. Intente mejorar sus tiempos.
                 </p>
               </div>
             </div>
 
             <q-separator />
-
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
                 <strong style="color: #333; text-align:center">
-                  Tiempo de Despacho 
+                  Tiempo de Despacho
                 </strong>
-                <p style="display:flex; flex-direction: row; justify-content:space-around;align-items:center">
+                <p
+                  style="display:flex; flex-direction: row; justify-content:space-around;align-items:center"
+                >
                   <q-chip
                     color="red"
                     text-color="white"
@@ -80,6 +127,7 @@
                     style="width: 100px;"
                     type="number"
                     v-model="deliveryTime"
+                    :min="orderDetail.soon === 0 ? minDeliveryTime : 0"
                   >
                     <template v-slot:prepend>
                       <q-icon name="moped" />
@@ -93,8 +141,12 @@
 
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center">Hora de confirmación final</strong>
-                <p style="display:flex; flex-direction: row; justify-content:center;align-items:center">
+                <strong style="color: #333; text-align:center"
+                  >Hora de confirmación final</strong
+                >
+                <p
+                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
+                >
                   <q-chip
                     color="green"
                     text-color="white"
@@ -123,7 +175,6 @@
                 label="Confirmar"
               />
             </q-card-actions>
-
           </q-tab-panel>
 
           <q-tab-panel
@@ -132,29 +183,37 @@
             v-if="orderDetail.product"
           >
             <div class="tab-overview-headers-c">
-              <p style="display:flex; flex-direction: column; justify-content:center;align-items:center">
+              <p
+                style="display:flex; flex-direction: column; justify-content:center;align-items:center"
+              >
                 <strong style="color: #333">
-                   Hora actual
+                  Hora actual
                   <div class="live-c"></div
                 ></strong>
                 <strong style="color: #333; font-size:18px">
-                  {{currentTime}}
+                  {{ currentTime }}
                 </strong>
               </p>
-              <p style="display:flex; flex-direction: column;justify-content:center;align-items:center">
+              <p
+                style="display:flex; flex-direction: column;justify-content:center;align-items:center"
+              >
                 <strong style="color: #333">Hora esperada</strong>
                 <strong style="color: #333; font-size:18px">{{ time }}</strong>
               </p>
             </div>
 
             <q-separator />
-            
+
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center;padding-bottom:5px ">
+                <strong
+                  style="color: #333; text-align:center;padding-bottom:5px "
+                >
                   Horario de entrega
                 </strong>
-                <div style="display:flex; flex-direction: row; justify-content:center;align-items:center">
+                <div
+                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
+                >
                   <q-input filled v-model="finalDateManual">
                     <template v-slot:append>
                       <q-icon name="access_time" class="cursor-pointer">
@@ -191,7 +250,9 @@
                 <strong style="color: #333; text-align:center">
                   Hora de confirmación final
                 </strong>
-                <p style="display:flex; flex-direction: row; justify-content:center;align-items:center">
+                <p
+                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
+                >
                   <q-chip
                     color="green"
                     text-color="white"
@@ -220,17 +281,11 @@
                 label="Confirmar"
               />
             </q-card-actions>
-
           </q-tab-panel>
-
         </q-tab-panels>
-
       </q-card-section>
-
     </q-card>
-
   </q-dialog>
-
 </template>
 
 <script>
@@ -241,9 +296,11 @@ export default {
     this.bus.$on("the-confirm", data => {
       this.card = !this.card;
       this.orderDetail = data;
-      this.finalDateManual= this.orderDetail.requestedTime;
+      this.finalDateManual = this.orderDetail.requestedTime;
       this.preparationTime = this.orderDetail.local.preparationTime;
       this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
+      this.minPreparationTime = this.orderDetail.local.preparationTime;
+      this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.updateTime();
       setInterval(() => {
         this.updateTime();
@@ -258,23 +315,40 @@ export default {
     },
     currentTime() {
       let timeValue = "";
-      timeValue +=this.current.hour < 10 ? "0" + this.current.hour : this.current.hour; // get hour
-      timeValue +=this.current.minutes < 10 ? ":0" + this.current.minutes: ":" + this.current.minutes; // get minutes
+      timeValue +=
+        this.current.hour < 10 ? "0" + this.current.hour : this.current.hour; // get hour
+      timeValue +=
+        this.current.minutes < 10
+          ? ":0" + this.current.minutes
+          : ":" + this.current.minutes; // get minutes
       return timeValue;
     },
     finalTime() {
       let tempFinalDetail = "";
       let date = new Date(Date.now());
-      tempFinalDetail += this.final.hour < 10 ? "0" + this.final.hour : this.final.hour; // get hour
-      tempFinalDetail += this.final.minutes < 10 ? ":0" + this.final.minutes: ":" + this.final.minutes; // get minutes
-      tempFinalDetail += this.final.seconds < 10 ? ":0" + this.final.seconds: ":" + this.final.seconds //get seconds
+      tempFinalDetail +=
+        this.final.hour < 10 ? "0" + this.final.hour : this.final.hour; // get hour
+      tempFinalDetail +=
+        this.final.minutes < 10
+          ? ":0" + this.final.minutes
+          : ":" + this.final.minutes; // get minutes
+      tempFinalDetail +=
+        this.final.seconds < 10
+          ? ":0" + this.final.seconds
+          : ":" + this.final.seconds; //get seconds
 
-      this.finalDateDetail  = date.getFullYear() + "-" + 
-                              (date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1): date.getMonth() + 1) + "-" +
-                              (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) + " " +
-                              tempFinalDetail;
-     
-     return this.finalDateDetail;
+      this.finalDateDetail =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        tempFinalDetail;
+
+      return this.finalDateDetail;
     }
   },
   data() {
@@ -295,14 +369,17 @@ export default {
       finalDateManual: null,
       finalDateDetail: null,
       deliveryTime: null,
-      preparationTime: null
+      preparationTime: null,
+      minPreparationTime: null,
+      minDeliveryTime: null
     };
   },
   methods: {
     confirm() {
       var data = {
         orderID: this.orderDetail.id,
-        confirmationTimestamp: this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
+        confirmationTimestamp:
+          this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
         //confirmationTimestamp: '2021-03-08 23:00:00',
         deliveryTime: +this.deliveryTime,
         preparationTime: +this.preparationTime
@@ -319,8 +396,8 @@ export default {
         var url = this.$store.getters["routes/getRoute"]("order.confirm");
         this.$axios
           .put(url, data, {
-            headers:{
-              'Authorization':this.$store.getters["auth/getToken"]
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
             }
           })
           .then(response => {
@@ -345,6 +422,8 @@ export default {
       this.tab = "one";
       this.preparationTime = this.orderDetail.local.preparationTime;
       this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
+      this.minPreparationTime = null;
+      this.minDeliveryTime = null;
     },
     updateTime() {
       let date = new Date();
@@ -354,15 +433,17 @@ export default {
     },
     updateFinalTime() {
       let date = new Date();
-      date.setMinutes(date.getMinutes() + (
-                      +this.preparationTime +
-                      +this.deliveryTime +
-                      +this.orderDetail.gmapsDeliveryTime));
+      date.setMinutes(
+        date.getMinutes() +
+          (+this.preparationTime +
+            +this.deliveryTime +
+            +this.orderDetail.gmapsDeliveryTime)
+      );
 
       this.final.hour = date.getHours();
       this.final.minutes = date.getMinutes();
       this.final.seconds = date.getSeconds();
-    },
+    }
   }
 };
 </script>
@@ -377,6 +458,16 @@ export default {
   justify-content: space-between;
   flex-direction: row;
   flex-wrap: nowrap;
+  padding: 20px 0;
+}
+
+.tab-alerts-c {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
   padding: 20px 0;
 }
 .tab-overview-headers-c {

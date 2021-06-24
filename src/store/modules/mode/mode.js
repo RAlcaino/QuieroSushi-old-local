@@ -1,10 +1,12 @@
 const state = {
     prod:true,             //TRUE if you wanna test with backend or in a production environment 
                             //otherwise FALSE
-    version:1.01
+    version:null
 }
 const mutations = {
-
+    setVersion(state){
+		state.version=1.02;
+    }
 }
 const actions = {
 

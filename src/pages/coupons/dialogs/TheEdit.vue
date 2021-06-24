@@ -1,6 +1,33 @@
 <template>
   <q-dialog v-model="card" persistent>
-    <q-card style="border-radius:10px;width: 550px; max-width: 80vw;overflow:hidden; ">
+    <q-card
+      class="my-card"
+      style="width: 350px; height:270px; border-radius:10px"
+    >
+      <q-card-section class="card-section-modal-new-o">
+        <q-avatar
+          style="width:80px; height:80px; font-size:110px"
+          icon="info"
+          text-color="blue"
+        />
+        <span class="q-ml-sm" style="font-size:18px; text-align:center"
+          >¡Proximamente esta función estará habilitada!</span
+        >
+      </q-card-section>
+
+      <q-card-actions align="right" style="height: 20%;">
+        <q-btn
+          rounded
+          color="primary"
+          label="Cerrar"
+          style="font-size: 11px !important"
+          v-close-popup
+        />
+      </q-card-actions>
+    </q-card>
+    <!--<q-card
+      style="border-radius:10px;width: 700px; max-width: 80vw;overflow:hidden; "
+    >
       <q-card-section
         class="row items-center q-pb-none bg-blue"
         style="padding: 10px 20px !important;"
@@ -34,19 +61,20 @@
               Datos del cupon
             </div>
             <q-list class="row">
-              <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
-                    v-model="item.title"
-                    color
+                    v-model="item.pieces"
                     outlined
                     rounded
                     dense
-                    label="Titulo"
+                    label="Cantidad de piezas"
+                    :min="1"
+                    type="number"
                   />
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
                     v-model="item.price"
@@ -58,7 +86,7 @@
                   />
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
                     v-model="item.discounted"
@@ -70,16 +98,48 @@
                   />
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+              <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <q-item-section>
+                  <q-select
+                    ref="select"
+                    rounded
+                    outlined
+                    dense
+                    :options="$store.getters['auth/getTitles']"
+                    :options-dense="true"
+                    @input="changeTitles"
+                    v-model="titleSelected"
+                    class="q-select-s"
+                    label="Titulos predeterminados"
+                    :virtual-scroll-sticky-size-start="80"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="title" />
+                    </template>
+                  </q-select>
+                </q-item-section>
+              </q-item>
+              <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
-                    v-model="item.pieces"
+                    v-model="titleDetails.shortTitle"
+                    color
                     outlined
                     rounded
                     dense
-                    label="Cantidad de piezas"
-                    :min="0"
-                    type="number"
+                    label="Titulo corto"
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <q-item-section>
+                  <q-input
+                    v-model="titleDetails.longTitle"
+                    color
+                    outlined
+                    rounded
+                    dense
+                    label="Titulo largo"
                   />
                 </q-item-section>
               </q-item>
@@ -96,10 +156,16 @@
               </q-item>
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-input outlined rounded v-model="item.details" label="Detalles" type="textarea" />
+                  <q-input
+                    outlined
+                    rounded
+                    v-model="item.details"
+                    label="Detalles"
+                    type="textarea"
+                  />
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <q-item class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
                     ref="select"
@@ -108,7 +174,7 @@
                     dense
                     :options="comunesFiltered"
                     :options-dense="true"
-                    hide-hint
+                    label="Comunas delivery"
                     v-model="comuneSelected"
                     @input="change"
                     @popup-hide="allComunes()"
@@ -170,7 +236,7 @@
                 class="col-lg-7 col-md-7 col-sm-12 col-xs-12"
                 style="margin-top:10px"
               >
-                <q-item-section >
+                <q-item-section>
                   <q-item-label style="font-weight:bold;margin-bottom:10px"
                     >Comunas agregadas:</q-item-label
                   >
@@ -195,14 +261,14 @@
           <q-btn
             @click="edit()"
             size="sm"
-            style="font-size:12px;padding: 0px 15px !important; margin-bottom:20px"
+            style="font-size:12px;padding: 0px 15px !important; margin:20px 0"
             rounded
             color="blue"
             >Editar</q-btn
           >
         </q-card-actions>
       </q-card-section>
-    </q-card>
+    </q-card>-->
   </q-dialog>
 </template>
 
@@ -216,24 +282,38 @@ export default {
     "errorHandling"
   ],
   created() {
-    var vue=this;
+    var vue = this;
     this.prod = this.$store.getters["mode/getMode"];
     this.initComunes();
     this.comunesFiltered = this.comunes;
     this.bus.$on("open-edit-coupon", row => {
       this.card = true;
-      this.item.id=row.id;
+      this.item.id = row.id;
       this.item.title = row.title;
       this.item.price = row.price;
       this.item.discounted = row.discounted;
       this.item.pieces = row.pieces;
-      this.item.details = 'Hola \nhola';
-      this.item.conditions= "Chao\nchao";
-      this.comunesSelected=this.findComunes("Maria elena,Vallenar,Ovalle");
+      this.item.details = "Hola \nhola";
+      this.item.conditions = "Chao\nchao";
+      this.comunesSelected = this.findComunes("Maria elena,Vallenar,Ovalle");
+
+      //setear title details 
+      //setear title template
+      //setear current title
     });
   },
   mounted() {
     this.responsiveMode();
+  },
+  watch:{
+    'item.pieces': {
+      handler(val){
+        this.titleDetails.shortTitle=this.currentTitleTemplate.label.replaceAll('$p',val);
+        this.titleDetails.longTitle=this.currentTitleTemplate.label2.replaceAll('$p',val);
+        this.titleDetails.longTitle=this.titleDetails.longTitle.replaceAll('$n',this.$store.getters['auth/getDataLocal'].name);
+   },
+      deep: true
+    }
   },
   data() {
     return {
@@ -245,14 +325,25 @@ export default {
       comuneSearch: "",
       comunesSelected: [],
       comuneSelected: {},
+      titleSelected: this.$store.getters["auth/getTitles"][0],
       item: {
         id: null,
         title: "",
         price: null,
         discounted: null,
         pieces: null,
-        details:"",
-        conditions:""
+        details: "",
+        conditions: "",
+      },
+      titleDetails:{
+          idTitle:null,
+          shortTitle:"",
+          longTitle:""
+      },
+      currentTitleTemplate:{
+          value:"",
+          label:"",
+          label2:""
       }
     };
   },
@@ -284,15 +375,16 @@ export default {
       });
     },
     edit() {
-      var data={
-          titulo: this.item.title,
-          piezas: this.item.pieces,
-          antes: this.item.price,
-          despues: this.item.discounted,
-          detalles: this.item.details.replaceAll("\n",".-"),
-          condiciones: this.item.conditions.replaceAll("\n",".-"),
-          delivery: this.formatComunes(),
-      }
+      var data = {
+        titulo: this.titleDetails.shortTitle,
+        titulo_largo: this.titleDetails.longTitle,
+        piezas: this.item.pieces,
+        antes: this.item.price,
+        despues: this.item.discounted,
+        detalles: this.item.details.replaceAll("\n", ".-"),
+        condiciones: this.item.conditions.replaceAll("\n", ".-"),
+        delivery: this.formatComunes()
+      };
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
@@ -376,28 +468,38 @@ export default {
         });
       }
     },
-    deleteComune(storeId){
-      this.comunesSelected=this.comunesSelected.filter(item => item.value !==storeId);
+    deleteComune(storeId) {
+      this.comunesSelected = this.comunesSelected.filter(
+        item => item.value !== storeId
+      );
     },
-    findComunes(comunes){
-        let comunesNew=[];
-        let comunesArray=comunes.split(",");
-        comunesArray.forEach(each =>{
-            let el=this.$store.getters["auth/getZones"].comunes.find(item2=>item2.label===each);
-            let row={
-                label:el.label,
-                value:el.value
-            }
-            comunesNew.push(row);  
-        })
-        return comunesNew;
+    findComunes(comunes) {
+      let comunesNew = [];
+      let comunesArray = comunes.split(",");
+      comunesArray.forEach(each => {
+        let el = this.$store.getters["auth/getZones"].comunes.find(
+          item2 => item2.label === each
+        );
+        let row = {
+          label: el.label,
+          value: el.value
+        };
+        comunesNew.push(row);
+      });
+      return comunesNew;
     },
-    formatComunes(){
-        let result="";
-        this.comunesSelected.forEach(res=>{
-            result+=res.label+","
-        });
-        return result.slice(0,-1);
+    formatComunes() {
+      let result = "";
+      this.comunesSelected.forEach(res => {
+        result += res.label + ",";
+      });
+      return result.slice(0, -1);
+    },
+    changeTitles(val){
+      this.currentTitleTemplate=val;
+      this.titleDetails.shortTitle=this.currentTitleTemplate.label.replaceAll('$p',this.item.pieces);
+      this.titleDetails.longTitle=this.currentTitleTemplate.label2.replaceAll('$p',this.item.pieces);
+      this.titleDetails.longTitle=this.titleDetails.longTitle.replaceAll('$n',this.$store.getters['auth/getDataLocal'].name);
     }
   }
 };

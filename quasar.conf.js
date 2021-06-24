@@ -80,7 +80,9 @@ module.exports = function (ctx) {
       analyze: false,
       // Options below are automatically set depending on the env, set them if you want to override
       // extractCSS: false,
-
+      
+      webpackManifest: true,
+      minify:true,
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
       extendWebpack (cfg) {
       }

@@ -24,6 +24,11 @@
         </q-toolbar-title>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
+          <div>
+            <p style="margin:0">
+              {{ currentHour }}:{{ currentMinute }}:{{ currentSecond }}
+            </p>
+          </div>
           <q-btn
             v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
             round
@@ -127,10 +132,8 @@
           </q-item>
           <q-separator color="grey-11" inset />
         </div>
-        <div
-          style="position: absolute; bottom:0px;left:15px;"
-        >
-        <p> v{{this.$store.getters["mode/getVersion"]}}</p>
+        <div style="position: absolute; bottom:0px;left:15px;">
+          <p>v{{ this.$store.getters["mode/getVersion"] }}</p>
         </div>
 
         <!--
@@ -530,12 +533,14 @@ export default {
     }, 1000);
     this.flag = this.$store.getters["auth/getCartsStatus"];
     this.bus.$on("refresh-cartstatus", () => {
-      if(this.$store.getters['auth/getDataLocals'].length>1){
+      if (this.$store.getters["auth/getDataLocals"].length > 1) {
         this.flag = this.$store.getters["auth/getCartsStatus"];
-      }else if(this.$store.getters['auth/getDataLocals'].length===1){
-        this.$store.commit("auth/setCurrentLocal", this.$store.getters['auth/getDataLocals'][0]);
+      } else if (this.$store.getters["auth/getDataLocals"].length === 1) {
+        this.$store.commit(
+          "auth/setCurrentLocal",
+          this.$store.getters["auth/getDataLocals"][0]
+        );
       }
-
     });
     this.bus.$on("stop-bell", () => {
       this.modalOpen = false;
@@ -558,10 +563,11 @@ export default {
   },
   mounted() {
     console.log("main layout mounted");
-    console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
+    //console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
     this.optionsAvailable = this.$store.getters["auth/getAvailableMenuOptions"];
     this.modeResponsive();
     this.getZones();
+    this.getTitles();
   },
   computed: {
     responsiveMode() {
@@ -584,21 +590,30 @@ export default {
       channelName: "",
       channelNameBlock: "",
       modalOpen: false,
-      flag: 1
+      flag: 1,
+      currentHour: null,
+      currentMinute: null,
+      currentSecond: null,
+      fiveAm: false
     };
   },
   provide() {
     return {
-      logout: this.logout
+      logout: this.logout,
+      refreshToken: this.refreshToken
     };
   },
   methods: {
     updateTime() {
       let date = new Date();
-      let currentHour = date.getHours();
-      let currentMinute = date.getMinutes();
-      let currentSecond = date.getSeconds();
-      if (currentHour === 5 && currentMinute === 0  && currentSecond === 0) {
+      this.currentHour = date.getHours();
+      this.currentMinute = date.getMinutes();
+      this.currentSecond = date.getSeconds();
+      if (
+        this.currentHour === 5 &&
+        this.currentMinute === 0 &&
+        this.currentSecond === 0
+      ) {
         console.log("Son las 5:00am");
         this.refreshToken();
       }
@@ -640,10 +655,10 @@ export default {
         }
       });
       this.privateChannelBlock.listen(".Notificacion", function(data) {
-        if(data.tipo==='Bloqueo'){
+        if (data.tipo === "Bloqueo") {
           vue.bus.$emit("modal-block", data);
-        }else if(data.tipo==='Actualizacion'){
-          vue.bus.$emit("modal-sync-page", data);   
+        } else if (data.tipo === "Actualizacion") {
+          vue.bus.$emit("modal-sync-page", data);
         }
       });
     },
@@ -678,7 +693,6 @@ export default {
         var url = this.$store.getters["routes/getRoute"]("locals.update", {
           localId: flag
         });
-        console.log(url);
         this.$axios
           .put(
             url,
@@ -693,7 +707,7 @@ export default {
           )
           .then(response => {
             if (response.data.status === "success") {
-              if(this.$router.currentRoute.name==="cupones"){
+              if (this.$router.currentRoute.name === "cupones") {
                 this.bus.$emit("sync-coupons");
               }
               this.getLocals(false);
@@ -799,15 +813,20 @@ export default {
                   preparationTime: 20
                 }*/
                 this.$store.commit("auth/setCurrentLocal", locals[0]);
-              }else{
-                if(vue.$store.getters["auth/getDataLocal"].id!==-1){
-                  let currentLocal= locals.find(item=>item.id===vue.$store.getters["auth/getDataLocal"].id);
-                  this.$store.commit("auth/setCurrentLocal",currentLocal);
+              } else {
+                if (vue.$store.getters["auth/getDataLocal"].id !== -1) {
+                  let currentLocal = locals.find(
+                    item =>
+                      item.id === vue.$store.getters["auth/getDataLocal"].id
+                  );
+                  this.$store.commit("auth/setCurrentLocal", currentLocal);
                 }
               }
 
-              if(flag){
+              if (flag) {
                 window.location.reload();
+              } else {
+                this.hideLoading();
               }
             } else {
               this.showNotification(response.data.message, "negative", "error");
@@ -829,17 +848,17 @@ export default {
       } else {
         var url = this.$store.getters["routes/getRoute"]("refresh.token");
         this.$axios
-          .post(url, {},{
+          .get(url, {
             headers: {
               Authorization: this.$store.getters["auth/getToken"]
             }
           })
           .then(response => {
             if (response.data.status === "success") {
-              ls.set("token", response.data.result);
-              this.$store.commit("auth/setToken", response.data.result);
+              ls.set("token", response.data.result.token);
+              this.$store.commit("auth/setToken", response.data.result.token);
+              this.$store.commit("auth/setAvailableMenuOptions",response.data.result.availableMenuOptions);
               this.getLocals(true);
-              
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
@@ -851,26 +870,43 @@ export default {
       }
     },
     getZones() {
-        var url = this.$store.getters["routes/getRoute"]("get.zones");
-        this.$axios
-          .get(url,{
-            headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
-          })
-          .then(response => {
-            if (response.data.status === "success") {
-              this.$store.commit("auth/setZones", response.data.result);     
-              console.log(this.$store.getters["auth/getZones"]);       
-            } else {
-              this.showNotification(response.data.message, "negative", "error");
-            }
-          })
-          .catch(error => {
-            this.errorHandling(error);
-          });
+      var url = this.$store.getters["routes/getRoute"]("get.zones");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.$store.commit("auth/setZones", response.data.result);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     },
-    
+    getTitles() {
+      var url = this.$store.getters["routes/getRoute"]("get.titles");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.$store.commit("auth/setTitles", response.data.result);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    }
   }
 };
 </script>

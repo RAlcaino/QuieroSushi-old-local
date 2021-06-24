@@ -31,7 +31,7 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling","refreshToken"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("modal-sync-page", data => {
@@ -49,8 +49,7 @@ export default {
   },
   methods: {
     sync() {
-      window.location.reload();
-      
+      this.refreshToken();
     }
   }
 };

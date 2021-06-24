@@ -21,6 +21,7 @@ const state = {
   comunas: [],
   regiones: [],
   ciudades: [],
+  titles:[]
 };
 const mutations = {
   setAvailableMenuOptions(state, payload) {
@@ -78,6 +79,10 @@ const mutations = {
       commune: null,
       cartStatus: null
     };
+    state.titles=[];
+    state.comunas= [];
+    state.regiones= [];
+    state.ciudades= [];
   },
   setCurrentLocal(state, payload) {
     state.currentLocal = payload;
@@ -127,6 +132,17 @@ const mutations = {
         label: item.nombre
       };
       state.regiones.push(row);
+    });
+  },
+  setTitles(state,payload){
+    state.titles=[];
+    var eachTitle = payload.map(function(item) {
+      let row = {
+        value: item.id,
+        label: item.titulo_corto,
+        label2: item.titulo_largo
+      };
+      state.titles.push(row);
     });
   }
 };
@@ -189,6 +205,9 @@ const getters = {
       comunes: state.comunas,
       regions: state.regiones
     };
+  },
+  getTitles(state){
+    return state.titles;
   }
 };
 

@@ -273,7 +273,8 @@ export default {
           let service= {
             name: 'Paquete de '+item.qty + ' subir',
             price:item.price,
-            qty: +vue.qtyGoUp[index]*item.qty
+            qty: +vue.qtyGoUp[index]*item.qty,
+            qtyPackage: +vue.qtyGoUp[index]
           }
           itemsToBuy.push(service);
         //}
@@ -283,7 +284,8 @@ export default {
           let service= {
             name: 'Paquete de '+item.qty + ' destacados',
             price:item.price,
-            qty:+vue.qtyStandOut[index]*item.qty
+            qty:+vue.qtyStandOut[index]*item.qty,
+            qtyPackage:+vue.qtyStandOut[index]
           }
           itemsToBuy.push(service);
         //}

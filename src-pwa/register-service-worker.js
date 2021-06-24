@@ -1,6 +1,13 @@
 import { register } from 'register-service-worker'
 import { Notify } from 'quasar'
+import {
+  Loading,
+  // optional!, for example below
+  // with custom spinner
+  QSpinnerGears
+} from 'quasar'
 
+const loading=Loading;
 // The ready(), registered(), cached(), updatefound() and updated()
 // events passes a ServiceWorkerRegistration instance in their arguments.
 // ServiceWorkerRegistration: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration
@@ -14,6 +21,7 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   ready (registration) {
     console.log('Service worker is active.')
+    loading.hide();
   },
 
   registered (registration) {
@@ -25,12 +33,17 @@ register(process.env.SERVICE_WORKER_FILE, {
   },
 
   updatefound (registration) {
-    console.log('New content is downloading!')
+    console.log('New content is downloading!');
+    loading.show({
+      spinner: QSpinnerGears,
+      message: "Espere un momento..."
+    });
   },
 
   updated (registration) {
+    loading.hide();
     Notify.create({
-      message: 'Es necesario actualizar la página. Espere...',
+      message: 'Es necesario actualizar la página',
       icon: 'info',
       color: 'blue',
       textColor: 'white',
