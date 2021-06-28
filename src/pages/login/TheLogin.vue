@@ -123,6 +123,11 @@ export default {
           link: "/administrar-usuarios",
           icon: "group"
         },
+        {
+          label: "Ventas",
+          link: "/ventas",
+          icon: "paid"
+        },
       ];
       if (this.validate(this.user)) {
         return;
