@@ -167,7 +167,7 @@ export default {
     setPassword() {
       this.showLoading();
       var data = {
-        password: this.password_dict.new_password
+        contrasena_nueva: this.password_dict.new_password
       };
       if (!this.prod) {
         setTimeout(() => {
