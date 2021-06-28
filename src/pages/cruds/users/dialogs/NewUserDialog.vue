@@ -57,6 +57,12 @@
                 <q-item-section>
                   <form autocomplete="off">
                     <q-input
+                      :error-message="
+                        alertDifferentPassword === true
+                          ? 'Las contraseñas no son iguales'
+                          : ''
+                      "
+                      :error="alertDifferentPassword"
                       v-model="form.password"
                       outlined
                       rounded
@@ -71,6 +77,12 @@
                 <q-item-section>
                   <form autocomplete="off">
                     <q-input
+                      :error-message="
+                        alertDifferentPassword === true
+                          ? 'Las contraseñas no son iguales'
+                          : ''
+                      "
+                      :error="alertDifferentPassword"
                       v-model="form.confirmPassword"
                       outlined
                       rounded
@@ -219,7 +231,7 @@ export default {
     return {
       card: false,
       prod: null,
-      roles: ["God", "Super Admin", "Administrador", "Gerente", "Cajero"],
+      roles: this.$store.getters["auth/getRoles"],
       localSelected: {
         label: "Todos",
         value: -1,
@@ -237,10 +249,61 @@ export default {
         email: "",
         password: "",
         confirmPassword: "",
-        roleSelected: "God",
+        roleSelected: {
+          value: null,
+          label: "Seleccionar..."
+        },
         storesSelected: []
       }
     };
+  },
+  computed: {
+    validationPassword() {
+      let condition2 = false;
+
+      let condition1 =
+        this.form.confirmPassword === undefined ||
+        this.form.confirmPassword === "" ||
+        this.form.password === undefined ||
+        this.form.password === "";
+
+      if (
+        this.form.confirmPassword !== undefined &&
+        this.form.confirmPassword !== "" &&
+        this.form.password !== undefined &&
+        this.form.password !== ""
+      ) {
+        if (this.form.confirmPassword === this.form.password) {
+          condition2 = false;
+        } else {
+          condition2 = true;
+        }
+      } else {
+        condition2 = false;
+      }
+
+      if (condition1 || condition2) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    alertDifferentPassword() {
+      if (
+        this.form.confirmPassword !== undefined &&
+        this.form.confirmPassword !== "" &&
+        this.form.password !== undefined &&
+        this.form.password !== ""
+      ) {
+        if (this.form.confirmPassword !== this.form.password) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
   },
   methods: {
     closeDialog() {
@@ -248,22 +311,32 @@ export default {
       this.form.email = "";
       this.form.password = "";
       this.form.confirmPassword = "";
-      this.form.roleSelected = "God";
+      this.form.roleSelected = {
+        value: null,
+        label: "Seleccionar..."
+      };
       this.form.storesSelected = [];
       this.reset();
     },
     save() {
       this.showLoading();
-      let selectedLocals=[];
-      this.form.storesSelected.map(function(item){
+      let selectedLocals = [];
+      let selectedLocalsString = "";
+      this.form.storesSelected.map(function(item) {
         selectedLocals.push(item.value);
+        selectedLocalsString += item.value + ",";
       });
-
       var data = {
-        id_rol: 2,
+        id_rol: this.form.roleSelected.value,
         password: this.form.password,
         email: this.form.email,
-        locales: selectedLocals
+        locales: {
+          string: selectedLocalsString.substring(
+            0,
+            selectedLocalsString.length - 1
+          ),
+          array: selectedLocals
+        }
       };
       if (!this.prod) {
         setTimeout(() => {

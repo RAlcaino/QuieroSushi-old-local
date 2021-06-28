@@ -1,8 +1,8 @@
 <template>
   <q-toggle
     v-model="status"
-    :false-value="0"
-    :true-value="1"
+    :false-value="'inactivo'"
+    :true-value="'activo'"
     color="green"
     @input="changeStatus()"
   />
@@ -24,10 +24,9 @@ export default {
   },
   methods: {
     changeStatus() {
-      console.log(this.userId);
       this.showLoading();
       var data = {
-        status: this.status
+        estado: this.status
       };
       if (!this.prod) {
         setTimeout(() => {
@@ -45,14 +44,14 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-              this.hideLoading();
-              this.card = false;
               this.bus.$emit("sync-users");
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
+            this.hideLoading();
           })
           .catch(error => {
+            this.hideLoading();
             this.errorHandling(error);
           });
       }

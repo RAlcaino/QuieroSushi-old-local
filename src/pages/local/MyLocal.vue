@@ -461,7 +461,7 @@
             </q-btn>
           </q-card-actions>
         </q-card>
-        <q-card class="card-bg" style="margin-top: 15px;">
+        <!--<q-card class="card-bg" style="margin-top: 15px;">
           <q-card-section class="text-h6 ">
             <div class="text-h6 ">
               <q-icon style="padding-bottom:4px" name="vpn_key"></q-icon>
@@ -523,7 +523,7 @@
               >Guardar
             </q-btn>
           </q-card-actions>
-        </q-card>
+        </q-card>-->
       </div>
     </div>
   </q-page>

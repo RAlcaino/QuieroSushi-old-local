@@ -490,7 +490,12 @@ export default {
                   title: item.title,
                   pieces: item.pieces,
                   price: item.price,
-                  discounted: item.discounted
+                  discounted: item.discounted,
+                  details:item.details.replaceAll(".-","\n"),
+                  conditions: item.conditions.replaceAll(".-","\n"),
+                  shortTitle: item.shortTitle,
+                  longTitle: item.longTitle,
+                  delivery: item.delivery
                 };
                 tempData.push(row);
               });

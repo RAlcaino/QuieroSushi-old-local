@@ -4,7 +4,7 @@ const state = {
 };
 const mutations = {
   setLinks(state) {
-    state.urlGlobal = process.env.API_URL; 
+    state.urlGlobal = process.env.API_URL;
     state.routes = [
       {
         name: "login",
@@ -94,6 +94,10 @@ const mutations = {
         name: "resource.users",
         link: "/usuarios/{localId}"
       },
+      {
+        name: "get.roles",
+        link: "/roles/get"
+      }
     ];
   }
 };

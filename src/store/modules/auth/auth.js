@@ -21,7 +21,8 @@ const state = {
   comunas: [],
   regiones: [],
   ciudades: [],
-  titles:[]
+  titles: [],
+  roles: []
 };
 const mutations = {
   setAvailableMenuOptions(state, payload) {
@@ -79,10 +80,10 @@ const mutations = {
       commune: null,
       cartStatus: null
     };
-    state.titles=[];
-    state.comunas= [];
-    state.regiones= [];
-    state.ciudades= [];
+    state.titles = [];
+    state.comunas = [];
+    state.regiones = [];
+    state.ciudades = [];
   },
   setCurrentLocal(state, payload) {
     state.currentLocal = payload;
@@ -97,9 +98,9 @@ const mutations = {
     state.token = payload;
   },
   setLocalName(state, payload) {
-    let index= state.user.locals.findIndex(item=> item.id===payload.id);
-    state.user.locals[index].name=payload.nombre;
-    state.user.locals[index].commune=payload.comuna.label;
+    let index = state.user.locals.findIndex(item => item.id === payload.id);
+    state.user.locals[index].name = payload.nombre;
+    state.user.locals[index].commune = payload.comuna.label;
   },
   setZones(state, payload) {
     state.comunas = [];
@@ -115,7 +116,6 @@ const mutations = {
       };
       state.comunas.push(row);
     });
-
 
     var eachCities = payload.ciudades.map(function(item) {
       let row = {
@@ -134,8 +134,8 @@ const mutations = {
       state.regiones.push(row);
     });
   },
-  setTitles(state,payload){
-    state.titles=[];
+  setTitles(state, payload) {
+    state.titles = [];
     var eachTitle = payload.map(function(item) {
       let row = {
         value: item.id,
@@ -143,6 +143,16 @@ const mutations = {
         label2: item.titulo_largo
       };
       state.titles.push(row);
+    });
+  },
+  setRoles(state, payload) {
+    state.roles = [];
+    var eachRoles = payload.map(function(item) {
+      let row = {
+        value: item.id,
+        label: item.name
+      };
+      state.roles.push(row);
     });
   }
 };
@@ -206,9 +216,12 @@ const getters = {
       regions: state.regiones
     };
   },
-  getTitles(state){
+  getTitles(state) {
     return state.titles;
-  }
+  },
+  getRoles(state) {
+    return state.roles;
+  },
 };
 
 export default {

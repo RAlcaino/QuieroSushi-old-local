@@ -59,6 +59,8 @@
           <form autocomplete="off">
             <q-input
               dense
+              rounded
+              outlined
               debounce="300"
               v-model="filter"
               type="text"
@@ -309,7 +311,7 @@ export default {
           email: item.email,
           role: item.role.name,
           roleObject: item.role,
-          status: item.status,
+          status: item.estado,
           locals: item.locales
         };
         vue.data.push(row);

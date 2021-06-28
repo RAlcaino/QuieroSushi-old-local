@@ -568,6 +568,7 @@ export default {
     this.modeResponsive();
     this.getZones();
     this.getTitles();
+    this.getRoles();
   },
   computed: {
     responsiveMode() {
@@ -902,6 +903,25 @@ export default {
         .then(response => {
           if (response.data.status === "success") {
             this.$store.commit("auth/setTitles", response.data.result);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    getRoles() {
+      var url = this.$store.getters["routes/getRoute"]("get.roles");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.$store.commit("auth/setRoles", response.data.result.data);
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }

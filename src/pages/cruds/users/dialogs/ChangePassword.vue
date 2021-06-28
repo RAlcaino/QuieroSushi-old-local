@@ -1,6 +1,9 @@
 <template>
   <q-dialog v-model="card" persistent>
-    <q-card class="card-bg" style="margin-top: 15px; border-radius: 15px; width: 400px;">
+    <q-card
+      class="card-bg"
+      style="margin-top: 15px; border-radius: 15px; width: 400px;"
+    >
       <q-card-section class="text-h6 ">
         <div class="text-h6 ">
           <q-icon style="padding-bottom:4px" name="vpn_key"></q-icon>
@@ -157,11 +160,44 @@ export default {
     }
   },
   methods: {
-    close(){
-        this.card=false;
-        this.password_dict={};
+    close() {
+      this.card = false;
+      this.password_dict = {};
     },
     setPassword() {
+      this.showLoading();
+      var data = {
+        password: this.password_dict.new_password
+      };
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("resource.users", {
+          localId: this.user.id
+        });
+        this.$axios
+          .put(url, data, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              this.card=false;
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+            this.hideLoading();
+          })
+          .catch(error => {
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    }
+    /*setPassword() {
       let data = {
         //contrasena_actual: this.password_dict.current_password,
         contrasena_nueva: this.password_dict.new_password
@@ -196,7 +232,7 @@ export default {
             this.errorHandling(error);
           });
       }
-    }
+    }*/
   }
 };
 </script>
