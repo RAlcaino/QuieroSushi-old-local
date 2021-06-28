@@ -113,7 +113,7 @@ const routes = [
       {
         name: "orders-stadistics",
         path: "/ventas",
-        component: () => import("src/pages/ordersStadistics/ordersStadistics.vue"),
+        component: () => import("src/pages/ordersStadistics/OrdersStadistics.vue"),
         /*beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
             if (accessTo("Ventas")) {
