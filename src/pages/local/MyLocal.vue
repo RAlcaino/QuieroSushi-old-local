@@ -646,51 +646,6 @@ export default {
         this.dataLocal.ciudad = citiesFiltered[0];
       }
       return citiesFiltered;
-    },
-    validationPassword() {
-      let condition2=false;
-
-      let condition1 =
-        this.password_dict.current_password === undefined ||
-        this.password_dict.current_password === "" ||
-        this.password_dict.new_password === undefined ||
-        this.password_dict.new_password === "" ||
-        this.password_dict.confirm_new_password === undefined ||
-        this.password_dict.confirm_new_password === "";
-
-      if(this.password_dict.new_password !== undefined &&
-        this.password_dict.new_password !== "" && 
-        this.password_dict.confirm_new_password !== undefined &&
-        this.password_dict.confirm_new_password !== ""){
-          if(this.password_dict.new_password===this.password_dict.confirm_new_password){
-            condition2=false;
-          }else{
-            condition2=true;
-          }
-
-      }else{
-        condition2=false;
-      }
-
-      if (condition1 || condition2) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    alertDifferentPassword(){
-      if(this.password_dict.new_password !== undefined &&
-        this.password_dict.new_password !== "" && 
-        this.password_dict.confirm_new_password !== undefined &&
-        this.password_dict.confirm_new_password !== ""){
-          if(this.password_dict.new_password!==this.password_dict.confirm_new_password){
-            return true;
-          }else{
-            return false;
-          }
-      }else{
-        return false;
-      }
     }
   },
   methods: {

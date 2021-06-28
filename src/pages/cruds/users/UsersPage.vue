@@ -3,6 +3,7 @@
     <new-user-dialog></new-user-dialog>
     <edit-user-dialog></edit-user-dialog>
     <delete-user-dialog></delete-user-dialog>
+    <change-password></change-password>
     <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
       <q-btn flat round dense icon="group" />
       <q-toolbar-title :style="FontSize"> Administrar usuarios</q-toolbar-title>
@@ -27,7 +28,7 @@
       >
         <img src="~/assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size:16px; font-weight:bold;text-align:center">
-          No se encontraron cupones
+          No se encontraron usuarios
         </p>
       </div>
       <div
@@ -46,7 +47,8 @@
         v-if="data.length !== 0 && searching === false"
         :data="data"
         :columns="columns"
-        :filter="filter"
+        :filter="filter"        
+        :pagination-label="getPaginationLabel"
         :pagination.sync="pagination"
         no-results-label="No se encontraron usuarios"
         rows-per-page-label="Usuarios por página"
@@ -54,19 +56,22 @@
         style="width:70%;border-radius:15px"
       >
         <template v-slot:top-right>
-          <q-input dense debounce="300" v-model="filter" placeholder="Buscar">
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
+          <form autocomplete="off">
+            <q-input
+              dense
+              debounce="300"
+              v-model="filter"
+              type="text"
+              placeholder="Buscar"
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </form>
         </template>
         <template v-slot:top-left>
-          <q-btn
-            color="green"
-            rounded
-            size="sm"
-            @click="dialogNew()"
-          >
+          <q-btn color="green" rounded size="sm" @click="dialogNew()">
             <q-icon style="margin-right:5px" size="20px" name="add_circle" />
             <div style="font-size:12px">Nuevo</div>
           </q-btn>
@@ -98,9 +103,19 @@
                   color="blue"
                   round
                   size="sm"
+                  style="margin-right: 20px"
                   @click="dialogEdit(props.row)"
                 >
                   <q-icon size="20px" name="edit" />
+                </q-btn>
+                <q-btn
+                  color="orange"
+                  round
+                  size="sm"
+                  style="margin-right: 20px"
+                  @click="dialogPassword(props.row)"
+                >
+                  <q-icon size="20px" name="vpn_key" />
                 </q-btn>
               </div>
             </q-td>
@@ -108,7 +123,7 @@
               <template v-if="col.name === 'status'">
                 <status-component
                   :value="col.value"
-                  :userId="props.name"
+                  :userId="props.row.id"
                 ></status-component>
               </template>
               <template v-else>
@@ -128,6 +143,7 @@ import StatusComponent from "../../../components/bases/StatusComponent.vue";
 import NewUserDialog from "./dialogs/NewUserDialog.vue";
 import DeleteUserDialog from "./dialogs/DeleteUserDialog.vue";
 import EditUserDialog from "./dialogs/EditUserDialog.vue";
+import ChangePassword from "./dialogs/ChangePassword.vue";
 
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
@@ -135,19 +151,19 @@ export default {
     StatusComponent,
     NewUserDialog,
     DeleteUserDialog,
-    EditUserDialog
+    EditUserDialog,
+    ChangePassword
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+    this.bus.$on("sync-users", () => {
+      this.getUsers();
+    });
   },
   mounted() {
     this.flag = true;
     this.searching = true;
-    setTimeout(() => {
-      this.flag = false;
-      this.searching = false;
-      this.data = this.response;
-    }, 3000);
+    this.getUsers();
   },
   computed: {
     FontSize() {
@@ -166,7 +182,7 @@ export default {
       responsiveMobile: false,
       data: [],
       pagination: {
-        rowsPerPage: 20,
+        rowsPerPage: 10,
         current_page: 1
       },
       columns: [
@@ -245,14 +261,79 @@ export default {
     };
   },
   methods: {
+    getPaginationLabel(firstRowIndex, endRowIndex, totalRowsNumber) {
+      return "Total filas: " + totalRowsNumber;
+    },
     dialogEdit(row) {
-      this.bus.$emit('open-edit-user',row);
+      this.bus.$emit("open-edit-user", row);
     },
     dialogDelete(row) {
-      this.bus.$emit('open-delete-user',row);     
+      this.bus.$emit("open-delete-user", row);
     },
     dialogNew() {
-      this.bus.$emit('open-new-user');
+      this.bus.$emit("open-new-user");
+    },
+    getUsers() {
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("gp.users");
+        this.$axios
+          .get(url, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              this.flag = false;
+              this.searching = false;
+              this.mapResponse(response.data.result);
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.errorHandling(error);
+          });
+      }
+    },
+    mapResponse(response) {
+      var vue = this;
+      vue.data = [];
+      var each = response.map(function(item) {
+        let row = {
+          id: item.id,
+          email: item.email,
+          role: item.role.name,
+          roleObject: item.role,
+          status: item.status,
+          locals: item.locales
+        };
+        vue.data.push(row);
+        vue.data.sort(function(a, b) {
+          if (a.email > b.email) {
+            return 1;
+          }
+          if (a.email < b.email) {
+            return -1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+      });
+    },
+    sync() {
+      this.showLoading();
+      this.flag = true;
+      this.searching = true;
+      this.getUsers();
+      this.hideLoading();
+    },
+    dialogPassword(row) {
+      this.bus.$emit("open-new-password", row);
     }
   }
 };

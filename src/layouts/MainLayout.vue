@@ -909,30 +909,6 @@ export default {
         .catch(error => {
           this.errorHandling(error);
         });
-    },
-    getHistory() {
-      var url = this.$store.getters["routes/getRoute"]("orders.history");
-      this.$axios
-        .post(
-          url,
-          {startDate:"2021/04/10",
-          finalDate:"2021/04/15"},
-          {
-            headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
-          }
-        )
-        .then(response => {
-          if (response.data.status === "success") {
-            console.log(response.data);
-          } else {
-            this.showNotification(response.data.message, "negative", "error");
-          }
-        })
-        .catch(error => {
-          this.errorHandling(error);
-        });
     }
   }
 };

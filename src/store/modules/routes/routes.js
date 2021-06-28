@@ -86,6 +86,14 @@ const mutations = {
         name: "orders.history",
         link: "/history"
       },
+      {
+        name: "gp.users",
+        link: "/usuarios"
+      },
+      {
+        name: "resource.users",
+        link: "/usuarios/{localId}"
+      },
     ];
   }
 };
