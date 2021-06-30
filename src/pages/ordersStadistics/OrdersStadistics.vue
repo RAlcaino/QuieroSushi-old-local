@@ -1,5 +1,6 @@
 <template>
   <q-page class="q-pa-sm" style="padding-bottom:100px">
+    <the-cancel :mode="'sales'"></the-cancel>
     <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
       <q-btn flat round dense icon="paid" />
       <q-toolbar-title :style="FontSize"
@@ -189,6 +190,7 @@
 
         <template v-slot:header="props">
           <q-tr :props="props">
+            <q-th>Anular</q-th>
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               {{ col.label }}
             </q-th>
@@ -197,6 +199,18 @@
 
         <template v-slot:body="props">
           <q-tr :props="props">
+            <q-td>
+              <div style="width:100%; display:flex; justify-content:center">
+                <q-btn
+                  color="primary"
+                  round
+                  size="sm"
+                  @click="dialogCancel(props.row)"
+                >
+                  <q-icon size="20px" name="undo" />
+                </q-btn>
+              </div>
+            </q-td>
             <q-td v-for="col in props.cols" :key="col.name" :props="props">
               <template>
                 {{ col.value }}
@@ -245,6 +259,7 @@
 </template>
 
 <script>
+import TheCancel from "../orders/status_tables/dialogs/TheCancel.vue";
 export default {
   name: "OrderStadistics",
   inject: [
@@ -255,6 +270,9 @@ export default {
     "formatNumber",
     "capitalize"
   ],
+  components: {
+    TheCancel
+  },
   data() {
     return {
       filter: "",
@@ -272,7 +290,7 @@ export default {
         currentPage: null,
         totalPages: null
       },
-      resetAll:false,
+      resetAll: false,
       meta: {},
       total: 0,
       columns: [
@@ -418,6 +436,10 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.initLocals();
+
+    this.bus.$on("sync-page-after-refund", () => {
+      this.getHistory(true);
+    });
   },
   mounted() {
     this.localsFilter = this.locals;
@@ -494,7 +516,6 @@ export default {
       );
     },
     change(val) {
-      console.log(val);
       this.changeLocal = true;
       if (val !== null) {
         this.localSelected = val;
@@ -508,7 +529,7 @@ export default {
       if (this.$refs.select !== undefined) {
         this.$refs.select.hidePopup();
       }
-      this.resetAll=true;
+      this.resetAll = true;
       this.localSelected = {
         label: "Todos",
         value: null,
@@ -552,12 +573,12 @@ export default {
         )
         .then(response => {
           if (response.data.status === "success") {
-            console.log(response.data);
             this.meta = response.data.result.pop();
             this.pagination.totalPages = this.meta.meta.totalPages;
             this.pagination.currentPage = this.meta.meta.currentPage;
             this.changeLocal = false;
-            this.resetAll=false;
+            this.resetAll = false;
+            this.total = this.meta.meta.ordersTotal;
             this.mapResponse(response.data.result);
             if (loading === true) {
               this.loadingPage = false;
@@ -580,10 +601,12 @@ export default {
       this.flag = false;
       this.searching = false;
     },
+    dialogCancel(item) {
+      this.bus.$emit("the-cancel", item);
+    },
     mapResponse(response) {
       var vue = this;
       vue.data = [];
-      vue.total = 0;
       var each = response.map(function(item) {
         let row = {
           id: item.id,
@@ -599,7 +622,6 @@ export default {
               ? item.dateConfirmation.replaceAll("-", "/")
               : "Sin Fecha"
         };
-        vue.total += item.total;
         vue.data.push(row);
         vue.data.sort(function(a, b) {
           if (a.id > b.id) {

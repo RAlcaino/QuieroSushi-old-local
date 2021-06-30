@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="card" persistent>
-    <!--<q-card
+    <q-card
       class="my-card"
       style="width: 350px; height:270px; border-radius:10px"
     >
@@ -24,8 +24,8 @@
           v-close-popup
         />
       </q-card-actions>
-    </q-card>-->
-    <q-card
+    </q-card>
+    <!--<q-card
       style="border-radius:10px;width: 700px; max-width: 80vw;overflow:hidden; "
     >
       <q-card-section
@@ -270,7 +270,7 @@
           >
         </q-card-actions>
       </q-card-section>
-    </q-card>
+    </q-card>-->
   </q-dialog>
 </template>
 

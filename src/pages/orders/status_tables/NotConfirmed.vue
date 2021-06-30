@@ -4,7 +4,7 @@
     <keep-alive>
       <the-confirm></the-confirm>
     </keep-alive>
-    <the-cancel></the-cancel>
+    <the-cancel :mode="'orders'"></the-cancel>
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top:3%;"
