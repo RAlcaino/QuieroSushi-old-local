@@ -283,7 +283,7 @@ export default {
     this.sync(false);
     this.responsiveMode();
 
-    this.bus.$on("sync-coupons", () => {
+    this.bus.$on("sync-coupon-edit", () => {
       this.sync(false);
     });
   },

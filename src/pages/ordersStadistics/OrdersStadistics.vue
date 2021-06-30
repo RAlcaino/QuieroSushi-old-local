@@ -175,9 +175,11 @@
         :filter="filter"
         :pagination-label="getPaginationLabel"
         :pagination.sync="pagination"
+        :rows-per-page-options="[0]"
         no-results-label="No se encontraron ventas. Intenten de nuevo."
         no-data-label="Realice una busqueda"
         rows-per-page-label="Ventas por página"
+        :loading="loadingPage"
         row-key="name"
         style="width:95%;border-radius:15px; margin-top: 15px"
       >
@@ -203,6 +205,19 @@
           </q-tr>
         </template>
       </q-table>
+      <div
+        v-if="pagination.totalPages !== null && searching === false"
+        class="row justify-center q-mt-md"
+      >
+        <q-pagination
+          v-model="pagination.currentPage"
+          color="grey-8"
+          :max="pagination.totalPages"
+          size="sm"
+          input
+          @input="changePage(pagination.currentPage)"
+        />
+      </div>
     </div>
     <div
       style="margin-top:100px"
@@ -232,7 +247,14 @@
 <script>
 export default {
   name: "OrderStadistics",
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling","formatNumber","capitalize"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "formatNumber",
+    "capitalize"
+  ],
   data() {
     return {
       filter: "",
@@ -241,12 +263,17 @@ export default {
       flag: false,
       responsiveMobile: false,
       data: [],
+      loadingPage: false,
+      changeLocal: false,
       startDate: "",
       finalDate: "",
       pagination: {
         rowsPerPage: 10,
-        current_page: 1
+        currentPage: null,
+        totalPages: null
       },
+      resetAll:false,
+      meta: {},
       total: 0,
       columns: [
         {
@@ -417,7 +444,10 @@ export default {
   },
   methods: {
     getPaginationLabel(firstRowIndex, endRowIndex, totalRowsNumber) {
-      return "Total filas: " + totalRowsNumber;
+      return "Total de filas: " + this.meta.meta.total;
+    },
+    changePage(value) {
+      this.getHistory(true);
     },
     initLocals() {
       var vue = this;
@@ -465,6 +495,7 @@ export default {
     },
     change(val) {
       console.log(val);
+      this.changeLocal = true;
       if (val !== null) {
         this.localSelected = val;
       }
@@ -477,6 +508,7 @@ export default {
       if (this.$refs.select !== undefined) {
         this.$refs.select.hidePopup();
       }
+      this.resetAll=true;
       this.localSelected = {
         label: "Todos",
         value: null,
@@ -486,9 +518,20 @@ export default {
         cartStatus: null
       };
     },
-    getHistory() {
-      this.loading();
-      var url = this.$store.getters["routes/getRoute"]("orders.history");
+    getHistory(loading) {
+      if (loading === true) {
+        this.loadingPage = true;
+      } else {
+        this.loading();
+      }
+      var url = this.$store.getters["routes/getRoute"]("orders.history", {
+        page:
+          this.pagination.currentPage === null ||
+          this.changeLocal ||
+          this.resetAll
+            ? 1
+            : this.pagination.currentPage
+      });
       this.$axios
         .post(
           url,
@@ -496,9 +539,10 @@ export default {
             startDate: this.startDate.replaceAll("/", "-"),
             finalDate: this.finalDate.replaceAll("/", "-"),
             localId: this.localSelected.value,
-            idUser: this.localSelected.value===null?this.$store.getters["auth/getDataUser"].id:null
-            /*localId: 568,
-            idUser: null*/
+            idUser:
+              this.localSelected.value === null
+                ? this.$store.getters["auth/getDataUser"].id
+                : null
           },
           {
             headers: {
@@ -509,8 +553,17 @@ export default {
         .then(response => {
           if (response.data.status === "success") {
             console.log(response.data);
-            this.mapResponse(response.data.result)
-            this.stopLoading();
+            this.meta = response.data.result.pop();
+            this.pagination.totalPages = this.meta.meta.totalPages;
+            this.pagination.currentPage = this.meta.meta.currentPage;
+            this.changeLocal = false;
+            this.resetAll=false;
+            this.mapResponse(response.data.result);
+            if (loading === true) {
+              this.loadingPage = false;
+            } else {
+              this.stopLoading();
+            }
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -530,20 +583,23 @@ export default {
     mapResponse(response) {
       var vue = this;
       vue.data = [];
-      vue.total=0;
+      vue.total = 0;
       var each = response.map(function(item) {
         let row = {
-          id:item.id,
+          id: item.id,
           localName: item.local.name,
-          comuneLocal:item.local.commune,
-          customerName:item.payDetail.user,
+          comuneLocal: item.local.commune,
+          customerName: item.payDetail.user,
           saleType: item.orderType,
           subtotal: vue.formatNumber(item.subtotal),
           delivery: vue.formatNumber(item.deliveryCost),
           total: vue.formatNumber(item.total),
-          confirmationDate:item.finalDate.replaceAll("-","/")
+          confirmationDate:
+            item.dateConfirmation !== null
+              ? item.dateConfirmation.replaceAll("-", "/")
+              : "Sin Fecha"
         };
-        vue.total+=item.total;
+        vue.total += item.total;
         vue.data.push(row);
         vue.data.sort(function(a, b) {
           if (a.id > b.id) {

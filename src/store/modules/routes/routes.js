@@ -84,7 +84,7 @@ const mutations = {
       },
       {
         name: "orders.history",
-        link: "/history"
+        link: "/history?page={page}"
       },
       {
         name: "gp.users",
