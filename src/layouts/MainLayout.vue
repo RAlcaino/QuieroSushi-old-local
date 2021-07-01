@@ -568,6 +568,7 @@ export default {
     this.modeResponsive();
     this.getZones();
     this.getTitles();
+    this.getRoles();
   },
   computed: {
     responsiveMode() {
@@ -910,22 +911,17 @@ export default {
           this.errorHandling(error);
         });
     },
-    getHistory() {
-      var url = this.$store.getters["routes/getRoute"]("orders.history");
+    getRoles() {
+      var url = this.$store.getters["routes/getRoute"]("get.roles");
       this.$axios
-        .post(
-          url,
-          {startDate:"2021/04/10",
-          finalDate:"2021/04/15"},
-          {
-            headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
           }
-        )
+        })
         .then(response => {
           if (response.data.status === "success") {
-            console.log(response.data);
+            this.$store.commit("auth/setRoles", response.data.result.data);
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
