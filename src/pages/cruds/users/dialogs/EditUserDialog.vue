@@ -209,28 +209,40 @@ export default {
     this.bus.$on("open-edit-user", data => {
       this.card = true;
       this.user = data;
-      console.log(data);
       this.form.email = this.user.email;
       this.form.roleSelected = {
         value: data.roleObject.id,
         label: data.roleObject.name
       };
-      this.form.storesSelected=[];
-      var vue=this;
+      this.form.storesSelected = [];
+      var vue = this;
       if (this.user.locals.length !== 0) {
         this.user.locals.map(function(item) {
-          let result=vue.$store.getters["auth/getDataLocals"].find(item2 => item2.id===item.id_local)
+          let result = vue.$store.getters["auth/getDataLocals"].find(
+            item2 => item2.id === item.id_local
+          );
           let row = {
             value: result.id,
-            label:result.name + ", " +result.commune,
-            image:result.image,
-            commune:result.commune,
-            name:result.name,
-            deliveryTime:result.deliveryTime,
-            preparationTime:result.preparationTime,
-            cart:result.cartStatus
+            label: result.name + ", " + result.commune,
+            image: result.image,
+            commune: result.commune,
+            name: result.name,
+            deliveryTime: result.deliveryTime,
+            preparationTime: result.preparationTime,
+            cart: result.cartStatus
           };
           vue.form.storesSelected.push(row);
+        });
+      } else {
+        vue.form.storesSelected.push({
+          label: "Todos",
+          value: -1,
+          image: null,
+          commune: null,
+          name: null,
+          preparationTime: 0,
+          deliveryTime: 0,
+          cart: null
         });
       }
     });
@@ -241,7 +253,7 @@ export default {
       card: false,
       prod: null,
       user: null,
-      roles: this.$store.getters['auth/getRoles'],
+      roles: this.$store.getters["auth/getRoles"],
       localSelected: {
         label: "Todos",
         value: -1,
@@ -259,9 +271,9 @@ export default {
         email: "",
         password: "",
         confirmPassword: "",
-        roleSelected:{
-          value:null,
-          label:""
+        roleSelected: {
+          value: null,
+          label: ""
         },
         storesSelected: []
       }
@@ -274,8 +286,8 @@ export default {
       this.form.password = "";
       this.form.confirmPassword = "";
       this.form.roleSelected = {
-          value:null,
-          label:""
+        value: null,
+        label: ""
       };
       this.form.storesSelected = [];
       this.reset();
@@ -283,17 +295,20 @@ export default {
     edit() {
       this.showLoading();
       let selectedLocals = [];
-      let selectedLocalsString=""; 
+      let selectedLocalsString = "";
       this.form.storesSelected.map(function(item) {
         selectedLocals.push(item.value);
-        selectedLocalsString+=item.value+","
+        selectedLocalsString += item.value + ",";
       });
       var data = {
         id_rol: this.form.roleSelected.value,
         email: this.form.email,
         locales: {
-          string:selectedLocalsString.substring(0,selectedLocalsString.length-1),
-          array:selectedLocals
+          string: selectedLocalsString.substring(
+            0,
+            selectedLocalsString.length - 1
+          ),
+          array: selectedLocals
         }
       };
       if (!this.prod) {
@@ -314,7 +329,7 @@ export default {
             if (response.data.status === "success") {
               this.hideLoading();
               this.card = false;
-              this.filter="";
+              this.filter = "";
               this.bus.$emit("sync-users");
             } else {
               this.showNotification(response.data.message, "negative", "error");

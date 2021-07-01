@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="card" persistent>
-    <!--<q-card
+    <q-card
       class="my-card"
       style="width: 350px; height:270px; border-radius:10px"
     >
@@ -24,8 +24,8 @@
           v-close-popup
         />
       </q-card-actions>
-    </q-card>-->
-    <q-card
+    </q-card>
+    <!--<q-card
       style="border-radius:10px;width: 700px; max-width: 80vw;overflow:hidden; "
     >
       <q-card-section
@@ -270,7 +270,7 @@
           >
         </q-card-actions>
       </q-card-section>
-    </q-card>
+    </q-card>-->
   </q-dialog>
 </template>
 
@@ -297,8 +297,25 @@ export default {
       this.item.details = row.details;
       this.item.conditions = row.conditions;
       this.comunesSelected = this.findComunes(row.delivery);
-      this.currentTitleTemplate.label = row.shortTitle;
-      this.currentTitleTemplate.label2 = row.longTitle;
+      var qty = this.item.pieces.toString();
+      var localName=this.$store.getters["auth/getDataLocal"].name;
+      this.currentTitleTemplate.label = row.shortTitle.replaceAll(
+        qty,
+        "$p"
+      );
+      this.currentTitleTemplate.label = this.currentTitleTemplate.label.replaceAll(
+        localName,
+        "$n"
+      );
+      this.currentTitleTemplate.label2 = row.longTitle.replaceAll(
+        qty,
+        "$p"
+      );
+      this.currentTitleTemplate.label2 = this.currentTitleTemplate.label2.replaceAll(
+        localName,
+        "$n"
+      );
+      console.log(this.currentTitleTemplate);
       this.item.price = row.price;
     });
   },
@@ -308,9 +325,14 @@ export default {
   watch: {
     "item.pieces": {
       handler(val) {
+        var localName=this.$store.getters["auth/getDataLocal"].name;
         this.titleDetails.shortTitle = this.currentTitleTemplate.label.replaceAll(
           "$p",
           val
+        );
+        this.titleDetails.shortTitle = this.titleDetails.shortTitle.replaceAll(
+          "$n",
+          localName
         );
         this.titleDetails.longTitle = this.currentTitleTemplate.label2.replaceAll(
           "$p",
@@ -318,7 +340,7 @@ export default {
         );
         this.titleDetails.longTitle = this.titleDetails.longTitle.replaceAll(
           "$n",
-          this.$store.getters["auth/getDataLocal"].name
+          localName
         );
       },
       deep: true
@@ -369,15 +391,15 @@ export default {
   methods: {
     reset() {
       this.card = false;
-      this.titleSelected= {
+      this.titleSelected = {
         value: null,
         label: "Seleccionar..."
       };
-      this.currentTitleTemplate={
+      this.currentTitleTemplate = {
         value: "",
         label: "",
         label2: ""
-      }
+      };
     },
     responsiveMode() {
       var responsive = window.matchMedia("(max-width: 900px)");
@@ -397,8 +419,8 @@ export default {
     },
     edit() {
       var data = {
-        titulo: this.currentTitleTemplate.label,
-        titulo_largo: this.currentTitleTemplate.label2,
+        titulo: this.titleDetails.shortTitle,
+        titulo_largo: this.titleDetails.longTitle,
         piezas: this.item.pieces,
         antes: this.item.price,
         despues: this.item.discounted,
@@ -425,7 +447,7 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               this.hideLoading();
-              this.bus.$emit("sync-coupons");
+              this.bus.$emit("sync-coupon-edit");
               this.reset();
             } else {
               this.hideLoading();
@@ -521,9 +543,14 @@ export default {
     changeTitles(val) {
       console.log(val);
       this.currentTitleTemplate = val;
+      var localName=this.$store.getters["auth/getDataLocal"].name;
       this.titleDetails.shortTitle = this.currentTitleTemplate.label.replaceAll(
         "$p",
         this.item.pieces
+      );
+      this.titleDetails.shortTitle = this.titleDetails.shortTitle.replaceAll(
+        "$n",
+        localName
       );
       this.titleDetails.longTitle = this.currentTitleTemplate.label2.replaceAll(
         "$p",
@@ -531,7 +558,7 @@ export default {
       );
       this.titleDetails.longTitle = this.titleDetails.longTitle.replaceAll(
         "$n",
-        this.$store.getters["auth/getDataLocal"].name
+        localName
       );
     }
   }

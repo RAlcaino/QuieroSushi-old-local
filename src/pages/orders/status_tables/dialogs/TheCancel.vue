@@ -29,6 +29,7 @@
 
 <script>
 export default {
+  props:["mode"],
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
@@ -80,7 +81,11 @@ export default {
 
             if (response.data.status === "success") {
               this.hideLoading();
-              this.bus.$emit("sync-orders");
+              if(this.mode==="orders"){
+                this.bus.$emit("sync-orders");
+              }else{
+                this.bus.$emit("sync-page-after-refund");
+              }
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");

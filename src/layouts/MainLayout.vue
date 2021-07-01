@@ -620,12 +620,12 @@ export default {
       }
     },
     logout() {
+      this.bus.$emit("logout");
       this.optionsAvailable = [];
       this.privateChannel = this.Echo.leaveChannel(this.channelName);
       this.privateChannelBlock = this.Echo2.leaveChannel(this.channelNameBlock);
       this.channelName = "";
       this.channelNameBlock = "";
-      this.bus.$emit("logout");
     },
     modeResponsive() {
       var responsive = window.matchMedia("(max-width: 500px)");
@@ -921,7 +921,8 @@ export default {
         })
         .then(response => {
           if (response.data.status === "success") {
-            this.$store.commit("auth/setRoles", response.data.result.data);
+            var locals=response.data.result.data.filter(item => item.name!=="God");
+            this.$store.commit("auth/setRoles", locals);
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
