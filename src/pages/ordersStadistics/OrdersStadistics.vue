@@ -220,7 +220,7 @@
         </template>
       </q-table>
       <div
-        v-if="pagination.totalPages !== null && searching === false"
+        v-if="count!== 0 && searching === false"
         class="row justify-center q-mt-md"
       >
         <q-pagination
@@ -282,7 +282,6 @@ export default {
       responsiveMobile: false,
       data: [],
       loadingPage: false,
-      changeLocal: false,
       startDate: "",
       finalDate: "",
       pagination: {
@@ -290,7 +289,7 @@ export default {
         currentPage: null,
         totalPages: null
       },
-      resetAll: false,
+      count:0,
       meta: {},
       total: 0,
       columns: [
@@ -469,7 +468,44 @@ export default {
       return "Total de filas: " + this.meta.meta.total;
     },
     changePage(value) {
-      this.getHistory(true);
+      this.loadingPage = true;
+      var url = this.$store.getters["routes/getRoute"]("orders.history", {
+        page: this.pagination.currentPage
+      });
+      this.$axios
+        .post(
+          url,
+          {
+            startDate: this.startDate.replaceAll("/", "-"),
+            finalDate: this.finalDate.replaceAll("/", "-"),
+            localId: this.localSelected.value,
+            idUser:
+              this.localSelected.value === null
+                ? this.$store.getters["auth/getDataUser"].id
+                : null
+          },
+          {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          }
+        )
+        .then(response => {
+          if (response.data.status === "success") {
+            this.meta = response.data.result.pop();
+            this.pagination.totalPages = this.meta.meta.totalPages;
+            this.pagination.currentPage = this.meta.meta.currentPage;
+            this.total = this.meta.meta.ordersTotal;
+            this.count= this. meta.meta.total;
+            this.mapResponse(response.data.result);
+            this.loadingPage = false;
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     },
     initLocals() {
       var vue = this;
@@ -516,7 +552,6 @@ export default {
       );
     },
     change(val) {
-      this.changeLocal = true;
       if (val !== null) {
         this.localSelected = val;
       }
@@ -529,7 +564,6 @@ export default {
       if (this.$refs.select !== undefined) {
         this.$refs.select.hidePopup();
       }
-      this.resetAll = true;
       this.localSelected = {
         label: "Todos",
         value: null,
@@ -539,19 +573,11 @@ export default {
         cartStatus: null
       };
     },
-    getHistory(loading) {
-      if (loading === true) {
-        this.loadingPage = true;
-      } else {
-        this.loading();
-      }
+    getHistory() {
+      this.loading();
+    
       var url = this.$store.getters["routes/getRoute"]("orders.history", {
-        page:
-          this.pagination.currentPage === null ||
-          this.changeLocal ||
-          this.resetAll
-            ? 1
-            : this.pagination.currentPage
+        page: 1
       });
       this.$axios
         .post(
@@ -576,15 +602,11 @@ export default {
             this.meta = response.data.result.pop();
             this.pagination.totalPages = this.meta.meta.totalPages;
             this.pagination.currentPage = this.meta.meta.currentPage;
-            this.changeLocal = false;
-            this.resetAll = false;
             this.total = this.meta.meta.ordersTotal;
+            this.count= this. meta.meta.total;
             this.mapResponse(response.data.result);
-            if (loading === true) {
-              this.loadingPage = false;
-            } else {
-              this.stopLoading();
-            }
+            this.stopLoading();
+ 
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
