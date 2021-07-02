@@ -97,6 +97,10 @@ const mutations = {
       {
         name: "get.roles",
         link: "/roles/get"
+      },
+      {
+        name: "upload.photo",
+        link: "/files/{type}"
       }
     ];
   }
