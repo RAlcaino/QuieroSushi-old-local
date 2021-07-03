@@ -2,6 +2,7 @@
   <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
     <the-aditionals :localName="local.label"></the-aditionals>
     <the-edit></the-edit>
+    <edit-photo></edit-photo>
     <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
       <q-btn flat round dense icon="confirmation_number" />
       <q-toolbar-title :style="FontSize"> Cupones</q-toolbar-title>
@@ -154,18 +155,31 @@
               />
             </q-item-section>
 
-            <q-item-section v-if="$store.getters['auth/getDataUser'].role === 'God'" center class="col-1 gt-xs">
-              <p style="margin-bottom:5px; font-weight:bold">#{{item.id}}</p>
+            <q-item-section
+              v-if="$store.getters['auth/getDataUser'].role === 'God'"
+              center
+              class="col-1 gt-xs"
+            >
+              <p style="margin-bottom:5px; font-weight:bold">#{{ item.id }}</p>
             </q-item-section>
 
-            <q-item-section center class="col-2 gt-xs">
-              <img
-                :src="item.image"
-                alt="img-sushi"
-                width="50"
-                height="50"
-                style="align-self:center;border-radius:50px"
-              />
+            <q-item-section center class="col-2 gt-xs" @click="upploadNew(item)">
+              <div class="image__coupon">
+                <img
+                  :src="item.image"
+                  alt="img-sushi"
+                  width="50"
+                  height="50"
+                  style="align-self:center; display: block;"
+                />
+                <div class="overlay__change__image">
+                  <q-icon
+                    size="20px"
+                    name="edit"
+                    color="white"
+                  />
+                </div>
+              </div>
             </q-item-section>
 
             <q-item-section center>
@@ -263,16 +277,18 @@
 <script>
 import TheAditionals from "./dialogs/TheAditionals.vue";
 import TheEdit from "./dialogs/TheEdit.vue";
+import EditPhoto from "./dialogs/EditPhoto.vue";
 
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   components: {
     TheAditionals,
-    TheEdit
+    TheEdit,
+    EditPhoto
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
-    this.bus.$on("sync-coupons",()=>{
+    this.bus.$on("sync-coupons", () => {
       this.sync();
     });
   },
@@ -491,8 +507,8 @@ export default {
                   pieces: item.pieces,
                   price: item.price,
                   discounted: item.discounted,
-                  details:item.details.replaceAll(".-","\n"),
-                  conditions: item.conditions.replaceAll(".-","\n"),
+                  details: item.details.replaceAll(".-", "\n"),
+                  conditions: item.conditions.replaceAll(".-", "\n"),
                   shortTitle: item.shortTitle,
                   longTitle: item.longTitle,
                   delivery: item.delivery
@@ -527,16 +543,16 @@ export default {
     },
     changeStatus(item) {
       let data = {
-        estado: ''
+        estado: ""
       };
       if (item.status == true) {
-        if(this.$store.getters["auth/getDataLocal"].cartStatus==0){
-          data.estado='cerrado'
-        }else{
-          data.estado='activo'
+        if (this.$store.getters["auth/getDataLocal"].cartStatus == 0) {
+          data.estado = "cerrado";
+        } else {
+          data.estado = "activo";
         }
       } else {
-        data.estado='pendiente' 
+        data.estado = "pendiente";
       }
 
       this.showLoading();
@@ -645,7 +661,7 @@ export default {
       this.bus.$emit("open-aditionals");
     },
     dialogEdit(item) {
-      this.bus.$emit("open-edit-coupon",item);
+      this.bus.$emit("open-edit-coupon", item);
     },
     filterFn(val) {
       if (val === "") {
@@ -746,6 +762,9 @@ export default {
         this.local.value = this.localSelected.value;
         this.local.label = this.localSelected.label;
       }
+    },
+    upploadNew(coupon) {
+      this.bus.$emit("open-upload-photo",coupon,this.$store.getters["auth/getDataLocal"].id);
     }
   }
 };
@@ -758,6 +777,36 @@ export default {
 .q-select-coupon {
   margin-right: 46px;
 }
+
+.image__coupon {
+  margin: 0 auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  cursor:pointer;
+}
+
+.overlay__change__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay__change__image:hover{
+  opacity: 1;
+}
+
 @media screen and (max-width: 500px) {
   .labels-available {
     width: 100%;

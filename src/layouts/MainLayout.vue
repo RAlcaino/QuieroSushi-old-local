@@ -611,12 +611,24 @@ export default {
       this.currentMinute = date.getMinutes();
       this.currentSecond = date.getSeconds();
       if (
-        this.currentHour === 5 &&
-        this.currentMinute === 0 &&
-        this.currentSecond === 0
+        this.currentHour ===
+          this.$store.getters["auth/getNextUpdateTime"].currentHour &&
+        this.currentMinute ===
+          this.$store.getters["auth/getNextUpdateTime"].currentMinute &&
+        this.currentSecond ===
+          this.$store.getters["auth/getNextUpdateTime"].currentSecond
       ) {
-        console.log("Son las 5:00am");
-        this.refreshToken();
+        console.log("Han pasado 30min. Verificando cambios.");
+        let dt = new Date();
+        dt.setMinutes(dt.getMinutes() + 30);
+
+        let payload = {
+          currentHour: dt.getHours(),
+          currentMinute: dt.getMinutes(),
+          currentSecond: dt.getHours()
+        };
+        this.$store.commit("auth/setNextTimeUpdate", payload);
+        this.refreshToken(true, false);
       }
     },
     logout() {
@@ -688,7 +700,7 @@ export default {
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
-          this.getLocals(false);
+          this.getLocals(false, false);
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("locals.update", {
@@ -711,7 +723,7 @@ export default {
               if (this.$router.currentRoute.name === "cupones") {
                 this.bus.$emit("sync-coupons");
               }
-              this.getLocals(false);
+              this.getLocals(false, false);
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
@@ -722,7 +734,8 @@ export default {
           });
       }
     },
-    getLocals(flag) {
+    getLocals(flag, syncComponent) {
+      var oldLocals = this.$store.getters["auth/getDataLocals"];
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -799,20 +812,12 @@ export default {
                 // a must be equal to b
                 return 0;
               });
+
               this.$store.commit("auth/setLocals", locals);
               this.bus.$emit("sync-locals-settings");
               this.flag = this.$store.getters["auth/getCartsStatus"];
 
               if (this.$store.getters["auth/getDataLocals"].length === 1) {
-                /*let test={
-                  cartStatus: 0,
-                  commune: "San Miguel",
-                  deliveryTime: 5,
-                  id: 1913,
-                  image: "http://quierosushi.cl/locales/umeshu-sushi478.jpg",
-                  name: "Umeshu Sushi",
-                  preparationTime: 20
-                }*/
                 this.$store.commit("auth/setCurrentLocal", locals[0]);
               } else {
                 if (vue.$store.getters["auth/getDataLocal"].id !== -1) {
@@ -824,8 +829,15 @@ export default {
                 }
               }
 
-              if (flag) {
+              if (syncComponent) {
                 window.location.reload();
+                return;
+              }
+
+              if (flag) {
+                if (this.verifyCartStatus(oldLocals, locals)) {
+                  return;
+                }
               } else {
                 this.hideLoading();
               }
@@ -839,12 +851,18 @@ export default {
           });
       }
     },
-    refreshToken() {
+    refreshToken(flag, syncComponent) {
       var ls = new SecureLS({ isCompression: false });
-      this.showLoading();
+      if (syncComponent) {
+        this.showLoading();
+      }
       if (!this.prod) {
         setTimeout(() => {
-          this.getLocals(true);
+          if (flag) {
+            this.getLocals(true, syncComponent);
+          } else {
+            this.getLocals(false, false);
+          }
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("refresh.token");
@@ -862,7 +880,11 @@ export default {
                 "auth/setAvailableMenuOptions",
                 response.data.result.availableMenuOptions
               );
-              this.getLocals(true);
+              if (flag) {
+                this.getLocals(true, syncComponent);
+              } else {
+                this.getLocals(false, false);
+              }
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
@@ -921,7 +943,9 @@ export default {
         })
         .then(response => {
           if (response.data.status === "success") {
-            var locals=response.data.result.data.filter(item => item.name!=="God");
+            var locals = response.data.result.data.filter(
+              item => item.name !== "God"
+            );
             this.$store.commit("auth/setRoles", locals);
           } else {
             this.showNotification(response.data.message, "negative", "error");
@@ -930,6 +954,24 @@ export default {
         .catch(error => {
           this.errorHandling(error);
         });
+    },
+    verifyCartStatus(oldLocals, currentLocals) {
+      if (oldLocals.length !== currentLocals.length) {
+        return true;
+      }
+      var flag = false;
+
+      for (let index = 0; index < oldLocals.length; index++) {
+        if (oldLocals[index].id !== currentLocals[index].id) {
+          flag = true;
+          break;
+        }
+        if (oldLocals[index].cartStatus !== currentLocals[index].cartStatus) {
+          flag = true;
+          break;
+        }
+      }
+      return flag;
     }
   }
 };
