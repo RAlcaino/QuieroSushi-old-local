@@ -70,7 +70,7 @@ export default {
   methods: {
     uploadPhoto() {
       var formData = new FormData();
-      formData.append("file", this.file_selected);
+      formData.append("foto1", this.file_selected);
       formData.append("id_cupon", this.coupon.id);
       formData.append("id_local", this.localId);
 
@@ -94,11 +94,11 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               this.bus.$emit("sync-coupon-edit");
-              this.closePopup();
             } else {
               //this.showNotification(response.data.message, "negative", "error");
             }
             this.hideLoading();
+            this.closePopup();
           })
           .catch(error => {
             this.hideLoading();

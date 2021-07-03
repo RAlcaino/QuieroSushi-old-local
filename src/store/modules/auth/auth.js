@@ -2,6 +2,11 @@ const state = {
   authenticated: false,
   godMode: false,
   token: "",
+  nextUpdateTime: {
+    currentHour: null,
+    currentMinute: null,
+    currentSecond: null
+  },
   user: {
     id: 0,
     email: "",
@@ -33,6 +38,15 @@ const mutations = {
     state.user.email = payload.email;
     state.user.role = payload.role.name;
     state.user.locals = payload.locals;
+    let date = new Date();
+    date.setMinutes(date.getMinutes() + 30);
+    let currentHour = date.getHours();
+    let currentMinute = date.getMinutes();
+    let currentSecond = date.getSeconds();
+
+    state.nextUpdateTime.currentHour = currentHour;
+    state.nextUpdateTime.currentMinute = currentMinute;
+    state.nextUpdateTime.currentSecond = currentSecond;
 
     if (payload.locals.length === 0) {
       state.user.debt = true;
@@ -84,6 +98,12 @@ const mutations = {
     state.comunas = [];
     state.regiones = [];
     state.ciudades = [];
+
+    state.nextUpdateTime = {
+      currentHour: null,
+      currentMinute: null,
+      currentSecond: null
+    };
   },
   setCurrentLocal(state, payload) {
     state.currentLocal = payload;
@@ -154,6 +174,11 @@ const mutations = {
       };
       state.roles.push(row);
     });
+  },
+  setNextTimeUpdate(state, payload) {
+    state.nextUpdateTime.currentHour = payload.currentHour;
+    state.nextUpdateTime.currentMinute = payload.currentMinute;
+    state.nextUpdateTime.currentSecond = payload.currentSecond;
   }
 };
 const actions = {};
@@ -222,6 +247,9 @@ const getters = {
   getRoles(state) {
     return state.roles;
   },
+  getNextUpdateTime(state) {
+    return state.nextUpdateTime;
+  }
 };
 
 export default {
