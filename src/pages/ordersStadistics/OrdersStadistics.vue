@@ -188,6 +188,20 @@
           <strong style="font-size:16px;">Resultados</strong>
         </template>
 
+        <template v-slot:top-right>
+          <q-select
+            style="width: 90px;"
+            rounded
+            v-model="pagination.currentPage"
+            :options="pagesOptions"
+            :options-dense="true"
+            outlined
+            @input="changePage()"
+            dense
+            label="Página"
+          />
+        </template>
+
         <template v-slot:header="props">
           <q-tr :props="props">
             <q-th>Anular</q-th>
@@ -220,7 +234,7 @@
         </template>
       </q-table>
       <div
-        v-if="count!== 0 && searching === false"
+        v-if="count !== 0 && searching === false"
         class="row justify-center q-mt-md"
       >
         <q-pagination
@@ -229,7 +243,7 @@
           :max="pagination.totalPages"
           size="sm"
           input
-          @input="changePage(pagination.currentPage)"
+          @input="changePage()"
         />
       </div>
     </div>
@@ -289,7 +303,8 @@ export default {
         currentPage: null,
         totalPages: null
       },
-      count:0,
+      pagesOptions: [],
+      count: 0,
       meta: {},
       total: 0,
       columns: [
@@ -467,7 +482,7 @@ export default {
     getPaginationLabel(firstRowIndex, endRowIndex, totalRowsNumber) {
       return "Total de filas: " + this.meta.meta.total;
     },
-    changePage(value) {
+    changePage() {
       this.loadingPage = true;
       var url = this.$store.getters["routes/getRoute"]("orders.history", {
         page: this.pagination.currentPage
@@ -496,8 +511,9 @@ export default {
             this.pagination.totalPages = this.meta.meta.totalPages;
             this.pagination.currentPage = this.meta.meta.currentPage;
             this.total = this.meta.meta.ordersTotal;
-            this.count= this. meta.meta.total;
+            this.count = this.meta.meta.total;
             this.mapResponse(response.data.result);
+            this.initSelectPages();
             this.loadingPage = false;
           } else {
             this.showNotification(response.data.message, "negative", "error");
@@ -575,7 +591,7 @@ export default {
     },
     getHistory() {
       this.loading();
-    
+
       var url = this.$store.getters["routes/getRoute"]("orders.history", {
         page: 1
       });
@@ -603,10 +619,10 @@ export default {
             this.pagination.totalPages = this.meta.meta.totalPages;
             this.pagination.currentPage = this.meta.meta.currentPage;
             this.total = this.meta.meta.ordersTotal;
-            this.count= this. meta.meta.total;
+            this.count = this.meta.meta.total;
             this.mapResponse(response.data.result);
+            this.initSelectPages();
             this.stopLoading();
- 
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -656,6 +672,12 @@ export default {
           return 0;
         });
       });
+    },
+    initSelectPages() {
+      this.pagesOptions = [];
+      for (let index = 1; index <= this.pagination.totalPages; index++) {
+        this.pagesOptions.push(index);
+      }
     }
   }
 };
