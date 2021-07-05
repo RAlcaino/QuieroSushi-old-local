@@ -560,6 +560,11 @@ export default {
     this.privateChannel = this.Echo.channel(this.channelName);
     this.privateChannelBlock = this.Echo2.channel(this.channelNameBlock);
     this.listenEvent();
+
+    if(this.$store.getters["auth/getAuthenticated"]){
+      this.refreshToken(true, false);
+    }
+
   },
   mounted() {
     console.log("main layout mounted");
