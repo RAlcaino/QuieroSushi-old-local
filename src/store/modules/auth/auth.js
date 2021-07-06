@@ -74,11 +74,9 @@ const mutations = {
     state.authenticated = true;
   },
   resetDataUserSesion(state) {
-    if (state.user.role === "God") {
-      state.godMode = false;
-    }
 
-    state.user.id = null;
+    state.godMode = false;
+    state.user.id = 0;
     state.user.email = "";
     state.user.role = "";
     state.user.locals = [];
@@ -87,17 +85,20 @@ const mutations = {
     state.token = "";
     state.availableMenuOptions = [];
     state.authenticated = false;
-    this.currentLocal = {
+    state.currentLocal = {
       id: null,
       name: null,
       image: null,
       commune: null,
       cartStatus: null
     };
+
+    state.installPromptEvent=null;
     state.titles = [];
     state.comunas = [];
     state.regiones = [];
     state.ciudades = [];
+    state.roles = [];
 
     state.nextUpdateTime = {
       currentHour: null,
