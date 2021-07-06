@@ -76,6 +76,8 @@ export default {
   inject: ["showNotification", "errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+    this.$store.commit("auth/resetDataUserSesion");
+    localStorage.clear();
   },
   mounted() {
     var vue = this;
