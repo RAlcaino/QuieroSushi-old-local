@@ -306,6 +306,8 @@ export default {
             if (response.data.status === "success") {
               if (this.$router.currentRoute.name === "cupones") {
                 this.bus.$emit("sync-coupons");
+              }else{
+                this.bus.$emit("sync-orders");
               }
               this.getLocals();
             } else {

@@ -151,7 +151,7 @@
                     color="green"
                     text-color="white"
                     icon="room_service"
-                    :label="finalTime"
+                    :label="orderDetail.soon === 1 ? finalTime : finalTime2"
                   />
                 </p>
               </div>
@@ -297,10 +297,15 @@ export default {
       this.card = !this.card;
       this.orderDetail = data;
       this.finalDateManual = this.orderDetail.requestedTime;
-      this.preparationTime = this.orderDetail.local.preparationTime;
       this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
-      this.minPreparationTime = this.orderDetail.local.preparationTime;
       this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
+
+      if (this.orderDetail.soon === 0) {
+        this.calculatePreparationTime();
+      } else {
+        this.preparationTime = this.orderDetail.local.preparationTime;
+        this.minPreparationTime = this.orderDetail.local.preparationTime;
+      }
       this.updateTime();
       setInterval(() => {
         this.updateTime();
@@ -336,6 +341,39 @@ export default {
         this.final.seconds < 10
           ? ":0" + this.final.seconds
           : ":" + this.final.seconds; //get seconds
+
+      this.finalDateDetail =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        tempFinalDetail;
+
+      return this.finalDateDetail;
+    },
+    finalTime2() {
+      let tempFinalDetail = "";
+      let date = new Date(Date.now());
+      date.setMinutes(
+        date.getMinutes() +
+          (+this.preparationTime +
+            +this.deliveryTime +
+            +this.orderDetail.gmapsDeliveryTime)
+      );
+      tempFinalDetail +=
+        date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      tempFinalDetail +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+      tempFinalDetail +=
+        date.getSeconds() < 10
+          ? ":0" + date.getSeconds()
+          : ":" + date.getSeconds(); //get seconds
 
       this.finalDateDetail =
         date.getFullYear() +
@@ -443,6 +481,23 @@ export default {
       this.final.hour = date.getHours();
       this.final.minutes = date.getMinutes();
       this.final.seconds = date.getSeconds();
+    },
+    calculatePreparationTime() {
+      let date = new Date(Date.now());
+      date.setMinutes(
+          date.getMinutes() +
+          this.deliveryTime +
+          this.orderDetail.gmapsDeliveryTime
+      );
+      let date2 = new Date(
+        this.orderDetail.requestedTime.replaceAll("-", "/")
+        //"2021/07/06 21:00:00"
+      );
+      this.minPreparationTime = Math.round(
+        (date2.getTime() - date.getTime()) / 60000
+      );
+      
+      this.preparationTime=this.minPreparationTime;
     }
   }
 };

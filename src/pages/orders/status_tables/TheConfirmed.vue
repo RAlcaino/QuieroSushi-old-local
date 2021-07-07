@@ -132,7 +132,7 @@
                 class="i-icon"
               /><strong
                 >Hora Prometida:
-                {{ item.confirmationTimestamp.split(" ")[1] }}</strong
+                {{ item.kitchenTime.split(" ")[1] }}</strong
               >
             </div>
           </q-card-section>
