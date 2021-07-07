@@ -42,23 +42,18 @@
             <q-separator />
 
             <div class="tab-alerts-c" v-if="orderDetail.soon !== null">
-              <strong style="color: #333; text-align:center">
-                <div class="live-c"></div>
-                Alertas
-                <div class="live-c"></div>
-              </strong>
               <p
                 v-if="orderDetail.soon === 1"
-                style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+                style="color: green; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
               >
-                - Intenta dar tu mejor tiempo. El cliente lo necesita lo antes
+                Intenta dar tu mejor tiempo. El cliente lo necesita lo antes
                 posible.
               </p>
               <p
                 v-if="orderDetail.soon === 0"
-                style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+                style="color: green; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
               >
-                - Intenta no cambiar los tiempos. El cliente lo necesita a esa
+                Intenta no cambiar los tiempos. El cliente lo necesita a esa
                 hora.
               </p>
               <p
@@ -69,7 +64,7 @@
                 "
                 style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
               >
-                - Usted esta cambiando el horario de preferencia del cliente.
+                El cliente lo pide para esa hora exacta, trata de no cambiarla.
               </p>
             </div>
 
@@ -98,7 +93,7 @@
                 </div>
                 <p
                   style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
-                  v-if="preparationTime > 60"
+                  v-if="preparationTime > 60 && orderDetail.soon!==0"
                 >
                   Usted está dando {{ preparationTime }} minutos en tiempo de
                   cocina. Intente mejorar sus tiempos.
