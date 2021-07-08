@@ -39,7 +39,7 @@ const mutations = {
     state.user.role = payload.role.name;
     state.user.locals = payload.locals;
     let date = new Date();
-    date.setMinutes(date.getMinutes() + 30);
+    date.setMinutes(date.getMinutes() + 5);
     let currentHour = date.getHours();
     let currentMinute = date.getMinutes();
     let currentSecond = date.getSeconds();
