@@ -57,12 +57,8 @@
                 <q-item-section>
                   <form autocomplete="off">
                     <q-input
-                      :error-message="
-                        alertDifferentPassword === true
-                          ? 'Las contraseñas no son iguales'
-                          : ''
-                      "
-                      :error="alertDifferentPassword"
+                      :error-message="errorMessages"
+                      :error="alertDifferentPassword || alertMinPassword"
                       v-model="form.password"
                       outlined
                       rounded
@@ -77,12 +73,8 @@
                 <q-item-section>
                   <form autocomplete="off">
                     <q-input
-                      :error-message="
-                        alertDifferentPassword === true
-                          ? 'Las contraseñas no son iguales'
-                          : ''
-                      "
-                      :error="alertDifferentPassword"
+                      :error-message="errorMessages"
+                      :error="alertDifferentPassword || alertMinPassword"
                       v-model="form.confirmPassword"
                       outlined
                       rounded
@@ -203,6 +195,7 @@
       <q-card-actions align="right">
         <q-btn
           @click="save()"
+          :disable="validationForm"
           size="sm"
           style="font-size:12px;padding: 0px 15px !important;"
           rounded
@@ -258,7 +251,16 @@ export default {
     };
   },
   computed: {
-    validationPassword() {
+    errorMessages() {
+      if (this.alertDifferentPassword === true) {
+        return "Las contraseñas no son iguales.";
+      }
+
+      if (this.form.password.length < 6) {
+        return "Las contraseña debe tener al menos 6 caracteres.";
+      }
+    },
+    validationForm() {
       let condition2 = false;
 
       let condition1 =
@@ -273,7 +275,7 @@ export default {
         this.form.password !== undefined &&
         this.form.password !== ""
       ) {
-        if (this.form.confirmPassword === this.form.password) {
+        if (this.form.confirmPassword === this.form.password && this.form.password.length >= 6) {
           condition2 = false;
         } else {
           condition2 = true;
@@ -284,6 +286,22 @@ export default {
 
       if (condition1 || condition2) {
         return true;
+      } else {
+        return false;
+      }
+    },
+    alertMinPassword() {
+      if (
+        this.form.confirmPassword !== undefined &&
+        this.form.confirmPassword !== "" &&
+        this.form.password !== undefined &&
+        this.form.password !== ""
+      ) {
+        if (this.form.password.length < 6) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }

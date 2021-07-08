@@ -625,7 +625,7 @@ export default {
       ) {
         console.log("Han pasado 30min. Verificando cambios.");
         let dt = new Date();
-        dt.setMinutes(dt.getMinutes() + 30);
+        dt.setMinutes(dt.getMinutes() + 5);
 
         let payload = {
           currentHour: dt.getHours(),
