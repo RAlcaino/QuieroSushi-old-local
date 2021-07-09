@@ -2295,30 +2295,7 @@ export default {
         }
       });
     },
-    /*last24hr() {
-      var vue=this;
-      let today = new Date();
-      let oneDay = 24 * 60 * 60 * 1000;
-      let yesterday = new Date(today.getTime() - oneDay);
-      console.log(today);
-      console.log(this.unix(today));
-      console.log(yesterday);
-      console.log(this.unix(yesterday));
-      console.log(this.data);
-      this.data = this.data.filter(function(item) {
-        if (
-          item.unixTermino >= vue.unix(yesterday) &&
-          item.unixTermino <= vue.unix(today)
-        ) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-      this.filters();
-    },*/
     filters() {
-      //console.log(this.data);
       var vue = this;
       var newArray = [];
       var roots = this.data.map(function(item) {
