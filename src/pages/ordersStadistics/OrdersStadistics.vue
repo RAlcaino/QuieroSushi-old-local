@@ -599,8 +599,8 @@ export default {
         .post(
           url,
           {
-            startDate: this.startDate.replaceAll("/", "-"),
-            finalDate: this.finalDate.replaceAll("/", "-"),
+            startDate: this.startDate.replaceAll("/", "-")+' '+'00:00:00',
+            finalDate: this.finalDate.replaceAll("/", "-")+' '+'23:59:59',
             localId: this.localSelected.value,
             idUser:
               this.localSelected.value === null
@@ -624,10 +624,12 @@ export default {
             this.initSelectPages();
             this.stopLoading();
           } else {
+            this.stopLoading();
             this.showNotification(response.data.message, "negative", "error");
           }
         })
         .catch(error => {
+          this.stopLoading();
           this.errorHandling(error);
         });
     },
