@@ -110,6 +110,16 @@
                     <template v-slot:prepend>
                       <q-icon name="store" />
                     </template>
+                    <template v-slot:option="scope">
+                      <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section>
+                          <q-item-label v-html="'<strong>'+scope.opt.value+'</strong> - '+scope.opt.label" />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                    <template v-slot:selected-item="scope">
+                     <div><strong v-if="scope.opt.value!==-1">{{scope.opt.value}} -</strong> {{scope.opt.label.length>18?scope.opt.label.substring(0,18)+'...':scope.opt.label}}</div>
+                    </template>
                     <template v-slot:before-options>
                       <q-item>
                         <q-item-section class="text-grey">
