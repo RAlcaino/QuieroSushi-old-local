@@ -4,6 +4,7 @@
     class="q-pa-sm"
     style="padding-bottom:100px"
   >
+    <edit-photo></edit-photo>
     <div class="row q-col-gutter-sm">
       <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12">
         <q-card class="card-bg">
@@ -30,12 +31,19 @@
           <q-card-section class="q-pa-sm">
             <q-list class="row">
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <q-item-section side>
-                  <q-avatar size="100px">
+                <q-item-section side @click="upploadNew(dataLocal)">
+                  <div class="image__local">
                     <img
-                      :src="'http://quierosushi.cl/locales/' + dataLocal.imagen"
+                      :src="dataLocal.imagen"
+                      alt="img-local"
+                      width="100"
+                      height="100"
+                      style="align-self:center; display: block;"
                     />
-                  </q-avatar>
+                    <div class="overlay__change__image">
+                      <q-icon size="20px" name="edit" color="white" />
+                    </div>
+                  </div>
                 </q-item-section>
               </q-item>
               <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -261,10 +269,7 @@
                           transition-show="scale"
                           transition-hide="scale"
                         >
-                          <q-time
-                            v-model="dia.hora_apertura"
-                            format24h
-                          >
+                          <q-time v-model="dia.hora_apertura" format24h>
                             <div class="row items-center justify-end">
                               <q-btn
                                 v-close-popup
@@ -294,10 +299,7 @@
                           transition-show="scale"
                           transition-hide="scale"
                         >
-                          <q-time
-                            v-model="dia.hora_cierre"
-                            format24h
-                          >
+                          <q-time v-model="dia.hora_cierre" format24h>
                             <div class="row items-center justify-end">
                               <q-btn
                                 v-close-popup
@@ -530,10 +532,13 @@
 </template>
 
 <script>
-import CardItemVue from 'src/components/cards/CardItem.vue';
+import EditPhoto from "./dialogs/EditPhoto.vue";
 export default {
   name: "UserProfile",
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  components:{
+    EditPhoto
+  },
   data() {
     return {
       password_dict: {},
@@ -567,8 +572,8 @@ export default {
         rut_legal: "",
         tipo_constitucion: "",
         semana: null,
-        telefono_notificaciones:null,
-        telefono_notificaciones_pagos:""
+        telefono_notificaciones: null,
+        telefono_notificaciones_pagos: ""
       },
       dataLocalOriginal: {
         id: null,
@@ -596,8 +601,8 @@ export default {
         rut_legal: "",
         tipo_constitucion: "",
         semana: null,
-        telefono_notificaciones:null,
-        telefono_notificaciones_pagos:""
+        telefono_notificaciones: null,
+        telefono_notificaciones_pagos: ""
       },
       region: {
         id: null,
@@ -615,6 +620,10 @@ export default {
   },
   mounted() {
     this.init();
+
+    this.bus.$on("sync-info-local", () => {
+      this.getDataLocal();
+    });
   },
   computed: {
     comunesFiltered() {
@@ -742,8 +751,11 @@ export default {
         lng: this.dataLocal.lng,
         comuna: this.dataLocal.comuna.label,
         telefono: this.dataLocal.telefono,
-        telefono_notificaciones: parseInt(this.dataLocal.telefono_notificaciones),
-        telefono_notificaciones_pagos: this.dataLocal.telefono_notificaciones_pagos,
+        telefono_notificaciones: parseInt(
+          this.dataLocal.telefono_notificaciones
+        ),
+        telefono_notificaciones_pagos: this.dataLocal
+          .telefono_notificaciones_pagos,
         ciudad: this.dataLocal.ciudad.label,
         region: this.dataLocal.region.value
       };
@@ -772,7 +784,7 @@ export default {
     },
     mapperResponse(data) {
       this.dataLocal.id = data.id_local;
-      this.dataLocal.imagen = data.imagen;
+      this.dataLocal.imagen = data.foto1;
       this.dataLocal.nombre = data.nombre;
       this.dataLocal.direccion = data.direccion;
       this.dataLocal.local = data.local;
@@ -784,7 +796,8 @@ export default {
       this.dataLocal.telefono = data.telefono;
       this.dataLocal.telefono_callcenter = data.telefono_callcenter;
       this.dataLocal.telefono_notificaciones = data.telefono_notificaciones.toString();
-      this.dataLocal.telefono_notificaciones_pagos = data.telefono_notificaciones_pagos;
+      this.dataLocal.telefono_notificaciones_pagos =
+        data.telefono_notificaciones_pagos;
       this.dataLocal.horario = data.horario;
       this.dataLocal.ciudad = this.$store.getters["auth/getZones"].cities.find(
         item => item.value === data.ciudad.id
@@ -807,7 +820,7 @@ export default {
       //-----
 
       this.dataLocalOriginal.id = data.id_local;
-      this.dataLocalOriginal.imagen = data.imagen;
+      this.dataLocalOriginal.imagen = data.foto1;
       this.dataLocalOriginal.nombre = data.nombre;
       this.dataLocalOriginal.direccion = data.direccion;
       this.dataLocalOriginal.local = data.local;
@@ -819,7 +832,8 @@ export default {
       this.dataLocalOriginal.telefono = data.telefono;
       this.dataLocalOriginal.telefono_callcenter = data.telefono_callcenter;
       this.dataLocalOriginal.telefono_notificaciones = data.telefono_notificaciones.toString();
-      this.dataLocalOriginal.telefono_notificaciones_pagos = data.telefono_notificaciones_pagos;
+      this.dataLocalOriginal.telefono_notificaciones_pagos =
+        data.telefono_notificaciones_pagos;
       this.dataLocalOriginal.horario = data.horario;
       this.dataLocalOriginal.ciudad = this.$store.getters[
         "auth/getZones"
@@ -957,14 +971,13 @@ export default {
       }
     },
     weekStructure(semana) {
-
       let week = [];
-      let result=this.uniqueDayWeek(semana);
+      let result = this.uniqueDayWeek(semana);
       let eachday = result.map(function(item) {
         let day = {
           dia_semana: item.dia_semana,
-          hora_apertura: item.hora_apertura.substr(0,5),
-          hora_cierre: item.hora_cierre.substr(0,5),
+          hora_apertura: item.hora_apertura.substr(0, 5),
+          hora_cierre: item.hora_cierre.substr(0, 5),
           label: item.label,
           estado: true
         };
@@ -972,7 +985,7 @@ export default {
       });
 
       for (let index = 0; index < 7; index++) {
-        if (!week.some(el=>el.dia_semana===index)) {
+        if (!week.some(el => el.dia_semana === index)) {
           week.push({
             dia_semana: index,
             hora_apertura: "00:00",
@@ -1013,9 +1026,9 @@ export default {
       }
     },
     setPassword() {
-      let data={
-        contrasena_actual:this.password_dict.current_password,
-        contrasena_nueva:this.password_dict.new_password
+      let data = {
+        contrasena_actual: this.password_dict.current_password,
+        contrasena_nueva: this.password_dict.new_password
       };
       this.showLoading();
       if (!this.prod) {
@@ -1034,7 +1047,7 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-              this.password_dict={};
+              this.password_dict = {};
               this.hideLoading();
             } else {
               this.hideLoading();
@@ -1047,28 +1060,30 @@ export default {
           });
       }
     },
-    uniqueDayWeek(week){
+    uniqueDayWeek(week) {
       const uniqueWeek = [];
 
-      for(var i = 0; i < week.length; i++) {
-      
+      for (var i = 0; i < week.length; i++) {
         const item = week[i];
-      
-        if(uniqueWeek.length!==0){
-          if(!uniqueWeek.some(el=>el.dia_semana===item.dia_semana)) {
+
+        if (uniqueWeek.length !== 0) {
+          if (!uniqueWeek.some(el => el.dia_semana === item.dia_semana)) {
             uniqueWeek.push(item);
           }
-        }else{
-           uniqueWeek.push(item);
+        } else {
+          uniqueWeek.push(item);
         }
       }
       return uniqueWeek;
+    },
+    upploadNew(local) {
+      this.bus.$emit("upload-photo-local",local.id);
     }
   }
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .card-bg {
   background-color: white;
   border-radius: 10px;
@@ -1081,5 +1096,32 @@ export default {
   .input-schedule {
     width: 30%;
   }
+}
+.image__local {
+  margin: 0 auto;
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  cursor:pointer;
+}
+.overlay__change__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay__change__image:hover{
+  opacity: 1;
 }
 </style>

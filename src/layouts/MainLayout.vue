@@ -565,10 +565,13 @@ export default {
       this.refreshToken(true, false);
     }
 
+    this.bus.$on("sync-locals", () => {
+      this.getLocals(false, false);
+    });
+
   },
   mounted() {
     console.log("main layout mounted");
-    //console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
     this.optionsAvailable = this.$store.getters["auth/getAvailableMenuOptions"];
     this.modeResponsive();
     this.getZones();

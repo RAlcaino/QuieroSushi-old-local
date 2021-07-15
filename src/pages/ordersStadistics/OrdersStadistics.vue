@@ -186,6 +186,7 @@
       >
         <template v-slot:top-left>
           <strong style="font-size:16px;">Resultados</strong>
+          <q-btn round dense flat color="primary" icon="download" style="margin-left:5px;" @click="download()"></q-btn>
         </template>
 
         <template v-slot:top-right>
@@ -680,7 +681,26 @@ export default {
       for (let index = 1; index <= this.pagination.totalPages; index++) {
         this.pagesOptions.push(index);
       }
-    }
+    },
+    download() {
+      var url = this.$store.getters["routes/getRoute"]("orders.history.download");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            console.log(response.data);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
   }
 };
 </script>

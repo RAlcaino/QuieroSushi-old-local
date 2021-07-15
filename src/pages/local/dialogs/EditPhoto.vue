@@ -75,9 +75,8 @@ export default {
   ],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
-    this.bus.$on("open-upload-photo", (coupon, localId) => {
+    this.bus.$on("upload-photo-local", (localId) => {
       this.card = true;
-      this.coupon = coupon;
       this.localId = localId;
       this.file_selected = null;
     });
@@ -87,7 +86,6 @@ export default {
     return {
       card: false,
       prod: null,
-      coupon: null,
       localId: null,
       file_selected: null
     };
@@ -96,7 +94,6 @@ export default {
     uploadPhoto() {
       var formData = new FormData();
       formData.append("file", this.file_selected);
-      formData.append("id_cupon", this.coupon.id);
       formData.append("id_local", this.localId);
       formData.append("espacio", "foto1");
 
@@ -108,7 +105,7 @@ export default {
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("upload.photo", {
-          type: "cupon"
+          type: "local"
         });
         this.$axios
           .post(url, formData, {
@@ -119,7 +116,8 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-              this.bus.$emit("sync-coupon-edit");
+              this.bus.$emit("sync-info-local");
+              this.bus.$emit("sync-locals");
             }
             this.hideLoading();
             this.closePopup();

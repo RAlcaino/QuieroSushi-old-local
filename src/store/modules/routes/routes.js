@@ -101,6 +101,10 @@ const mutations = {
       {
         name: "upload.photo",
         link: "/files/{type}"
+      },
+      {
+        name: "orders.history.download",
+        link: "/history/download"
       }
     ];
   }
