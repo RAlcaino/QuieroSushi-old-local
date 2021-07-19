@@ -186,7 +186,15 @@
       >
         <template v-slot:top-left>
           <strong style="font-size:16px;">Resultados</strong>
-          <q-btn round dense flat color="primary" icon="download" style="margin-left:5px;" @click="download()"></q-btn>
+          <q-btn
+            round
+            dense
+            flat
+            color="primary"
+            icon="download"
+            style="margin-left:5px;"
+            @click="download()"
+          ></q-btn>
         </template>
 
         <template v-slot:top-right>
@@ -600,8 +608,8 @@ export default {
         .post(
           url,
           {
-            startDate: this.startDate.replaceAll("/", "-")+' '+'00:00:00',
-            finalDate: this.finalDate.replaceAll("/", "-")+' '+'23:59:59',
+            startDate: this.startDate.replaceAll("/", "-") + " " + "00:00:00",
+            finalDate: this.finalDate.replaceAll("/", "-") + " " + "23:59:59",
             localId: this.localSelected.value,
             idUser:
               this.localSelected.value === null
@@ -683,24 +691,50 @@ export default {
       }
     },
     download() {
-      var url = this.$store.getters["routes/getRoute"]("orders.history.download");
+      this.showLoading();
+      var url = this.$store.getters["routes/getRoute"](
+        "orders.history.download"
+      );
       this.$axios
-        .get(url, {
-          headers: {
-            Authorization: this.$store.getters["auth/getToken"]
+        .post(
+          url,
+          {
+            startDate: this.startDate.replaceAll("/", "-") + " " + "00:00:00",
+            finalDate: this.finalDate.replaceAll("/", "-") + " " + "23:59:59",
+            localId: this.localSelected.value,
+            idUser:
+              this.localSelected.value === null
+                ? this.$store.getters["auth/getDataUser"].id
+                : null
+          },
+          {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            },
+            responseType: "blob"
           }
-        })
+        )
         .then(response => {
-          if (response.data.status === "success") {
-            console.log(response.data);
-          } else {
-            this.showNotification(response.data.message, "negative", "error");
-          }
+          console.log(response.data);
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute(
+            "download",
+            `${this.startDate.replaceAll("/", "-")}-${this.finalDate.replaceAll(
+              "/",
+              "-"
+            )}-${this.localSelected.label}.xlsx`
+          );
+          document.body.appendChild(link);
+          link.click();
+          this.hideLoading();
         })
         .catch(error => {
+          this.hideLoading();
           this.errorHandling(error);
         });
-    },
+    }
   }
 };
 </script>
