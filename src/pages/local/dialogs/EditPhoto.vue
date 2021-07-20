@@ -48,7 +48,7 @@
           :disable="file_selected === null"
           rounded
           color="green"
-          label="Subir"
+          label="Guardar"
           style="font-size: 11px !important"
           @click="uploadPhoto()"
         />
