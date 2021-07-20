@@ -383,6 +383,7 @@
             $store.getters['auth/getDataUser'].role !== 'God'
         "
       >
+      <!--
         <q-banner
           v-if="flag === null"
           dense
@@ -479,7 +480,7 @@
               "
             />
           </template>
-        </q-banner>
+        </q-banner>-->
       </template>
       <router-view />
     </q-page-container>

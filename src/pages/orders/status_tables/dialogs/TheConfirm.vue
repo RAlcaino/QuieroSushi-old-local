@@ -93,7 +93,7 @@
                 </div>
                 <p
                   style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
-                  v-if="preparationTime > 60 && orderDetail.soon!==0"
+                  v-if="preparationTime > 60 && orderDetail.soon !== 0"
                 >
                   Usted está dando {{ preparationTime }} minutos en tiempo de
                   cocina. Intente mejorar sus tiempos.
@@ -146,7 +146,7 @@
                     color="green"
                     text-color="white"
                     icon="room_service"
-                    :label="orderDetail.soon === 1 ? finalTime : finalTime2"
+                    :label="finalTime"
                   />
                 </p>
               </div>
@@ -157,17 +157,17 @@
             <q-card-actions align="right">
               <q-btn
                 size="sm"
-                rounded
-                color="primary"
-                label="Cerrar"
-                @click="close()"
-              />
-              <q-btn
-                size="sm"
                 @click="confirm()"
                 rounded
                 color="green"
                 label="Confirmar"
+              />
+              <q-btn
+                size="sm"
+                rounded
+                color="primary"
+                label="Cerrar"
+                @click="close()"
               />
             </q-card-actions>
           </q-tab-panel>
@@ -294,13 +294,7 @@ export default {
       this.finalDateManual = this.orderDetail.requestedTime;
       this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
-
-      if (this.orderDetail.soon === 0) {
-        this.calculatePreparationTime();
-      } else {
-        this.preparationTime = this.orderDetail.local.preparationTime;
-        this.minPreparationTime = this.orderDetail.local.preparationTime;
-      }
+      this.calculatePreparationTime();
       this.updateTime();
       setInterval(() => {
         this.updateTime();
@@ -326,33 +320,6 @@ export default {
     finalTime() {
       let tempFinalDetail = "";
       let date = new Date(Date.now());
-      tempFinalDetail +=
-        this.final.hour < 10 ? "0" + this.final.hour : this.final.hour; // get hour
-      tempFinalDetail +=
-        this.final.minutes < 10
-          ? ":0" + this.final.minutes
-          : ":" + this.final.minutes; // get minutes
-      tempFinalDetail +=
-        this.final.seconds < 10
-          ? ":0" + this.final.seconds
-          : ":" + this.final.seconds; //get seconds
-
-      this.finalDateDetail =
-        date.getFullYear() +
-        "-" +
-        (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) +
-        "-" +
-        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
-        " " +
-        tempFinalDetail;
-
-      return this.finalDateDetail;
-    },
-    finalTime2() {
-      let tempFinalDetail = "";
-      let date = new Date(Date.now());
       date.setMinutes(
         date.getMinutes() +
           (+this.preparationTime +
@@ -365,10 +332,6 @@ export default {
         date.getMinutes() < 10
           ? ":0" + date.getMinutes()
           : ":" + date.getMinutes(); // get minutes
-      tempFinalDetail +=
-        date.getSeconds() < 10
-          ? ":0" + date.getSeconds()
-          : ":" + date.getSeconds(); //get seconds
 
       this.finalDateDetail =
         date.getFullYear() +
@@ -480,19 +443,19 @@ export default {
     calculatePreparationTime() {
       let date = new Date(Date.now());
       date.setMinutes(
-          date.getMinutes() +
+        date.getMinutes() +
           this.deliveryTime +
           this.orderDetail.gmapsDeliveryTime
       );
       let date2 = new Date(
         this.orderDetail.requestedTime.replaceAll("-", "/")
-        //"2021/07/06 21:00:00"
+        //"2021/07/20 18:00:00"
       );
       this.minPreparationTime = Math.round(
         (date2.getTime() - date.getTime()) / 60000
       );
-      
-      this.preparationTime=this.minPreparationTime;
+
+      this.preparationTime = this.minPreparationTime;
     }
   }
 };
