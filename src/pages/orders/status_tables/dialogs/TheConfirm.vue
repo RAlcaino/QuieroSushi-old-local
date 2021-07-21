@@ -84,6 +84,7 @@
                     label="Minutos"
                     style="width: 100px;"
                     type="number"
+                    @input="changePreparationTime()"
                     :min="orderDetail.soon === 0 ? minPreparationTime : 0"
                   >
                     <template v-slot:prepend>
@@ -122,6 +123,7 @@
                     style="width: 100px;"
                     type="number"
                     v-model="deliveryTime"
+                    @input="changeDeliveryTime()"
                     :min="orderDetail.soon === 0 ? minDeliveryTime : 0"
                   >
                     <template v-slot:prepend>
@@ -293,8 +295,10 @@ export default {
       this.orderDetail = data;
       this.finalDateManual = this.orderDetail.requestedTime;
       this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
+      this.constDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
-      this.calculatePreparationTime();
+      this.doAlgorithm = false;
+      this.autoDecrement = true;
       this.updateTime();
       setInterval(() => {
         this.updateTime();
@@ -367,7 +371,10 @@ export default {
       deliveryTime: null,
       preparationTime: null,
       minPreparationTime: null,
-      minDeliveryTime: null
+      minDeliveryTime: null,
+      autoDecrement: true,
+      doAlgorithm: false,
+      constDeliveryTime: null
     };
   },
   methods: {
@@ -375,12 +382,12 @@ export default {
       var data = {
         orderID: this.orderDetail.id,
         confirmationTimestamp:
-          this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
+          this.tab === "one" ? this.finalDateDetail+':00' : this.finalDateManual,
         //confirmationTimestamp: '2021-03-08 23:00:00',
         deliveryTime: +this.deliveryTime,
-        preparationTime: +this.preparationTime
+        preparationTime: +this.preparationTime,
+        doAlgorithm: this.doAlgorithm
       };
-
       this.showLoading();
 
       if (!this.prod) {
@@ -425,10 +432,10 @@ export default {
       let date = new Date();
       this.current.hour = date.getHours();
       this.current.minutes = date.getMinutes();
-      this.updateFinalTime();
+      this.calculatePreparationTime(date);
+      this.updateFinalTime(date);
     },
-    updateFinalTime() {
-      let date = new Date();
+    updateFinalTime(date) {
       date.setMinutes(
         date.getMinutes() +
           (+this.preparationTime +
@@ -440,8 +447,7 @@ export default {
       this.final.minutes = date.getMinutes();
       this.final.seconds = date.getSeconds();
     },
-    calculatePreparationTime() {
-      let date = new Date(Date.now());
+    calculatePreparationTime(date) {
       date.setMinutes(
         date.getMinutes() +
           this.deliveryTime +
@@ -449,13 +455,23 @@ export default {
       );
       let date2 = new Date(
         this.orderDetail.requestedTime.replaceAll("-", "/")
-        //"2021/07/20 18:00:00"
+        //"2021/07/21 21:00:00"
       );
-      this.minPreparationTime = Math.round(
-        (date2.getTime() - date.getTime()) / 60000
-      );
-
-      this.preparationTime = this.minPreparationTime;
+      if (this.autoDecrement) {
+        this.minPreparationTime = Math.ceil(
+          (date2.getTime() - date.getTime()) / 60000
+        );
+        this.preparationTime = this.minPreparationTime;
+      }
+    },
+    changePreparationTime() {
+      this.autoDecrement = false;
+    },
+    changeDeliveryTime() {
+      this.autoDecrement = false;
+      +this.deliveryTime !== this.constDeliveryTime
+        ? (this.doAlgorithm = true)
+        : (this.doAlgorithm = false);
     }
   }
 };
