@@ -330,12 +330,22 @@ export default {
             +this.deliveryTime +
             +this.orderDetail.gmapsDeliveryTime)
       );
-      tempFinalDetail +=
-        date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
-      tempFinalDetail +=
-        date.getMinutes() < 10
-          ? ":0" + date.getMinutes()
-          : ":" + date.getMinutes(); // get minutes
+
+      if (this.autoDecrement) {
+        tempFinalDetail +=
+          date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+        tempFinalDetail +=
+          date.getMinutes() < 10
+            ? ":0" + date.getMinutes()
+            : ":" + date.getMinutes(); // get minutes
+      } else {
+        tempFinalDetail +=
+          this.final.hour < 10 ? "0" + this.final.hour : this.final.hour; // get hour
+        tempFinalDetail +=
+          this.final.minutes < 10
+            ? ":0" + this.final.minutes
+            : ":" + this.final.minutes; // get minutes
+      }
 
       this.finalDateDetail =
         date.getFullYear() +
@@ -382,7 +392,9 @@ export default {
       var data = {
         orderID: this.orderDetail.id,
         confirmationTimestamp:
-          this.tab === "one" ? this.finalDateDetail+':00' : this.finalDateManual,
+          this.tab === "one"
+            ? this.finalDateDetail + ":00"
+            : this.finalDateManual,
         //confirmationTimestamp: '2021-03-08 23:00:00',
         deliveryTime: +this.deliveryTime,
         preparationTime: +this.preparationTime,
