@@ -148,7 +148,7 @@
                     color="green"
                     text-color="white"
                     icon="room_service"
-                    :label="finalTime"
+                    :label="finalDateDetail"
                   />
                 </p>
               </div>
@@ -298,7 +298,8 @@ export default {
       this.constDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.doAlgorithm = false;
-      this.autoDecrement = true;
+      this.autoMode = true;
+      this.calculatePreparationTime();
       this.updateTime();
       setInterval(() => {
         this.updateTime();
@@ -321,45 +322,6 @@ export default {
           : ":" + this.current.minutes; // get minutes
       return timeValue;
     },
-    finalTime() {
-      let tempFinalDetail = "";
-      let date = new Date(Date.now());
-      date.setMinutes(
-        date.getMinutes() +
-          (+this.preparationTime +
-            +this.deliveryTime +
-            +this.orderDetail.gmapsDeliveryTime)
-      );
-
-      if (this.autoDecrement) {
-        tempFinalDetail +=
-          date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
-        tempFinalDetail +=
-          date.getMinutes() < 10
-            ? ":0" + date.getMinutes()
-            : ":" + date.getMinutes(); // get minutes
-      } else {
-        tempFinalDetail +=
-          this.final.hour < 10 ? "0" + this.final.hour : this.final.hour; // get hour
-        tempFinalDetail +=
-          this.final.minutes < 10
-            ? ":0" + this.final.minutes
-            : ":" + this.final.minutes; // get minutes
-      }
-
-      this.finalDateDetail =
-        date.getFullYear() +
-        "-" +
-        (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) +
-        "-" +
-        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
-        " " +
-        tempFinalDetail;
-
-      return this.finalDateDetail;
-    }
   },
   data() {
     return {
@@ -382,9 +344,9 @@ export default {
       preparationTime: null,
       minPreparationTime: null,
       minDeliveryTime: null,
-      autoDecrement: true,
+      autoMode: true,
       doAlgorithm: false,
-      constDeliveryTime: null
+      constDeliveryTime: null,
     };
   },
   methods: {
@@ -444,32 +406,33 @@ export default {
       let date = new Date();
       this.current.hour = date.getHours();
       this.current.minutes = date.getMinutes();
-      this.calculatePreparationTime(date);
-      this.updateFinalTime(date);
-    },
-    updateFinalTime(date) {
       date.setMinutes(
         date.getMinutes() +
           (+this.preparationTime +
             +this.deliveryTime +
             +this.orderDetail.gmapsDeliveryTime)
       );
-
+      this.calculatePreparationTime();
+      this.updateFinalTime(date);
+      this.finalConfirmationDate(date);
+    },
+    updateFinalTime(date) {
       this.final.hour = date.getHours();
       this.final.minutes = date.getMinutes();
       this.final.seconds = date.getSeconds();
     },
-    calculatePreparationTime(date) {
+    calculatePreparationTime() {
+      let date = new Date();
       date.setMinutes(
         date.getMinutes() +
           this.deliveryTime +
           this.orderDetail.gmapsDeliveryTime
       );
       let date2 = new Date(
-        this.orderDetail.requestedTime.replaceAll("-", "/")
-        //"2021/07/21 21:00:00"
+        //this.orderDetail.requestedTime.replaceAll("-", "/")
+        "2021/07/23 15:00:00"
       );
-      if (this.autoDecrement) {
+      if (this.autoMode) {
         this.minPreparationTime = Math.ceil(
           (date2.getTime() - date.getTime()) / 60000
         );
@@ -477,13 +440,34 @@ export default {
       }
     },
     changePreparationTime() {
-      this.autoDecrement = false;
+      this.autoMode = false;
     },
     changeDeliveryTime() {
-      this.autoDecrement = false;
+      this.autoMode = false;
       +this.deliveryTime !== this.constDeliveryTime
         ? (this.doAlgorithm = true)
         : (this.doAlgorithm = false);
+    },
+    finalConfirmationDate(date) {
+      let tempFinalDetail = "";
+
+      tempFinalDetail +=
+        date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      tempFinalDetail +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+
+      this.finalDateDetail =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        tempFinalDetail;
     }
   }
 };
