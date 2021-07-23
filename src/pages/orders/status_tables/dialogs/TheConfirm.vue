@@ -429,8 +429,8 @@ export default {
           this.orderDetail.gmapsDeliveryTime
       );
       let date2 = new Date(
-        //this.orderDetail.requestedTime.replaceAll("-", "/")
-        "2021/07/23 15:00:00"
+        this.orderDetail.requestedTime.replaceAll("-", "/")
+        //"2021/07/23 15:00:00"
       );
       if (this.autoMode) {
         this.minPreparationTime = Math.ceil(
