@@ -26,7 +26,7 @@
           class="fit row no-wrap justify-center items-center content-center"
           style="margin-top:25px"
         >
-        <p style="font-size:16px">¿Estas seguro de eliminar este usuario?</p>
+          <p style="font-size:16px">¿Estas seguro de eliminar este usuario?</p>
         </div>
       </q-card-section>
       <q-card-actions align="center">
@@ -49,9 +49,9 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
 
-    this.bus.$on("open-delete-user", (data) => {
+    this.bus.$on("open-delete-user", data => {
       this.card = true;
-      this.user=data;
+      this.user = data;
     });
   },
   mounted() {},
@@ -59,15 +59,41 @@ export default {
     return {
       card: false,
       prod: null,
-      user:null
+      user: null
     };
   },
   methods: {
     reset() {
       this.card = false;
-      this.user=null;
+      this.user = null;
     },
-    delete() {}
+    deleteUser() {
+      this.showLoading();
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("resource.users", {
+          localId: this.user.id
+        });
+        this.$axios
+          .delete(url, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            this.card = false;
+            this.bus.$emit("sync-users");
+            this.hideLoading();
+          })
+          .catch(error => {
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    }
   }
 };
 </script>

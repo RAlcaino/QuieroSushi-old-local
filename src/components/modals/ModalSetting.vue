@@ -19,7 +19,6 @@
       </q-card-section>
       <q-card-section class="card-section-modal-new-o">
         <q-select
-          v-if="localsFilter.length > 1"
           ref="select"
           rounded
           outlined
@@ -30,9 +29,9 @@
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"
-          class="q-select-s"
-          style="margin-bottom: 15px;"
+          style="margin-bottom:15px;"
           :virtual-scroll-sticky-size-start="80"
+          class="q-select-responsive"
         >
           <template v-slot:prepend>
             <q-icon name="store" />
@@ -131,8 +130,9 @@
             :min="0"
             v-model="preparationTime"
             color="primary"
-            style="width: 80px; margin-left: 10px"
+            style="width: 100px; margin-left: 10px"
             type="number"
+            label="Minutos"
           >
             <template v-slot:prepend>
               <q-icon name="query_builder" />
@@ -149,8 +149,9 @@
           <q-input
             v-model="deliveryTime"
             color="primary"
-            style="width: 80px;margin-left: 10px"
+            style="width: 100px;margin-left: 10px"
             type="number"
+            label="Minutos"
             :min="0"
           >
             <template v-slot:prepend>
@@ -303,8 +304,10 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-              if(this.$router.currentRoute.name==="cupones"){
+              if (this.$router.currentRoute.name === "cupones") {
                 this.bus.$emit("sync-coupons");
+              }else{
+                this.bus.$emit("sync-orders");
               }
               this.getLocals();
             } else {
@@ -346,7 +349,7 @@ export default {
           )
           .then(response => {
             if (response.data.status === "success") {
-              if(this.$router.currentRoute.name==="cupones"){
+              if (this.$router.currentRoute.name === "cupones") {
                 this.bus.$emit("sync-coupons");
               }
               this.getLocals();

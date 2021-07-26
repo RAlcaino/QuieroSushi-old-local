@@ -42,23 +42,18 @@
             <q-separator />
 
             <div class="tab-alerts-c" v-if="orderDetail.soon !== null">
-              <strong style="color: #333; text-align:center">
-                <div class="live-c"></div>
-                Alertas
-                <div class="live-c"></div>
-              </strong>
               <p
                 v-if="orderDetail.soon === 1"
-                style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+                style="color: green; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
               >
-                - Intenta dar tu mejor tiempo. El cliente lo necesita lo antes
+                Intenta dar tu mejor tiempo. El cliente lo necesita lo antes
                 posible.
               </p>
               <p
                 v-if="orderDetail.soon === 0"
-                style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+                style="color: green; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
               >
-                - Intenta no cambiar los tiempos. El cliente lo necesita a esa
+                Intenta no cambiar los tiempos. El cliente lo necesita a esa
                 hora.
               </p>
               <p
@@ -69,7 +64,7 @@
                 "
                 style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
               >
-                - Usted esta cambiando el horario de preferencia del cliente.
+                El cliente lo pide para esa hora exacta, trata de no cambiarla.
               </p>
             </div>
 
@@ -89,6 +84,7 @@
                     label="Minutos"
                     style="width: 100px;"
                     type="number"
+                    @input="changePreparationTime()"
                     :min="orderDetail.soon === 0 ? minPreparationTime : 0"
                   >
                     <template v-slot:prepend>
@@ -98,7 +94,7 @@
                 </div>
                 <p
                   style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
-                  v-if="preparationTime > 60"
+                  v-if="preparationTime > 60 && orderDetail.soon !== 0"
                 >
                   Usted está dando {{ preparationTime }} minutos en tiempo de
                   cocina. Intente mejorar sus tiempos.
@@ -127,6 +123,7 @@
                     style="width: 100px;"
                     type="number"
                     v-model="deliveryTime"
+                    @input="changeDeliveryTime()"
                     :min="orderDetail.soon === 0 ? minDeliveryTime : 0"
                   >
                     <template v-slot:prepend>
@@ -151,7 +148,7 @@
                     color="green"
                     text-color="white"
                     icon="room_service"
-                    :label="finalTime"
+                    :label="finalDateDetail"
                   />
                 </p>
               </div>
@@ -162,17 +159,17 @@
             <q-card-actions align="right">
               <q-btn
                 size="sm"
-                rounded
-                color="primary"
-                label="Cerrar"
-                @click="close()"
-              />
-              <q-btn
-                size="sm"
                 @click="confirm()"
                 rounded
                 color="green"
                 label="Confirmar"
+              />
+              <q-btn
+                size="sm"
+                rounded
+                color="primary"
+                label="Cerrar"
+                @click="close()"
               />
             </q-card-actions>
           </q-tab-panel>
@@ -297,10 +294,12 @@ export default {
       this.card = !this.card;
       this.orderDetail = data;
       this.finalDateManual = this.orderDetail.requestedTime;
-      this.preparationTime = this.orderDetail.local.preparationTime;
       this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
-      this.minPreparationTime = this.orderDetail.local.preparationTime;
+      this.constDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
+      this.doAlgorithm = false;
+      this.autoMode = true;
+      this.calculatePreparationTime();
       this.updateTime();
       setInterval(() => {
         this.updateTime();
@@ -323,33 +322,6 @@ export default {
           : ":" + this.current.minutes; // get minutes
       return timeValue;
     },
-    finalTime() {
-      let tempFinalDetail = "";
-      let date = new Date(Date.now());
-      tempFinalDetail +=
-        this.final.hour < 10 ? "0" + this.final.hour : this.final.hour; // get hour
-      tempFinalDetail +=
-        this.final.minutes < 10
-          ? ":0" + this.final.minutes
-          : ":" + this.final.minutes; // get minutes
-      tempFinalDetail +=
-        this.final.seconds < 10
-          ? ":0" + this.final.seconds
-          : ":" + this.final.seconds; //get seconds
-
-      this.finalDateDetail =
-        date.getFullYear() +
-        "-" +
-        (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) +
-        "-" +
-        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
-        " " +
-        tempFinalDetail;
-
-      return this.finalDateDetail;
-    }
   },
   data() {
     return {
@@ -371,7 +343,10 @@ export default {
       deliveryTime: null,
       preparationTime: null,
       minPreparationTime: null,
-      minDeliveryTime: null
+      minDeliveryTime: null,
+      autoMode: true,
+      doAlgorithm: false,
+      constDeliveryTime: null,
     };
   },
   methods: {
@@ -379,12 +354,14 @@ export default {
       var data = {
         orderID: this.orderDetail.id,
         confirmationTimestamp:
-          this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
+          this.tab === "one"
+            ? this.finalDateDetail + ":00"
+            : this.finalDateManual,
         //confirmationTimestamp: '2021-03-08 23:00:00',
         deliveryTime: +this.deliveryTime,
-        preparationTime: +this.preparationTime
+        preparationTime: +this.preparationTime,
+        doAlgorithm: this.doAlgorithm
       };
-
       this.showLoading();
 
       if (!this.prod) {
@@ -429,20 +406,68 @@ export default {
       let date = new Date();
       this.current.hour = date.getHours();
       this.current.minutes = date.getMinutes();
-      this.updateFinalTime();
-    },
-    updateFinalTime() {
-      let date = new Date();
       date.setMinutes(
         date.getMinutes() +
           (+this.preparationTime +
             +this.deliveryTime +
             +this.orderDetail.gmapsDeliveryTime)
       );
-
+      this.calculatePreparationTime();
+      this.updateFinalTime(date);
+      this.finalConfirmationDate(date);
+    },
+    updateFinalTime(date) {
       this.final.hour = date.getHours();
       this.final.minutes = date.getMinutes();
       this.final.seconds = date.getSeconds();
+    },
+    calculatePreparationTime() {
+      let date = new Date();
+      date.setMinutes(
+        date.getMinutes() +
+          this.deliveryTime +
+          this.orderDetail.gmapsDeliveryTime
+      );
+      let date2 = new Date(
+        this.orderDetail.requestedTime.replaceAll("-", "/")
+        //"2021/07/23 15:00:00"
+      );
+      if (this.autoMode) {
+        this.minPreparationTime = Math.ceil(
+          (date2.getTime() - date.getTime()) / 60000
+        );
+        this.preparationTime = this.minPreparationTime;
+      }
+    },
+    changePreparationTime() {
+      this.autoMode = false;
+    },
+    changeDeliveryTime() {
+      this.autoMode = false;
+      +this.deliveryTime !== this.constDeliveryTime
+        ? (this.doAlgorithm = true)
+        : (this.doAlgorithm = false);
+    },
+    finalConfirmationDate(date) {
+      let tempFinalDetail = "";
+
+      tempFinalDetail +=
+        date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      tempFinalDetail +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+
+      this.finalDateDetail =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        tempFinalDetail;
     }
   }
 };

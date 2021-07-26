@@ -2,6 +2,11 @@ const state = {
   authenticated: false,
   godMode: false,
   token: "",
+  nextUpdateTime: {
+    currentHour: null,
+    currentMinute: null,
+    currentSecond: null
+  },
   user: {
     id: 0,
     email: "",
@@ -21,7 +26,8 @@ const state = {
   comunas: [],
   regiones: [],
   ciudades: [],
-  titles:[]
+  titles: [],
+  roles: []
 };
 const mutations = {
   setAvailableMenuOptions(state, payload) {
@@ -32,6 +38,15 @@ const mutations = {
     state.user.email = payload.email;
     state.user.role = payload.role.name;
     state.user.locals = payload.locals;
+    let date = new Date();
+    date.setMinutes(date.getMinutes() + 5);
+    let currentHour = date.getHours();
+    let currentMinute = date.getMinutes();
+    let currentSecond = date.getSeconds();
+
+    state.nextUpdateTime.currentHour = currentHour;
+    state.nextUpdateTime.currentMinute = currentMinute;
+    state.nextUpdateTime.currentSecond = currentSecond;
 
     if (payload.locals.length === 0) {
       state.user.debt = true;
@@ -59,11 +74,9 @@ const mutations = {
     state.authenticated = true;
   },
   resetDataUserSesion(state) {
-    if (state.user.role === "God") {
-      state.godMode = false;
-    }
 
-    state.user.id = null;
+    state.godMode = false;
+    state.user.id = 0;
     state.user.email = "";
     state.user.role = "";
     state.user.locals = [];
@@ -72,17 +85,26 @@ const mutations = {
     state.token = "";
     state.availableMenuOptions = [];
     state.authenticated = false;
-    this.currentLocal = {
+    state.currentLocal = {
       id: null,
       name: null,
       image: null,
       commune: null,
       cartStatus: null
     };
-    state.titles=[];
-    state.comunas= [];
-    state.regiones= [];
-    state.ciudades= [];
+
+    state.installPromptEvent=null;
+    state.titles = [];
+    state.comunas = [];
+    state.regiones = [];
+    state.ciudades = [];
+    state.roles = [];
+
+    state.nextUpdateTime = {
+      currentHour: null,
+      currentMinute: null,
+      currentSecond: null
+    };
   },
   setCurrentLocal(state, payload) {
     state.currentLocal = payload;
@@ -97,9 +119,9 @@ const mutations = {
     state.token = payload;
   },
   setLocalName(state, payload) {
-    let index= state.user.locals.findIndex(item=> item.id===payload.id);
-    state.user.locals[index].name=payload.nombre;
-    state.user.locals[index].commune=payload.comuna.label;
+    let index = state.user.locals.findIndex(item => item.id === payload.id);
+    state.user.locals[index].name = payload.nombre;
+    state.user.locals[index].commune = payload.comuna.label;
   },
   setZones(state, payload) {
     state.comunas = [];
@@ -115,7 +137,6 @@ const mutations = {
       };
       state.comunas.push(row);
     });
-
 
     var eachCities = payload.ciudades.map(function(item) {
       let row = {
@@ -134,8 +155,8 @@ const mutations = {
       state.regiones.push(row);
     });
   },
-  setTitles(state,payload){
-    state.titles=[];
+  setTitles(state, payload) {
+    state.titles = [];
     var eachTitle = payload.map(function(item) {
       let row = {
         value: item.id,
@@ -144,6 +165,21 @@ const mutations = {
       };
       state.titles.push(row);
     });
+  },
+  setRoles(state, payload) {
+    state.roles = [];
+    var eachRoles = payload.map(function(item) {
+      let row = {
+        value: item.id,
+        label: item.name
+      };
+      state.roles.push(row);
+    });
+  },
+  setNextTimeUpdate(state, payload) {
+    state.nextUpdateTime.currentHour = payload.currentHour;
+    state.nextUpdateTime.currentMinute = payload.currentMinute;
+    state.nextUpdateTime.currentSecond = payload.currentSecond;
   }
 };
 const actions = {};
@@ -206,8 +242,14 @@ const getters = {
       regions: state.regiones
     };
   },
-  getTitles(state){
+  getTitles(state) {
     return state.titles;
+  },
+  getRoles(state) {
+    return state.roles;
+  },
+  getNextUpdateTime(state) {
+    return state.nextUpdateTime;
   }
 };
 

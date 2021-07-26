@@ -91,7 +91,9 @@
               </div>
             </div>
           </q-card-section>
-          <q-card-section style="display:flex; flex-direction:row; justify-content: space-between;">
+          <q-card-section
+            style="display:flex; flex-direction:row; justify-content: space-between;"
+          >
             <div class="user-info">
               <p style="margin:0; font-weight:bold">
                 {{ item.payDetail.user }}
@@ -100,11 +102,14 @@
                 {{ item.payDetail.userPhone }}
               </p>
               <p style="margin:0;font-family:'Roboto'">
-                      {{ item.payDetail.address.trim()}}. 
-                      <template v-if="item.payDetail.address2!=''">
-                      <span v-if="item.payDetail.address2.search('dpto')==-1">Dpto/Ubicacion:</span> {{item.payDetail.address2.trim()}}. 
-                      </template>
-                      {{item.payDetail.userCommune.trim()}}
+                {{ item.payDetail.address.trim() }}.
+                <template v-if="item.payDetail.address2 != ''">
+                  <span v-if="item.payDetail.address2.search('dpto') == -1"
+                    >Dpto/Ubicacion:</span
+                  >
+                  {{ item.payDetail.address2.trim() }}.
+                </template>
+                {{ item.payDetail.userCommune.trim() }}
               </p>
             </div>
             <div class="user-payDetail">
@@ -122,7 +127,7 @@
             </div>
           </q-card-section>
           <q-card-section
-            class="fit row wrap justify-center items-center content-center"
+            class="fit column wrap justify-center items-center content-center"
           >
             <div style="font-size:14px;font-family:'Roboto'">
               <q-icon
@@ -131,6 +136,15 @@
                 class="i-icon"
               /><strong
                 >Hora Listo: {{ item.finalTimestamp.split(" ")[1] }}</strong
+              >
+            </div>
+            <div style="font-size:14px;font-family:'Roboto'">
+              <q-icon
+                name="schedule"
+                style="font-size:22px; padding-bottom:5px"
+                class="i-icon"
+              /><strong
+                >Hora Prometida: {{ item.kitchenTime.split(" ")[1] }}</strong
               >
             </div>
           </q-card-section>
@@ -176,13 +190,13 @@ export default {
   },
   created() {
     this.bus.$on("reset-page", () => {
-      if(this.page!==1){
+      if (this.page !== 1) {
         this.flag = true;
         this.searching = true;
         setTimeout(() => {
           this.flag = false;
           this.searching = false;
-        },500);
+        }, 500);
       }
       this.page = 1;
     });

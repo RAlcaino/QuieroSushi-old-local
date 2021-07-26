@@ -20,8 +20,20 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancelar" color="primary" @click="closeDialog()" />
-        <q-btn @click="DoCancel()" flat label="Anular" color="green" />
+        <q-btn
+          @click="DoCancel()"
+          size="sm"
+          rounded
+          label="Anular"
+          color="green"
+        />
+        <q-btn
+          size="sm"
+          rounded
+          label="cerrar"
+          color="primary"
+          @click="closeDialog()"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -29,6 +41,7 @@
 
 <script>
 export default {
+  props: ["mode"],
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
@@ -80,7 +93,11 @@ export default {
 
             if (response.data.status === "success") {
               this.hideLoading();
-              this.bus.$emit("sync-orders");
+              if (this.mode === "orders") {
+                this.bus.$emit("sync-orders");
+              } else {
+                this.bus.$emit("sync-page-after-refund");
+              }
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
