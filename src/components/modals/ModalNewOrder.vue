@@ -97,7 +97,8 @@ export default {
       this.order.address = data.direccion;
       this.order.amount = data.precioTotal;
       this.order.idSale = data.venta_id;
-      this.orders.push(this.order);
+      let order = {...this.order};
+      this.orders.push(order);
     },
     doHistory(action) {
       let data = {
