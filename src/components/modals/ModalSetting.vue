@@ -322,8 +322,6 @@ export default {
       }
     },
     changeStatus() {
-      /*console.log(this.localSelected.value);
-      console.log(this.cartStatus);*/
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
@@ -339,7 +337,8 @@ export default {
           .put(
             url,
             {
-              status: this.cartStatus
+              status: this.cartStatus,
+              version_panel: this.$store.getters['mode/getVersion']
             },
             {
               headers: {
