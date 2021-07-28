@@ -29,6 +29,7 @@
           :options="localsFilter"
           :options-dense="true"
           hide-hint
+          label="Locales"
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"
@@ -134,6 +135,7 @@ import TheConfirmed from "./status_tables/TheConfirmed.vue";
 import TheDone from "./status_tables/TheDone.vue";
 
 export default {
+  props:["toAll"],
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   components: {
     NotConfirmed,
@@ -142,6 +144,9 @@ export default {
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+    if(this.toAll){
+      this.allOrders();
+    }
     this.bus.$on("to-one-tab", () => {
       this.bus.$emit("scroll-up");
       this.tab = "not-confirmed";

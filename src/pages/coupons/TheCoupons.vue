@@ -44,6 +44,7 @@
           :options="localsFilter"
           :options-dense="true"
           hide-hint
+          label="Locales"
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"

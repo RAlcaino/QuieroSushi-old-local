@@ -87,7 +87,12 @@ export default {
       if (this.$router.currentRoute.fullPath === "/pedidos") {
         this.bus.$emit("to-one-tab");
       } else {
-        this.$router.push({ path: "/pedidos" });
+        this.$router.push({
+          name: "pedidos",
+          params: {
+            toAll: true
+          },
+        });
       }
 
       this.doHistory("Ir a pedidos");
@@ -97,10 +102,14 @@ export default {
       this.order.address = data.direccion;
       this.order.amount = data.precioTotal;
       this.order.idSale = data.venta_id;
-      let order = {...this.order};
+      let order = { ...this.order };
       this.orders.push(order);
     },
     doHistory(action) {
+      if (this.$store.getters["auth/getGodMode"]) {
+        return;
+      }
+
       let data = {
         action: action,
         orders: this.orders,

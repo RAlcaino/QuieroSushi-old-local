@@ -35,8 +35,10 @@ const routes = [
         }
       },
       {
+        name: "pedidos",
         path: "/pedidos",
         component: () => import("pages/orders/TheOrders.vue"),
+        props: true,
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
             if (accessTo("Pedidos")) {

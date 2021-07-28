@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-pa-sm" style="padding-bottom:100px">
+  <q-page class="q-pa-sm" style="padding-bottom: 100px">
     <the-cancel :mode="'sales'"></the-cancel>
-    <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
+    <q-toolbar class="bg-primary text-white" style="border-radius: 50px">
       <q-btn flat round dense icon="paid" />
       <q-toolbar-title :style="FontSize"
         >Estadisticas de ventas</q-toolbar-title
@@ -9,12 +9,16 @@
     </q-toolbar>
     <div
       class="fit column no-wrap justify-center items-center content-center"
-      style="margin-top:20px"
+      style="margin-top: 20px"
     >
-      <q-card class="card-bg" style="width:95%;">
+      <q-card class="card-bg" style="width: 95%">
         <q-card-section
           class="text-h6"
-          style="display: flex; flex-direction:row; justify-content:space-between"
+          style="
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+          "
         >
           <div>
             <div class="c-q-select-responsive" v-if="locals.length > 1">
@@ -30,7 +34,7 @@
                 @input="change"
                 label="Locales"
                 @popup-hide="allLocals()"
-                style="margin-bottom: 10px; width: 350px;"
+                style="margin-bottom: 10px; width: 350px"
                 :virtual-scroll-sticky-size-start="80"
               >
                 <template v-slot:prepend>
@@ -44,7 +48,13 @@
                         @input="filterFn(localFilter)"
                         type="text"
                         placeholder="Buscar"
-                        style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                        style="
+                          padding: 7px;
+                          margin-top: 10px;
+                          border-radius: 20px;
+                          border: 1px solid #333;
+                          outline: none;
+                        "
                       />
                     </q-item-section>
                   </q-item>
@@ -60,7 +70,13 @@
                         @input="filterFn(localFilter)"
                         type="text"
                         placeholder="Buscar"
-                        style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                        style="
+                          padding: 7px;
+                          margin-top: 10px;
+                          border-radius: 20px;
+                          border: 1px solid #333;
+                          outline: none;
+                        "
                       />
                     </q-item-section>
                   </q-item>
@@ -81,16 +97,16 @@
                 :maxlength="10"
                 :rules="['date']"
                 label="Desde"
-                style="width: 170px; margin-right: 10px;"
+                style="width: 170px; margin-right: 10px"
               >
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy
-                      ref="qDateProxy"
+                      ref="qDateProxyStart"
                       transition-show="scale"
                       transition-hide="scale"
                     >
-                      <q-date v-model="startDate" minimal>
+                      <q-date v-model="startDate" @input="changeDate" minimal>
                         <div class="row items-center justify-end">
                           <q-btn
                             v-close-popup
@@ -112,16 +128,16 @@
                 :maxlength="10"
                 :rules="['date']"
                 label="Hasta"
-                style="width: 170px; margin-right: 10px;"
+                style="width: 170px; margin-right: 10px"
               >
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy
-                      ref="qDateProxy"
+                      ref="qDateProxyEnd"
                       transition-show="scale"
                       transition-hide="scale"
                     >
-                      <q-date v-model="finalDate" minimal>
+                      <q-date v-model="finalDate" @input="changeDate" minimal>
                         <div class="row items-center justify-end">
                           <q-btn
                             v-close-popup
@@ -140,7 +156,7 @@
                 round
                 size="sm"
                 :disable="validateDate"
-                style="width:30px; height:30px; margin-top: 5px;"
+                style="width: 30px; height: 30px; margin-top: 5px"
                 @click="getHistory()"
               >
                 <q-icon size="20px" name="search" />
@@ -182,24 +198,24 @@
         rows-per-page-label="Ventas por página"
         :loading="loadingPage"
         row-key="name"
-        style="width:95%;border-radius:15px; margin-top: 15px"
+        style="width: 95%; border-radius: 15px; margin-top: 15px"
       >
         <template v-slot:top-left>
-          <strong style="font-size:16px;">Resultados</strong>
+          <strong style="font-size: 16px">Resultados</strong>
           <q-btn
             round
             dense
             flat
             color="primary"
             icon="download"
-            style="margin-left:5px;"
+            style="margin-left: 5px"
             @click="download()"
           ></q-btn>
         </template>
 
         <template v-slot:top-right>
           <q-select
-            style="width: 90px;"
+            style="width: 90px"
             rounded
             v-model="pagination.currentPage"
             :options="pagesOptions"
@@ -223,7 +239,7 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td>
-              <div style="width:100%; display:flex; justify-content:center">
+              <div style="width: 100%; display: flex; justify-content: center">
                 <q-btn
                   color="primary"
                   round
@@ -257,17 +273,17 @@
       </div>
     </div>
     <div
-      style="margin-top:100px"
+      style="margin-top: 100px"
       class="fit column wrap justify-center items-center content-center"
       v-if="data.length === 0 && searching === false"
     >
       <img src="~/assets/icons8-sad.gif" alt="sad" width="130" />
-      <p style="font-size:16px; font-weight:bold;text-align:center">
+      <p style="font-size: 16px; font-weight: bold; text-align: center">
         No se encontraron ventas
       </p>
     </div>
     <div
-      style="margin-top:100px;border-radius:100%; overflow:hidden"
+      style="margin-top: 100px; border-radius: 100%; overflow: hidden"
       class="fit column wrap justify-center items-center content-center"
       v-if="flag === true"
     >
@@ -275,7 +291,7 @@
         src="~/assets/maki-roll.gif"
         alt="sad"
         width="130"
-        style="border-radius:100%"
+        style="border-radius: 100%"
       />
     </div>
   </q-page>
@@ -291,10 +307,10 @@ export default {
     "hideLoading",
     "errorHandling",
     "formatNumber",
-    "capitalize"
+    "capitalize",
   ],
   components: {
-    TheCancel
+    TheCancel,
   },
   data() {
     return {
@@ -310,7 +326,7 @@ export default {
       pagination: {
         rowsPerPage: 10,
         currentPage: null,
-        totalPages: null
+        totalPages: null,
       },
       pagesOptions: [],
       count: 0,
@@ -323,64 +339,64 @@ export default {
           label: "Id",
           align: "center",
           field: "id",
-          sortable: true
+          sortable: true,
         },
         {
           name: "localName",
           align: "left",
           label: "Nombre Local",
           field: "localName",
-          sortable: true
+          sortable: true,
         },
         {
           name: "comuneLocal",
           align: "left",
           label: "Comuna Local",
           field: "comuneLocal",
-          sortable: true
+          sortable: true,
         },
         {
           name: "customerName",
           required: true,
           label: "Nombre Cliente",
           align: "center",
-          field: "customerName"
+          field: "customerName",
         },
         {
           name: "saleType",
           align: "center",
           label: "Tipo Venta",
           field: "saleType",
-          sortable: true
+          sortable: true,
         },
         {
           name: "subtotal",
           align: "center",
           label: "Subtotal ($)",
           field: "subtotal",
-          sortable: true
+          sortable: true,
         },
         {
           name: "delivery",
           align: "center",
           label: "Delivery ($)",
           field: "delivery",
-          sortable: true
+          sortable: true,
         },
         {
           name: "total",
           align: "center",
           label: "Total ($)",
           field: "total",
-          sortable: true
+          sortable: true,
         },
         {
           name: "confirmationDate",
           align: "center",
           label: "Fecha Confirmación",
           field: "confirmationDate",
-          sortable: true
-        }
+          sortable: true,
+        },
       ],
       response: [
         {
@@ -393,7 +409,7 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27"
+          confirmationDate: "2021-05-27",
         },
         {
           id: 2,
@@ -405,7 +421,7 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27"
+          confirmationDate: "2021-05-27",
         },
         {
           id: 3,
@@ -417,7 +433,7 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27"
+          confirmationDate: "2021-05-27",
         },
         {
           id: 4,
@@ -429,7 +445,7 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27"
+          confirmationDate: "2021-05-27",
         },
         {
           id: 5,
@@ -441,8 +457,8 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27"
-        }
+          confirmationDate: "2021-05-27",
+        },
       ],
       localsFilter: [],
       localSelected: {
@@ -451,13 +467,15 @@ export default {
         image: null,
         commune: null,
         name: null,
-        cartStatus: null
+        cartStatus: null,
       },
-      localFilter: ""
+      localFilter: "",
+      more31days: false,
     };
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+    this.todaySales();
     this.initLocals();
 
     this.bus.$on("sync-page-after-refund", () => {
@@ -476,16 +494,22 @@ export default {
       }
     },
     validateDate() {
+      if (this.startDate === null || this.finalDate === null) {
+        return true;
+      }
       if (this.startDate === "" || this.finalDate === "") {
         return true;
       }
-
       if (this.startDate.length < 10 || this.finalDate.length < 10) {
+        return true;
+      }
+      if (this.more31days) {
+        this.showNotification("Solo puedes consultar 31 dias", "warning", "warning");
         return true;
       }
 
       return false;
-    }
+    },
   },
   methods: {
     getPaginationLabel(firstRowIndex, endRowIndex, totalRowsNumber) {
@@ -494,27 +518,27 @@ export default {
     changePage() {
       this.loadingPage = true;
       var url = this.$store.getters["routes/getRoute"]("orders.history", {
-        page: this.pagination.currentPage
+        page: this.pagination.currentPage,
       });
       this.$axios
         .post(
           url,
           {
-            startDate: this.startDate.replaceAll("/", "-"),
-            finalDate: this.finalDate.replaceAll("/", "-"),
+            startDate: this.startDate.replaceAll("/", "-") + " " + "00:00:00",
+            finalDate: this.finalDate.replaceAll("/", "-") + " " + "23:59:59",
             localId: this.localSelected.value,
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null
+                : null,
           },
           {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+              Authorization: this.$store.getters["auth/getToken"],
+            },
           }
         )
-        .then(response => {
+        .then((response) => {
           if (response.data.status === "success") {
             this.meta = response.data.result.pop();
             this.pagination.totalPages = this.meta.meta.totalPages;
@@ -528,24 +552,24 @@ export default {
             this.showNotification(response.data.message, "negative", "error");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorHandling(error);
         });
     },
     initLocals() {
       var vue = this;
       vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+      var each = this.$store.getters["auth/getDataLocals"].map(function (item) {
         let row = {
           value: item.id,
           label: item.name + ", " + item.commune,
           image: item.image,
           commune: item.commune,
           name: item.name,
-          cartStatus: item.cartStatus
+          cartStatus: item.cartStatus,
         };
         vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
+        vue.locals.sort(function (a, b) {
           if (a.name > b.name) {
             return 1;
           }
@@ -562,7 +586,7 @@ export default {
         image: null,
         commune: null,
         name: null,
-        cartStatus: null
+        cartStatus: null,
       };
     },
     filterFn(val) {
@@ -573,7 +597,7 @@ export default {
 
       const needle = val.toLowerCase();
       this.localsFilter = this.locals.filter(
-        v => v.label.toLowerCase().indexOf(needle) > -1
+        (v) => v.label.toLowerCase().indexOf(needle) > -1
       );
     },
     change(val) {
@@ -595,34 +619,39 @@ export default {
         image: null,
         commune: null,
         name: null,
-        cartStatus: null
+        cartStatus: null,
       };
     },
-    getHistory() {
+    getHistory(dates) {
       this.loading();
-
       var url = this.$store.getters["routes/getRoute"]("orders.history", {
-        page: 1
+        page: 1,
       });
       this.$axios
         .post(
           url,
           {
-            startDate: this.startDate.replaceAll("/", "-") + " " + "00:00:00",
-            finalDate: this.finalDate.replaceAll("/", "-") + " " + "23:59:59",
+            startDate:
+              dates === undefined
+                ? this.startDate.replaceAll("/", "-") + " " + "00:00:00"
+                : dates.startDate,
+            finalDate:
+              dates === undefined
+                ? this.finalDate.replaceAll("/", "-") + " " + "23:59:59"
+                : dates.finalDate,
             localId: this.localSelected.value,
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null
+                : null,
           },
           {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+              Authorization: this.$store.getters["auth/getToken"],
+            },
           }
         )
-        .then(response => {
+        .then((response) => {
           if (response.data.status === "success") {
             this.meta = response.data.result.pop();
             this.pagination.totalPages = this.meta.meta.totalPages;
@@ -637,7 +666,7 @@ export default {
             this.showNotification(response.data.message, "negative", "error");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.stopLoading();
           this.errorHandling(error);
         });
@@ -656,7 +685,7 @@ export default {
     mapResponse(response) {
       var vue = this;
       vue.data = [];
-      var each = response.map(function(item) {
+      var each = response.map(function (item) {
         let row = {
           id: item.id,
           localName: item.local.name,
@@ -669,10 +698,10 @@ export default {
           confirmationDate:
             item.dateConfirmation !== null
               ? item.dateConfirmation.replaceAll("-", "/")
-              : "Sin Fecha"
+              : "Sin Fecha",
         };
         vue.data.push(row);
-        vue.data.sort(function(a, b) {
+        vue.data.sort(function (a, b) {
           if (a.id > b.id) {
             return 1;
           }
@@ -705,16 +734,16 @@ export default {
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null
+                : null,
           },
           {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"]
+              Authorization: this.$store.getters["auth/getToken"],
             },
-            responseType: "blob"
+            responseType: "blob",
           }
         )
-        .then(response => {
+        .then((response) => {
           console.log(response.data);
           const url = URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
@@ -730,12 +759,50 @@ export default {
           link.click();
           this.hideLoading();
         })
-        .catch(error => {
+        .catch((error) => {
           this.hideLoading();
           this.errorHandling(error);
         });
-    }
-  }
+    },
+    changeDate(value, reason, details) {
+      if (value !== null) {
+        this.$refs.qDateProxyStart.hide();
+        this.$refs.qDateProxyEnd.hide();
+      }
+      if (this.finalDate === null || this.startDate === null) {
+        return;
+      }
+      if (this.finalDate !== "" && this.startDate !== "") {
+        var start = new Date(this.startDate.replaceAll("/", "-")).getTime();
+        var end = new Date(this.finalDate.replaceAll("/", "-")).getTime();
+
+        var diff = (end - start)/(1000*60*60*24);
+
+        console.log(diff);
+
+        diff > 31 ? (this.more31days = true) : (this.more31days = false);
+      }
+    },
+    todaySales() {
+      let date = new Date();
+      let dateString =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " ";
+
+      let dates = {
+        startDate: dateString + " " + "00:00:00",
+        finalDate: dateString + " " + "23:59:59",
+      };
+
+      this.getHistory(dates);
+    },
+  },
 };
 </script>
 
