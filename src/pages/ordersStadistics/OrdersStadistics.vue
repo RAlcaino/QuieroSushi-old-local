@@ -201,13 +201,11 @@
         style="width: 95%; border-radius: 15px; margin-top: 15px"
       >
         <template v-slot:top-left>
-          <strong style="font-size: 16px">Resultados</strong>
           <q-btn
-            round
-            dense
-            flat
+            rounded
+            label="Exportar"
             color="primary"
-            icon="download"
+            icon-right="download"
             style="margin-left: 5px"
             @click="download()"
           ></q-btn>
@@ -307,10 +305,10 @@ export default {
     "hideLoading",
     "errorHandling",
     "formatNumber",
-    "capitalize",
+    "capitalize"
   ],
   components: {
-    TheCancel,
+    TheCancel
   },
   data() {
     return {
@@ -326,7 +324,7 @@ export default {
       pagination: {
         rowsPerPage: 10,
         currentPage: null,
-        totalPages: null,
+        totalPages: null
       },
       pagesOptions: [],
       count: 0,
@@ -339,64 +337,64 @@ export default {
           label: "Id",
           align: "center",
           field: "id",
-          sortable: true,
+          sortable: true
         },
         {
           name: "localName",
           align: "left",
           label: "Nombre Local",
           field: "localName",
-          sortable: true,
+          sortable: true
         },
         {
           name: "comuneLocal",
           align: "left",
           label: "Comuna Local",
           field: "comuneLocal",
-          sortable: true,
+          sortable: true
         },
         {
           name: "customerName",
           required: true,
           label: "Nombre Cliente",
           align: "center",
-          field: "customerName",
+          field: "customerName"
         },
         {
           name: "saleType",
           align: "center",
           label: "Tipo Venta",
           field: "saleType",
-          sortable: true,
+          sortable: true
         },
         {
           name: "subtotal",
           align: "center",
           label: "Subtotal ($)",
           field: "subtotal",
-          sortable: true,
+          sortable: true
         },
         {
           name: "delivery",
           align: "center",
           label: "Delivery ($)",
           field: "delivery",
-          sortable: true,
+          sortable: true
         },
         {
           name: "total",
           align: "center",
           label: "Total ($)",
           field: "total",
-          sortable: true,
+          sortable: true
         },
         {
           name: "confirmationDate",
           align: "center",
           label: "Fecha Confirmación",
           field: "confirmationDate",
-          sortable: true,
-        },
+          sortable: true
+        }
       ],
       response: [
         {
@@ -409,7 +407,7 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27",
+          confirmationDate: "2021-05-27"
         },
         {
           id: 2,
@@ -421,7 +419,7 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27",
+          confirmationDate: "2021-05-27"
         },
         {
           id: 3,
@@ -433,7 +431,7 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27",
+          confirmationDate: "2021-05-27"
         },
         {
           id: 4,
@@ -445,7 +443,7 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27",
+          confirmationDate: "2021-05-27"
         },
         {
           id: 5,
@@ -457,8 +455,8 @@ export default {
           subtotal: 1000,
           delivery: 500,
           total: 1500,
-          confirmationDate: "2021-05-27",
-        },
+          confirmationDate: "2021-05-27"
+        }
       ],
       localsFilter: [],
       localSelected: {
@@ -467,10 +465,10 @@ export default {
         image: null,
         commune: null,
         name: null,
-        cartStatus: null,
+        cartStatus: null
       },
       localFilter: "",
-      more31days: false,
+      more31days: false
     };
   },
   created() {
@@ -504,12 +502,16 @@ export default {
         return true;
       }
       if (this.more31days) {
-        this.showNotification("Solo puedes consultar 31 dias", "warning", "warning");
+        this.showNotification(
+          "Solo puedes consultar 31 dias",
+          "warning",
+          "warning"
+        );
         return true;
       }
 
       return false;
-    },
+    }
   },
   methods: {
     getPaginationLabel(firstRowIndex, endRowIndex, totalRowsNumber) {
@@ -518,7 +520,7 @@ export default {
     changePage() {
       this.loadingPage = true;
       var url = this.$store.getters["routes/getRoute"]("orders.history", {
-        page: this.pagination.currentPage,
+        page: this.pagination.currentPage
       });
       this.$axios
         .post(
@@ -530,15 +532,15 @@ export default {
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null,
+                : null
           },
           {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"],
-            },
+              Authorization: this.$store.getters["auth/getToken"]
+            }
           }
         )
-        .then((response) => {
+        .then(response => {
           if (response.data.status === "success") {
             this.meta = response.data.result.pop();
             this.pagination.totalPages = this.meta.meta.totalPages;
@@ -552,24 +554,24 @@ export default {
             this.showNotification(response.data.message, "negative", "error");
           }
         })
-        .catch((error) => {
+        .catch(error => {
           this.errorHandling(error);
         });
     },
     initLocals() {
       var vue = this;
       vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function (item) {
+      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
         let row = {
           value: item.id,
           label: item.name + ", " + item.commune,
           image: item.image,
           commune: item.commune,
           name: item.name,
-          cartStatus: item.cartStatus,
+          cartStatus: item.cartStatus
         };
         vue.locals.push(row);
-        vue.locals.sort(function (a, b) {
+        vue.locals.sort(function(a, b) {
           if (a.name > b.name) {
             return 1;
           }
@@ -586,7 +588,7 @@ export default {
         image: null,
         commune: null,
         name: null,
-        cartStatus: null,
+        cartStatus: null
       };
     },
     filterFn(val) {
@@ -597,7 +599,7 @@ export default {
 
       const needle = val.toLowerCase();
       this.localsFilter = this.locals.filter(
-        (v) => v.label.toLowerCase().indexOf(needle) > -1
+        v => v.label.toLowerCase().indexOf(needle) > -1
       );
     },
     change(val) {
@@ -619,13 +621,13 @@ export default {
         image: null,
         commune: null,
         name: null,
-        cartStatus: null,
+        cartStatus: null
       };
     },
     getHistory(dates) {
       this.loading();
       var url = this.$store.getters["routes/getRoute"]("orders.history", {
-        page: 1,
+        page: 1
       });
       this.$axios
         .post(
@@ -643,15 +645,15 @@ export default {
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null,
+                : null
           },
           {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"],
-            },
+              Authorization: this.$store.getters["auth/getToken"]
+            }
           }
         )
-        .then((response) => {
+        .then(response => {
           if (response.data.status === "success") {
             this.meta = response.data.result.pop();
             this.pagination.totalPages = this.meta.meta.totalPages;
@@ -666,7 +668,7 @@ export default {
             this.showNotification(response.data.message, "negative", "error");
           }
         })
-        .catch((error) => {
+        .catch(error => {
           this.stopLoading();
           this.errorHandling(error);
         });
@@ -685,7 +687,7 @@ export default {
     mapResponse(response) {
       var vue = this;
       vue.data = [];
-      var each = response.map(function (item) {
+      var each = response.map(function(item) {
         let row = {
           id: item.id,
           localName: item.local.name,
@@ -698,10 +700,10 @@ export default {
           confirmationDate:
             item.dateConfirmation !== null
               ? item.dateConfirmation.replaceAll("-", "/")
-              : "Sin Fecha",
+              : "Sin Fecha"
         };
         vue.data.push(row);
-        vue.data.sort(function (a, b) {
+        vue.data.sort(function(a, b) {
           if (a.id > b.id) {
             return 1;
           }
@@ -734,16 +736,16 @@ export default {
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null,
+                : null
           },
           {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"],
+              Authorization: this.$store.getters["auth/getToken"]
             },
-            responseType: "blob",
+            responseType: "blob"
           }
         )
-        .then((response) => {
+        .then(response => {
           console.log(response.data);
           const url = URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
@@ -759,7 +761,7 @@ export default {
           link.click();
           this.hideLoading();
         })
-        .catch((error) => {
+        .catch(error => {
           this.hideLoading();
           this.errorHandling(error);
         });
@@ -776,7 +778,7 @@ export default {
         var start = new Date(this.startDate.replaceAll("/", "-")).getTime();
         var end = new Date(this.finalDate.replaceAll("/", "-")).getTime();
 
-        var diff = (end - start)/(1000*60*60*24);
+        var diff = (end - start) / (1000 * 60 * 60 * 24);
 
         console.log(diff);
 
@@ -797,12 +799,12 @@ export default {
 
       let dates = {
         startDate: dateString + " " + "00:00:00",
-        finalDate: dateString + " " + "23:59:59",
+        finalDate: dateString + " " + "23:59:59"
       };
 
       this.getHistory(dates);
-    },
-  },
+    }
+  }
 };
 </script>
 

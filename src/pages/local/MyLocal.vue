@@ -140,7 +140,7 @@
                     rounded
                     dense
                     v-model="dataLocal.comuna"
-                    :options="comunesFiltered"
+                    :options="comunesFilteredForm"
                     label="Comuna"
                   >
                     <template v-slot:selected-item="scope">
@@ -463,69 +463,134 @@
             </q-btn>
           </q-card-actions>
         </q-card>
-        <!--<q-card class="card-bg" style="margin-top: 15px;">
-          <q-card-section class="text-h6 ">
+        <q-card class="card-bg" style="margin-top: 15px;">
+          <q-card-section
+            class="text-h6"
+            style="display: flex; flex-direction: row; justify-content: space-between; align-items:center;"
+          >
             <div class="text-h6 ">
-              <q-icon style="padding-bottom:4px" name="vpn_key"></q-icon>
-              Cambiar contraseña
+              <q-icon
+                style="padding-bottom:4px"
+                name="delivery_dining"
+              ></q-icon>
+              Comunas Delivery
             </div>
+            <q-btn
+              v-if="!sameArrayValidation"
+              round
+              dense
+              flat
+              color="primary"
+              icon="undo"
+              style="margin-left: 5px"
+              @click="undoChangesComunes()"
+            ></q-btn>
           </q-card-section>
-          <q-card-section class="q-pa-sm row">
-            <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <q-card-section
+            class="q-pa-sm row"
+            style="display: flex; flex-direction: column; justify-content: center; align-items:center;"
+          >
+            <q-item class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
               <q-item-section>
-                <q-input
-                  :error-message="''"
-                  :error="false"
-                  type="password"
-                  dense
-                  outlined
+                <q-select
+                  ref="select"
                   rounded
-                  v-model="password_dict.current_password"
-                  label="Contraseña actual"
-                />
+                  outlined
+                  dense
+                  :options="comunesFiltered"
+                  :options-dense="true"
+                  label="Comunas delivery"
+                  v-model="comuneSelected"
+                  @input="changeComune"
+                  @popup-hide="allComunes()"
+                  class="q-select-s"
+                  style="margin-bottom: 15px;"
+                  :virtual-scroll-sticky-size-start="80"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="place" />
+                  </template>
+                  <template v-slot:before-options>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        <input
+                          v-model="comuneSearch"
+                          @input="filterFn(comuneSearch)"
+                          type="text"
+                          placeholder="Buscar"
+                          style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                        />
+                      </q-item-section>
+                    </q-item>
+                    <!--<q-item dense clickable @click="allOrders()">
+                      <q-item-section>Todos</q-item-section>
+                    </q-item>-->
+                  </template>
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        <input
+                          v-model="comuneSearch"
+                          @input="filterFn(comuneSearch)"
+                          type="text"
+                          placeholder="Buscar"
+                          style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                        />
+                      </q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        Sin Resultados
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
               </q-item-section>
+              <q-btn
+                color="green"
+                round
+                style="margin-left:10px; height:30px; margin-top: 5px"
+                size="sm"
+                @click="addComune()"
+              >
+                <q-icon size="20px" name="add" />
+              </q-btn>
             </q-item>
-            <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <q-item
+              v-if="comunesSelected.length !== 0"
+              class="col-lg-8 col-md-8 col-sm-12 col-xs-12"
+              style="margin-top:10px"
+            >
               <q-item-section>
-                <q-input
-                  :error-message="alertDifferentPassword===true?'Las contraseñas no son iguales':''"
-                  :error="alertDifferentPassword"
-                  type="password"
-                  dense
-                  outlined
-                  rounded
-                  v-model="password_dict.new_password"
-                  label="Contraseña nueva"
-                />
-              </q-item-section>
-            </q-item>
-            <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-              <q-item-section>
-                <q-input
-                  :error-message="alertDifferentPassword===true?'Las contraseñas no son iguales':''"
-                  :error="alertDifferentPassword"
-                  type="password"
-                  dense
-                  outlined
-                  rounded
-                  v-model="password_dict.confirm_new_password"
-                  label="Confirmar contraseña"
-                />
+                <q-item-label style="font-weight:bold;margin-bottom:10px"
+                  >Comunas agregadas:</q-item-label
+                >
+                <q-chip
+                  v-for="comune of comunesSelected"
+                  :key="comune.value"
+                  v-model="comune.flag"
+                  removable
+                  color="green"
+                  text-color="white"
+                  icon="place"
+                  @remove="deleteComune(comune.value)"
+                >
+                  {{ comune.label }}
+                </q-chip>
               </q-item-section>
             </q-item>
           </q-card-section>
           <q-card-actions align="center">
             <q-btn
-              :disable="validationPassword"
               style="margin-bottom:10px; margin-top:8px"
               rounded
               dense
-              @click="setPassword()"
+              @click="edit()"
               class="text-capitalize bg-green text-white"
               >Guardar
             </q-btn>
           </q-card-actions>
-        </q-card>-->
+        </q-card>
       </div>
     </div>
   </q-page>
@@ -536,7 +601,7 @@ import EditPhoto from "./dialogs/EditPhoto.vue";
 export default {
   name: "UserProfile",
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
-  components:{
+  components: {
     EditPhoto
   },
   data() {
@@ -612,11 +677,18 @@ export default {
       markers: [],
       apiKey: process.env.API_GOOGLE,
       baseUrl:
-        "https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={apikeyGoogle}"
+        "https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={apikeyGoogle}",
+      comuneSelected: {},
+      comunesSelected: [],
+      comuneSearch: "",
+      comunes: [],
+      comunesFiltered: [],
+      comunesSelectedOriginal: []
     };
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
+    this.initComunes();
   },
   mounted() {
     this.init();
@@ -626,7 +698,7 @@ export default {
     });
   },
   computed: {
-    comunesFiltered() {
+    comunesFilteredForm() {
       var comunesFiltered = this.$store.getters["auth/getZones"].comunes.filter(
         item =>
           item.id_ciudad === this.dataLocal.ciudad.value &&
@@ -641,6 +713,16 @@ export default {
         this.dataLocal.comuna = comunesFiltered[0];
       }
       return comunesFiltered;
+    },
+    sameArrayValidation() {
+      if (
+        this.comunesSelected.sort().length ===
+        this.comunesSelectedOriginal.sort().length
+      ) {
+        return true;
+      }
+
+      return false;
     },
     citiesFiltered() {
       var citiesFiltered = this.$store.getters["auth/getZones"].cities.filter(
@@ -658,6 +740,21 @@ export default {
     }
   },
   methods: {
+    initComunes() {
+      var vue = this;
+      vue.comunes = [];
+      let each = this.$store.getters["auth/getZones"].comunes.map(function(
+        item
+      ) {
+        let row = {
+          value: item.value,
+          label: item.label
+        };
+        vue.comunes.push(row);
+      });
+      vue.comuneSelected = vue.comunes[0];
+      vue.comunesFiltered = this.comunes;
+    },
     getDataLocal() {
       this.showLoading();
       if (!this.prod) {
@@ -695,6 +792,64 @@ export default {
         this.localSelected = val;
         this.getDataLocal();
       }
+    },
+    changeComune(val) {
+      if (val !== null) {
+        this.comuneSelected = val;
+      }
+    },
+    allComunes() {
+      this.comunesFiltered = this.comunes;
+      this.comuneSearch = "";
+    },
+    addComune() {
+      if (
+        this.comunesSelected.some(
+          item => item.value === this.comuneSelected.value
+        )
+      ) {
+        this.showNotification(
+          "La comuna ya encuentra en su lista",
+          "negative",
+          "error"
+        );
+      } else {
+        this.comunesSelected.push({
+          value: this.comuneSelected.value,
+          label: this.comuneSelected.label,
+          flag: true
+        });
+      }
+    },
+    deleteComune(storeId) {
+      this.comunesSelected = this.comunesSelected.filter(
+        item => item.value !== storeId
+      );
+    },
+    findComunes(comunes) {
+      let comunesNew = [];
+      if (comunes !== null) {
+        let comunesArray = comunes.split(",");
+        comunesArray.forEach(each => {
+          let el = this.$store.getters["auth/getZones"].comunes.find(
+            item2 => item2.label === each
+          );
+          let row = {
+            label: el.label,
+            value: el.value,
+            flag: true
+          };
+          comunesNew.push(row);
+        });
+      }
+      return comunesNew;
+    },
+    formatComunes() {
+      let result = "";
+      this.comunesSelected.forEach(res => {
+        result += res.label + ",";
+      });
+      return result.slice(0, -1);
     },
     init() {
       var vue = this;
@@ -783,75 +938,27 @@ export default {
       return data;
     },
     mapperResponse(data) {
-      this.dataLocal.id = data.id_local;
-      this.dataLocal.imagen = data.foto1;
-      this.dataLocal.nombre = data.nombre;
-      this.dataLocal.direccion = data.direccion;
-      this.dataLocal.local = data.local;
-      this.dataLocal.lat = data.lat;
-      this.dataLocal.lng = data.lng;
-      this.dataLocal.comuna = this.$store.getters["auth/getZones"].comunes.find(
-        item => item.value === data.comuna.id
-      );
-      this.dataLocal.telefono = data.telefono;
-      this.dataLocal.telefono_callcenter = data.telefono_callcenter;
-      this.dataLocal.telefono_notificaciones = data.telefono_notificaciones.toString();
-      this.dataLocal.telefono_notificaciones_pagos =
-        data.telefono_notificaciones_pagos;
-      this.dataLocal.horario = data.horario;
-      this.dataLocal.ciudad = this.$store.getters["auth/getZones"].cities.find(
-        item => item.value === data.ciudad.id
-      );
-      this.dataLocal.region = {
-        value: data.region.id,
-        label: data.region.nombre
+      this.dataLocal = {
+        ...data,
+        id: data.id_local,
+        imagen: data.foto1,
+        comuna: this.$store.getters["auth/getZones"].comunes.find(
+          item => item.value === data.comuna.id
+        ),
+        telefono_notificaciones: data.telefono_notificaciones.toString(),
+        ciudad: this.$store.getters["auth/getZones"].cities.find(
+          item => item.value === data.ciudad.id
+        ),
+        region: {
+          value: data.region.id,
+          label: data.region.nombre
+        },
+        semana: this.weekStructure(data.semana)
       };
-      this.dataLocal.telefono_emp = data.telefono_emp;
-      this.dataLocal.rut_empresa = data.rut_empresa;
-      this.dataLocal.razon = data.razon;
-      this.dataLocal.giro = data.giro;
-      this.dataLocal.nombre_dueno = data.nombre_dueno;
-      this.dataLocal.telefono_dueno = data.telefono_dueno;
-      this.dataLocal.nombre_legal = data.nombre_legal;
-      this.dataLocal.rut_legal = data.rut_legal;
-      this.dataLocal.tipo_constitucion = data.tipo_constitucion;
-      this.dataLocal.semana = this.weekStructure(data.semana);
 
-      //-----
-
-      this.dataLocalOriginal.id = data.id_local;
-      this.dataLocalOriginal.imagen = data.foto1;
-      this.dataLocalOriginal.nombre = data.nombre;
-      this.dataLocalOriginal.direccion = data.direccion;
-      this.dataLocalOriginal.local = data.local;
-      this.dataLocalOriginal.lat = data.lat;
-      this.dataLocalOriginal.lng = data.lng;
-      this.dataLocalOriginal.comuna = this.$store.getters[
-        "auth/getZones"
-      ].comunes.find(item => item.value === data.comuna.id);
-      this.dataLocalOriginal.telefono = data.telefono;
-      this.dataLocalOriginal.telefono_callcenter = data.telefono_callcenter;
-      this.dataLocalOriginal.telefono_notificaciones = data.telefono_notificaciones.toString();
-      this.dataLocalOriginal.telefono_notificaciones_pagos =
-        data.telefono_notificaciones_pagos;
-      this.dataLocalOriginal.horario = data.horario;
-      this.dataLocalOriginal.ciudad = this.$store.getters[
-        "auth/getZones"
-      ].cities.find(item => item.value === data.ciudad.id);
-      this.dataLocalOriginal.region = {
-        value: data.region.id,
-        label: data.region.nombre
-      };
-      this.dataLocalOriginal.telefono_emp = data.telefono_emp;
-      this.dataLocalOriginal.rut_empresa = data.rut_empresa;
-      this.dataLocalOriginal.razon = data.razon;
-      this.dataLocalOriginal.giro = data.giro;
-      this.dataLocalOriginal.nombre_dueno = data.nombre_dueno;
-      this.dataLocalOriginal.telefono_dueno = data.telefono_dueno;
-      this.dataLocalOriginal.nombre_legal = data.nombre_legal;
-      this.dataLocalOriginal.rut_legal = data.rut_legal;
-      this.dataLocalOriginal.tipo_constitucion = data.tipo_constitucion;
-      this.dataLocalOriginal.semana = this.weekStructure(data.semana);
+      this.dataLocalOriginal = { ...this.dataLocal };
+      this.comunesSelected = this.findComunes(data.comunas_delivery);
+      this.comunesSelectedOriginal = [...this.comunesSelected];
     },
     getLocation() {
       if (
@@ -899,6 +1006,17 @@ export default {
         lng: +this.dataLocal.lng
       };
       this.markers.push(marker);
+    },
+    filterFn(val) {
+      if (val === "") {
+        this.comunesFiltered = this.comunes;
+        return;
+      }
+
+      const needle = val.toLowerCase();
+      this.comunesFiltered = this.comunes.filter(
+        v => v.label.toLowerCase().indexOf(needle) > -1
+      );
     },
     formatLocals() {
       var vue = this;
@@ -1077,7 +1195,48 @@ export default {
       return uniqueWeek;
     },
     upploadNew(local) {
-      this.bus.$emit("upload-photo-local",local.id);
+      this.bus.$emit("upload-photo-local", local.id);
+    },
+    edit() {
+      this.showLoading();
+      let data = {
+        comunas_delivery: this.formatComunes()
+      };
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("resource.local", {
+          localId: this.localSelected.value
+        });
+        this.$axios
+          .put(url, data, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              this.hideLoading();
+              this.comunesSelectedOriginal=[...this.comunesSelected];
+            } else {
+              this.hideLoading();
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.hideLoading();
+            this.errorHandling(error);
+          });
+      }
+    },
+    undoChangesComunes() {
+      this.comunesSelected=[];
+      this.comunesSelectedOriginal.forEach((item)=>{
+        item.flag=true;
+        this.comunesSelected.push(item);
+      });
     }
   }
 };
@@ -1104,7 +1263,7 @@ export default {
   border-radius: 50px;
   overflow: hidden;
   position: relative;
-  cursor:pointer;
+  cursor: pointer;
 }
 .overlay__change__image {
   position: absolute;
@@ -1121,7 +1280,7 @@ export default {
   justify-content: center;
 }
 
-.overlay__change__image:hover{
+.overlay__change__image:hover {
   opacity: 1;
 }
 </style>

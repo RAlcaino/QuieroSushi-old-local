@@ -4,7 +4,7 @@
     transition-show="slide-down"
     transition-hide="slide-up"
   >
-    <q-card class="my-card" style="width: 500px; border-radius:10px">
+    <q-card class="my-card" style="width: 500px; border-radius: 10px">
       <q-card-section class="q-pt-none">
         <q-tabs v-model="tab" class="text-blacklight">
           <q-tab label="Detalle" name="one" />
@@ -21,21 +21,31 @@
           >
             <div class="tab-overview-headers-c" style="margn">
               <p
-                style="display:flex; flex-direction: column; justify-content:center;align-items:center"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                "
               >
                 <strong style="color: #333"
                   >Hora actual
                   <div class="live-c"></div
                 ></strong>
-                <strong style="color: #333; font-size:18px">{{
+                <strong style="color: #333; font-size: 18px">{{
                   currentTime
                 }}</strong>
               </p>
               <p
-                style="display:flex; flex-direction: column;justify-content:center;align-items:center"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                "
               >
-                <strong style="color: #333 ">Hora esperada</strong>
-                <strong style="color: #333; font-size:18px">{{ time }}</strong>
+                <strong style="color: #333">Hora esperada</strong>
+                <strong style="color: #333; font-size: 18px">{{ time }}</strong>
               </p>
             </div>
 
@@ -44,14 +54,28 @@
             <div class="tab-alerts-c" v-if="orderDetail.soon !== null">
               <p
                 v-if="orderDetail.soon === 1"
-                style="color: green; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+                style="
+                  color: green;
+                  margin: 0 auto;
+                  text-align: center;
+                  font-size: 13px;
+                  margin-top: 10px;
+                  width: 80%;
+                "
               >
                 Intenta dar tu mejor tiempo. El cliente lo necesita lo antes
                 posible.
               </p>
               <p
                 v-if="orderDetail.soon === 0"
-                style="color: green; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+                style="
+                  color: green;
+                  margin: 0 auto;
+                  text-align: center;
+                  font-size: 13px;
+                  margin-top: 10px;
+                  width: 80%;
+                "
               >
                 Intenta no cambiar los tiempos. El cliente lo necesita a esa
                 hora.
@@ -59,10 +83,17 @@
               <p
                 v-if="
                   orderDetail.soon === 0 &&
-                    (preparationTime > minPreparationTime ||
-                      deliveryTime > minDeliveryTime)
+                  (preparationTime > minPreparationTime ||
+                    deliveryTime > minDeliveryTime)
                 "
-                style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+                style="
+                  color: red;
+                  margin: 0 auto;
+                  text-align: center;
+                  font-size: 13px;
+                  margin-top: 10px;
+                  width: 80%;
+                "
               >
                 El cliente lo pide para esa hora exacta, trata de no cambiarla.
               </p>
@@ -72,17 +103,22 @@
 
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center">
+                <strong style="color: #333; text-align: center">
                   Tiempo de preparación
                 </strong>
                 <div
-                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                  "
                 >
                   <q-input
                     v-model="preparationTime"
                     color="primary"
                     label="Minutos"
-                    style="width: 100px;"
+                    style="width: 100px"
                     type="number"
                     @input="changePreparationTime()"
                     :min="orderDetail.soon === 0 ? minPreparationTime : 0"
@@ -93,7 +129,14 @@
                   </q-input>
                 </div>
                 <p
-                  style="color: red; margin:0 auto;text-align: center; font-size: 13px; margin-top: 10px; width: 80%;"
+                  style="
+                    color: red;
+                    margin: 0 auto;
+                    text-align: center;
+                    font-size: 13px;
+                    margin-top: 10px;
+                    width: 80%;
+                  "
                   v-if="preparationTime > 60 && orderDetail.soon !== 0"
                 >
                   Usted está dando {{ preparationTime }} minutos en tiempo de
@@ -105,11 +148,16 @@
             <q-separator />
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center">
+                <strong style="color: #333; text-align: center">
                   Tiempo de Despacho
                 </strong>
                 <p
-                  style="display:flex; flex-direction: row; justify-content:space-around;align-items:center"
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-around;
+                    align-items: center;
+                  "
                 >
                   <q-chip
                     color="red"
@@ -120,7 +168,7 @@
                   <q-input
                     color="primary"
                     label="Minutos"
-                    style="width: 100px;"
+                    style="width: 100px"
                     type="number"
                     v-model="deliveryTime"
                     @input="changeDeliveryTime()"
@@ -138,11 +186,16 @@
 
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center"
+                <strong style="color: #333; text-align: center"
                   >Hora de confirmación final</strong
                 >
                 <p
-                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                  "
                 >
                   <q-chip
                     color="green"
@@ -181,21 +234,31 @@
           >
             <div class="tab-overview-headers-c">
               <p
-                style="display:flex; flex-direction: column; justify-content:center;align-items:center"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                "
               >
                 <strong style="color: #333">
                   Hora actual
                   <div class="live-c"></div
                 ></strong>
-                <strong style="color: #333; font-size:18px">
+                <strong style="color: #333; font-size: 18px">
                   {{ currentTime }}
                 </strong>
               </p>
               <p
-                style="display:flex; flex-direction: column;justify-content:center;align-items:center"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                "
               >
                 <strong style="color: #333">Hora esperada</strong>
-                <strong style="color: #333; font-size:18px">{{ time }}</strong>
+                <strong style="color: #333; font-size: 18px">{{ time }}</strong>
               </p>
             </div>
 
@@ -204,12 +267,17 @@
             <div class="tab-overview-c">
               <div class="tab-overview-items-c">
                 <strong
-                  style="color: #333; text-align:center;padding-bottom:5px "
+                  style="color: #333; text-align: center; padding-bottom: 5px"
                 >
                   Horario de entrega
                 </strong>
                 <div
-                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                  "
                 >
                   <q-input filled v-model="finalDateManual">
                     <template v-slot:append>
@@ -244,11 +312,16 @@
 
             <div class="tab-overview-c" v-if="finalDateManual">
               <div class="tab-overview-items-c">
-                <strong style="color: #333; text-align:center">
+                <strong style="color: #333; text-align: center">
                   Hora de confirmación final
                 </strong>
                 <p
-                  style="display:flex; flex-direction: row; justify-content:center;align-items:center"
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                  "
                 >
                   <q-chip
                     color="green"
@@ -290,7 +363,7 @@ export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
-    this.bus.$on("the-confirm", data => {
+    this.bus.$on("the-confirm", (data) => {
       this.card = !this.card;
       this.orderDetail = data;
       this.finalDateManual = this.orderDetail.requestedTime;
@@ -331,12 +404,12 @@ export default {
       orderDetail: {},
       current: {
         hour: null,
-        minutes: null
+        minutes: null,
       },
       final: {
         hour: null,
         minutes: null,
-        seconds: null
+        seconds: null,
       },
       finalDateManual: null,
       finalDateDetail: null,
@@ -360,7 +433,7 @@ export default {
         //confirmationTimestamp: '2021-03-08 23:00:00',
         deliveryTime: +this.deliveryTime,
         preparationTime: +this.preparationTime,
-        doAlgorithm: this.doAlgorithm
+        doAlgorithm: this.doAlgorithm,
       };
       this.showLoading();
 
@@ -374,10 +447,10 @@ export default {
         this.$axios
           .put(url, data, {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+              Authorization: this.$store.getters["auth/getToken"],
+            },
           })
-          .then(response => {
+          .then((response) => {
             if (response.data.status === "success") {
               this.hideLoading();
               this.bus.$emit("sync-orders");
@@ -386,7 +459,7 @@ export default {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
-          .catch(error => {
+          .catch((error) => {
             this.hideLoading();
             this.errorHandling(error);
           });
@@ -433,10 +506,14 @@ export default {
         //"2021/07/23 15:00:00"
       );
       if (this.autoMode) {
-        this.minPreparationTime = Math.ceil(
-          (date2.getTime() - date.getTime()) / 60000
-        );
-        this.preparationTime = this.minPreparationTime;
+        let diff = Math.ceil((date2.getTime() - date.getTime()) / 60000);
+        if (diff >= 0) {
+          this.minPreparationTime = diff;
+          this.preparationTime = this.minPreparationTime;
+        } else {
+          this.minPreparationTime = 0;
+          this.preparationTime = 0;
+        }
       }
     },
     changePreparationTime() {
@@ -468,8 +545,8 @@ export default {
         (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
         " " +
         tempFinalDetail;
-    }
-  }
+    },
+  },
 };
 </script>
 

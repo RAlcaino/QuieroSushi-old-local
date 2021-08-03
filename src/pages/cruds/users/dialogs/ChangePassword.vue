@@ -11,29 +11,11 @@
         </div>
       </q-card-section>
       <q-card-section class="q-pa-sm row">
-        <!--<q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <q-item-section>
-            <q-input
-              :error-message="''"
-              :error="false"
-              type="password"
-              dense
-              outlined
-              rounded
-              v-model="password_dict.current_password"
-              label="Contraseña actual"
-            />
-          </q-item-section>
-        </q-item>-->
         <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <q-item-section>
             <q-input
-              :error-message="
-                alertDifferentPassword === true
-                  ? 'Las contraseñas no son iguales'
-                  : ''
-              "
-              :error="alertDifferentPassword"
+              :error-message="errorMessages"
+              :error="alertDifferentPassword || alertMinPassword"
               type="password"
               dense
               outlined
@@ -46,12 +28,8 @@
         <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <q-item-section>
             <q-input
-              :error-message="
-                alertDifferentPassword === true
-                  ? 'Las contraseñas no son iguales'
-                  : ''
-              "
-              :error="alertDifferentPassword"
+              :error-message="errorMessages"
+              :error="alertDifferentPassword || alertMinPassword"
               type="password"
               dense
               outlined
@@ -64,7 +42,7 @@
       </q-card-section>
       <q-card-actions align="center">
         <q-btn
-          :disable="validationPassword"
+          :disable="validationForm"
           style="margin-bottom:10px; margin-top:8px"
           rounded
           dense
@@ -101,29 +79,42 @@ export default {
     return {
       card: false,
       prod: null,
-      password_dict: {},
+      password_dict: {
+        confirm_new_password: "",
+        new_password: ""
+      },
       user: null
     };
   },
   computed: {
-    validationPassword() {
+    errorMessages() {
+      if (this.alertDifferentPassword === true) {
+        return "Las contraseñas no son iguales.";
+      }
+
+      if (this.password_dict.new_password.length < 6) {
+        return "Las contraseña debe tener al menos 6 caracteres.";
+      }
+    },
+    validationForm() {
       let condition2 = false;
 
       let condition1 =
-        this.password_dict.new_password === undefined ||
-        this.password_dict.new_password === "" ||
         this.password_dict.confirm_new_password === undefined ||
-        this.password_dict.confirm_new_password === "";
+        this.password_dict.confirm_new_password === "" ||
+        this.password_dict.new_password === undefined ||
+        this.password_dict.new_password === "";
 
       if (
-        this.password_dict.new_password !== undefined &&
-        this.password_dict.new_password !== "" &&
         this.password_dict.confirm_new_password !== undefined &&
-        this.password_dict.confirm_new_password !== ""
+        this.password_dict.confirm_new_password !== "" &&
+        this.password_dict.new_password !== undefined &&
+        this.password_dict.new_password !== ""
       ) {
         if (
-          this.password_dict.new_password ===
-          this.password_dict.confirm_new_password
+          this.password_dict.confirm_new_password ===
+            this.password_dict.new_password &&
+          this.password_dict.new_password.length >= 6
         ) {
           condition2 = false;
         } else {
@@ -135,6 +126,22 @@ export default {
 
       if (condition1 || condition2) {
         return true;
+      } else {
+        return false;
+      }
+    },
+    alertMinPassword() {
+      if (
+        this.password_dict.confirm_new_password !== undefined &&
+        this.password_dict.confirm_new_password !== "" &&
+        this.password_dict.new_password !== undefined &&
+        this.password_dict.new_password !== ""
+      ) {
+        if (this.password_dict.new_password.length < 6) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
@@ -162,7 +169,10 @@ export default {
   methods: {
     close() {
       this.card = false;
-      this.password_dict = {};
+      this.password_dict = {
+        confirm_new_password: "",
+        new_password: ""
+      };
     },
     setPassword() {
       this.showLoading();
@@ -185,7 +195,7 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-              this.card=false;
+              this.card = false;
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }

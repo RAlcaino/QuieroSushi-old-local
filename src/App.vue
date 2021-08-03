@@ -155,21 +155,23 @@ export default {
             }
           } else {
             this.showNotification(
-              error.response.data.message,
+              //error.response.data.message,
+              "Ha ocurrido un error con el servidor",
               "negative",
               "error"
             );
           }
         } else if (error.response.status == 401) {
           this.showNotification(
-            error.response.data.message,
+            //error.response.data.message,
+            "Ha ocurrido un error con el servidor",
             "negative",
             "error"
           );
           this.bus.$emit("logout");
         }
       } else {
-        this.showNotification(error.message, "negative", "error");
+        this.showNotification(/*error.message*/"Ha ocurrido un error con el servidor", "negative", "error");
       }
     }
   }
