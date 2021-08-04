@@ -83,8 +83,8 @@
               <p
                 v-if="
                   orderDetail.soon === 0 &&
-                  (preparationTime > minPreparationTime ||
-                    deliveryTime > minDeliveryTime)
+                    (preparationTime > minPreparationTime ||
+                      deliveryTime > minDeliveryTime)
                 "
                 style="
                   color: red;
@@ -120,7 +120,7 @@
                     label="Minutos"
                     style="width: 100px"
                     type="number"
-                    @input="changePreparationTime()"
+                    @input="changeTimes()"
                     :min="orderDetail.soon === 0 ? minPreparationTime : 0"
                   >
                     <template v-slot:prepend>
@@ -171,7 +171,7 @@
                     style="width: 100px"
                     type="number"
                     v-model="deliveryTime"
-                    @input="changeDeliveryTime()"
+                    @input="changeTimes()"
                     :min="orderDetail.soon === 0 ? minDeliveryTime : 0"
                   >
                     <template v-slot:prepend>
@@ -363,7 +363,7 @@ export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
-    this.bus.$on("the-confirm", (data) => {
+    this.bus.$on("the-confirm", data => {
       this.card = !this.card;
       this.orderDetail = data;
       this.finalDateManual = this.orderDetail.requestedTime;
@@ -372,7 +372,7 @@ export default {
       this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.doAlgorithm = false;
       this.autoMode = true;
-      this.calculatePreparationTime();
+      this.calculatePreparationTime(true);
       this.updateTime();
       setInterval(() => {
         this.updateTime();
@@ -394,7 +394,7 @@ export default {
           ? ":0" + this.current.minutes
           : ":" + this.current.minutes; // get minutes
       return timeValue;
-    },
+    }
   },
   data() {
     return {
@@ -404,12 +404,12 @@ export default {
       orderDetail: {},
       current: {
         hour: null,
-        minutes: null,
+        minutes: null
       },
       final: {
         hour: null,
         minutes: null,
-        seconds: null,
+        seconds: null
       },
       finalDateManual: null,
       finalDateDetail: null,
@@ -420,6 +420,7 @@ export default {
       autoMode: true,
       doAlgorithm: false,
       constDeliveryTime: null,
+      constPreparationTime: null
     };
   },
   methods: {
@@ -433,7 +434,7 @@ export default {
         //confirmationTimestamp: '2021-03-08 23:00:00',
         deliveryTime: +this.deliveryTime,
         preparationTime: +this.preparationTime,
-        doAlgorithm: this.doAlgorithm,
+        doAlgorithm: this.doAlgorithm
       };
       this.showLoading();
 
@@ -447,10 +448,10 @@ export default {
         this.$axios
           .put(url, data, {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"],
-            },
+              Authorization: this.$store.getters["auth/getToken"]
+            }
           })
-          .then((response) => {
+          .then(response => {
             if (response.data.status === "success") {
               this.hideLoading();
               this.bus.$emit("sync-orders");
@@ -459,7 +460,7 @@ export default {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
-          .catch((error) => {
+          .catch(error => {
             this.hideLoading();
             this.errorHandling(error);
           });
@@ -485,7 +486,7 @@ export default {
             +this.deliveryTime +
             +this.orderDetail.gmapsDeliveryTime)
       );
-      this.calculatePreparationTime();
+      this.calculatePreparationTime(false);
       this.updateFinalTime(date);
       this.finalConfirmationDate(date);
     },
@@ -494,7 +495,7 @@ export default {
       this.final.minutes = date.getMinutes();
       this.final.seconds = date.getSeconds();
     },
-    calculatePreparationTime() {
+    calculatePreparationTime(flag) {
       let date = new Date();
       date.setMinutes(
         date.getMinutes() +
@@ -515,15 +516,20 @@ export default {
           this.preparationTime = 0;
         }
       }
+      if (flag) {
+        this.constPreparationTime = this.preparationTime;
+      }
     },
-    changePreparationTime() {
+    changeTimes() {
       this.autoMode = false;
-    },
-    changeDeliveryTime() {
-      this.autoMode = false;
-      +this.deliveryTime !== this.constDeliveryTime
-        ? (this.doAlgorithm = true)
-        : (this.doAlgorithm = false);
+      if (
+        +this.deliveryTime !== this.constDeliveryTime ||
+        +this.preparationTime !== this.constPreparationTime
+      ) {
+        this.doAlgorithm = true;
+      } else {
+        this.doAlgorithm = false;
+      }
     },
     finalConfirmationDate(date) {
       let tempFinalDetail = "";
@@ -545,8 +551,8 @@ export default {
         (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
         " " +
         tempFinalDetail;
-    },
-  },
+    }
+  }
 };
 </script>
 
