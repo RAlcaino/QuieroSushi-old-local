@@ -78,7 +78,7 @@
       </div>
     </div>
     <div class="orders-tab" style="margin-top:20px">
-      <q-card style="width: 90%;height: 0;">
+      <div style="width: 90%;height: 100%;">
         <q-tabs
           v-model="tab"
           dense
@@ -124,7 +124,7 @@
             <the-done :ordersDone="getOrdersDone"></the-done>
           </q-tab-panel>
         </q-tab-panels>
-      </q-card>
+      </div>
     </div>
   </q-page>
 </template>
@@ -2447,7 +2447,7 @@ export default {
 
 <style lang="scss">
 .orders-tab {
-  height: 100vh;
+  height: 100%;
   display: flex;
   justify-content: center;
 }

@@ -24,11 +24,11 @@
         </q-toolbar-title>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
-          <div>
+          <!--<div>
             <p style="margin:0">
               {{ currentHour }}:{{ currentMinute }}:{{ currentSecond }}
             </p>
-          </div>
+          </div>-->
           <q-btn
             v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
             round
