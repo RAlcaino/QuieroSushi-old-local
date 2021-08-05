@@ -7,10 +7,10 @@
     <q-card class="my-card" style="width: 450px; border-radius:10px;">
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
-          <q-tab
-            name="one"
-          >
-            <strong v-if="$store.getters['auth/getDataUser'].role === 'God'">N° Pedido: {{ orderDetail.id }}</strong>
+          <q-tab name="one">
+            <strong v-if="$store.getters['auth/getDataUser'].role === 'God'"
+              >N° Pedido: {{ orderDetail.id }}</strong
+            >
             <strong v-else>Detalle</strong>
           </q-tab>
         </q-tabs>
@@ -77,44 +77,39 @@
               </q-item>
             </q-list>
             <div class="tab-overview-footer">
-              <p v-if="orderDetail.discount!==0" style="font-size:14px">
-                <strong style="color: green;">Descuento incluido</strong>
+              <p v-if="orderDetail.discount !== 0" style="font-size:14px">
+                <strong style="color: #333;">Descuento: </strong> ${{
+                  formatNumber(orderDetail.discount)
+                }}
               </p>
               <p style="font-size:14px">
-                <strong style="color: #333;">Subtotal: </strong> ${{ formatNumber(orderDetail.subtotal) }}
+                <strong style="color: #333;">Subtotal: </strong> ${{
+                  formatNumber(orderDetail.subtotal)
+                }}
               </p>
               <p style="font-size:14px">
-                <strong style="color: #333;">Costo Despacho: </strong> ${{ formatNumber(orderDetail.deliveryCost) }}
+                <strong style="color: #333;">Costo Despacho: </strong> ${{
+                  formatNumber(orderDetail.deliveryCost)
+                }}
               </p>
               <p style="font-size:14px">
-                <strong style="color: #333;">Total: </strong> <span style="color:#ff2d2d; font-weight:bold">${{ formatNumber(orderDetail.total) }}</span>
+                <strong style="color: #333;">Total: </strong>
+                <span style="color:#ff2d2d; font-weight:bold"
+                  >${{ formatNumber(orderDetail.total) }}</span
+                >
               </p>
             </div>
             <div class="tab-overview-footer">
               <q-list>
-                <!--<q-item v-if="orderDetail.payDetail.address.trim()!==''">
+                <q-item v-if="orderDetail.aditionalMessage !== ''">
                   <q-item-section avatar>
-                    <q-icon name="room" color="primary" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Dirección completa del cliente</q-item-label>
-                    <q-item-label caption>{{ orderDetail.payDetail.address.trim()}}. 
-                      <template v-if="orderDetail.payDetail.address2!=''">
-                      <span v-if="orderDetail.payDetail.address2.search('dpto')==-1">Dpto/Ubicacion:</span> {{orderDetail.payDetail.address2.trim()}}. 
-                      </template>
-                      {{orderDetail.payDetail.userCommune.trim()}}</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-separator v-if="orderDetail.aditionalMessage!==''" spaced inset ></q-separator>-->
-
-                <q-item v-if="orderDetail.aditionalMessage!==''">
-                    <q-item-section avatar>
                     <q-icon name="message" color="primary" />
                   </q-item-section>
                   <q-item-section>
                     <q-item-label>Mensaje del cliente</q-item-label>
-                    <q-item-label caption>{{orderDetail.aditionalMessage}}</q-item-label>
+                    <q-item-label caption>{{
+                      orderDetail.aditionalMessage
+                    }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
