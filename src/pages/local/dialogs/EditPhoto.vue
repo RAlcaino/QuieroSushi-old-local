@@ -116,7 +116,7 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-              this.bus.$emit("sync-info-local");
+              this.bus.$emit("sync-info-local-1");
               this.bus.$emit("sync-locals");
             }
             this.hideLoading();
