@@ -11,7 +11,7 @@
 <script>
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
-  props: ["value","userId"],
+  props: ["value", "userId"],
   created() {
     this.status = this.value;
     this.prod = this.$store.getters["mode/getMode"];
@@ -19,7 +19,7 @@ export default {
   data() {
     return {
       status: null,
-      prod:null
+      prod: null
     };
   },
   methods: {

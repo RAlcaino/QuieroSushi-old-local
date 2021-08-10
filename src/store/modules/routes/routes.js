@@ -109,6 +109,10 @@ const mutations = {
       {
         name: "history.newOrder.pusher",
         link: "/pedidos/actionPusher"
+      },
+      {
+        name: "notification.status.order",
+        link: "/notification"
       }
     ];
   }

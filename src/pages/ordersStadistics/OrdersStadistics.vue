@@ -213,6 +213,17 @@
 
         <template v-slot:top-right>
           <q-select
+            style="margin-right: 10px;"
+            rounded
+            v-model="currentStatus"
+            :options="statusOptions"
+            :options-dense="true"
+            outlined
+            @input="getHistory()"
+            dense
+            label="Estado"
+          />
+          <q-select
             style="width: 90px"
             rounded
             v-model="pagination.currentPage"
@@ -227,7 +238,7 @@
 
         <template v-slot:header="props">
           <q-tr :props="props">
-            <q-th>Anular</q-th>
+            <!--<q-th>Anular</q-th>-->
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               {{ col.label }}
             </q-th>
@@ -236,7 +247,7 @@
 
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td>
+            <!--<q-td>
               <div style="width: 100%; display: flex; justify-content: center">
                 <q-btn
                   color="primary"
@@ -247,7 +258,7 @@
                   <q-icon size="20px" name="undo" />
                 </q-btn>
               </div>
-            </q-td>
+            </q-td>-->
             <q-td v-for="col in props.cols" :key="col.name" :props="props">
               <template>
                 {{ col.value }}
@@ -468,7 +479,9 @@ export default {
         cartStatus: null
       },
       localFilter: "",
-      more31days: false
+      more31days: false,
+      statusOptions: ["Todos", "Confirmados", "Anulados"],
+      currentStatus: "Todos"
     };
   },
   created() {
@@ -477,7 +490,7 @@ export default {
     this.initLocals();
 
     this.bus.$on("sync-page-after-refund", () => {
-      this.getHistory(true);
+      this.getHistory();
     });
   },
   mounted() {
@@ -532,7 +545,8 @@ export default {
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null
+                : null,
+            status: this.currentStatus
           },
           {
             headers: {
@@ -559,9 +573,8 @@ export default {
         });
     },
     initLocals() {
-      var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
+      this.locals = [];
+      var each = this.$store.getters["auth/getDataLocals"].map(item => {
         let row = {
           value: item.id,
           label: item.name + ", " + item.commune,
@@ -570,8 +583,8 @@ export default {
           name: item.name,
           cartStatus: item.cartStatus
         };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
+        this.locals.push(row);
+        this.locals.sort(function(a, b) {
           if (a.name > b.name) {
             return 1;
           }
@@ -645,7 +658,8 @@ export default {
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null
+                : null,
+            status: this.currentStatus
           },
           {
             headers: {
@@ -685,32 +699,30 @@ export default {
       this.bus.$emit("the-cancel", item);
     },
     mapResponse(response) {
-      var vue = this;
-      vue.data = [];
-      var each = response.map(function(item) {
+      this.data = [];
+      var each = response.map(item => {
         let row = {
           id: item.id,
           localName: item.local.name,
           comuneLocal: item.local.commune,
           customerName: item.payDetail.user,
           saleType: item.orderType,
-          subtotal: vue.formatNumber(item.subtotal),
-          delivery: vue.formatNumber(item.deliveryCost),
-          total: vue.formatNumber(item.total),
+          subtotal: this.formatNumber(item.subtotal),
+          delivery: this.formatNumber(item.deliveryCost),
+          total: this.formatNumber(item.total),
           confirmationDate:
             item.dateConfirmation !== null
               ? item.dateConfirmation.replaceAll("-", "/")
               : "Sin Fecha"
         };
-        vue.data.push(row);
-        vue.data.sort(function(a, b) {
+        this.data.push(row);
+        this.data.sort(function(a, b) {
           if (a.id > b.id) {
             return 1;
           }
           if (a.id < b.id) {
             return -1;
           }
-          // a must be equal to b
           return 0;
         });
       });
@@ -736,7 +748,8 @@ export default {
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null
+                : null,
+            status: this.currentStatus
           },
           {
             headers: {

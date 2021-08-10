@@ -1,10 +1,13 @@
 <template>
   <q-layout view="lHh Lpr lFf">
+    <!--Modals-->
     <modal-new-order></modal-new-order>
     <modal-setting></modal-setting>
     <modal-block></modal-block>
     <modal-sync-page></modal-sync-page>
     <modal-debt :open="$store.getters['auth/getDataUser'].debt"></modal-debt>
+    <modal-status-order></modal-status-order>
+    <!---->
     <q-header class="bg-header">
       <q-toolbar>
         <q-btn
@@ -383,7 +386,7 @@
             $store.getters['auth/getDataUser'].role !== 'God'
         "
       >
-      <!--
+        <!--
         <q-banner
           v-if="flag === null"
           dense
@@ -512,6 +515,7 @@ import ModalSetting from "../components/modals/ModalSetting.vue";
 import ModalDebt from "../components/modals/ModalDebt.vue";
 import ModalBlock from "../components/modals/ModalBlock.vue";
 import ModalSyncPage from "../components/modals/ModalSyncPage.vue";
+import ModalStatusOrder from "../components/modals/ModalStatusOrder.vue";
 import SecureLS from "secure-ls";
 
 export default {
@@ -525,7 +529,8 @@ export default {
     ModalSetting,
     ModalDebt,
     ModalBlock,
-    ModalSyncPage
+    ModalSyncPage,
+    ModalStatusOrder
   },
   created() {
     this.updateTime();
@@ -562,14 +567,13 @@ export default {
     this.privateChannelBlock = this.Echo2.channel(this.channelNameBlock);
     this.listenEvent();
 
-    if(this.$store.getters["auth/getAuthenticated"]){
+    if (this.$store.getters["auth/getAuthenticated"]) {
       this.refreshToken(true, false);
     }
 
     this.bus.$on("sync-locals", () => {
       this.getLocals(false, false);
     });
-
   },
   mounted() {
     console.log("main layout mounted");
@@ -650,37 +654,37 @@ export default {
     },
     modeResponsive() {
       var responsive = window.matchMedia("(max-width: 500px)");
-      var vue = this;
 
       if (screen.width < 500) {
-        vue.responsiveMobile = true;
+        this.responsiveMobile = true;
       }
 
-      responsive.addListener(function(event) {
+      responsive.addListener(event => {
         if (event.matches) {
-          vue.responsiveMobile = true;
+          this.responsiveMobile = true;
         } else {
-          vue.responsiveMobile = false;
+          this.responsiveMobile = false;
         }
       });
     },
     listenEvent() {
-      var vue = this;
-      this.privateChannel.listen(".PedidoNuevo", function(data) {
-        if (vue.modalOpen) {
-          vue.bus.$emit("sync-new-order", data);
+      this.privateChannel.listen(".PedidoNuevo", data => {
+        if (this.modalOpen) {
+          this.bus.$emit("sync-new-order", data);
         } else {
-          vue.modalOpen = true;
-          vue.bell.loop(true);
-          vue.bell.play();
-          vue.bus.$emit("new-order", data);
+          this.modalOpen = true;
+          this.bell.loop(true);
+          this.bell.play();
+          this.bus.$emit("new-order", data);
         }
       });
-      this.privateChannelBlock.listen(".Notificacion", function(data) {
+      this.privateChannelBlock.listen(".Notificacion", data => {
         if (data.tipo === "Bloqueo") {
-          vue.bus.$emit("modal-block", data);
+          this.bus.$emit("modal-block", data);
         } else if (data.tipo === "Actualizacion") {
-          vue.bus.$emit("modal-sync-page", data);
+          this.bus.$emit("modal-sync-page", data);
+        } else if (data.tipo === "notificacion-local") {
+          this.bus.$emit("modal-status-order-?", data);
         }
       });
     },
@@ -808,17 +812,15 @@ export default {
             }
           })
           .then(response => {
-            var vue = this;
             this.hideLoading();
             if (response.data.status === "success") {
-              var locals = response.data.result.sort(function(a, b) {
+              var locals = response.data.result.sort((a, b) => {
                 if (a.name > b.name) {
                   return 1;
                 }
                 if (a.name < b.name) {
                   return -1;
                 }
-                // a must be equal to b
                 return 0;
               });
 
@@ -829,10 +831,10 @@ export default {
               if (this.$store.getters["auth/getDataLocals"].length === 1) {
                 this.$store.commit("auth/setCurrentLocal", locals[0]);
               } else {
-                if (vue.$store.getters["auth/getDataLocal"].id !== -1) {
+                if (this.$store.getters["auth/getDataLocal"].id !== -1) {
                   let currentLocal = locals.find(
                     item =>
-                      item.id === vue.$store.getters["auth/getDataLocal"].id
+                      item.id === this.$store.getters["auth/getDataLocal"].id
                   );
                   this.$store.commit("auth/setCurrentLocal", currentLocal);
                 }

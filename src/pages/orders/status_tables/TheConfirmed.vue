@@ -2,6 +2,7 @@
   <div style="padding-bottom:100px;">
     <more-details></more-details>
     <the-done></the-done>
+    <the-cancel :mode="'orders'"></the-cancel>
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top:3%;"
@@ -92,7 +93,9 @@
               </div>
             </div>
           </q-card-section>
-          <q-card-section style="display:flex; flex-direction:row; justify-content: space-between;">
+          <q-card-section
+            style="display:flex; flex-direction:row; justify-content: space-between;"
+          >
             <div class="user-info">
               <p style="margin:0; font-weight:bold">
                 {{ item.payDetail.user }}
@@ -101,11 +104,14 @@
                 {{ item.payDetail.userPhone }}
               </p>
               <p style="margin:0;font-family:'Roboto'">
-                      {{ item.payDetail.address.trim()}}. 
-                      <template v-if="item.payDetail.address2!=''">
-                      <span v-if="item.payDetail.address2.search('dpto')==-1">Dpto/Ubicacion:</span> {{item.payDetail.address2.trim()}}. 
-                      </template>
-                      {{item.payDetail.userCommune.trim()}}
+                {{ item.payDetail.address.trim() }}.
+                <template v-if="item.payDetail.address2 != ''">
+                  <span v-if="item.payDetail.address2.search('dpto') == -1"
+                    >Dpto/Ubicacion:</span
+                  >
+                  {{ item.payDetail.address2.trim() }}.
+                </template>
+                {{ item.payDetail.userCommune.trim() }}
               </p>
             </div>
             <div class="user-payDetail">
@@ -131,8 +137,7 @@
                 style="font-size:22px; padding-bottom:5px"
                 class="i-icon"
               /><strong
-                >Hora Prometida:
-                {{ item.kitchenTime.split(" ")[1] }}</strong
+                >Hora Prometida: {{ item.kitchenTime.split(" ")[1] }}</strong
               >
             </div>
           </q-card-section>
@@ -161,6 +166,15 @@
             >
               Detalle
             </q-btn>
+            <q-btn
+              rounded
+              size="sm"
+              color="primary"
+              style="font-size:10px;"
+              @click="cancelDialog(item)"
+            >
+              Anular
+            </q-btn>
           </q-card-actions>
         </q-card>
       </div>
@@ -181,6 +195,7 @@
 import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
 import TheDone from "./dialogs/TheDone.vue";
+import TheCancel from "./dialogs/TheCancel.vue";
 
 export default {
   props: ["ordersConfirmed"],
@@ -188,17 +203,18 @@ export default {
   components: {
     BaseMoreComponent,
     MoreDetails,
-    TheDone
+    TheDone,
+    TheCancel
   },
   created() {
     this.bus.$on("reset-page", () => {
-      if(this.page!==1){
+      if (this.page !== 1) {
         this.flag = true;
         this.searching = true;
         setTimeout(() => {
           this.flag = false;
           this.searching = false;
-        },500);
+        }, 500);
       }
       this.page = 1;
     });
@@ -244,6 +260,9 @@ export default {
     },
     callEvent(val) {
       this.bus.$emit("scroll-up");
+    },
+    cancelDialog(row) {
+      this.bus.$emit("the-cancel", row);
     }
   }
 };
