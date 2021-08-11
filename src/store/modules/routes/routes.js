@@ -113,6 +113,10 @@ const mutations = {
       {
         name: "notification.status.order",
         link: "/notification"
+      },
+      {
+        name: "get.chat",
+        link: "/getChat/{orderId}"
       }
     ];
   }

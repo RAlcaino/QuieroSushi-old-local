@@ -12,51 +12,47 @@
           <q-icon
             style="margin-right:3px;padding-bottom:4px;"
             size="24px"
-            name="contact_support"
+            name="support_agent"
           />
-          ¿Cual es el estado del pedido?
+          Servicio al cliente
         </div>
+        <q-space />
+        <q-btn
+          icon="close"
+          color="white"
+          flat
+          round
+          dense
+          @click="open = false"
+        />
       </q-card-section>
 
       <q-card-section
+        id="chat"
         v-if="data !== null"
-        style="height: 450px; overflow-y: auto;"
+        style="overflow-y: auto;"
+        :style="chatHeight"
       >
         <q-list>
-          <q-item>
-            <q-item-section avatar top>
-              <q-icon name="message" color="primary" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label><strong>Último Mensaje</strong></q-item-label>
-              <q-item-label>{{ data.mensaje }}</q-item-label>
-            </q-item-section>
-          </q-item>
           <q-item style="margin-top: 10px;">
             <q-item-section avatar top>
-              <q-icon name="help_center" color="primary" />
+              <q-icon name="person" color="primary" />
             </q-item-section>
-            <q-item-section>
-              <q-item-label><strong>Respuesta</strong></q-item-label>
-              <div class="q-pa-md" style="display: flex;">
-                <q-input
-                  v-model="text"
-                  dense
-                  outlined
-                  rounded
-                  autogrow
-                  style="width:80%;margin-right:5px;"
-                />
-                <q-btn
-                  color="green"
-                  round
-                  :disable="validation"
-                  size="sm"
-                  @click="notify()"
-                  style="width: 35px; height:35px; margin-top: 2px;"
-                >
-                  <q-icon size="20px" name="send" />
-                </q-btn>
+            <q-item-section v-if="customerDataAvailable">
+              <q-item-label
+                ><strong>Cliente: </strong
+                >{{ data.client.nombre }}</q-item-label
+              >
+              <div style="margin-top: 15px;">
+                <p>
+                  <strong>Telefono (+56):</strong> {{ data.client.telefono }}
+                </p>
+                <p><strong>Tipo de venta:</strong> {{ data.type }}</p>
+                <p v-if="data.type !== 'despacho'">
+                  <strong>Direccion:</strong> {{ data.address[0].direccion }}.
+                  Dpto/Ubicacion: {{ data.address[0].direccion2 }}.
+                  {{ data.address[0].comuna }}
+                </p>
               </div>
             </q-item-section>
           </q-item>
@@ -68,7 +64,7 @@
               <q-item-label><strong>Chat</strong></q-item-label>
               <div style="width: 100%; max-width: 400px">
                 <q-chat-message
-                  v-for="msg in messages"
+                  v-for="msg in data.chats"
                   :key="msg.id"
                   :name="msg.origen"
                   :avatar="avatarMsg(msg.origen)"
@@ -81,22 +77,50 @@
           </q-item>
         </q-list>
       </q-card-section>
+      <q-card-section v-else>
+        <div
+          style="margin-top:50px"
+          class="fit column wrap justify-center items-center content-center"
+        >
+          <img
+            src="~/assets/maki-roll.gif"
+            alt="sad"
+            width="130"
+            style="border-radius:100%"
+          />
+        </div>
+      </q-card-section>
 
-      <!--<q-card-actions align="right" style="height: 20%;">
-        <q-btn
-          rounded
-          :disable="validation"
-          color="green"
-          label="Notificar"
-          style="font-size: 11px !important"
-          @click="notify()"
-        />
-      </q-card-actions>-->
+      <q-card-actions style="height: 20%; width: 100%; display:block;">
+        <div class="q-pa-md" style="display: flex;">
+          <q-input
+            v-model="text"
+            dense
+            outlined
+            :maxlength="100"
+            counter
+            rounded
+            autogrow
+            style="width:100%;margin-right:5px;"
+          />
+          <q-btn
+            color="green"
+            round
+            :disable="validation"
+            size="sm"
+            @click="notify()"
+            style="width: 35px; height:35px; margin-top: 3px;"
+          >
+            <q-icon size="20px" name="send" />
+          </q-btn>
+        </div>
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script>
+import $ from "jquery";
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   computed: {
@@ -106,6 +130,23 @@ export default {
       } else {
         return false;
       }
+    },
+    customerDataAvailable() {
+      return (
+        this.data.client !== undefined &&
+        this.data.type !== undefined &&
+        this.data.address !== undefined
+      );
+    },
+    chatHeight() {
+      if (this.data.chats.length > 2) {
+        return {
+          height: "450px"
+        };
+      }
+      return {
+        height: "300px"
+      };
     }
   },
   data() {
@@ -128,13 +169,41 @@ export default {
           mensaje: "Salio hace 20 minutos",
           timestamp: "2021-08-10 19:45:12"
         },
+        {
+          id: 8,
+          id_venta: 2,
+          origen: "SAC",
+          mensaje: "Que pasa con la orden?",
+          timestamp: "2021-08-10 19:45:12"
+        },
+        {
+          id: 9,
+          id_venta: 2,
+          origen: "Local",
+          mensaje: "Salio hace 20 minutos",
+          timestamp: "2021-08-10 19:45:12"
+        },
+        {
+          id: 10,
+          id_venta: 2,
+          origen: "SAC",
+          mensaje: "Que pasa con la orden?",
+          timestamp: "2021-08-10 19:45:12"
+        },
+        {
+          id: 11,
+          id_venta: 2,
+          origen: "Local",
+          mensaje: "Salio hace 20 minutos",
+          timestamp: "2021-08-10 19:45:12"
+        }
       ]
     };
   },
-  created() {
+  mounted() {
     this.bus.$on("modal-status-order-?", data => {
       this.open = true;
-      this.data = { ...data };
+      this.init(data);
     });
   },
   methods: {
@@ -170,6 +239,35 @@ export default {
     },
     avatarMsg(origen) {
       return origen === "Local" ? "img/store.png" : "img/sca.png";
+    },
+    init(data) {
+      var url = this.$store.getters["routes/getRoute"]("get.chat", {
+        orderId: data.id_venta
+      });
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.data = { ...data, ...response.data.result };
+            $(document).ready(function() {
+              /*var t = document.getElementById("chat");
+              t.scrollTop=t.scrollHeight;*/
+              $("#chat").animate(
+                { scrollTop: $("#chat").prop("scrollHeight") },
+                1000
+              );
+            });
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     }
   }
 };
