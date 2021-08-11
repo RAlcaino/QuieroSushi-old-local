@@ -178,7 +178,7 @@
             <q-btn
               rounded
               size="sm"
-              color="yellow"
+              color="amber-9"
               style="font-size:10px; margin-right:5px"
               @click="openChat(item)"
             >
