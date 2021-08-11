@@ -95,7 +95,9 @@
               </div>
             </div>
           </q-card-section>
-          <q-card-section style="display:flex; flex-direction:row; justify-content: space-between;">
+          <q-card-section
+            style="display:flex; flex-direction:row; justify-content: space-between;"
+          >
             <div class="user-info">
               <p style="margin:0; font-weight:bold">
                 {{ item.payDetail.user }}
@@ -104,11 +106,14 @@
                 {{ item.payDetail.userPhone }}
               </p>
               <p style="margin:0;font-family:'Roboto'">
-                      {{ item.payDetail.address.trim()}}. 
-                      <template v-if="item.payDetail.address2!=''">
-                      <span v-if="item.payDetail.address2.search('dpto')==-1">Dpto/Ubicacion:</span> {{item.payDetail.address2.trim()}}. 
-                      </template>
-                      {{item.payDetail.userCommune.trim()}}
+                {{ item.payDetail.address.trim() }}.
+                <template v-if="item.payDetail.address2 != ''">
+                  <span v-if="item.payDetail.address2.search('dpto') == -1"
+                    >Dpto/Ubicacion:</span
+                  >
+                  {{ item.payDetail.address2.trim() }}.
+                </template>
+                {{ item.payDetail.userCommune.trim() }}
               </p>
             </div>
             <div class="user-payDetail">
@@ -169,6 +174,15 @@
             >
               Anular
             </q-btn>
+            <q-btn
+              rounded
+              size="sm"
+              color="orange-10"
+              style="font-size:10px; margin-right:5px"
+              @click="openChat(item)"
+            >
+              SAC
+            </q-btn>
           </q-card-actions>
         </q-card>
       </div>
@@ -197,19 +211,19 @@ export default {
     BaseMoreComponent,
     MoreDetails,
     TheConfirm,
-    TheCancel
+    TheCancel,
   },
   created() {
     this.flag = this.refresh;
     this.searching = this.refresh;
     this.bus.$on("reset-page", () => {
-      if(this.page!==1){
+      if (this.page !== 1) {
         this.flag = true;
         this.searching = true;
         setTimeout(() => {
           this.flag = false;
           this.searching = false;
-        },500);
+        }, 500);
       }
       this.page = 1;
     });
@@ -258,6 +272,12 @@ export default {
     },
     callEvent(val) {
       this.bus.$emit("scroll-up");
+    },
+    openChat(row) {
+      var data = {
+        id_venta: row.id
+      };
+      this.bus.$emit("modal-status-order-?", data);
     }
   }
 };
@@ -280,7 +300,7 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
-.user-info{
+.user-info {
   width: auto;
 }
 .user-payDetail {

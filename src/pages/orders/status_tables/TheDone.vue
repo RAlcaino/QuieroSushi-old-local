@@ -161,6 +161,15 @@
             >
               Detalle
             </q-btn>
+            <q-btn
+              rounded
+              size="sm"
+              color="yellow"
+              style="font-size:10px; margin-right:5px"
+              @click="openChat(item)"
+            >
+              SAC
+            </q-btn>
           </q-card-actions>
         </q-card>
       </div>
@@ -186,7 +195,7 @@ export default {
   inject: ["formatNumber", "capitalize"],
   components: {
     BaseMoreComponent,
-    MoreDetails
+    MoreDetails,
   },
   created() {
     this.bus.$on("reset-page", () => {
@@ -239,6 +248,12 @@ export default {
     },
     callEvent(val) {
       this.bus.$emit("scroll-up");
+    },
+    openChat(row) {
+      var data = {
+        id_venta: row.id
+      };
+      this.bus.$emit("modal-status-order-?", data);
     }
   }
 };

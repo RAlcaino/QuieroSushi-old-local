@@ -17,14 +17,7 @@
           Servicio al cliente
         </div>
         <q-space />
-        <q-btn
-          icon="close"
-          color="white"
-          flat
-          round
-          dense
-          @click="open = false"
-        />
+        <q-btn icon="close" color="white" flat round dense @click="close()" />
       </q-card-section>
 
       <q-card-section
@@ -62,7 +55,10 @@
             </q-item-section>
             <q-item-section>
               <q-item-label><strong>Chat</strong></q-item-label>
-              <div style="width: 100%; max-width: 400px">
+              <div
+                style="width: 100%; max-width: 400px"
+                v-if="data.chats.length !== 0"
+              >
                 <q-chat-message
                   v-for="msg in data.chats"
                   :key="msg.id"
@@ -72,6 +68,12 @@
                   :sent="msg.origen === 'Local' ? true : false"
                   :stamp="msg.timestamp"
                 />
+              </div>
+              <div v-else class="center-div">
+                <img src="~/assets/icons8-sad.gif" alt="sad" width="80" />
+                <p style="font-size:16px; font-weight:bold;text-align:center">
+                  No hay mensajes
+                </p>
               </div>
             </q-item-section>
           </q-item>
@@ -203,6 +205,7 @@ export default {
   mounted() {
     this.bus.$on("modal-status-order-?", data => {
       this.open = true;
+      console.log(data.length);
       this.init(data);
     });
   },
@@ -223,7 +226,7 @@ export default {
         })
         .then(response => {
           if (response.data.status === "success") {
-            this.open = false;
+            this.close();
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -238,7 +241,9 @@ export default {
       }
     },
     avatarMsg(origen) {
-      return origen === "Local" ? require("src/assets/store.png") : require("src/assets/sca.png");
+      return origen === "Local"
+        ? require("src/assets/store.png")
+        : require("src/assets/sca.png");
     },
     init(data) {
       var url = this.$store.getters["routes/getRoute"]("get.chat", {
@@ -268,9 +273,20 @@ export default {
         .catch(error => {
           this.errorHandling(error);
         });
+    },
+    close() {
+      this.open = false;
+      this.data = null;
     }
   }
 };
 </script>
 
-<style></style>
+<style>
+.center-div {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+</style>
