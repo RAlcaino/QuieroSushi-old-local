@@ -238,7 +238,7 @@ export default {
       }
     },
     avatarMsg(origen) {
-      return origen === "Local" ? "img/store.png" : "img/sca.png";
+      return origen === "Local" ? require("src/assets/store.png") : require("src/assets/sca.png");
     },
     init(data) {
       var url = this.$store.getters["routes/getRoute"]("get.chat", {
