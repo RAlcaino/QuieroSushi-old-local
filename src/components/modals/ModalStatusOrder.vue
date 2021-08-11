@@ -277,6 +277,7 @@ export default {
     close() {
       this.open = false;
       this.data = null;
+      this.text = null;
     }
   }
 };
