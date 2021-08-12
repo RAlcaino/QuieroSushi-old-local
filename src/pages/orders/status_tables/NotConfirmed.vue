@@ -144,45 +144,52 @@
             </div>
           </q-card-section>
 
-          <q-card-actions
-            class="fit row no-wrap justify-center items-center content-center"
-          >
-            <q-btn
-              rounded
-              size="sm"
-              color="green"
-              style="font-size:10px"
-              @click="confirmDialog(item)"
+          <q-card-actions>
+            <div
+              class="fit row no-wrap justify-center items-center content-center"
             >
-              Confirmar
-            </q-btn>
-            <q-btn
-              rounded
-              size="sm"
-              color="blue"
-              style="font-size:10px"
-              @click="moreDetailsDialog(item)"
+              <q-btn
+                rounded
+                size="sm"
+                color="blue"
+                style="font-size:10.5px; margin-right:5px"
+                @click="moreDetailsDialog(item)"
+              >
+                Detalle
+              </q-btn>
+              <q-btn
+                rounded
+                size="sm"
+                color="primary"
+                style="font-size:10.5px; margin-right:5px"
+                @click="cancelDialog(item)"
+              >
+                Anular
+              </q-btn>
+              <q-btn
+                rounded
+                size="sm"
+                color="green"
+                style="font-size:10.5px"
+                @click="confirmDialog(item)"
+              >
+                Confirmar
+              </q-btn>
+            </div>
+            <div
+              class="fit row wrap justify-center items-center content-center"
+              style="margin-top: 5px;"
             >
-              Detalle
-            </q-btn>
-            <q-btn
-              rounded
-              size="sm"
-              color="primary"
-              style="font-size:10px; margin-right:5px"
-              @click="cancelDialog(item)"
-            >
-              Anular
-            </q-btn>
-            <q-btn
-              rounded
-              size="sm"
-              color="amber-9"
-              style="font-size:10px; margin-right:5px"
-              @click="openChat(item)"
-            >
-              SAC
-            </q-btn>
+              <q-btn
+                rounded
+                size="sm"
+                color="amber-9"
+                style="font-size:10.5px; margin-right:5px"
+                @click="openChat(item)"
+              >
+                Servicio al cliente
+              </q-btn>
+            </div>
           </q-card-actions>
         </q-card>
       </div>
@@ -211,7 +218,7 @@ export default {
     BaseMoreComponent,
     MoreDetails,
     TheConfirm,
-    TheCancel,
+    TheCancel
   },
   created() {
     this.flag = this.refresh;

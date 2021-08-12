@@ -41,7 +41,7 @@
                   <strong>Telefono (+56):</strong> {{ data.client.telefono }}
                 </p>
                 <p><strong>Tipo de venta:</strong> {{ data.type }}</p>
-                <p v-if="data.type !== 'despacho'">
+                <p v-if="data.type !== 'retiro' && data.address.length !== 0">
                   <strong>Direccion:</strong> {{ data.address[0].direccion }}.
                   Dpto/Ubicacion: {{ data.address[0].direccion2 }}.
                   {{ data.address[0].comuna }}
@@ -113,7 +113,8 @@
             @click="notify()"
             style="width: 35px; height:35px; margin-top: 3px;"
           >
-            <q-icon size="20px" name="send" />
+            <q-icon v-if="!sendingMsg" size="20px" name="send" />
+            <q-spinner-hourglass v-if="sendingMsg" size="20px" color="white" />
           </q-btn>
         </div>
       </q-card-actions>
@@ -156,6 +157,7 @@ export default {
       open: false,
       data: null,
       text: null,
+      sendingMsg: false,
       messages: [
         {
           id: 6,
@@ -205,12 +207,12 @@ export default {
   mounted() {
     this.bus.$on("modal-status-order-?", data => {
       this.open = true;
-      console.log(data.length);
       this.init(data);
     });
   },
   methods: {
     notify() {
+      this.sendingMsg = true;
       var data = {
         orderId: +this.data.id_venta,
         message: this.text
@@ -278,6 +280,7 @@ export default {
       this.open = false;
       this.data = null;
       this.text = null;
+      this.sendingMsg = false;
     }
   }
 };

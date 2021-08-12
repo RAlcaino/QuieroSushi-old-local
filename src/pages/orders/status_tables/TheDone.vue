@@ -157,7 +157,7 @@
               rounded
               size="sm"
               color="blue"
-              style="font-size:10px"
+              style="font-size:10.5px"
             >
               Detalle
             </q-btn>
@@ -165,10 +165,10 @@
               rounded
               size="sm"
               color="amber-9"
-              style="font-size:10px; margin-right:5px"
+              style="font-size:10.5px; margin-right:5px"
               @click="openChat(item)"
             >
-              SAC
+              Servicio al cliente
             </q-btn>
           </q-card-actions>
         </q-card>
