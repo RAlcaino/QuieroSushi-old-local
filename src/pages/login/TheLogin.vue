@@ -83,10 +83,9 @@ export default {
     localStorage.clear();
   },
   mounted() {
-    var vue = this;
-    window.addEventListener("keyup", function (event) {
-      if (event.keyCode === 13) {
-        vue.login();
+    window.addEventListener("keyup", event => {
+      if (event.keyCode === 13 && this.$router.currentRoute.fullPath==="/login") {
+        this.login();
       }
     });
   },
@@ -95,10 +94,10 @@ export default {
       html: null,
       user: {
         email: "",
-        password: "",
+        password: ""
       },
       prod: null,
-      dialog: null,
+      dialog: null
     };
   },
   methods: {
@@ -107,33 +106,33 @@ export default {
         {
           label: "Mis Locales",
           link: "/locales",
-          icon: "store",
+          icon: "store"
         },
         {
           label: "Home",
           link: "/home",
-          icon: "dashboard",
+          icon: "dashboard"
         },
         {
           label: "Pedidos",
           link: "/pedidos",
-          icon: "delivery_dining",
+          icon: "delivery_dining"
         },
         {
           label: "Cupones",
           link: "/cupones",
-          icon: "confirmation_number",
+          icon: "confirmation_number"
         },
         {
           label: "Usuarios",
           link: "/administrar-usuarios",
-          icon: "group",
+          icon: "group"
         },
         {
           label: "Ventas",
           link: "/ventas",
-          icon: "paid",
-        },
+          icon: "paid"
+        }
       ];
       if (this.validate(this.user)) {
         return;
@@ -228,7 +227,7 @@ export default {
           ];
           let data = {
             locals: locals,
-            availableMenuOptions: availableMenuOptions,
+            availableMenuOptions: availableMenuOptions
           };
           this.bus.$emit("login", data);
           this.$q.loadingBar.stop();
@@ -240,13 +239,13 @@ export default {
         var url = this.$store.getters["routes/getRoute"]("login");
         this.$axios
           .post(url, this.user)
-          .then((response) => {
+          .then(response => {
             if (response.data.status === "success") {
               //console.log(response.data.result);
               ls.set("token", response.data.result.token);
               let data = {
                 locals: response.data.result.locals,
-                availableMenuOptions: response.data.result.availableMenuOptions,
+                availableMenuOptions: response.data.result.availableMenuOptions
                 //availableMenuOptions: availableMenuOptions
               };
               this.bus.$emit("login", data);
@@ -258,7 +257,7 @@ export default {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
-          .catch((error) => {
+          .catch(error => {
             this.hideLoading();
             this.errorHandling(error);
           });
@@ -302,10 +301,10 @@ export default {
         style: { borderRadius: "20px" },
         progress: {
           spinner: QSpinnerGears,
-          color: "primary",
+          color: "primary"
         },
         persistent: true, // we want the user to not be able to close it
-        ok: false, // we want the user to not be able to close it
+        ok: false // we want the user to not be able to close it
       });
     },
     hideCustom() {
@@ -315,7 +314,7 @@ export default {
       this.$q.loading.show({
         spinner: QSpinnerGears,
         spinnerColor: "white",
-        message: "Cargando...",
+        message: "Cargando..."
       });
     },
     hideLoading() {
@@ -324,15 +323,15 @@ export default {
     async install() {
       var dialog = this.$store.getters["auth/getInstallPromptEvent"];
       dialog.prompt();
-      dialog.userChoice.then((choiceResult) => {
+      dialog.userChoice.then(choiceResult => {
         if (choiceResult.outcome === "accepted") {
           console.log("User accepted the A2HS prompt");
         } else {
           console.log("User dismissed the A2HS prompt");
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
