@@ -683,7 +683,7 @@ export default {
           this.bus.$emit("modal-block", data);
         } else if (data.tipo === "Actualizacion") {
           this.bus.$emit("modal-sync-page", data);
-        } else if (data.tipo === "notificacion-local") {
+        } else if (data.tipo === "conversacion-local") {
           this.bus.$emit("modal-status-order-?", data);
         }
       });

@@ -99,11 +99,11 @@
             v-model="text"
             dense
             outlined
-            :maxlength="100"
+            :maxlength="60"
             counter
             rounded
-            autogrow
-            style="width:100%;margin-right:5px;"
+            @keyup.enter.native="notify()"
+            style="width:100%;margin-right:5px; height: 60px;"
           />
           <q-btn
             color="green"
@@ -130,9 +130,13 @@ export default {
     validation() {
       if (this.text === null || this.text.trim().length === 0) {
         return true;
-      } else {
-        return false;
       }
+
+      if (this.sendingMsg) {
+        return true;
+      }
+
+      return false;
     },
     customerDataAvailable() {
       return (
@@ -207,11 +211,15 @@ export default {
   mounted() {
     this.bus.$on("modal-status-order-?", data => {
       this.open = true;
-      this.init(data);
+      this.text = null;
+      this.init(data, "INIT");
     });
   },
   methods: {
     notify() {
+      if (this.validation) {
+        return;
+      }
       this.sendingMsg = true;
       var data = {
         orderId: +this.data.id_venta,
@@ -228,7 +236,7 @@ export default {
         })
         .then(response => {
           if (response.data.status === "success") {
-            this.close();
+            this.init(undefined, "REFRESH");
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -247,9 +255,9 @@ export default {
         ? require("src/assets/store.png")
         : require("src/assets/sca.png");
     },
-    init(data) {
+    init(data, action) {
       var url = this.$store.getters["routes/getRoute"]("get.chat", {
-        orderId: data.id_venta
+        orderId: data === undefined ? this.data.id_venta : data.id_venta
       });
       this.$axios
         .get(url, {
@@ -259,7 +267,14 @@ export default {
         })
         .then(response => {
           if (response.data.status === "success") {
-            this.data = { ...data, ...response.data.result };
+            if (action === "INIT") {
+              this.data = { ...data, ...response.data.result };
+            }
+            if (action === "REFRESH") {
+              this.data.chats = [...response.data.result.chats];
+              this.sendingMsg = false;
+              this.text = null;
+            }
             $(document).ready(function() {
               /*var t = document.getElementById("chat");
               t.scrollTop=t.scrollHeight;*/
