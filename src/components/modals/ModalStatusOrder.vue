@@ -71,7 +71,9 @@
               </div>
               <div v-else class="center-div">
                 <img src="~/assets/icons8-sad.gif" alt="sad" width="80" />
-                <p style="font-size:16px; font-weight:bold;text-align:center">
+                <p
+                  style="font-size:14px; font-weight:bold;text-align:center;margin-top:3px;"
+                >
                   No hay mensajes
                 </p>
               </div>
@@ -90,6 +92,12 @@
             width="130"
             style="border-radius:100%"
           />
+          <p
+            v-if="newChat"
+            style="font-size:14px; font-weight:bold;text-align:center; margin-top: 3px;"
+          >
+            Nuevo mensaje en otro pedido...
+          </p>
         </div>
       </q-card-section>
 
@@ -102,7 +110,7 @@
             :maxlength="60"
             counter
             rounded
-            @keyup.enter.native="notify()"
+            @keyup.enter="notify()"
             style="width:100%;margin-right:5px; height: 60px;"
           />
           <q-btn
@@ -162,6 +170,7 @@ export default {
       data: null,
       text: null,
       sendingMsg: false,
+      newChat: false,
       messages: [
         {
           id: 6,
@@ -212,6 +221,8 @@ export default {
     this.bus.$on("modal-status-order-?", data => {
       this.open = true;
       this.text = null;
+      this.sendingMsg = false;
+      this.newChat = false;
       this.init(data, "INIT");
     });
   },
@@ -256,6 +267,14 @@ export default {
         : require("src/assets/sca.png");
     },
     init(data, action) {
+      if (this.data !== null && data !== undefined) {
+        if (+this.data.id_venta !== +data.id_venta) {
+          this.data = null;
+          this.newChat = true;
+        } else {
+          action = "REFRESH";
+        }
+      }
       var url = this.$store.getters["routes/getRoute"]("get.chat", {
         orderId: data === undefined ? this.data.id_venta : data.id_venta
       });
@@ -268,21 +287,19 @@ export default {
         .then(response => {
           if (response.data.status === "success") {
             if (action === "INIT") {
-              this.data = { ...data, ...response.data.result };
+              setTimeout(() => {
+                this.data = { ...data, ...response.data.result };
+                this.moveDownChat();
+                this.newChat = false;
+              }, 1200);
             }
             if (action === "REFRESH") {
               this.data.chats = [...response.data.result.chats];
               this.sendingMsg = false;
               this.text = null;
+              this.moveDownChat();
+              this.newChat = false;
             }
-            $(document).ready(function() {
-              /*var t = document.getElementById("chat");
-              t.scrollTop=t.scrollHeight;*/
-              $("#chat").animate(
-                { scrollTop: $("#chat").prop("scrollHeight") },
-                1000
-              );
-            });
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -296,6 +313,16 @@ export default {
       this.data = null;
       this.text = null;
       this.sendingMsg = false;
+    },
+    moveDownChat() {
+      $(document).ready(function() {
+        /*var t = document.getElementById("chat");
+              t.scrollTop=t.scrollHeight;*/
+        $("#chat").animate(
+          { scrollTop: $("#chat").prop("scrollHeight") },
+          1000
+        );
+      });
     }
   }
 };
