@@ -12,11 +12,11 @@ import $ from "jquery";
 export default {
   name: "App",
   created() {
-    import(`quasar/lang/es`).then(language =>     
-    {this.$q.lang.set(language.default)
-    })
+    import(`quasar/lang/es`).then(language => {
+      this.$q.lang.set(language.default);
+    });
     this.$store.commit("routes/setLinks");
-	  this.$store.commit("mode/setVersion");
+    this.$store.commit("mode/setVersion");
     var vue = this;
     this.bus.$on("scroll-up", () => {
       $("html, body").animate({ scrollTop: 0 }, "slow");
@@ -171,9 +171,23 @@ export default {
           this.bus.$emit("logout");
         }
       } else {
-        this.showNotification(/*error.message*/"Ha ocurrido un error con el servidor", "negative", "error");
+        this.showNotification(
+          /*error.message*/ "Ha ocurrido un error con el servidor",
+          "negative",
+          "error"
+        );
       }
     }
   }
 };
 </script>
+
+<style>
+.q-field--outlined .q-field__control:before {
+  border: 1px solid rgba(0, 0, 0, 0.45);
+}
+
+.q-field__counter {
+  color: #000;
+}
+</style>

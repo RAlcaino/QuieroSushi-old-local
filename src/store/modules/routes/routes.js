@@ -12,7 +12,7 @@ const mutations = {
       },
       {
         name: "orders",
-        link: "/pedidos/{userId}"
+        link: "/pedidos/{userId}/{filter}"
       },
       {
         name: "order.confirm",
@@ -84,7 +84,7 @@ const mutations = {
       },
       {
         name: "orders.history",
-        link: "/history?page={page}"
+        link: "/history/{filter}?page={page}"
       },
       {
         name: "gp.users",
@@ -104,7 +104,7 @@ const mutations = {
       },
       {
         name: "orders.history.download",
-        link: "/history/download"
+        link: "/history/download/{filter}"
       },
       {
         name: "history.newOrder.pusher",

@@ -2247,7 +2247,8 @@ export default {
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("orders", {
-          userId: this.$store.getters["auth/getDataUser"].id
+          userId: this.$store.getters["auth/getDataUser"].id,
+          filter: "Todos"
         });
         this.$axios
           .get(url, {

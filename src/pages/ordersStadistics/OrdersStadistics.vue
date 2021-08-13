@@ -21,7 +21,7 @@
           "
         >
           <div>
-            <div class="c-q-select-responsive" v-if="locals.length > 1">
+            <div class="firts-options" v-if="locals.length > 1">
               <q-select
                 ref="select"
                 rounded
@@ -34,7 +34,7 @@
                 @input="change"
                 label="Locales"
                 @popup-hide="allLocals()"
-                style="margin-bottom: 10px; width: 350px"
+                style="margin-bottom: 10px;width: 43%; margin-right:5px;"
                 :virtual-scroll-sticky-size-start="80"
               >
                 <template v-slot:prepend>
@@ -86,7 +86,23 @@
                     </q-item-section>
                   </q-item>
                 </template>
+                <template v-slot:selected-item="scope">
+                  <span v-if="scope.opt.label.length > 9"
+                    >{{ scope.opt.label.substring(0, 9) }}...</span
+                  >
+                  <span v-else>{{ scope.opt.label }}</span>
+                </template>
               </q-select>
+              <q-select
+                rounded
+                v-model="currentStatus"
+                :options="statusOptions"
+                :options-dense="true"
+                outlined
+                dense
+                label="Estado"
+                style="margin-bottom: 10px; width: 45%; margin-left:5px;"
+              />
             </div>
             <form autocomplete="off" style="display: flex; flex-direction: row">
               <q-input
@@ -168,19 +184,6 @@
               <p style="text-align: right; font-size: 16px">
                 <strong>Total Ventas:</strong> ${{ formatNumber(total) }}
               </p>
-              <q-input
-                dense
-                debounce="300"
-                v-model="filter"
-                type="text"
-                rounded
-                outlined
-                placeholder="Buscar"
-              >
-                <template v-slot:append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
             </form>
           </div>
         </q-card-section>
@@ -212,17 +215,20 @@
         </template>
 
         <template v-slot:top-right>
-          <q-select
-            style="margin-right: 10px;"
-            rounded
-            v-model="currentStatus"
-            :options="statusOptions"
-            :options-dense="true"
-            outlined
-            @input="getHistory()"
+          <q-input
             dense
-            label="Estado"
-          />
+            debounce="300"
+            v-model="filter"
+            type="text"
+            rounded
+            outlined
+            placeholder="Buscar"
+            style="margin-right: 10px;"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
           <q-select
             style="width: 90px"
             rounded
@@ -533,7 +539,8 @@ export default {
     changePage() {
       this.loadingPage = true;
       var url = this.$store.getters["routes/getRoute"]("orders.history", {
-        page: this.pagination.currentPage
+        page: this.pagination.currentPage,
+        filter: this.currentStatus
       });
       this.$axios
         .post(
@@ -545,8 +552,7 @@ export default {
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null,
-            status: this.currentStatus
+                : null
           },
           {
             headers: {
@@ -637,29 +643,23 @@ export default {
         cartStatus: null
       };
     },
-    getHistory(dates) {
+    getHistory() {
       this.loading();
       var url = this.$store.getters["routes/getRoute"]("orders.history", {
-        page: 1
+        page: 1,
+        filter: this.currentStatus
       });
       this.$axios
         .post(
           url,
           {
-            startDate:
-              dates === undefined
-                ? this.startDate.replaceAll("/", "-") + " " + "00:00:00"
-                : dates.startDate,
-            finalDate:
-              dates === undefined
-                ? this.finalDate.replaceAll("/", "-") + " " + "23:59:59"
-                : dates.finalDate,
+            startDate: this.startDate.replaceAll("/", "-") + " " + "00:00:00",
+            finalDate: this.finalDate.replaceAll("/", "-") + " " + "23:59:59",
             localId: this.localSelected.value,
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null,
-            status: this.currentStatus
+                : null
           },
           {
             headers: {
@@ -676,11 +676,11 @@ export default {
             this.count = this.meta.meta.total;
             this.mapResponse(response.data.result);
             this.initSelectPages();
-            this.stopLoading();
           } else {
-            this.stopLoading();
             this.showNotification(response.data.message, "negative", "error");
           }
+
+          this.stopLoading();
         })
         .catch(error => {
           this.stopLoading();
@@ -736,7 +736,10 @@ export default {
     download() {
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"](
-        "orders.history.download"
+        "orders.history.download",
+        {
+          filter: this.currentStatus
+        }
       );
       this.$axios
         .post(
@@ -748,8 +751,7 @@ export default {
             idUser:
               this.localSelected.value === null
                 ? this.$store.getters["auth/getDataUser"].id
-                : null,
-            status: this.currentStatus
+                : null
           },
           {
             headers: {
@@ -765,10 +767,12 @@ export default {
           link.href = url;
           link.setAttribute(
             "download",
-            `${this.startDate.replaceAll("/", "-")}-${this.finalDate.replaceAll(
+            `${this.startDate.replaceAll(
               "/",
               "-"
-            )}-${this.localSelected.label}.xlsx`
+            )}-AL-${this.finalDate.replaceAll("/", "-")}-${
+              this.localSelected.label
+            }-${this.currentStatus}.xlsx`
           );
           document.body.appendChild(link);
           link.click();
@@ -793,8 +797,6 @@ export default {
 
         var diff = (end - start) / (1000 * 60 * 60 * 24);
 
-        console.log(diff);
-
         diff > 31 ? (this.more31days = true) : (this.more31days = false);
       }
     },
@@ -802,20 +804,17 @@ export default {
       let date = new Date();
       let dateString =
         date.getFullYear() +
-        "-" +
+        "/" +
         (date.getMonth() + 1 < 10
           ? "0" + (date.getMonth() + 1)
           : date.getMonth() + 1) +
-        "-" +
+        "/" +
         (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
         " ";
 
-      let dates = {
-        startDate: dateString + " " + "00:00:00",
-        finalDate: dateString + " " + "23:59:59"
-      };
+      this.startDate = this.finalDate = dateString;
 
-      this.getHistory(dates);
+      this.getHistory();
     }
   }
 };
@@ -828,6 +827,10 @@ export default {
 }
 .input-schedule {
   width: 25%;
+}
+.firts-options {
+  display: flex;
+  flex-direction: row;
 }
 @media screen and (max-width: 500px) {
   .input-schedule {
