@@ -91,7 +91,7 @@ export default {
     logout() {
       this.$store.commit("auth/resetDataUserSesion");
       localStorage.clear();
-      this.$router.push({ path: "/login" });
+      window.location.reload();
     },
     formatNumber(num) {
       if (!num || num == "NaN") return "0";

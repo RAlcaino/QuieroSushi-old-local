@@ -554,17 +554,17 @@ export default {
     });
     this.prod = this.$store.getters["mode/getMode"];
     this.channelName = "Private-qs-venta-";
-    this.channelNameBlock = "Private-notificacion-";
+    this.channelNameAlt = "Private-notificacion-";
 
     if (this.$store.getters["auth/getGodMode"]) {
       this.channelName += "-1";
-      this.channelNameBlock += "-1";
+      this.channelNameAlt += "-1";
     } else {
       this.channelName += this.$store.getters["auth/getDataUser"].id;
-      this.channelNameBlock += this.$store.getters["auth/getDataUser"].id;
+      this.channelNameAlt += this.$store.getters["auth/getDataUser"].id;
     }
     this.privateChannel = this.Echo.channel(this.channelName);
-    this.privateChannelBlock = this.Echo2.channel(this.channelNameBlock);
+    this.privateChannelAlt = this.Echo2.channel(this.channelNameAlt);
     this.listenEvent();
 
     if (this.$store.getters["auth/getAuthenticated"]) {
@@ -600,9 +600,9 @@ export default {
       responsiveMobile: false,
       prod: null,
       privateChannel: null,
-      privateChannelBlock: null,
+      privateChannelAlt: null,
       channelName: "",
-      channelNameBlock: "",
+      channelNameAlt: "",
       modalOpen: false,
       flag: 1,
       currentHour: null,
@@ -645,12 +645,15 @@ export default {
       }
     },
     logout() {
-      this.bus.$emit("logout");
+      this.leftDrawerOpen = false;
       this.optionsAvailable = [];
       this.privateChannel = this.Echo.leaveChannel(this.channelName);
-      this.privateChannelBlock = this.Echo2.leaveChannel(this.channelNameBlock);
+      this.privateChannelAlt = this.Echo2.leaveChannel(this.channelNameAlt);
       this.channelName = "";
-      this.channelNameBlock = "";
+      this.channelNameAlt = "";
+      setTimeout(() => {
+        this.bus.$emit("logout");
+      },500);
     },
     modeResponsive() {
       var responsive = window.matchMedia("(max-width: 500px)");
@@ -678,7 +681,7 @@ export default {
           this.bus.$emit("new-order", data);
         }
       });
-      this.privateChannelBlock.listen(".Notificacion", data => {
+      this.privateChannelAlt.listen(".Notificacion", data => {
         if (data.tipo === "Bloqueo") {
           this.bus.$emit("modal-block", data);
         } else if (data.tipo === "Actualizacion") {
