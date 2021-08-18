@@ -18,7 +18,14 @@
       style="margin: 20px 0"
     >
       <div class="input-style-o">
-        <q-input dense rounded outlined label="Buscar" v-model="search" @focus="resetPage()" />
+        <q-input
+          dense
+          rounded
+          outlined
+          label="Buscar"
+          v-model="search"
+          @focus="resetPage()"
+        />
       </div>
       <div v-if="locals.length > 1">
         <q-select
@@ -111,17 +118,19 @@
             <not-confirmed
               :ordersNotConfirmed="getOrdersNotConfirmed"
               :refresh="refresh"
+              :sendWs="sendWs"
             ></not-confirmed>
           </q-tab-panel>
 
           <q-tab-panel name="confirmed" style="padding: 0; overflow:hidden">
             <the-confirmed
               :ordersConfirmed="getOrdersConfirmed"
+              :sendWs="sendWs"
             ></the-confirmed>
           </q-tab-panel>
 
           <q-tab-panel name="done" style="padding: 0; overflow:hidden">
-            <the-done :ordersDone="getOrdersDone"></the-done>
+            <the-done :ordersDone="getOrdersDone" :sendWs="sendWs"></the-done>
           </q-tab-panel>
         </q-tab-panels>
       </div>
@@ -135,7 +144,7 @@ import TheConfirmed from "./status_tables/TheConfirmed.vue";
 import TheDone from "./status_tables/TheDone.vue";
 
 export default {
-  props:["toAll"],
+  props: ["toAll"],
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   components: {
     NotConfirmed,
@@ -144,14 +153,14 @@ export default {
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
-    if(this.toAll){
+    if (this.toAll) {
       this.allOrders();
     }
     this.bus.$on("to-one-tab", () => {
       this.bus.$emit("scroll-up");
       this.tab = "not-confirmed";
       this.refresh = true;
-      this.search="";
+      this.search = "";
       this.allOrders();
       this.sync(false);
     });
@@ -169,10 +178,10 @@ export default {
   },
   computed: {
     getOrdersConfirmed() {
-      var vue=this;
+      var vue = this;
       if (this.search !== "") {
-        return this.ordersConfirmed.filter(function(item){
-          if(vue.conditionsToFilter(item,vue.search)){
+        return this.ordersConfirmed.filter(function(item) {
+          if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
         });
@@ -181,10 +190,10 @@ export default {
       }
     },
     getOrdersNotConfirmed() {
-      var vue=this;
+      var vue = this;
       if (this.search !== "") {
-        return this.ordersNotConfirmed.filter(function(item){
-          if(vue.conditionsToFilter(item,vue.search)){
+        return this.ordersNotConfirmed.filter(function(item) {
+          if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
         });
@@ -193,10 +202,10 @@ export default {
       }
     },
     getOrdersDone() {
-      var vue=this;
+      var vue = this;
       if (this.search !== "") {
-        return this.ordersDone.filter(function(item){
-          if(vue.conditionsToFilter(item,vue.search)){
+        return this.ordersDone.filter(function(item) {
+          if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
         });
@@ -2222,7 +2231,7 @@ export default {
         image: null,
         commune: null,
         name: null,
-        cartStatus:null
+        cartStatus: null
       }
     };
   },
@@ -2353,7 +2362,7 @@ export default {
           name: val.name,
           image: val.image,
           commune: val.commune,
-          cartStatus:val.cartStatus
+          cartStatus: val.cartStatus
         });
       }
     },
@@ -2362,7 +2371,7 @@ export default {
       this.localFilter = "";
     },
     allOrders() {
-      if(this.$refs.select!==undefined){
+      if (this.$refs.select !== undefined) {
         this.$refs.select.hidePopup();
       }
       this.data = this.originalData;
@@ -2375,7 +2384,7 @@ export default {
             ? "icons/favicon-128.png"
             : this.$store.getters["auth/getDataLocals"][0].image,
         commune: null,
-        cartStatus:null
+        cartStatus: null
       };
       this.local = this.localSelected;
       this.filters();
@@ -2384,26 +2393,49 @@ export default {
         name: this.localSelected.name,
         image: this.localSelected.image,
         commune: this.localSelected.commune,
-        cartStatus:this.localSelected.cartStatus
+        cartStatus: this.localSelected.cartStatus
       });
     },
-    conditionsToFilter(item,value){
-          if(item.id.toString().toLowerCase().indexOf(value) > -1 ||
-             item.payDetail.user.toString().toLowerCase().indexOf(value) > -1 ||
-             item.payDetail.userPhone.toString().toLowerCase().indexOf(value) > -1 ||
-             item.payDetail.pay.toString().toLowerCase().indexOf(value) > -1 ||
-             item.payDetail.address.toString().toLowerCase().indexOf(value) > -1 ||
-             item.local.name.toString().toLowerCase().indexOf(value) > -1 ||
-             item.local.commune.toString().toLowerCase().indexOf(value) > -1 ){
-            return true;
-          }
+    conditionsToFilter(item, value) {
+      if (
+        item.id
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.payDetail.user
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.payDetail.userPhone
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.payDetail.pay
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.payDetail.address
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.local.name
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.local.commune
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1
+      ) {
+        return true;
+      }
     },
-    resetPage(){
+    resetPage() {
       this.bus.$emit("reset-page");
     },
-    initLocals(){
+    initLocals() {
       var vue = this;
-      vue.locals=[];
+      vue.locals = [];
       var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
         let row = {
           value: item.id,
@@ -2411,10 +2443,10 @@ export default {
           image: item.image,
           commune: item.commune,
           name: item.name,
-          cartStatus:item.cartStatus
+          cartStatus: item.cartStatus
         };
-          vue.locals.push(row);
-          vue.locals.sort(function(a, b) {
+        vue.locals.push(row);
+        vue.locals.sort(function(a, b) {
           if (a.name > b.name) {
             return 1;
           }
@@ -2425,22 +2457,45 @@ export default {
           return 0;
         });
       });
-        this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-        this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
-        this.localSelected.commune = this.$store.getters[
-          "auth/getDataLocal"
-        ].commune;
-        this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
-        this.localSelected.cartStatus = this.$store.getters["auth/getDataLocal"].cartStatus;
+      this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+      this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
+      this.localSelected.commune = this.$store.getters[
+        "auth/getDataLocal"
+      ].commune;
+      this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
+      this.localSelected.cartStatus = this.$store.getters[
+        "auth/getDataLocal"
+      ].cartStatus;
 
-        if (this.localSelected.value !== -1) {
-          this.localSelected.label =
-            this.localSelected.name + ", " + this.localSelected.commune;
-        } else {
-          this.localSelected.label = this.localSelected.name;
-        }
-        this.local.value = this.localSelected.value;
-        this.local.label = this.localSelected.label;
+      if (this.localSelected.value !== -1) {
+        this.localSelected.label =
+          this.localSelected.name + ", " + this.localSelected.commune;
+      } else {
+        this.localSelected.label = this.localSelected.name;
+      }
+      this.local.value = this.localSelected.value;
+      this.local.label = this.localSelected.label;
+    },
+    sendWs(id) {
+      var url = this.$store.getters["routes/getRoute"]("send.ws");
+      this.$axios
+        .post(
+          url,
+          { orderId: id },
+          {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          }
+        )
+        .then(response => {
+          if (response.data.status !== "success") {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     }
   }
 };

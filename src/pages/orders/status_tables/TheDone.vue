@@ -191,11 +191,11 @@ import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
 
 export default {
-  props: ["ordersDone"],
+  props: ["ordersDone", "sendWs"],
   inject: ["formatNumber", "capitalize"],
   components: {
     BaseMoreComponent,
-    MoreDetails,
+    MoreDetails
   },
   created() {
     this.bus.$on("reset-page", () => {
@@ -253,6 +253,8 @@ export default {
       var data = {
         id_venta: row.id
       };
+
+      this.sendWs(row.id);
       this.bus.$emit("modal-status-order-?", data);
     }
   }

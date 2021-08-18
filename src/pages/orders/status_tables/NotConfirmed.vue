@@ -212,7 +212,7 @@ import TheConfirm from "./dialogs/TheConfirm.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
 
 export default {
-  props: ["ordersNotConfirmed", "refresh"],
+  props: ["ordersNotConfirmed", "refresh","sendWs"],
   inject: ["formatNumber", "capitalize"],
   components: {
     BaseMoreComponent,
@@ -284,6 +284,7 @@ export default {
       var data = {
         id_venta: row.id
       };
+      this.sendWs(row.id);
       this.bus.$emit("modal-status-order-?", data);
     }
   }

@@ -117,7 +117,12 @@ const mutations = {
       {
         name: "get.chat",
         link: "/getChat/{orderId}"
-      }
+      },
+      {
+        name: "send.ws",
+        link: "/sendWhatsApp"
+      },
+      
     ];
   }
 };
