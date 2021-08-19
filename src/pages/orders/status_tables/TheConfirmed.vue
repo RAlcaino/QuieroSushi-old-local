@@ -285,7 +285,7 @@ export default {
         id_venta: row.id
       };
 
-      this.sendWs(row.id);
+      //this.sendWs(row.id);
       this.bus.$emit("modal-status-order-?", data);
     }
   }
