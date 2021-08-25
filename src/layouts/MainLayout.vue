@@ -565,6 +565,8 @@ export default {
     }
     this.privateChannel = this.Echo.channel(this.channelName);
     this.privateChannelAlt = this.Echo2.channel(this.channelNameAlt);
+    this.privateChannelSync = this.Echo2.channel("Private-Notificacion");
+
     this.listenEvent();
 
     if (this.$store.getters["auth/getAuthenticated"]) {
@@ -601,6 +603,7 @@ export default {
       prod: null,
       privateChannel: null,
       privateChannelAlt: null,
+      privateChannelSync: null,
       channelName: "",
       channelNameAlt: "",
       modalOpen: false,
@@ -649,11 +652,12 @@ export default {
       this.optionsAvailable = [];
       this.privateChannel = this.Echo.leaveChannel(this.channelName);
       this.privateChannelAlt = this.Echo2.leaveChannel(this.channelNameAlt);
+      this.privateChannelSync = this.Echo2.leaveChannel("Private-Notificacion");
       this.channelName = "";
       this.channelNameAlt = "";
       setTimeout(() => {
         this.bus.$emit("logout");
-      },500);
+      }, 500);
     },
     modeResponsive() {
       var responsive = window.matchMedia("(max-width: 500px)");
@@ -684,11 +688,12 @@ export default {
       this.privateChannelAlt.listen(".Notificacion", data => {
         if (data.tipo === "Bloqueo") {
           this.bus.$emit("modal-block", data);
-        } else if (data.tipo === "Actualizacion") {
-          this.bus.$emit("modal-sync-page", data);
         } else if (data.tipo === "conversacion-local") {
           this.bus.$emit("modal-status-order-?", data);
         }
+      });
+      this.privateChannelSync.listen(".Notificacion", data => {
+        this.bus.$emit("modal-sync-page", data);
       });
     },
     async install() {

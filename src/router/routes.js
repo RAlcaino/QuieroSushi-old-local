@@ -24,7 +24,7 @@ const routes = [
         component: () => import("pages/dashboard/Dashboard.vue"),
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
-            if (accessTo("Home")) {
+            if (accessTo("/home")) {
               next();
             } else {
               next("/404");
@@ -41,7 +41,7 @@ const routes = [
         props: true,
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
-            if (accessTo("Pedidos")) {
+            if (accessTo("/pedidos")) {
               next();
             } else {
               next("/404");
@@ -57,7 +57,7 @@ const routes = [
         component: () => import("pages/coupons/TheCoupons.vue"),
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
-            if (accessTo("Cupones")) {
+            if (accessTo("/cupones")) {
               next();
             } else {
               next("/404");
@@ -86,7 +86,7 @@ const routes = [
         component: () => import("src/pages/local/MyLocal.vue"),
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
-            if (accessTo("Mis Locales")) {
+            if (accessTo("/locales")) {
               next();
             } else {
               next("/404");
@@ -102,7 +102,7 @@ const routes = [
         component: () => import("src/pages/cruds/users/UsersPage.vue"),
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
-            if (accessTo("Usuarios")) {
+            if (accessTo("/administrar-usuarios")) {
               next();
             } else {
               next("/404");
@@ -118,7 +118,7 @@ const routes = [
         component: () => import("src/pages/ordersStadistics/OrdersStadistics.vue"),
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
-            if (accessTo("Ventas")) {
+            if (accessTo("/ventas")) {
               next();
             } else {
               next("/404");
@@ -220,9 +220,9 @@ function isAuthenticated() {
   }
 }
 
-function accessTo(option) {
+function accessTo(link) {
   let availableMenuOptions = Store.getters["auth/getAvailableMenuOptions"];
-  if (availableMenuOptions.some(item => item.label === option)) {
+  if (availableMenuOptions.some(item => item.link === link)) {
     return true;
   } else {
     return false;

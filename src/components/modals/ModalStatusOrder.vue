@@ -70,7 +70,6 @@
                 />
               </div>
               <div v-else class="center-div">
-                <img src="~/assets/icons8-sad.gif" alt="sad" width="80" />
                 <p
                   style="font-size:14px; font-weight:bold;text-align:center;margin-top:3px;"
                 >

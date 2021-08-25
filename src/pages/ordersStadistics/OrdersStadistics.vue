@@ -406,10 +406,10 @@ export default {
           sortable: true
         },
         {
-          name: "confirmationDate",
+          name: "date",
           align: "center",
-          label: "Fecha Confirmación",
-          field: "confirmationDate",
+          label: "Fecha",
+          field: "date",
           sortable: true
         }
       ],
@@ -486,8 +486,8 @@ export default {
       },
       localFilter: "",
       more31days: false,
-      statusOptions: ["Todos", "Confirmados", "Anulados"],
-      currentStatus: "Todos"
+      statusOptions: ["Confirmados", "Anulados"],
+      currentStatus: "Confirmados"
     };
   },
   created() {
@@ -710,10 +710,7 @@ export default {
           subtotal: this.formatNumber(item.subtotal),
           delivery: this.formatNumber(item.deliveryCost),
           total: this.formatNumber(item.total),
-          confirmationDate:
-            item.dateConfirmation !== null
-              ? item.dateConfirmation.replaceAll("-", "/")
-              : "Sin Fecha"
+          date: this.getProperlyDate(item)
         };
         this.data.push(row);
         this.data.sort(function(a, b) {
@@ -815,6 +812,17 @@ export default {
       this.startDate = this.finalDate = dateString;
 
       this.getHistory();
+    },
+    getProperlyDate(item) {
+      if (item.dateConfirmation !== null) {
+        return item.dateConfirmation.replaceAll("-", "/");
+      }
+
+      if (item.finalDate !== null) {
+        return item.finalDate.replaceAll("-", "/");
+      }
+
+      return "Sin fecha";
     }
   }
 };
