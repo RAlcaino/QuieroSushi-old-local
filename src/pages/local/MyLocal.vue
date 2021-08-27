@@ -1,11 +1,7 @@
 <template>
-  <q-page
-    v-if="dataLocal.nombre !== ''"
-    class="q-pa-sm"
-    style="padding-bottom:100px"
-  >
+  <q-page class="q-pa-sm" style="padding-bottom:100px">
     <edit-photo></edit-photo>
-    <div class="row q-col-gutter-sm">
+    <div class="row q-col-gutter-sm" v-if="dataLocal.nombre !== ''">
       <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12">
         <local-info
           :dataLocal="dataLocal"
@@ -28,6 +24,18 @@
           :localSelected="localSelected"
         ></local-communes>
       </div>
+    </div>
+    <div
+      v-else
+      style="margin-top:30vh"
+      class="fit column wrap justify-center items-center content-center"
+    >
+      <img
+        src="~/assets/maki-roll.gif"
+        alt="sad"
+        width="130"
+        style="border-radius:100%"
+      />
     </div>
   </q-page>
 </template>
@@ -135,7 +143,7 @@ export default {
   },
   methods: {
     getDataLocal() {
-      this.showLoading();
+      //this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -197,10 +205,10 @@ export default {
           value: data.region.id,
           label: data.region.nombre
         },
-        semana: this.weekStructure(data.semana),
+        semana: this.weekStructure(data.semana)
       };
       this.dataLocalOriginal = { ...this.dataLocal };
-      this.bus.$emit("sync-communes",this.dataLocal);
+      this.bus.$emit("sync-communes", this.dataLocal);
     },
     formatLocals() {
       this.locals = [];
