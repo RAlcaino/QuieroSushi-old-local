@@ -115,10 +115,28 @@ const routes = [
       {
         name: "orders-stadistics",
         path: "/ventas",
-        component: () => import("src/pages/ordersStadistics/OrdersStadistics.vue"),
+        component: () =>
+          import("src/pages/ordersStadistics/OrdersStadistics.vue"),
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
             if (accessTo("/ventas")) {
+              next();
+            } else {
+              next("/404");
+            }
+          } else {
+            next("/login");
+          }
+        }
+      },
+      {
+        name: "comments-local",
+        path: "/comentarios",
+        component: () =>
+          import("src/pages/local/comments/CommentsComponent.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("/comentarios")) {
               next();
             } else {
               next("/404");
