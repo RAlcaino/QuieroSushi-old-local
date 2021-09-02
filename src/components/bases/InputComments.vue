@@ -48,6 +48,7 @@
 
 <script>
 export default {
+  props: ["comment", "local"],
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   computed: {
     validation() {
@@ -69,16 +70,19 @@ export default {
       sendingMsg: false
     };
   },
+  mounted() {},
   methods: {
     notify() {
       if (this.validation) {
         return;
       }
+      console.log(this.comment);
+      console.log(this.local);
       this.sendingMsg = true;
 
-      setTimeout(()=>{
-          this.sendingMsg = false;
-      },1000);
+      setTimeout(() => {
+        this.sendingMsg = false;
+      }, 1000);
     },
     close() {
       this.toggle = !this.toggle;

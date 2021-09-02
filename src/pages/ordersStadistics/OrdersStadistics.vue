@@ -818,8 +818,8 @@ export default {
         return item.dateConfirmation.replaceAll("-", "/");
       }
 
-      if (item.finalDate !== null) {
-        return item.finalDate.replaceAll("-", "/");
+      if (item.dateCancelled !== null) {
+        return item.dateCancelled.replaceAll("-", "/");
       }
 
       return "Sin fecha";
