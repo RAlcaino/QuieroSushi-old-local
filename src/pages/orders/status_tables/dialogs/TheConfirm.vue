@@ -477,7 +477,7 @@ export default {
       this.minDeliveryTime = null;
     },
     updateTime() {
-      let date = new Date();
+      let date = new Date(this.$store.getters["auth/getServerTime"]);
       this.current.hour = date.getHours();
       this.current.minutes = date.getMinutes();
       date.setMinutes(
@@ -496,7 +496,7 @@ export default {
       this.final.seconds = date.getSeconds();
     },
     calculatePreparationTime(flag) {
-      let date = new Date();
+      let date = new Date(this.$store.getters["auth/getServerTime"]);
       date.setMinutes(
         date.getMinutes() +
           this.deliveryTime +

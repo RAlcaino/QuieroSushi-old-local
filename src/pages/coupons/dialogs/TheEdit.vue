@@ -168,7 +168,7 @@
                   />
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+              <!--<q-item class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
                     ref="select"
@@ -256,7 +256,7 @@
                     {{ comune.label }}
                   </q-chip>
                 </q-item-section>
-              </q-item>
+              </q-item>-->
             </q-list>
           </div>
         </div>

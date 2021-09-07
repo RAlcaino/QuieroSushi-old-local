@@ -40,6 +40,14 @@ export default {
   },
   mounted() {
     console.log("app mounted");
+    //SERVER TIME
+    setInterval(() => {
+      if (this.$store.getters["auth/getServerTime"] !== null) {
+        let date = new Date(this.$store.getters["auth/getServerTime"]);
+        date.setSeconds(date.getSeconds() + 1);
+        this.$store.commit("auth/setServerTime", date.toString());
+      }
+    }, 1000);
     this.init();
   },
   data() {
@@ -177,7 +185,7 @@ export default {
           "error"
         );
       }
-    }
+    },
   }
 };
 </script>

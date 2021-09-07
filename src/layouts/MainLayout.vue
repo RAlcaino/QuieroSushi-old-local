@@ -541,6 +541,15 @@ export default {
     this.bus.$on("refresh-cartstatus", () => {
       if (this.$store.getters["auth/getDataLocals"].length > 1) {
         this.flag = this.$store.getters["auth/getCartsStatus"];
+        let currentLocalIndex = this.$store.getters[
+          "auth/getDataLocals"
+        ].findIndex(
+          item => item.id === this.$store.getters["auth/getDataLocal"].id
+        );
+        this.$store.commit(
+          "auth/setCurrentLocal",
+          this.$store.getters["auth/getDataLocals"][currentLocalIndex]
+        );
       } else if (this.$store.getters["auth/getDataLocals"].length === 1) {
         this.$store.commit(
           "auth/setCurrentLocal",
@@ -584,6 +593,7 @@ export default {
     this.getZones();
     this.getTitles();
     this.getRoles();
+    this.getServerTime();
   },
   computed: {
     responsiveMode() {
@@ -991,6 +1001,26 @@ export default {
         }
       }
       return flag;
+    },
+    getServerTime() {
+      var url = this.$store.getters["routes/getRoute"]("get.serverTime");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            let date = new Date(response.data.result);
+            this.$store.commit("auth/setServerTime", date.toString());
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     }
   }
 };

@@ -27,7 +27,8 @@ const state = {
   regiones: [],
   ciudades: [],
   titles: [],
-  roles: []
+  roles: [],
+  serverTime: null
 };
 const mutations = {
   setAvailableMenuOptions(state, payload) {
@@ -74,7 +75,6 @@ const mutations = {
     state.authenticated = true;
   },
   resetDataUserSesion(state) {
-
     state.godMode = false;
     state.user.id = 0;
     state.user.email = "";
@@ -93,7 +93,7 @@ const mutations = {
       cartStatus: null
     };
 
-    state.installPromptEvent=null;
+    state.installPromptEvent = null;
     state.titles = [];
     state.comunas = [];
     state.regiones = [];
@@ -105,6 +105,8 @@ const mutations = {
       currentMinute: null,
       currentSecond: null
     };
+
+    state.serverTime = null;
   },
   setCurrentLocal(state, payload) {
     state.currentLocal = payload;
@@ -180,6 +182,9 @@ const mutations = {
     state.nextUpdateTime.currentHour = payload.currentHour;
     state.nextUpdateTime.currentMinute = payload.currentMinute;
     state.nextUpdateTime.currentSecond = payload.currentSecond;
+  },
+  setServerTime(state, payload) {
+    state.serverTime = payload;
   }
 };
 const actions = {};
@@ -250,6 +255,9 @@ const getters = {
   },
   getNextUpdateTime(state) {
     return state.nextUpdateTime;
+  },
+  getServerTime(state) {
+    return state.serverTime;
   }
 };
 

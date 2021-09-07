@@ -122,6 +122,10 @@ const mutations = {
         name: "send.ws",
         link: "/sendWhatsApp"
       },
+      {
+        name: "get.serverTime",
+        link: "/serverTime"
+      },
       
     ];
   }
