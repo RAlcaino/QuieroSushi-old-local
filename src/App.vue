@@ -63,7 +63,8 @@ export default {
       showLoading: this.showLoading,
       hideLoading: this.hideLoading,
       errorHandling: this.errorHandling,
-      installPromptEvent: this.installPromptEvent
+      installPromptEvent: this.installPromptEvent,
+      getServerTime: this.serverTime
     };
   },
   methods: {
@@ -186,6 +187,34 @@ export default {
         );
       }
     },
+    serverTime() {
+      let date = new Date(this.$store.getters["auth/getServerTime"]);
+      let time = "";
+      let serverTime = "";
+
+      time += date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      time +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+      time +=
+        date.getSeconds() < 10
+          ? ":0" + date.getSeconds()
+          : ":" + date.getSeconds(); // get seconds
+
+      serverTime =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        time;
+
+      return serverTime;
+    }
   }
 };
 </script>

@@ -126,7 +126,14 @@ const mutations = {
         name: "get.serverTime",
         link: "/serverTime"
       },
-      
+      {
+        name: "get.comments",
+        link: "/comentarios/{localId}"
+      },
+      {
+        name: "do.reply",
+        link: "/replies"
+      }
     ];
   }
 };

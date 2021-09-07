@@ -49,7 +49,13 @@
 <script>
 export default {
   props: ["comment", "local"],
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getServerTime"
+  ],
   computed: {
     validation() {
       if (this.text === null || this.text.trim().length === 0) {
@@ -76,13 +82,34 @@ export default {
       if (this.validation) {
         return;
       }
-      console.log(this.comment);
-      console.log(this.local);
       this.sendingMsg = true;
 
-      setTimeout(() => {
-        this.sendingMsg = false;
-      }, 1000);
+      let data = {
+        comentario: this.text,
+        id_comentario: this.comment,
+        id_local: this.local,
+        fecha: this.getServerTime()
+      };
+
+      var url = this.$store.getters["routes/getRoute"]("do.reply");
+      this.$axios
+        .post(url, data, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.bus.$emit("refresh-comments");
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+            this.sendingMsg = false;
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+          this.sendingMsg = false;
+        });
     },
     close() {
       this.toggle = !this.toggle;

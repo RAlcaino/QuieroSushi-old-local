@@ -84,7 +84,10 @@ export default {
   },
   mounted() {
     window.addEventListener("keyup", event => {
-      if (event.keyCode === 13 && this.$router.currentRoute.fullPath==="/login") {
+      if (
+        event.keyCode === 13 &&
+        this.$router.currentRoute.fullPath === "/login"
+      ) {
         this.login();
       }
     });
@@ -127,6 +130,11 @@ export default {
           label: "Usuarios",
           link: "/administrar-usuarios",
           icon: "group"
+        },
+        {
+          label: "Comentarios",
+          link: "/comentarios",
+          icon: "question_answer"
         },
         {
           label: "Ventas",
