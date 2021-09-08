@@ -5,15 +5,29 @@
       <q-toolbar-title>
         Comentarios en {{ localSelected.label }}</q-toolbar-title
       >
-      <q-btn flat round dense icon="sync" class="q-mr-xs" @click="getComments(true)" />
+      <q-btn
+        flat
+        round
+        dense
+        icon="sync"
+        class="q-mr-xs"
+        @click="getComments(true)"
+      />
     </q-toolbar>
 
-    <div
-      class="text-h6"
-      style="width: 95%;display: flex; flex-direction:row; justify-content:flex-end; margin-top:20px;"
-      v-if="locals.length > 1"
-    >
-      <div>
+    <div class="text-h6 comment__container__select">
+      <div style="margin: 0 5px">
+        <q-select
+          outlined
+          rounded
+          dense
+          v-model="statusSelected"
+          :options="status"
+          label="Estados"
+          @input="changeStatus"
+        />
+      </div>
+      <div style="margin: 0 5px" v-if="locals.length > 1">
         <q-select
           outlined
           rounded
@@ -27,13 +41,13 @@
     </div>
     <div
       v-if="comments.length > 0 && flag === false"
-      class="fit row no-wrap justify-center items-center content-center"
+      class="fit column no-wrap justify-center items-center content-center"
     >
       <q-card class="class__card">
         <q-list bordered class="rounded-borders" style="max-width: 100%">
           <q-item-label header>Recientes</q-item-label>
 
-          <div v-for="comment in comments" :key="comment.comentario_id">
+          <div v-for="comment in getData" :key="comment.comentario_id">
             <q-item style="margin: 10px">
               <q-item-section avatar top>
                 <q-avatar icon="person" color="primary" text-color="white" />
@@ -76,6 +90,14 @@
           </div>
         </q-list>
       </q-card>
+      <q-pagination
+        v-if="comments.length > perPage"
+        v-model="page"
+        :max="getMaxPages"
+        style="padding-top:25px"
+        color="primary"
+        input
+      />
     </div>
     <div
       v-else
@@ -111,6 +133,7 @@
 import InputComments from "../../../components/bases/InputComments.vue";
 
 export default {
+  inject: ["showNotification", "errorHandling", "scrollTop"],
   components: {
     InputComments
   },
@@ -127,8 +150,36 @@ export default {
       locals: [],
       localSelected: "",
       comments: [],
-      flag: false
+      flag: false,
+      page: 1,
+      perPage: 6,
+      status: ["Todos", "Sin replicas", "Con replicas"],
+      statusSelected: "Todos",
+      filteredComments: []
     };
+  },
+  computed: {
+    getData() {
+      this.scrollTop();
+      if (this.statusSelected === "Todos") {
+        this.filteredComments = [...this.comments];
+      } else if (this.statusSelected === "Sin replicas") {
+        this.filteredComments = [
+          ...this.comments.filter(item => item.replica_id === null)
+        ];
+      } else if (this.statusSelected === "Con replicas") {
+        this.filteredComments = [
+          ...this.comments.filter(item => item.replica_id !== null)
+        ];
+      }
+      return this.filteredComments.slice(
+        (this.page - 1) * this.perPage,
+        (this.page - 1) * this.perPage + this.perPage
+      );
+    },
+    getMaxPages() {
+      return Math.ceil(this.filteredComments.length / this.perPage);
+    }
   },
   methods: {
     init() {
@@ -162,7 +213,13 @@ export default {
     change(val) {
       if (val !== null) {
         this.localSelected = val;
+        this.statusSelected = "Todos";
         this.getComments(true);
+      }
+    },
+    changeStatus(val) {
+      if (val !== null) {
+        this.page = 1;
       }
     },
     getComments(flag) {
@@ -202,6 +259,13 @@ export default {
   width: 50%;
   height: auto;
   border-radius: 15px;
-  margin-top: 50px;
-}</style
->>
+}
+
+.comment__container__select {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin: 20px auto;
+}
+</style>

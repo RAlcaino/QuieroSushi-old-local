@@ -64,7 +64,8 @@ export default {
       hideLoading: this.hideLoading,
       errorHandling: this.errorHandling,
       installPromptEvent: this.installPromptEvent,
-      getServerTime: this.serverTime
+      getServerTime: this.serverTime,
+      scrollTop: this.scrollTop
     };
   },
   methods: {
@@ -214,6 +215,14 @@ export default {
         time;
 
       return serverTime;
+    },
+    scrollTop() {
+      $(document).ready(function() {
+        $("html").animate(
+          { scrollTop: 0 },
+          1000
+        );
+      });
     }
   }
 };
