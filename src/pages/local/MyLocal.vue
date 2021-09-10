@@ -62,7 +62,8 @@ export default {
   provide() {
     return {
       change: this.change,
-      setLocalSelected: this.setLocalSelected
+      setLocalSelected: this.setLocalSelected,
+      weekDay: this.weekDay
     };
   },
   data() {
