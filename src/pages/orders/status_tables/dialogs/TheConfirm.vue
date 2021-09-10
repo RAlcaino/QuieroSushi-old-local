@@ -360,7 +360,7 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling", "refreshServerTime", "getServerTime"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-confirm", data => {
@@ -374,6 +374,7 @@ export default {
       this.autoMode = true;
       this.calculatePreparationTime(true);
       this.updateTime();
+      this.refreshServerTime();
       setInterval(() => {
         this.updateTime();
       }, 1000);
@@ -388,12 +389,13 @@ export default {
     currentTime() {
       let timeValue = "";
       timeValue +=
-        this.current.hour < 10 ? "0" + this.current.hour : this.current.hour; // get hour
+        this.serverTime.getHours() < 10 ? "0" + this.serverTime.getHours() : this.serverTime.getHours(); // get hour
       timeValue +=
-        this.current.minutes < 10
-          ? ":0" + this.current.minutes
-          : ":" + this.current.minutes; // get minutes
-      return timeValue;
+        this.serverTime.getMinutes() < 10
+          ? ":0" + this.serverTime.getMinutes()
+          : ":" + this.serverTime.getMinutes(); // get minutes
+      return timeValue
+      ;
     }
   },
   data() {
@@ -420,7 +422,8 @@ export default {
       autoMode: true,
       doAlgorithm: false,
       constDeliveryTime: null,
-      constPreparationTime: null
+      constPreparationTime: null,
+      serverTime: null
     };
   },
   methods: {
@@ -478,8 +481,9 @@ export default {
     },
     updateTime() {
       let date = new Date(this.$store.getters["auth/getServerTime"]);
-      this.current.hour = date.getHours();
-      this.current.minutes = date.getMinutes();
+      /*this.current.hour = date.getHours();
+      this.current.minutes = date.getMinutes();*/
+      this.serverTime = new Date(this.$store.getters["auth/getServerTime"]);
       date.setMinutes(
         date.getMinutes() +
           (+this.preparationTime +

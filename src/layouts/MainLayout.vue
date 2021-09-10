@@ -627,7 +627,8 @@ export default {
   provide() {
     return {
       logout: this.logout,
-      refreshToken: this.refreshToken
+      refreshToken: this.refreshToken,
+      refreshServerTime: this.getServerTime
     };
   },
   methods: {
