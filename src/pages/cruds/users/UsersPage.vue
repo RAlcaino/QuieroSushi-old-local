@@ -21,7 +21,7 @@
       class="fit row wrap justify-end items-center content-center mobile-styles-o"
       style="margin: 20px 0"
     >
-      <div v-if="locals.length > 1">
+      <div v-if="getStoreLocals('ACTIVE').length > 1">
         <q-select
           ref="select"
           rounded
@@ -209,7 +209,7 @@ import EditUserDialog from "./dialogs/EditUserDialog.vue";
 import ChangePassword from "./dialogs/ChangePassword.vue";
 
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling","getStoreLocals"],
   components: {
     StatusComponent,
     NewUserDialog,
@@ -251,7 +251,7 @@ export default {
           } else {
             return false;
           }
-        }else{
+        } else {
           return false;
         }
       });
@@ -468,36 +468,16 @@ export default {
         image:
           this.$store.getters["auth/getDataUser"].id === -1
             ? "icons/favicon-128.png"
-            : this.$store.getters["auth/getDataLocals"][0].image,
+            : getStoreLocals("ACTIVE")[0].image,
         commune: null,
         cartStatus: null
       };
       this.local = this.localSelected;
     },
     initLocals() {
-      var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
+
       this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
       this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
       this.localSelected.commune = this.$store.getters[

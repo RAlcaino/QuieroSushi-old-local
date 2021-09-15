@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
-    <the-aditionals :localName="local.label"></the-aditionals>
+    <the-aditionals :localName="localSelected.label"></the-aditionals>
     <the-edit></the-edit>
     <edit-photo></edit-photo>
     <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
@@ -123,7 +123,7 @@
           class="fit row no-wrap justify-between items-start content-center"
         >
           <div style="padding-top:8px">
-            Mis cupones en: <strong>{{ local.label }}</strong>
+            Mis cupones en: <strong>{{ localSelected.label }}</strong>
           </div>
           <q-btn
             class="gt-sm"
@@ -164,7 +164,11 @@
               <p style="margin-bottom:5px; font-weight:bold">#{{ item.id }}</p>
             </q-item-section>
 
-            <q-item-section center class="col-2 gt-xs" @click="upploadNew(item)">
+            <q-item-section
+              center
+              class="col-2 gt-xs"
+              @click="upploadNew(item)"
+            >
               <div class="image__coupon">
                 <img
                   :src="item.image"
@@ -174,11 +178,7 @@
                   style="align-self:center; display: block;"
                 />
                 <div class="overlay__change__image">
-                  <q-icon
-                    size="20px"
-                    name="edit"
-                    color="white"
-                  />
+                  <q-icon size="20px" name="edit" color="white" />
                 </div>
               </div>
             </q-item-section>
@@ -281,7 +281,7 @@ import TheEdit from "./dialogs/TheEdit.vue";
 import EditPhoto from "./dialogs/EditPhoto.vue";
 
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling","getStoreLocals"],
   components: {
     TheAditionals,
     TheEdit,
@@ -345,10 +345,6 @@ export default {
       availableStandOut: 0,
       availableGoUp: 0,
       locals: [],
-      local: {
-        value: null,
-        label: ""
-      },
       localFilter: "",
       data: [],
       result: {
@@ -478,8 +474,9 @@ export default {
           }
         }, 3000);
       } else {
+        console.log(this.localSelected);
         var url = this.$store.getters["routes/getRoute"]("resource.coupons", {
-          localId: this.local.value
+          localId: this.localSelected.value
         });
         this.$axios
           .get(url, {
@@ -677,7 +674,7 @@ export default {
     },
     change(val) {
       if (val !== null) {
-        this.local = val;
+        this.localSelected = {...val};
         this.sync(false);
         this.$store.commit("auth/setCurrentLocal", {
           id: val.value,
@@ -693,51 +690,18 @@ export default {
       this.localFilter = "";
     },
     initLocals() {
-      var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
 
-      if (this.$store.getters["auth/getDataLocal"].id == -1) {
-        this.localSelected.value = this.$store.getters[
-          "auth/getDataLocals"
-        ][0].id;
-        this.localSelected.image = this.$store.getters[
-          "auth/getDataLocals"
-        ][0].image;
-        this.localSelected.commune = this.$store.getters[
-          "auth/getDataLocals"
-        ][0].commune;
-        this.localSelected.name = this.$store.getters[
-          "auth/getDataLocals"
-        ][0].name;
+      if (this.$store.getters["auth/getDataLocal"].id === -1) {
+        this.localSelected.value = this.locals[0].value;
+        this.localSelected.image = this.locals[0].image;
+        this.localSelected.commune = this.locals[0].commune;
+        this.localSelected.name = this.locals[0].name;
         this.localSelected.label =
           this.localSelected.name + ", " + this.localSelected.commune;
-        this.localSelected.cartStatus = this.$store.getters[
-          "auth/getDataLocals"
-        ][0].cartStatus;
+        this.localSelected.cartStatus = this.locals[0].cartStatus;
 
-        this.local.value = this.localSelected.value;
-        this.local.label = this.localSelected.label;
         this.$store.commit("auth/setCurrentLocal", {
           id: this.localSelected.value,
           name: this.localSelected.name,
@@ -760,12 +724,14 @@ export default {
         this.localSelected.cartStatus = this.$store.getters[
           "auth/getDataLocal"
         ].cartStatus;
-        this.local.value = this.localSelected.value;
-        this.local.label = this.localSelected.label;
       }
     },
     upploadNew(coupon) {
-      this.bus.$emit("open-upload-photo",coupon,this.$store.getters["auth/getDataLocal"].id);
+      this.bus.$emit(
+        "open-upload-photo",
+        coupon,
+        this.$store.getters["auth/getDataLocal"].id
+      );
     }
   }
 };
@@ -786,7 +752,7 @@ export default {
   border-radius: 50px;
   overflow: hidden;
   position: relative;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 .overlay__change__image {
@@ -804,7 +770,7 @@ export default {
   justify-content: center;
 }
 
-.overlay__change__image:hover{
+.overlay__change__image:hover {
   opacity: 1;
 }
 

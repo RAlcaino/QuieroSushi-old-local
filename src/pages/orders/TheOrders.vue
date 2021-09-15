@@ -145,7 +145,7 @@ import TheDone from "./status_tables/TheDone.vue";
 
 export default {
   props: ["toAll"],
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling","getStoreLocals"],
   components: {
     NotConfirmed,
     TheConfirmed,
@@ -2382,7 +2382,7 @@ export default {
         image:
           this.$store.getters["auth/getDataUser"].id === -1
             ? "icons/favicon-128.png"
-            : this.$store.getters["auth/getDataLocals"][0].image,
+            : getStoreLocals("ACTIVE")[0].image,
         commune: null,
         cartStatus: null
       };
@@ -2434,29 +2434,9 @@ export default {
       this.bus.$emit("reset-page");
     },
     initLocals() {
-      var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
+
       this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
       this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
       this.localSelected.commune = this.$store.getters[

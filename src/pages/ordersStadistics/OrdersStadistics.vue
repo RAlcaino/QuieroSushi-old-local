@@ -322,7 +322,8 @@ export default {
     "hideLoading",
     "errorHandling",
     "formatNumber",
-    "capitalize"
+    "capitalize",
+    "getStoreLocals"
   ],
   components: {
     TheCancel
@@ -580,27 +581,8 @@ export default {
     },
     initLocals() {
       this.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(item => {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        this.locals.push(row);
-        this.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
+      this.locals = [...this.getStoreLocals("ACTIVE")];
+  
       this.localSelected = {
         label: "Todos",
         value: null,

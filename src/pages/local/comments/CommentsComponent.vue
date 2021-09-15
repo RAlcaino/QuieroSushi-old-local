@@ -133,7 +133,7 @@
 import InputComments from "../../../components/bases/InputComments.vue";
 
 export default {
-  inject: ["showNotification", "errorHandling", "scrollTop"],
+  inject: ["showNotification", "errorHandling", "scrollTop", "getStoreLocals"],
   components: {
     InputComments
   },
@@ -187,26 +187,7 @@ export default {
     },
     formatLocals() {
       this.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(item => {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        this.locals.push(row);
-        this.locals.sort((a, b) => {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          return 0;
-        });
-      });
+      this.locals = [...this.getStoreLocals("ACTIVE")];
 
       this.localSelected = this.locals[0];
     },

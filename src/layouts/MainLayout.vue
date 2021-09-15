@@ -382,7 +382,7 @@
     <q-page-container class="bg-white">
       <template
         v-if="
-          $store.getters['auth/getDataLocals'].length > 1 &&
+          getStoreLocals('ACTIVE').length > 1 &&
             $store.getters['auth/getDataUser'].role !== 'God'
         "
       >
@@ -519,7 +519,13 @@ import ModalStatusOrder from "../components/modals/ModalStatusOrder.vue";
 import SecureLS from "secure-ls";
 
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
   name: "MainLayout",
 
   components: {
@@ -539,21 +545,19 @@ export default {
     }, 1000);
     this.flag = this.$store.getters["auth/getCartsStatus"];
     this.bus.$on("refresh-cartstatus", () => {
-      if (this.$store.getters["auth/getDataLocals"].length > 1) {
+      if (this.getStoreLocals("ACTIVE").length > 1) {
         this.flag = this.$store.getters["auth/getCartsStatus"];
-        let currentLocalIndex = this.$store.getters[
-          "auth/getDataLocals"
-        ].findIndex(
+        let currentLocalIndex = this.getStoreLocals("ACTIVE").findIndex(
           item => item.id === this.$store.getters["auth/getDataLocal"].id
         );
         this.$store.commit(
           "auth/setCurrentLocal",
-          this.$store.getters["auth/getDataLocals"][currentLocalIndex]
+          this.getStoreLocals("ACTIVE")[currentLocalIndex]
         );
-      } else if (this.$store.getters["auth/getDataLocals"].length === 1) {
+      } else if (this.getStoreLocals("ACTIVE").length === 1) {
         this.$store.commit(
           "auth/setCurrentLocal",
-          this.$store.getters["auth/getDataLocals"][0]
+          this.getStoreLocals("ACTIVE")[0]
         );
       }
     });
@@ -767,7 +771,7 @@ export default {
       }
     },
     getLocals(flag, syncComponent) {
-      var oldLocals = this.$store.getters["auth/getDataLocals"];
+      var oldLocals = [...this.getStoreLocals("ACTIVE")];
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -847,8 +851,8 @@ export default {
               this.bus.$emit("sync-locals-settings");
               this.flag = this.$store.getters["auth/getCartsStatus"];
 
-              if (this.$store.getters["auth/getDataLocals"].length === 1) {
-                this.$store.commit("auth/setCurrentLocal", locals[0]);
+              if (this.getStoreLocals("ACTIVE").length === 1) {
+                this.$store.commit("auth/setCurrentLocal", this.sortAndFilter(locals)[0]);
               } else {
                 if (this.$store.getters["auth/getDataLocal"].id !== -1) {
                   let currentLocal = locals.find(
@@ -1022,6 +1026,19 @@ export default {
         .catch(error => {
           this.errorHandling(error);
         });
+    },
+    sortAndFilter(locals) {
+      locals.sort((a, b) => {
+        if (a.name > b.name) {
+          return 1;
+        }
+        if (a.name < b.name) {
+          return -1;
+        }
+        return 0;
+      });
+
+      return locals.filter(item => item.localStatus ==="normal");
     }
   }
 };

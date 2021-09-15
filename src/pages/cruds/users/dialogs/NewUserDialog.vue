@@ -100,7 +100,7 @@
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
-                    v-if="$store.getters['auth/getDataLocals'].length > 1"
+                    v-if="getStoreLocals('ACTIVE').length > 1"
                     ref="select"
                     rounded
                     outlined
@@ -121,12 +121,28 @@
                     <template v-slot:option="scope">
                       <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
                         <q-item-section>
-                          <q-item-label v-html="'<strong>'+scope.opt.value+'</strong> - '+scope.opt.label" />
+                          <q-item-label
+                            v-html="
+                              '<strong>' +
+                                scope.opt.value +
+                                '</strong> - ' +
+                                scope.opt.label
+                            "
+                          />
                         </q-item-section>
                       </q-item>
                     </template>
                     <template v-slot:selected-item="scope">
-                     <div><strong v-if="scope.opt.value!==-1">{{scope.opt.value}} -</strong> {{scope.opt.label.length>18?scope.opt.label.substring(0,18)+'...':scope.opt.label}}</div>
+                      <div>
+                        <strong v-if="scope.opt.value !== -1"
+                          >{{ scope.opt.value }} -</strong
+                        >
+                        {{
+                          scope.opt.label.length > 18
+                            ? scope.opt.label.substring(0, 18) + "..."
+                            : scope.opt.label
+                        }}
+                      </div>
                     </template>
                     <template v-slot:before-options>
                       <q-item>
@@ -219,7 +235,7 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling", "getStoreLocals"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.initLocals();
@@ -397,31 +413,8 @@ export default {
       }
     },
     initLocals() {
-      var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          deliveryTime: item.deliveryTime,
-          preparationTime: item.preparationTime,
-          cart: item.cartStatus
-        };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
     },
     filterFn(val) {
       if (val === "") {
@@ -480,7 +473,7 @@ export default {
       this.localFilter = "";
     },
     reset() {
-      if (this.$store.getters["auth/getDataLocals"].length !== 1) {
+      if (this.getStoreLocals("ACTIVE").length !== 1) {
         this.storesSelected = [];
         this.localSelected = {
           label: "Todos",

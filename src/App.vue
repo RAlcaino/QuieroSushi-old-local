@@ -65,7 +65,8 @@ export default {
       errorHandling: this.errorHandling,
       installPromptEvent: this.installPromptEvent,
       getServerTime: this.serverTime,
-      scrollTop: this.scrollTop
+      scrollTop: this.scrollTop,
+      getStoreLocals: this.getStoreLocals
     };
   },
   methods: {
@@ -216,12 +217,31 @@ export default {
 
       return serverTime;
     },
+    getStoreLocals(option) {
+      var locals = [];
+      var each = this.$store.getters["auth/getDataLocals"].map(item => {
+        let row = {
+          value: item.id,
+          label: item.name + ", " + item.commune,
+          image: item.image,
+          commune: item.commune,
+          name: item.name,
+          cartStatus: item.cartStatus,
+          localStatus: item.localStatus
+        };
+        locals.push(row);
+      });
+
+      if(option ==="ALL"){
+        return locals;
+      }
+      else if(option === "ACTIVE"){
+        return locals.filter(item => item.localStatus==="normal");
+      }
+    },
     scrollTop() {
       $(document).ready(function() {
-        $("html").animate(
-          { scrollTop: 0 },
-          1000
-        );
+        $("html").animate({ scrollTop: 0 }, 1000);
       });
     }
   }

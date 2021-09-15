@@ -49,6 +49,9 @@ const mutations = {
     state.nextUpdateTime.currentMinute = currentMinute;
     state.nextUpdateTime.currentSecond = currentSecond;
 
+    let locals = [...payload.locals];
+    console.log(state.user.locals);
+
     if (payload.locals.length === 0) {
       state.user.debt = true;
     } else {
@@ -58,11 +61,11 @@ const mutations = {
         if (state.user.id === -1) {
           state.currentLocal.image = "icons/favicon-128.png";
         } else {
-          state.currentLocal.image = payload.locals[0].image;
+          state.currentLocal.image = sortAndFilter(locals)[0].image;
         }
         state.currentLocal.commune = null;
       } else {
-        state.currentLocal = payload.locals[0];
+        state.currentLocal = sortAndFilter(locals)[0];
       }
     }
 
@@ -259,6 +262,20 @@ const getters = {
   getServerTime(state) {
     return state.serverTime;
   }
+};
+
+const sortAndFilter = (locals) => {
+  locals.sort((a, b) => {
+    if (a.name > b.name) {
+      return 1;
+    }
+    if (a.name < b.name) {
+      return -1;
+    }
+    return 0;
+  });
+
+  return locals.filter(item => item.localStatus ==="normal");
 };
 
 export default {

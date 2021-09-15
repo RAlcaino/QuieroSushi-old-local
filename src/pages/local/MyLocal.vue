@@ -51,7 +51,13 @@ import LocalCommunes from "./cards/LocalCommunes.vue";
 
 export default {
   name: "UserProfile",
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
   components: {
     EditPhoto,
     LocalInfo,
@@ -213,26 +219,7 @@ export default {
     },
     formatLocals() {
       this.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(item => {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        this.locals.push(row);
-        this.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          return 0;
-        });
-      });
+      this.locals = [...this.getStoreLocals("ACTIVE")];
     },
     weekStructure(semana) {
       let week = [];
