@@ -189,6 +189,17 @@
               </q-item-label>
             </q-item-section>
 
+            <q-item-section center>
+              <span class="material-icons" style="font-size: 16px;">
+                trending_up
+              </span>
+              <p
+                style="margin-bottom:5px; font-weight:bold; text-align:center;"
+              >
+                Posición: {{ item.position }}
+              </p>
+            </q-item-section>
+
             <q-item-section center side>
               <div class="text-grey-8 q-gutter-xs">
                 <q-btn
@@ -281,7 +292,13 @@ import TheEdit from "./dialogs/TheEdit.vue";
 import EditPhoto from "./dialogs/EditPhoto.vue";
 
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling","getStoreLocals"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
   components: {
     TheAditionals,
     TheEdit,
@@ -474,7 +491,7 @@ export default {
           }
         }, 3000);
       } else {
-        console.log(this.localSelected);
+        //console.log(this.localSelected);
         var url = this.$store.getters["routes/getRoute"]("resource.coupons", {
           localId: this.localSelected.value
         });
@@ -494,13 +511,12 @@ export default {
             if (response.data.status === "success") {
               var r = response.data.result;
               this.data = r.coupons;
-              var vue = this;
               var tempData = [];
-              let map = this.data.map(function(item) {
+              let map = this.data.map(item => {
                 let row = {
                   id: item.id,
                   image: item.image,
-                  status: vue.realStatus(item.status),
+                  status: this.realStatus(item.status),
                   title: item.title,
                   pieces: item.pieces,
                   price: item.price,
@@ -509,7 +525,8 @@ export default {
                   conditions: item.conditions.replaceAll(".-", "\n"),
                   shortTitle: item.shortTitle,
                   longTitle: item.longTitle,
-                  delivery: item.delivery
+                  delivery: item.delivery,
+                  position: item.position
                 };
                 tempData.push(row);
               });
@@ -674,7 +691,7 @@ export default {
     },
     change(val) {
       if (val !== null) {
-        this.localSelected = {...val};
+        this.localSelected = { ...val };
         this.sync(false);
         this.$store.commit("auth/setCurrentLocal", {
           id: val.value,
