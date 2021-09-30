@@ -5,16 +5,24 @@
       style="border-radius:10px;width: 600px; max-width: 80vw; overflow:hidden"
     >
       <q-card-section
+        v-if="data !== null"
         class="row items-center q-pb-none"
         style="background:#333; padding: 10px 20px !important;"
       >
-        <div class="text-h6" style="color: white">
+        <div class="text-h6" style="color: white; font-size: 18px;">
           <q-icon
             style="margin-right:3px;padding-bottom:4px;"
-            size="24px"
+            size="20px"
             name="support_agent"
           />
-          Servicio al cliente
+          Servicio Al Cliente — N° Pedido:
+          {{
+            $store.getters["auth/getDataUser"].role === "God"
+              ? `${data === undefined ? this.data.id_venta : data.id_venta} - ${
+                  data.internalCode
+                }`
+              : data.internalCode
+          }}
         </div>
         <q-space />
         <q-btn icon="close" color="white" flat round dense @click="close()" />

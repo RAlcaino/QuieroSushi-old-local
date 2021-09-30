@@ -49,8 +49,11 @@
 
           <div v-for="comment in getData" :key="comment.comentario_id">
             <q-item style="margin: 10px">
-              <q-item-section avatar top>
+              <q-item-section avatar top class="avatar__responsive">
                 <q-avatar icon="person" color="primary" text-color="white" />
+                <p class="comment__date__avatar">
+                  {{ comment.fecha_comentario }}
+                </p>
               </q-item-section>
 
               <q-item-section>
@@ -81,11 +84,10 @@
                 </q-item-label>
               </q-item-section>
 
-              <q-item-section side top>
+              <q-item-section side top class="comment__date">
                 {{ comment.fecha_comentario }}
               </q-item-section>
             </q-item>
-
             <q-separator inset />
           </div>
         </q-list>
@@ -97,6 +99,7 @@
         style="padding-top:25px"
         color="primary"
         input
+        @input="scrollTop()"
       />
     </div>
     <div
@@ -143,6 +146,7 @@ export default {
 
     this.bus.$on("refresh-comments", () => {
       this.getComments(false);
+      this.sendingResponse = true;
     });
   },
   data() {
@@ -160,7 +164,6 @@ export default {
   },
   computed: {
     getData() {
-      this.scrollTop();
       if (this.statusSelected === "Todos") {
         this.filteredComments = [...this.comments];
       } else if (this.statusSelected === "Sin replicas") {
@@ -248,5 +251,32 @@ export default {
   flex-direction: row;
   justify-content: flex-end;
   margin: 20px auto;
+}
+
+.comment__date__avatar {
+  display: none;
+}
+
+@media screen and (max-width: 500px) {
+  .class__card {
+    width: 95%;
+  }
+
+  .comment__container__select {
+    justify-content: center;
+  }
+
+  .comment__date {
+    display: none;
+  }
+
+  .avatar__responsive {
+    align-items: center !important;
+  }
+  .comment__date__avatar {
+    display: block;
+    padding: 5px 0;
+    font-size: 13px;
+  }
 }
 </style>

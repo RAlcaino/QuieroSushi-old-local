@@ -352,29 +352,15 @@ export default {
         {
           name: "id",
           required: true,
-          label: "Id",
+          label: "# Orden",
           align: "center",
           field: "id",
           sortable: true
         },
         {
-          name: "localName",
-          align: "left",
-          label: "Nombre Local",
-          field: "localName",
-          sortable: true
-        },
-        {
-          name: "comuneLocal",
-          align: "left",
-          label: "Comuna Local",
-          field: "comuneLocal",
-          sortable: true
-        },
-        {
           name: "customerName",
           required: true,
-          label: "Nombre Cliente",
+          label: "Cliente",
           align: "center",
           field: "customerName"
         },
@@ -411,6 +397,13 @@ export default {
           align: "center",
           label: "Fecha",
           field: "date",
+          sortable: true
+        },
+        {
+          name: "localName",
+          align: "center",
+          label: "Local",
+          field: "localName",
           sortable: true
         }
       ],
@@ -582,7 +575,7 @@ export default {
     initLocals() {
       this.locals = [];
       this.locals = [...this.getStoreLocals("ACTIVE")];
-  
+
       this.localSelected = {
         label: "Todos",
         value: null,
@@ -685,8 +678,7 @@ export default {
       var each = response.map(item => {
         let row = {
           id: item.id,
-          localName: item.local.name,
-          comuneLocal: item.local.commune,
+          localName: `${item.local.name}, ${item.local.commune} `,
           customerName: item.payDetail.user,
           saleType: item.orderType,
           subtotal: this.formatNumber(item.subtotal),
