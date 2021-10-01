@@ -227,7 +227,9 @@ export default {
           commune: item.commune,
           name: item.name,
           cartStatus: item.cartStatus,
-          localStatus: item.localStatus
+          localStatus: item.localStatus,
+          preparationTime: item.preparationTime,
+          deliveryTime: item.deliveryTime
         };
         locals.push(row);
       });

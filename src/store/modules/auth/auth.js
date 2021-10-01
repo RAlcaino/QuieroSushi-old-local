@@ -50,7 +50,6 @@ const mutations = {
     state.nextUpdateTime.currentSecond = currentSecond;
 
     let locals = [...payload.locals];
-    console.log(state.user.locals);
 
     if (payload.locals.length === 0) {
       state.user.debt = true;

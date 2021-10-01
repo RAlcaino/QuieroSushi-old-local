@@ -31,7 +31,6 @@
           @popup-hide="allLocals()"
           style="margin-bottom:15px;"
           :virtual-scroll-sticky-size-start="80"
-          class="q-select-responsive"
         >
           <template v-slot:prepend>
             <q-icon name="store" />
@@ -242,7 +241,7 @@ export default {
     change(val) {
       if (val !== null) {
         this.deliveryTime = +val.deliveryTime;
-        this.cartStatus = val.cart;
+        this.cartStatus = val.cartStatus;
         this.preparationTime = +val.preparationTime;
       }
     },

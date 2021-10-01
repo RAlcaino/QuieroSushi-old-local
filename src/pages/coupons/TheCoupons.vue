@@ -189,7 +189,7 @@
               </q-item-label>
             </q-item-section>
 
-            <q-item-section center>
+            <q-item-section center v-if="item.position">
               <span class="material-icons" style="font-size: 16px;">
                 trending_up
               </span>

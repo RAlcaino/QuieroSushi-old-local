@@ -546,19 +546,20 @@ export default {
     this.flag = this.$store.getters["auth/getCartsStatus"];
     this.bus.$on("refresh-cartstatus", () => {
       if (this.getStoreLocals("ACTIVE").length > 1) {
+        var locals = this.getStoreLocals("ACTIVE");
         this.flag = this.$store.getters["auth/getCartsStatus"];
-        let currentLocalIndex = this.getStoreLocals("ACTIVE").findIndex(
-          item => item.id === this.$store.getters["auth/getDataLocal"].id
+        let currentLocalIndex = locals.findIndex(
+          item => item.value === this.$store.getters["auth/getDataLocal"].id
         );
-        this.$store.commit(
-          "auth/setCurrentLocal",
-          this.getStoreLocals("ACTIVE")[currentLocalIndex]
-        );
+        this.$store.commit("auth/setCurrentLocal", {
+          id: locals[currentLocalIndex].value,
+          ...locals[currentLocalIndex]
+        });
       } else if (this.getStoreLocals("ACTIVE").length === 1) {
-        this.$store.commit(
-          "auth/setCurrentLocal",
-          this.getStoreLocals("ACTIVE")[0]
-        );
+        this.$store.commit("auth/setCurrentLocal", {
+          id: locals[0].value,
+          ...locals[0]
+        });
       }
     });
     this.bus.$on("stop-bell", () => {
@@ -852,7 +853,10 @@ export default {
               this.flag = this.$store.getters["auth/getCartsStatus"];
 
               if (this.getStoreLocals("ACTIVE").length === 1) {
-                this.$store.commit("auth/setCurrentLocal", this.sortAndFilter(locals)[0]);
+                this.$store.commit(
+                  "auth/setCurrentLocal",
+                  this.sortAndFilter(locals)[0]
+                );
               } else {
                 if (this.$store.getters["auth/getDataLocal"].id !== -1) {
                   let currentLocal = locals.find(
@@ -1038,7 +1042,7 @@ export default {
         return 0;
       });
 
-      return locals.filter(item => item.localStatus ==="normal");
+      return locals.filter(item => item.localStatus === "normal");
     }
   }
 };
