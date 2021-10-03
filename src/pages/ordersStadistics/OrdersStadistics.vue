@@ -677,7 +677,7 @@ export default {
       this.data = [];
       var each = response.map(item => {
         let row = {
-          id: item.id,
+          id: item.internalCode,
           localName: `${item.local.name}, ${item.local.commune} `,
           customerName: item.payDetail.user,
           saleType: item.orderType,

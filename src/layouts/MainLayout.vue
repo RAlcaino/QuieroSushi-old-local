@@ -545,16 +545,18 @@ export default {
     }, 1000);
     this.flag = this.$store.getters["auth/getCartsStatus"];
     this.bus.$on("refresh-cartstatus", () => {
+      var locals = [...this.getStoreLocals("ACTIVE")];
       if (this.getStoreLocals("ACTIVE").length > 1) {
-        var locals = this.getStoreLocals("ACTIVE");
         this.flag = this.$store.getters["auth/getCartsStatus"];
         let currentLocalIndex = locals.findIndex(
           item => item.value === this.$store.getters["auth/getDataLocal"].id
         );
-        this.$store.commit("auth/setCurrentLocal", {
-          id: locals[currentLocalIndex].value,
-          ...locals[currentLocalIndex]
-        });
+        if (currentLocalIndex !== -1) {
+          this.$store.commit("auth/setCurrentLocal", {
+            id: locals[currentLocalIndex].value,
+            ...locals[currentLocalIndex]
+          });
+        }
       } else if (this.getStoreLocals("ACTIVE").length === 1) {
         this.$store.commit("auth/setCurrentLocal", {
           id: locals[0].value,
