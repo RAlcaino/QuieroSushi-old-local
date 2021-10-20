@@ -1,18 +1,5 @@
 <template>
-  <q-page class="q-pa-sm" style="background:white;">
-    <q-toolbar class="bg-primary text-white" style="border-radius:50px">
-      <q-btn flat round dense icon="delivery_dining" />
-      <q-toolbar-title :style="FontSize"> Pedidos</q-toolbar-title>
-      <q-btn
-        flat
-        round
-        dense
-        icon="sync"
-        class="q-mr-xs"
-        @click="sync(false)"
-      />
-    </q-toolbar>
-
+  <base-page title="Pedidos" icon="delivery_dining" :sync="sync">
     <div
       class="fit row wrap justify-between items-center content-center mobile-styles-o"
       style="margin: 20px 0"
@@ -135,13 +122,14 @@
         </q-tab-panels>
       </div>
     </div>
-  </q-page>
+  </base-page>
 </template>
 
 <script>
 import NotConfirmed from "./status_tables/NotConfirmed.vue";
 import TheConfirmed from "./status_tables/TheConfirmed.vue";
 import TheDone from "./status_tables/TheDone.vue";
+import BasePage from "src/components/bases/BasePage.vue";
 
 export default {
   props: ["toAll"],
@@ -149,7 +137,8 @@ export default {
   components: {
     NotConfirmed,
     TheConfirmed,
-    TheDone
+    TheDone,
+    BasePage
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];

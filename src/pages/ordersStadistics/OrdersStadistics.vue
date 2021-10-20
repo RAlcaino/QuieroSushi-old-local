@@ -1,12 +1,6 @@
 <template>
-  <q-page class="q-pa-sm" style="padding-bottom: 100px">
+  <base-page title="Estadisticas de ventas" icon="paid" :sync="null">
     <the-cancel :mode="'sales'"></the-cancel>
-    <q-toolbar class="bg-primary text-white" style="border-radius: 50px">
-      <q-btn flat round dense icon="paid" />
-      <q-toolbar-title :style="FontSize"
-        >Estadisticas de ventas</q-toolbar-title
-      >
-    </q-toolbar>
     <div
       class="fit column no-wrap justify-center items-center content-center"
       style="margin-top: 20px"
@@ -253,18 +247,6 @@
 
         <template v-slot:body="props">
           <q-tr :props="props">
-            <!--<q-td>
-              <div style="width: 100%; display: flex; justify-content: center">
-                <q-btn
-                  color="primary"
-                  round
-                  size="sm"
-                  @click="dialogCancel(props.row)"
-                >
-                  <q-icon size="20px" name="undo" />
-                </q-btn>
-              </div>
-            </q-td>-->
             <q-td v-for="col in props.cols" :key="col.name" :props="props">
               <template>
                 {{ col.value }}
@@ -309,11 +291,12 @@
         style="border-radius: 100%"
       />
     </div>
-  </q-page>
+  </base-page>
 </template>
 
 <script>
 import TheCancel from "../orders/status_tables/dialogs/TheCancel.vue";
+import BasePage from "src/components/bases/BasePage.vue";
 export default {
   name: "OrderStadistics",
   inject: [
@@ -326,7 +309,8 @@ export default {
     "getStoreLocals"
   ],
   components: {
-    TheCancel
+    TheCancel,
+    BasePage
   },
   data() {
     return {

@@ -146,6 +146,22 @@ const routes = [
           }
         }
       },
+      {
+        name: "support-tickets",
+        path: "/tickets",
+        component: () => import("src/pages/support/TheTickets.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("/tickets")) {
+              next();
+            } else {
+              next("/404");
+            }
+          } else {
+            next("/login");
+          }
+        }
+      },
       /* Template Paths - It could be useful*/
       { path: "/Dashboard2", component: () => import("pages/Dashboard2.vue") },
       { path: "/Map", component: () => import("pages/Map.vue") },

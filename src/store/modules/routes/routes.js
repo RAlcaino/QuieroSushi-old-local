@@ -133,6 +133,18 @@ const mutations = {
       {
         name: "do.reply",
         link: "/replies"
+      },
+      {
+        name: "tickets.all",
+        link: "/tickets"
+      },
+      {
+        name: "tickets.resources",
+        link: "/tickets/{id}" //id = idLocal or idTicket
+      },
+      {
+        name: "comments",
+        link: "/comments" 
       }
     ];
   }

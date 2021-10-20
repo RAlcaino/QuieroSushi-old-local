@@ -1,20 +1,9 @@
 <template>
-  <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
-    <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
-      <q-btn flat round dense icon="question_answer" />
-      <q-toolbar-title>
-        Comentarios en {{ localSelected.label }}</q-toolbar-title
-      >
-      <q-btn
-        flat
-        round
-        dense
-        icon="sync"
-        class="q-mr-xs"
-        @click="getComments(true)"
-      />
-    </q-toolbar>
-
+  <base-page
+    :title="`Comentarios en ${localSelected.label}`"
+    icon="question_answer"
+    :sync="getComments"
+  >
     <div class="text-h6 comment__container__select">
       <div style="margin: 0 5px">
         <q-select
@@ -129,16 +118,18 @@
         </p>
       </div>
     </div>
-  </q-page>
+  </base-page>
 </template>
 
 <script>
 import InputComments from "../../../components/bases/InputComments.vue";
+import BasePage from "../../../components/bases/BasePage.vue";
 
 export default {
   inject: ["showNotification", "errorHandling", "scrollTop", "getStoreLocals"],
   components: {
-    InputComments
+    InputComments,
+    BasePage
   },
   created() {
     this.init();
@@ -206,10 +197,8 @@ export default {
         this.page = 1;
       }
     },
-    getComments(flag) {
-      if (flag) {
-        this.flag = true;
-      }
+    getComments() {
+      this.flag = true;
       var url = this.$store.getters["routes/getRoute"]("get.comments", {
         localId: this.localSelected.value
       });

@@ -1,22 +1,9 @@
 <template>
-  <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
+  <base-page title="Administrar usuarios" icon="group" :sync="sync">
     <new-user-dialog></new-user-dialog>
     <edit-user-dialog></edit-user-dialog>
     <delete-user-dialog></delete-user-dialog>
     <change-password></change-password>
-    <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
-      <q-btn flat round dense icon="group" />
-      <q-toolbar-title :style="FontSize"> Administrar usuarios</q-toolbar-title>
-      <q-btn
-        flat
-        round
-        dense
-        icon="sync"
-        class="q-mr-xs"
-        @click="sync(false)"
-      />
-    </q-toolbar>
-
     <div
       class="fit row wrap justify-end items-center content-center mobile-styles-o"
       style="margin: 20px 0"
@@ -197,7 +184,7 @@
         </template>
       </q-table>
     </div>
-  </q-page>
+  </base-page>
 </template>
 
 <script>
@@ -207,6 +194,7 @@ import NewUserDialog from "./dialogs/NewUserDialog.vue";
 import DeleteUserDialog from "./dialogs/DeleteUserDialog.vue";
 import EditUserDialog from "./dialogs/EditUserDialog.vue";
 import ChangePassword from "./dialogs/ChangePassword.vue";
+import BasePage from "src/components/bases/BasePage.vue";
 
 export default {
   inject: ["showNotification", "showLoading", "hideLoading", "errorHandling","getStoreLocals"],
@@ -215,7 +203,8 @@ export default {
     NewUserDialog,
     DeleteUserDialog,
     EditUserDialog,
-    ChangePassword
+    ChangePassword,
+    BasePage
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];

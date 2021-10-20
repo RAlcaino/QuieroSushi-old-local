@@ -1,21 +1,8 @@
 <template>
-  <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
+  <base-page title="Cupones" icon="category" :sync="sync">
     <the-aditionals :localName="localSelected.label"></the-aditionals>
     <the-edit></the-edit>
     <edit-photo></edit-photo>
-    <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
-      <q-btn flat round dense icon="confirmation_number" />
-      <q-toolbar-title :style="FontSize"> Cupones</q-toolbar-title>
-      <q-btn
-        flat
-        round
-        dense
-        icon="sync"
-        class="q-mr-xs"
-        @click="sync(false)"
-      />
-    </q-toolbar>
-
     <div
       style="padding-top:25px; margin:0 auto;margin-left: 80px;"
       class="fit row wrap justify-between items-start content-start container-q-select"
@@ -283,13 +270,14 @@
         input
       />
     </div>
-  </q-page>
+  </base-page>
 </template>
 
 <script>
 import TheAditionals from "./dialogs/TheAditionals.vue";
 import TheEdit from "./dialogs/TheEdit.vue";
 import EditPhoto from "./dialogs/EditPhoto.vue";
+import BasePage from "../../components/bases/BasePage.vue";
 
 export default {
   inject: [
@@ -302,7 +290,8 @@ export default {
   components: {
     TheAditionals,
     TheEdit,
-    EditPhoto
+    EditPhoto,
+    BasePage
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
