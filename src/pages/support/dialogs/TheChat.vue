@@ -3,8 +3,8 @@
     :open="open"
     :width="700"
     :closeModal="closeModal"
-    title="Chat"
-    icon="chat"
+    title="Soporte"
+    icon="support_agent"
   >
     <q-card-section
       id="chat"
