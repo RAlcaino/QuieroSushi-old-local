@@ -3,8 +3,15 @@
     <the-chat :sync="syncComments"></the-chat>
     <new-ticket :locals="locals" :sync="sync"></new-ticket>
     <close-ticket></close-ticket>
-    <div class="text-h6 tickets__container__select">
-      <div>
+    <div
+      class="text-h6"
+      :class="[
+        godAccess
+          ? 'tickets__container__select'
+          : 'tickets__container__select__alt'
+      ]"
+    >
+      <div v-if="godAccess">
         <q-btn
           rounded
           color="green"
@@ -135,15 +142,28 @@
         </q-expansion-item>
       </q-list>
 
-      <q-pagination
-        v-if="getData.length === perPage && searching === false"
-        v-model="page"
-        :max="maxPage"
-        style="padding-top:25px"
-        color="primary"
-        input
-        @click="sync(false)"
-      />
+      <template v-if="getData.length === perPage">
+        <q-pagination
+          v-if="searching === false"
+          v-model="page"
+          :max="maxPage"
+          style="padding-top:25px"
+          color="primary"
+          input
+          @click="sync(false)"
+        />
+      </template>
+      <template v-else>
+        <q-pagination
+          v-if="page === maxPage && page !== 1 && searching === false"
+          v-model="page"
+          :max="maxPage"
+          style="padding-top:25px"
+          color="primary"
+          input
+          @click="sync(false)"
+        />
+      </template>
     </div>
   </base-page>
 </template>
@@ -160,12 +180,13 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getStoreLocals"
+    "getStoreLocals",
+    "scrollTop"
   ],
   created() {
     this.init();
     this.sync(false);
-
+    this.godAccess = this.$store.getters["auth/getDataUser"].role === "God";
     this.bus.$on("sync-tickets", local => {
       console.log(local);
       if (local !== undefined) {
@@ -186,6 +207,7 @@ export default {
   data() {
     return {
       data: [],
+      godAccess: "",
       localSelected: {},
       local: [],
       statusSelected: "Abierto",
@@ -245,7 +267,7 @@ export default {
       var url =
         this.$store.getters["routes/getRoute"]("tickets.resources", {
           id: this.localSelected.value
-        }) + `?estado=${this.statusSelected.toLowerCase()}?page=${this.page}`;
+        }) + `?estado=${this.statusSelected.toLowerCase()}&page=${this.page}`;
 
       this.$axios
         .get(url, {
@@ -266,6 +288,7 @@ export default {
                 flag: data.flag
               });
             }
+            this.scrollTop();
           }
 
           this.flag = false;
@@ -333,6 +356,14 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin: 20px auto;
+}
+
+.tickets__container__select__alt {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
   margin: 20px auto;
 }
 </style>

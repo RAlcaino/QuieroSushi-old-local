@@ -234,16 +234,17 @@ export default {
         locals.push(row);
       });
 
-      if(option ==="ALL"){
+      if (option === "ALL") {
         return locals;
-      }
-      else if(option === "ACTIVE"){
-        return locals.filter(item => item.localStatus==="normal");
+      } else if (option === "ACTIVE") {
+        return locals.filter(item => item.localStatus === "normal");
       }
     },
     scrollTop() {
       $(document).ready(function() {
-        $("html").animate({ scrollTop: 0 }, 1000);
+        if ($("html").scrollTop() !== 0) {
+          $("html").animate({ scrollTop: 0 }, 1000);
+        }
       });
     }
   }
