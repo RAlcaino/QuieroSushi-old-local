@@ -46,7 +46,7 @@
     </div>
     <div
       style="padding-top:10px; margin:0 auto;"
-      class="fit row wrap justify-center items-start content-start container-q-select"
+      class="fit column justify-center items-center content-center"
     >
       <div
         style="margin-top:100px"
