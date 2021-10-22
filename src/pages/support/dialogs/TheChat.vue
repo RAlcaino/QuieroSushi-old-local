@@ -12,6 +12,16 @@
       class="row items-center justify-center scroll"
       v-if="data !== null"
     >
+      <div style="width: 90%;">
+        <q-chat-message
+          name="Descripción del ticket"
+          :text="[data.description]"
+          :sent="false"
+          bg-color="amber-7"
+          :stamp="data.created_at"
+        />
+      </div>
+
       <div style="width: 90%;" v-if="data.comments.length !== 0">
         <q-chat-message
           v-for="comment in data.comments"
@@ -235,7 +245,7 @@ export default {
           1000
         );
       });
-    }
+    },
   }
 };
 </script>

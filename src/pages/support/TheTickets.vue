@@ -4,14 +4,9 @@
     <new-ticket :locals="locals" :sync="sync"></new-ticket>
     <close-ticket></close-ticket>
     <div
-      class="text-h6"
-      :class="[
-        godAccess
-          ? 'tickets__container__select'
-          : 'tickets__container__select__alt'
-      ]"
+      class="text-h6 tickets__container__select"
     >
-      <div v-if="godAccess">
+      <div>
         <q-btn
           rounded
           color="green"
@@ -186,7 +181,6 @@ export default {
   created() {
     this.init();
     this.sync(false);
-    this.godAccess = this.$store.getters["auth/getDataUser"].role === "God";
     this.bus.$on("sync-tickets", local => {
       console.log(local);
       if (local !== undefined) {
@@ -207,7 +201,6 @@ export default {
   data() {
     return {
       data: [],
-      godAccess: "",
       localSelected: {},
       local: [],
       statusSelected: "Abierto",
@@ -356,14 +349,6 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin: 20px auto;
-}
-
-.tickets__container__select__alt {
-  width: 90%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
   margin: 20px auto;
 }
 </style>

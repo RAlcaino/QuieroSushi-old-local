@@ -229,7 +229,7 @@ export default {
 
 <style lang="scss" scoped>
 .class__card {
-  width: 50%;
+  width: 90%;
   height: auto;
   border-radius: 15px;
 }
