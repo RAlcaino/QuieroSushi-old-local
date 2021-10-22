@@ -9,7 +9,7 @@
         :label="`Responder`"
       />
     </div>
-    <div v-else style="display: flex; flex-direction: column; padding: 16px 0;">
+    <div v-else style="display: flex; flex-direction: column; padding: 16px 0; width:50%;">
       <div style="display: flex;">
         <q-input
           v-model="text"
