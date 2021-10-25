@@ -3,6 +3,7 @@
     :title="`Comentarios en ${localSelected.label}`"
     icon="question_answer"
     :sync="getComments"
+    :toolbar="true"
   >
     <div class="text-h6 comment__container__select">
       <div style="margin: 0 5px">

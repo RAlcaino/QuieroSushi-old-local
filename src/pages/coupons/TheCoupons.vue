@@ -1,5 +1,5 @@
 <template>
-  <base-page title="Cupones" icon="category" :sync="sync">
+  <base-page title="Cupones" icon="category" :sync="sync" :toolbar="true">
     <the-aditionals :localName="localSelected.label"></the-aditionals>
     <the-edit></the-edit>
     <edit-photo></edit-photo>

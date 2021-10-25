@@ -1,5 +1,5 @@
 <template>
-  <base-page title="Pedidos" icon="delivery_dining" :sync="sync">
+  <base-page title="Pedidos" icon="delivery_dining" :sync="sync" :toolbar="true">
     <div
       class="fit row wrap justify-between items-center content-center mobile-styles-o"
       style="margin: 20px 0"

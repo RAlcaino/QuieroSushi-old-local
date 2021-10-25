@@ -1,5 +1,5 @@
 <template>
-  <base-page title="Administrar usuarios" icon="group" :sync="sync">
+  <base-page title="Administrar usuarios" icon="group" :sync="sync" :toolbar="true">
     <new-user-dialog></new-user-dialog>
     <edit-user-dialog></edit-user-dialog>
     <delete-user-dialog></delete-user-dialog>

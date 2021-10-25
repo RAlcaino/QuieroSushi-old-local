@@ -113,10 +113,10 @@ const routes = [
         }
       },
       {
-        name: "orders-stadistics",
+        name: "orders-statistics",
         path: "/ventas",
         component: () =>
-          import("src/pages/ordersStadistics/OrdersStadistics.vue"),
+          import("src/pages/ordersStatistics/OrdersStatistics.vue"),
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
             if (accessTo("/ventas")) {
@@ -153,6 +153,22 @@ const routes = [
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
             if (accessTo("/tickets")) {
+              next();
+            } else {
+              next("/404");
+            }
+          } else {
+            next("/login");
+          }
+        }
+      },
+      {
+        name: "weekly-historial",
+        path: "/historico-cobro-semanal",
+        component: () => import("src/pages/Historial/WeeklyHistorial.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("/historico-cobro-semanal")) {
               next();
             } else {
               next("/404");

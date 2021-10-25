@@ -1,5 +1,5 @@
 <template>
-  <base-page title="Estadisticas de ventas" icon="paid" :sync="null">
+  <base-page title="Estadisticas de ventas" icon="paid" :sync="null" :toolbar="true">
     <the-cancel :mode="'sales'"></the-cancel>
     <div
       class="fit column no-wrap justify-center items-center content-center"

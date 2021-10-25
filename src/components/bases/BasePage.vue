@@ -1,6 +1,6 @@
 <template>
-  <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
-    <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
+  <q-page class="q-pa-sm" style="background:white; max-height: 600px; padding-bottom: 20px ; overflow: auto;">
+    <q-toolbar v-if="toolbar" class="bg-primary text-white" style="border-radius:50px;">
       <q-btn flat round dense :icon="icon" />
       <q-toolbar-title :style="FontSize"> {{ title }}</q-toolbar-title>
       <q-btn
@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  props: ["title", "sync", "icon"],
+  props: ["title", "sync", "icon", "toolbar"],
   data() {
     return {
       responsiveMobile: false

@@ -488,7 +488,7 @@
       <router-view />
     </q-page-container>
 
-    <div style="position: fixed; right: 0; bottom:0;">
+    <!--<div style="position: fixed; right: 0; bottom:0;">
       <q-toolbar>
         <div class="fit row no-wrap justify-end items-start content-start">
           <q-btn
@@ -503,7 +503,7 @@
           </q-btn>
         </div>
       </q-toolbar>
-    </div>
+    </div>-->
   </q-layout>
 </template>
 

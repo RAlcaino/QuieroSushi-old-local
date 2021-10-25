@@ -1,5 +1,5 @@
 <template>
-  <base-page title="Mis Tickets" icon="confirmation_number" :sync="sync">
+  <base-page title="Mis Tickets" icon="confirmation_number" :sync="sync" :toolbar="true">
     <the-chat :sync="syncComments"></the-chat>
     <new-ticket :locals="locals" :sync="sync"></new-ticket>
     <close-ticket></close-ticket>

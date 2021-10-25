@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-sm" style="padding-bottom:100px">
+  <base-page :toolbar="false">
     <edit-photo></edit-photo>
     <div class="row q-col-gutter-sm" v-if="dataLocal.nombre !== ''">
       <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12">
@@ -35,9 +35,8 @@
         alt="sad"
         width="130"
         style="border-radius:100%"
-      />
-    </div>
-  </q-page>
+      /></div
+  ></base-page>
 </template>
 
 <script>
@@ -48,6 +47,7 @@ import LocalInfo from "./cards/LocalInfo.vue";
 import LocalSchedule from "./cards/LocalSchedule.vue";
 import LocalOwner from "./cards/LocalOwner.vue";
 import LocalCommunes from "./cards/LocalCommunes.vue";
+import BasePage from "src/components/bases/BasePage.vue";
 
 export default {
   name: "UserProfile",
@@ -63,7 +63,8 @@ export default {
     LocalInfo,
     LocalSchedule,
     LocalOwner,
-    LocalCommunes
+    LocalCommunes,
+    BasePage
   },
   provide() {
     return {
