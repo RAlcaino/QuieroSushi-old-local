@@ -190,6 +190,7 @@ export default {
       if (val !== null) {
         this.localSelected = val;
         this.statusSelected = "Todos";
+        this.page = 1;
         this.getComments(true);
       }
     },
