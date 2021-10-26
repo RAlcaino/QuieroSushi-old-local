@@ -178,6 +178,22 @@ const routes = [
           }
         }
       },
+      {
+        name: "register-services",
+        path: "/registrar-transferencia",
+        component: () => import("src/pages/registerServices/RegisterServices.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("/registrar-transferencia")) {
+              next();
+            } else {
+              next("/404");
+            }
+          } else {
+            next("/login");
+          }
+        }
+      },
       /* Template Paths - It could be useful*/
       { path: "/Dashboard2", component: () => import("pages/Dashboard2.vue") },
       { path: "/Map", component: () => import("pages/Map.vue") },
