@@ -1,12 +1,17 @@
 <template>
-  <base-page title="Administrar usuarios" icon="group" :sync="sync" :toolbar="true">
+  <base-page
+    title="Administrar usuarios"
+    icon="group"
+    :sync="sync"
+    :toolbar="true"
+  >
     <new-user-dialog></new-user-dialog>
     <edit-user-dialog></edit-user-dialog>
     <delete-user-dialog></delete-user-dialog>
     <change-password></change-password>
     <div
-      class="fit row wrap justify-end items-center content-center mobile-styles-o"
-      style="margin: 20px 0"
+      class="row wrap justify-end items-end content-end mobile-styles-o"
+      style="margin: 20px auto; width: 90%;"
     >
       <div v-if="getStoreLocals('ACTIVE').length > 1">
         <q-select
@@ -21,9 +26,7 @@
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"
-          style="margin-right:46px;"
           :virtual-scroll-sticky-size-start="80"
-          class="q-select-responsive"
         >
           <template v-slot:prepend>
             <q-icon name="store" />
@@ -121,7 +124,13 @@
           </form>
         </template>
         <template v-slot:top-left>
-          <q-btn color="green" rounded size="sm" @click="dialogNew()">
+          <q-btn
+            color="green"
+            rounded
+            size="sm"
+            @click="dialogNew()"
+            style="margin-bottom: 10px;"
+          >
             <q-icon style="margin-right:5px" size="20px" name="add_circle" />
             <div style="font-size:12px">Nuevo</div>
           </q-btn>
@@ -197,7 +206,13 @@ import ChangePassword from "./dialogs/ChangePassword.vue";
 import BasePage from "src/components/bases/BasePage.vue";
 
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling","getStoreLocals"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
   components: {
     StatusComponent,
     NewUserDialog,
@@ -490,4 +505,10 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+@media screen and (max-width: 450px) {
+  .mobile-styles-o {
+    justify-content: center !important;
+  }
+}
+</style>

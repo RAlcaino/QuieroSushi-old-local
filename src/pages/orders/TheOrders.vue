@@ -1,8 +1,13 @@
 <template>
-  <base-page title="Pedidos" icon="delivery_dining" :sync="sync" :toolbar="true">
+  <base-page
+    title="Pedidos"
+    icon="delivery_dining"
+    :sync="sync"
+    :toolbar="true"
+  >
     <div
-      class="fit row wrap justify-between items-center content-center mobile-styles-o"
-      style="margin: 20px 0"
+      class="row wrap justify-between items-center content-center mobile-styles-o"
+      style="margin: 20px auto; width: 90%"
     >
       <div class="input-style-o">
         <q-input
@@ -27,9 +32,7 @@
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"
-          style="margin-right:46px;"
           :virtual-scroll-sticky-size-start="80"
-          class="q-select-responsive"
         >
           <template v-slot:prepend>
             <q-icon name="store" />
@@ -133,7 +136,13 @@ import BasePage from "src/components/bases/BasePage.vue";
 
 export default {
   props: ["toAll"],
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling","getStoreLocals"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
   components: {
     NotConfirmed,
     TheConfirmed,
@@ -2495,10 +2504,6 @@ export default {
   padding: 0px 46px 0px 16px;
 }
 
-.input-style-o {
-  margin-left: 50px;
-  margin-top: 5px;
-}
 @media screen and (max-width: 900px) {
   .dropdown-container {
     padding-top: 3%;
@@ -2511,15 +2516,10 @@ export default {
   .dropdown-locals {
     padding: 16px 0;
   }
-  .q-select-responsive {
-    margin-left: 60px;
-    margin-top: 10px;
-  }
 }
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 550px) {
   .input-style-o {
-    margin-top: 0px !important;
-    margin-left: 5px !important;
+    margin-bottom: 10px !important;
   }
   .mobile-styles-o {
     justify-content: center !important;
