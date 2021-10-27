@@ -83,7 +83,13 @@
 export default {
   name: "Checkout",
   props: ["data", "total"],
-  inject: ["showNotification","formatNumber", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "formatNumber",
+    "showLoading",
+    "hideLoading",
+    "errorHandling"
+  ],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     var vue = this;
@@ -98,12 +104,12 @@ export default {
       step: 1,
       address_detail: {},
       card_detail: {},
-      prod:null
+      prod: null
     };
   },
-  computed:{
-    getData(){
-      return this.data.filter(item => item.qty!=0);
+  computed: {
+    getData() {
+      return this.data.filter(item => item.qty != 0);
     }
   },
   methods: {
@@ -120,9 +126,11 @@ export default {
           .post(
             url,
             {
-              idLocal: this.$store.getters['auth/getDataLocal'].id,
+              idLocal: this.$store.getters["auth/getDataLocal"].id,
               amount: this.total,
-              commerceOrder: Math.round(Math.random() * (99999999999999 - 1) + 1),
+              commerceOrder: Math.round(
+                Math.random() * (99999999999999 - 1) + 1
+              ),
               detail: this.data
             },
             {
@@ -132,16 +140,24 @@ export default {
             }
           )
           .then(response => {
+            this.hideLoading();
             if (response.data.status === "success") {
-              this.hideLoading();
-              window.location.href=response.data.result;
+              window.location.href = response.data.result;
             } else {
-              this.showNotification(response.data.message, "negative", "error");
+              this.showNotification(
+                "Error al procesar el pago. Contacte al administrador del sistema.",
+                "negative",
+                "error"
+              );
             }
           })
           .catch(error => {
             this.hideLoading();
-            this.errorHandling(error);
+            this.showNotification(
+              "Error al procesar el pago. Contacte al administrador del sistema.",
+              "negative",
+              "error"
+            );
           });
       }
     }

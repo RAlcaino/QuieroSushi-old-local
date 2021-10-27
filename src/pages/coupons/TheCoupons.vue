@@ -4,7 +4,7 @@
     <the-edit></the-edit>
     <edit-photo></edit-photo>
     <div
-      style="padding-top:25px; margin:0 auto;margin-left: 80px;"
+      style="padding-top:25px; margin:0 auto !important;"
       class="fit row wrap justify-between items-start content-start container-q-select"
     >
       <div class="labels-available">
@@ -35,7 +35,6 @@
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"
-          class="q-select-coupon"
           :virtual-scroll-sticky-size-start="80"
         >
           <template v-slot:prepend>
