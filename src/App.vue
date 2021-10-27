@@ -166,16 +166,14 @@ export default {
             }
           } else {
             this.showNotification(
-              //error.response.data.message,
-              "Ha ocurrido un error con el servidor",
+              error.response.data.message,
               "negative",
               "error"
             );
           }
         } else if (error.response.status == 401) {
           this.showNotification(
-            //error.response.data.message,
-            "Ha ocurrido un error con el servidor",
+            error.response.data.message,
             "negative",
             "error"
           );
