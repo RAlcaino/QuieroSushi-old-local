@@ -181,7 +181,9 @@ const routes = [
       {
         name: "register-services",
         path: "/registrar-transferencia",
-        component: () => import("src/pages/registerServices/RegisterServices.vue"),
+        component: () =>
+          import("src/pages/registerServices/RegisterServices.vue"),
+        prop: true,
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
             if (accessTo("/registrar-transferencia")) {

@@ -94,7 +94,7 @@
           class="fit column wrap justify-center items-center content-center"
         >
           <img
-            src="~/assets/maki-roll.gif"
+            src="~/assets/maki-roll2.gif"
             alt="sad"
             width="130"
             style="border-radius:100%"

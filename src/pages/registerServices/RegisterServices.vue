@@ -6,25 +6,12 @@
     :toolbar="true"
     style="display: flex; flex-direction: column; align-items: center;"
   >
-    <q-card class="card__styles">
+    <q-card class="card__styles" v-if="services.length !== 0">
       <q-card-section horizontal style="height: 100%">
         <q-card-section
           style="width: 50%; display: flex; flex-direction: column;"
         >
-          <strong style="font-size: 16px;">Servicios: </strong>
-          <q-select
-            outlined
-            rounded
-            dense
-            v-model="serviceSelected"
-            :options="services"
-            label="Servicios"
-            @input="changeService"
-            style="width: 100%; margin-top: 20px;"
-            multiple
-            map-options
-            hint="Selecciona uno o varios servicios"
-          />
+          <strong style="font-size: 16px;">Servicios </strong>
 
           <q-select
             v-if="locals.length > 1"
@@ -39,6 +26,34 @@
             "
             hint="Seleccione el local que desea aplicar el servicio"
           />
+          <q-select
+            outlined
+            rounded
+            dense
+            v-model="serviceSelected"
+            :options="services"
+            label="Servicios"
+            @input="changeService"
+            style="width: 100%; margin-top: 20px;"
+            hint="Selecciona un servicio y agregue a su lista"
+          >
+            <template v-slot:selected-item="scope">
+              <span v-if="scope.opt.label !== null"
+                >{{scope.opt.label}} <strong>${{scope.opt.price}}</strong></span
+              >
+              <span v-else>Seleccionar...</span>
+            </template>
+
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                <q-item-section>
+                  <q-item-label
+                    v-html="`${scope.opt.label} <strong>$${scope.opt.price}</strong>`"
+                  />
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
 
           <div
             style="width: 100%; display: flex; justify-content: center; margin-bottom: 20px;"
@@ -55,7 +70,7 @@
             </q-btn>
           </div>
 
-          <q-separator></q-separator>
+          <!--<q-separator></q-separator>
 
           <div style="width: 100%; display: flex; justify-content: center; fle">
             <q-uploader
@@ -71,13 +86,21 @@
               @removed="fileRemoved"
             >
             </q-uploader>
-          </div>
+          </div>-->
         </q-card-section>
 
         <q-separator vertical></q-separator>
 
         <q-card-section style="width: 50%;">
-          <strong style="font-size: 16px; padding: 20px 0;">Resumen: </strong>
+          <div
+            style="display: flex; flex-direction: row;justify-content: space-between"
+          >
+            <strong style="font-size: 16px;">Resumen </strong>
+            <strong v-if="total !== 0" style="font-size: 16px;"
+              >Total: ${{ formatNumberCustom(total) }}
+            </strong>
+          </div>
+
           <div
             style="position: relative; width: 100%; height: 90%;"
             v-if="servicesAdded.length !== 0"
@@ -99,12 +122,15 @@
                 </q-chip>
 
                 <div
-                  style="margin-left: 20px; margin-top: 10px;"
-                  v-for="item2 of item.services"
-                  :key="item2.value"
+                  style="margin-left: 20px; margin-top: 10px; display: flex; flex-wrap:wrap; "
                 >
-                  <p style="margin:0">
+                  <p
+                    v-for="item2 of item.services"
+                    :key="item2.id"
+                    style="margin:0; width: 50%;"
+                  >
                     <i class="fas fa-check"></i> {{ item2.label }}
+                    <strong>${{ item2.price }}</strong>
                   </p>
                 </div>
               </div>
@@ -137,10 +163,24 @@
         </q-card-section>
       </q-card-section>
     </q-card>
+
+    <div
+      style="margin-top:200px"
+      class="fit column wrap justify-center items-center content-center"
+      v-if="services.length === 0"
+    >
+      <img
+        src="~/assets/maki-roll2.gif"
+        alt="sad"
+        width="130"
+        style="border-radius:100%"
+      />
+    </div>
   </base-page>
 </template>
 
 <script>
+//#edf1f5
 import BasePage from "src/components/bases/BasePage.vue";
 export default {
   components: { BasePage },
@@ -150,7 +190,8 @@ export default {
     "hideLoading",
     "errorHandling",
     "getStoreLocals",
-    "scrollTop"
+    "scrollTop",
+    "formatNumber"
   ],
   data() {
     return {
@@ -158,42 +199,9 @@ export default {
       localSelected: {},
       servicesAdded: [],
       file_selected: null,
-      serviceSelected: [
-        {
-          value: "psp",
-          label: "Pago semanal sin pagar"
-        }
-      ],
-      services: [
-        {
-          value: "psp",
-          label: "Pago semanal sin pagar"
-        },
-        {
-          value: "1d",
-          label: "1 Destacado"
-        },
-        {
-          value: "3d",
-          label: "3 Destacados"
-        },
-        {
-          value: "6d",
-          label: "6 Destacados"
-        },
-        {
-          value: "1s",
-          label: "1 Subir"
-        },
-        {
-          value: "10s",
-          label: "10 Subir"
-        },
-        {
-          value: "20s",
-          label: "20 Subir"
-        }
-      ]
+      serviceSelected: {},
+      services: [],
+      total: 0
     };
   },
   computed: {
@@ -206,6 +214,7 @@ export default {
     sync() {},
     init() {
       this.formatLocals();
+      this.getPrices();
     },
     formatLocals() {
       this.locals = [];
@@ -230,30 +239,36 @@ export default {
       this.file_selected = null;
     },
     addServices() {
-      let exist = this.servicesAdded.find(
+      let index = this.servicesAdded.findIndex(
         item => item.local.label === this.localSelected.label
       );
 
-      if (exist !== undefined) {
-        this.showNotification("El local ya fue agregado a su lista","negative" ,"error");
+      if (index !== -1) {
+        this.servicesAdded[index].services.push({
+          id: Math.random(),
+          ...this.serviceSelected
+        });
+        this.total += +this.serviceSelected.pricev2;
         return;
       }
 
       this.servicesAdded.push({
         id: Math.random(),
-        services: this.serviceSelected,
+        services: [{ id: Math.random(), ...this.serviceSelected }],
         local: this.localSelected,
         flag: true
       });
-      this.serviceSelected = [
-        {
-          value: "psp",
-          label: "Pago semanal sin pagar"
-        }
-      ];
-      this.localSelected = this.locals[0];
+
+      this.total += +this.serviceSelected.pricev2;
+      this.serviceSelected = this.services[0];
     },
     deleteLocal(storeId) {
+      let item = this.servicesAdded.find(item => item.id === storeId);
+
+      item.services.map(item => {
+        this.total -= item.pricev2;
+      });
+
       this.servicesAdded = this.servicesAdded.filter(
         item => item.id !== storeId
       );
@@ -265,6 +280,61 @@ export default {
       setTimeout(() => {
         this.hideLoading();
       }, 2000);
+    },
+    getPrices() {
+      var url = this.$store.getters["routes/getRoute"]("services.prices");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            let pricesGoUp = response.data.result.pricesGoUp;
+
+            pricesGoUp.map(item => {
+              this.services.push({
+                value: `${item.qty}s`,
+                label: `${item.qty} Subir`,
+                price: this.formatNumber(item.price),
+                pricev2: item.price
+              });
+            });
+
+            let pricesStandOut = response.data.result.pricesStandOut;
+
+            pricesStandOut.map(item => {
+              this.services.push({
+                value: `${item.qty}d`,
+                label:
+                  item.qty === 1
+                    ? `${item.qty} Destacado`
+                    : `${item.qty} Destacados`,
+                price: this.formatNumber(item.price),
+                pricev2: item.price
+              });
+            });
+
+            this.serviceSelected = this.services[0];
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    formatNumberCustom(num) {
+      let splitNumber = num.toString().split(".");
+      let integer = this.formatNumber(parseInt(splitNumber[0])).toString();
+      let decimals = splitNumber[1];
+
+      if (decimals) {
+        return `${integer},${decimals}`;
+      } else {
+        return integer;
+      }
     }
   }
 };

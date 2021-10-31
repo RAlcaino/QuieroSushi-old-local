@@ -145,6 +145,10 @@ const mutations = {
       {
         name: "comments",
         link: "/comments" 
+      },
+      {
+        name: "status.postpago",
+        link: "/status_post_pago" 
       }
     ];
   }

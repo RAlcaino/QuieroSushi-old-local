@@ -1,6 +1,11 @@
 <template>
-  <base-page icon="date_range" :sync="sync" title="Histórico Cobro Semanal" :toolbar="true">
-    <div class="fit row no-wrap justify-end q__select__wh" >
+  <base-page
+    icon="date_range"
+    :sync="sync"
+    title="Histórico Cobro Semanal"
+    :toolbar="true"
+  >
+    <div class="row no-wrap justify-end q__select__wh">
       <q-select
         v-if="locals.length > 1"
         outlined
@@ -16,20 +21,21 @@
     <div
       class="fit column no-wrap justify-center items-center content-center"
       style="margin-top: 20px"
+      v-if="data.length !== 0"
     >
       <q-table
-        :data="response"
+        :data="data"
         :columns="columns"
-        virtual-scroll
         :pagination.sync="pagination"
         :rows-per-page-options="[0]"
+        :loading="loadingPage"
+        :pagination-label="getPaginationLabel"
         no-results-label="No se encontraron cobros. Intenten de nuevo."
-        style="height: 450px; width: 95%; border-radius: 15px; margin-top: 15px;"
+        style=" width: 80%; border-radius: 15px; margin-top: 15px;"
         class="my-sticky-header-table"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
-            <!--<q-th>Anular</q-th>-->
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               {{ col.label }}
             </q-th>
@@ -39,13 +45,88 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td v-for="col in props.cols" :key="col.name" :props="props">
-              <template>
-                {{ col.value }}
+              <template v-if="col.name === 'semana'">
+                {{ generateWeek(col.value) }}
+              </template>
+              <template v-if="col.name === 'saldo'">
+                {{ formatBalance(col.value, props) }}</template
+              >
+              <template v-if="col.name === 'acciones'">
+                <div style="display:flex; justify-content: center">
+                  <q-btn
+                    v-if="
+                      props.row.fecha_pago === '0000-00-00 00:00:00' &&
+                        props.cols[1].value > 0
+                    "
+                    class="gt-sm"
+                    color="green"
+                    rounded
+                    size="sm"
+                    style="margin-right:5px"
+                    @click="pay(props)"
+                  >
+                    <q-icon style="margin-right:5px" size="20px" name="paid" />
+                    <div style="font-size:12px">Pagar</div>
+                  </q-btn>
+                  <q-btn
+                    class="gt-sm"
+                    color="blue"
+                    rounded
+                    size="sm"
+                    style="margin-right:5px"
+                    @click="detail(props)"
+                  >
+                    <q-icon style="margin-right:5px" size="20px" name="info" />
+                    <div style="font-size:12px">Ver Detalle</div>
+                  </q-btn>
+
+                  <q-btn
+                    class="gt-sm"
+                    color="primary"
+                    rounded
+                    size="sm"
+                    style="margin-right:5px"
+                    @click="registerPay(props)"
+                    v-if="
+                      props.row.fecha_pago === '0000-00-00 00:00:00' &&
+                        props.cols[1].value > 0
+                    "
+                  >
+                    <q-icon
+                      style="margin-right:5px"
+                      size="20px"
+                      name="credit_score"
+                    />
+                    <div style="font-size:12px">Registrar Transferencia</div>
+                  </q-btn>
+                </div>
               </template>
             </q-td>
           </q-tr>
         </template>
       </q-table>
+      <div v-if="data.length !== 0" class="row justify-center q-mt-md">
+        <q-pagination
+          v-model="page"
+          color="grey-8"
+          :max="meta.total_pages"
+          size="sm"
+          input
+          @input="changePage()"
+        />
+      </div>
+    </div>
+    <div
+      style="margin-top:150px"
+      class="fit column wrap justify-center items-center content-center"
+      v-else
+    >
+      <img
+        src="~/assets/maki-roll2.gif"
+        alt="sad"
+        width="130"
+        style="border-radius:100%"
+      />
     </div>
   </base-page>
 </template>
@@ -61,114 +142,42 @@ export default {
     "hideLoading",
     "errorHandling",
     "getStoreLocals",
-    "scrollTop"
+    "formatNumber"
   ],
   data() {
     return {
       pagination: {
-        rowsPerPage: 10,
+        rowsPerPage: 15,
         currentPage: null,
         totalPages: null
       },
+      page: 1,
+      meta: {},
+      loadingPage: false,
       columns: [
         {
-          name: "timestamp_cobro",
+          name: "semana",
           required: true,
-          label: "Fecha Cobro",
+          label: "Semana",
           align: "center",
           field: "timestamp_cobro",
           sortable: true
         },
         {
-          name: "fecha_pago",
-          required: true,
-          label: "Fecha Pago",
-          align: "center",
-          field: "fecha_pago",
-          sortable: true
-        },
-        {
-          name: "fecha_facturacion",
+          name: "saldo",
           required: true,
           align: "center",
-          label: "Fecha Facturación",
-          field: "fecha_facturacion",
-          sortable: true
-        },
-        {
-          name: "usuario_pago",
-          required: true,
-          align: "center",
-          label: "Usuario Pago",
-          field: "usuario_pago",
-          sortable: true
-        },
-        {
-          name: "usuario_facturacion",
-          required: true,
-          align: "center",
-          label: "Usuario Facturación",
-          field: "usuario_facturacion",
-          sortable: true
-        },
-        {
-          name: "comision",
-          required: true,
-          align: "center",
-          label: "Comisión ($)",
-          field: "comision",
-          sortable: true
-        },
-        {
-          name: "comision_devolucion",
-          required: true,
-          align: "center",
-          label: "Comisión Devolución ($)",
-          field: "comision_devolucion_anuladas",
-          sortable: true
-        },
-        {
-          name: "comision_online",
-          required: true,
-          align: "center",
-          label: "Comisión Online ($)",
-          field: "comision_online",
-          sortable: true
-        },
-        {
-          name: "comision_online_anuladas",
-          required: true,
-          align: "center",
-          label: "Comisión Online Anuladas ($)",
-          field: "comision_online_anuladas",
-          sortable: true
-        },
-        {
-          name: "pago_total",
-          required: true,
-          align: "center",
-          label: "Pago Total ($)",
-          field: "pago_total",
-          sortable: true
-        },
-        {
-          name: "saldo_a_pagar",
-          required: true,
-          align: "center",
-          label: "A Pagar ($)",
+          label: "Saldo",
           field: "saldo_a_pagar",
           sortable: true
         },
         {
-          name: "formaPago",
-          required: true,
+          name: "acciones",
           align: "center",
-          label: "Forma De Pago",
-          field: "formaPago",
-          sortable: true
+          label: "Acciones"
         }
       ],
-      response: dataHistorial,
+      data: [],
       locals: [],
       localSelected: {}
     };
@@ -177,9 +186,37 @@ export default {
     this.init();
   },
   methods: {
-    sync() {},
+    getPaginationLabel(firstRowIndex, endRowIndex, totalRowsNumber) {
+      return "Total de filas: " + this.meta.total;
+    },
+    sync() {
+      this.loadingPage = true;
+      var url = `${this.$store.getters["routes/getRoute"](
+        "status.postpago"
+      )}?idLocal=${this.localSelected.value}&page=${this.page}`;
+
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.data = response.data.result.data;
+            this.meta = response.data.result.meta;
+            this.loadingPage = false;
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
     init() {
       this.formatLocals();
+      this.sync();
     },
     formatLocals() {
       this.locals = [];
@@ -190,33 +227,122 @@ export default {
     change(val) {
       if (val !== null) {
         this.localSelected = val;
+        this.data = [];
+        this.page = 1;
         this.sync();
       }
+    },
+    generateWeek(day) {
+      let date = new Date(day);
+      let back = date.getDay() === 1 ? 10080 : 11520;
+      let lastWeek = new Date(date.setMinutes(date.getMinutes() - back));
+
+      let startDay = lastWeek.getDate();
+      let startMonth = lastWeek.getMonth();
+
+      let lastWeekPlus6Days = new Date(
+        lastWeek.setMinutes(lastWeek.getMinutes() + 8640)
+      );
+
+      let endDay = lastWeekPlus6Days.getDate();
+      let endMonth = lastWeekPlus6Days.getMonth();
+
+      return `Del ${startDay} ${this.getMonth(
+        startMonth
+      )} ${lastWeek.getFullYear()} al ${endDay} ${this.getMonth(
+        endMonth
+      )} ${lastWeekPlus6Days.getFullYear()}`;
+    },
+    formatBalance(balance, props) {
+      if (balance < 0) {
+        balance *= -1;
+        return `A favor $${this.formatNumber(balance)}`;
+      } else if (
+        balance > 0 &&
+        props.row.fecha_pago === "0000-00-00 00:00:00"
+      ) {
+        return `A pagar $${this.formatNumberCustom(balance)}`;
+      } else {
+        return `Pagado $${this.formatNumberCustom(balance)}`;
+      }
+    },
+    formatNumberCustom(balance) {
+      let splitNumber = balance.toString().split(".");
+      let integer = this.formatNumber(parseInt(splitNumber[0])).toString();
+      let decimals = splitNumber[1];
+
+      if (decimals) {
+        return `${integer},${decimals}`;
+      } else {
+        return integer;
+      }
+    },
+    weekDay(day) {
+      if (day === 0) {
+        return "Domingo";
+      } else if (day === 1) {
+        return "Lunes";
+      } else if (day === 2) {
+        return "Martes";
+      } else if (day === 3) {
+        return "Miercoles";
+      } else if (day === 4) {
+        return "Jueves";
+      } else if (day === 5) {
+        return "Viernes";
+      } else if (day === 6) {
+        return "Sabado";
+      }
+    },
+    getMonth(month) {
+      if (month === 0) {
+        return "Enero";
+      } else if (month === 1) {
+        return "Febrero";
+      } else if (month === 2) {
+        return "Marzo";
+      } else if (month === 3) {
+        return "Abril";
+      } else if (month === 4) {
+        return "Mayo";
+      } else if (month === 5) {
+        return "Junio";
+      } else if (month === 6) {
+        return "Julio";
+      } else if (month === 7) {
+        return "Agosto";
+      } else if (month === 8) {
+        return "Septiembre";
+      } else if (month === 9) {
+        return "Octubre";
+      } else if (month === 10) {
+        return "Noviembre";
+      } else if (month === 11) {
+        return "Diciembre";
+      }
+    },
+    pay(props) {
+      console.log(props);
+      console.log(props.key);
+    },
+    detail(props) {
+      console.log(props.key);
+    },
+    registerPay(props) {
+      console.log(props.key);
+    },
+    changePage() {
+      this.bus.$emit("scrollTopPage");
+      this.sync();
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.my-sticky-header-table .q-table__middle {
-  max-height: 200px;
-}
-
-.q-table__top,
-.q-table__bottom,
-thead tr:first-child th {
-  background-color: #f2f2f2;
-  z-index: 1000;
-}
-
-thead tr:first-child th {
-  position: sticky;
-  top: 0;
-}
-
 .q__select__wh {
   padding-top: 20px;
-  width: 98% !important;
+  width: 90% !important;
 }
 
 @media screen and (max-width: 500px) {

@@ -1,7 +1,7 @@
 export let dataHistorial = [
   {
     id: "210",
-    timestamp_cobro: "2019-10-14 12:08:06",
+    timestamp_cobro: "2019-10-15 12:08:06",
     id_local: "414",
     fecha_pago: "2019-10-16 13:08:57",
     usuario_pago: "Gabriel Romero",

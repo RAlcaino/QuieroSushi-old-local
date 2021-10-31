@@ -285,7 +285,7 @@
       v-if="flag === true"
     >
       <img
-        src="~/assets/maki-roll.gif"
+        src="~/assets/maki-roll2.gif"
         alt="sad"
         width="130"
         style="border-radius: 100%"
