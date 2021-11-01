@@ -329,7 +329,13 @@ export default {
       console.log(props.key);
     },
     registerPay(props) {
-      console.log(props.key);
+      var data = { ...props };
+      this.$router.push({
+        name: "register-services",
+        params: {
+          props: data
+        }
+      });
     },
     changePage() {
       this.bus.$emit("scrollTopPage");

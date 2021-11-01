@@ -39,7 +39,14 @@
           >
             <template v-slot:selected-item="scope">
               <span v-if="scope.opt.label !== null"
-                >{{scope.opt.label}} <strong>${{scope.opt.price}}</strong></span
+                >{{ scope.opt.label }}
+                <strong
+                  >${{
+                    scope.opt.value === "psp"
+                      ? formatNumberCustom(scope.opt.price)
+                      : scope.opt.price
+                  }}</strong
+                ></span
               >
               <span v-else>Seleccionar...</span>
             </template>
@@ -48,7 +55,13 @@
               <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
                 <q-item-section>
                   <q-item-label
-                    v-html="`${scope.opt.label} <strong>$${scope.opt.price}</strong>`"
+                    v-html="
+                      `${scope.opt.label} <strong>$${
+                        scope.opt.value === 'psp'
+                          ? formatNumberCustom(scope.opt.price)
+                          : scope.opt.price
+                      }</strong>`
+                    "
                   />
                 </q-item-section>
               </q-item>
@@ -93,7 +106,7 @@
 
         <q-card-section style="width: 50%;">
           <div
-            style="display: flex; flex-direction: row;justify-content: space-between"
+            style="display: flex; flex-direction: row;justify-content: space-between; padding-bottom:10px;"
           >
             <strong style="font-size: 16px;">Resumen </strong>
             <strong v-if="total !== 0" style="font-size: 16px;"
@@ -130,7 +143,13 @@
                     style="margin:0; width: 50%;"
                   >
                     <i class="fas fa-check"></i> {{ item2.label }}
-                    <strong>${{ item2.price }}</strong>
+                    <strong
+                      >${{
+                        item2.value === "psp"
+                          ? formatNumberCustom(item2.price)
+                          : item2.price
+                      }}</strong
+                    >
                   </p>
                 </div>
               </div>
@@ -183,6 +202,7 @@
 //#edf1f5
 import BasePage from "src/components/bases/BasePage.vue";
 export default {
+  props: ["props"],
   components: { BasePage },
   inject: [
     "showNotification",
@@ -225,6 +245,21 @@ export default {
     changeLocal(val) {
       if (val !== null) {
         this.localSelected = val;
+
+        let index = this.services.findIndex(item => item.localId !== undefined);
+
+        if (index !== -1) {
+          if (this.services[index].localId !== this.localSelected.value) {
+            this.deleteWeeklyPay();
+            this.serviceSelected = this.services[0];
+          }
+        } else {
+          if (this.props !== undefined) {
+            if (this.props.row.local.id_local === this.localSelected.value) {
+              this.addWeeklyPay();
+            }
+          }
+        }
       }
     },
     changeService(val) {
@@ -244,11 +279,26 @@ export default {
       );
 
       if (index !== -1) {
+        for (var i = 0; i < this.servicesAdded.length; i++) {
+          let indexWeeklyPay = this.servicesAdded[i].services.findIndex(
+            item => item.value === "psp"
+          );
+          if (indexWeeklyPay !== -1) {
+            if (this.serviceSelected.value === "psp") {
+              this.showNotification(
+                "Ya se agrego el pago semanal del local",
+                "negative",
+                "error"
+              );
+              return;
+            }
+          }
+        }
         this.servicesAdded[index].services.push({
           id: Math.random(),
           ...this.serviceSelected
         });
-        this.total += +this.serviceSelected.pricev2;
+        this.total += this.serviceSelected.pricev2;
         return;
       }
 
@@ -259,8 +309,7 @@ export default {
         flag: true
       });
 
-      this.total += +this.serviceSelected.pricev2;
-      this.serviceSelected = this.services[0];
+      this.total += this.serviceSelected.pricev2;
     },
     deleteLocal(storeId) {
       let item = this.servicesAdded.find(item => item.id === storeId);
@@ -275,7 +324,11 @@ export default {
     },
     register() {
       this.showLoading();
-      console.log(this.servicesAdded);
+      var data = {
+        total: this.truncNum(this.total, 2),
+        detail: this.servicesAdded
+      };
+      console.log(data);
 
       setTimeout(() => {
         this.hideLoading();
@@ -298,7 +351,8 @@ export default {
                 value: `${item.qty}s`,
                 label: `${item.qty} Subir`,
                 price: this.formatNumber(item.price),
-                pricev2: item.price
+                pricev2: item.price,
+                disable: false
               });
             });
 
@@ -312,11 +366,28 @@ export default {
                     ? `${item.qty} Destacado`
                     : `${item.qty} Destacados`,
                 price: this.formatNumber(item.price),
-                pricev2: item.price
+                pricev2: item.price,
+                disable: false
               });
             });
 
-            this.serviceSelected = this.services[0];
+            if (this.props) {
+              this.addWeeklyPay();
+
+              this.localSelected = this.locals.find(
+                item => item.value === this.props.row.local.id_local
+              );
+              this.servicesAdded.push({
+                id: Math.random(),
+                services: [{ id: Math.random(), ...this.serviceSelected }],
+                local: this.localSelected,
+                flag: true
+              });
+
+              this.total += +this.serviceSelected.pricev2;
+            } else {
+              this.serviceSelected = this.services[0];
+            }
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -326,7 +397,9 @@ export default {
         });
     },
     formatNumberCustom(num) {
-      let splitNumber = num.toString().split(".");
+      let splitNumber = this.truncNum(num, 2)
+        .toString()
+        .split(".");
       let integer = this.formatNumber(parseInt(splitNumber[0])).toString();
       let decimals = splitNumber[1];
 
@@ -335,6 +408,49 @@ export default {
       } else {
         return integer;
       }
+    },
+    addWeeklyPay() {
+      this.services.unshift({
+        value: `psp`,
+        label: `Pago Semanal`,
+        price: this.props.row.saldo_a_pagar,
+        pricev2: this.props.row.saldo_a_pagar,
+        disable: false,
+        localId: this.props.row.local.id_local
+      });
+
+      this.serviceSelected = this.services[0];
+    },
+    deleteWeeklyPay() {
+      this.services = this.services.filter(item => item.value !== "psp");
+    },
+    truncNum(x, posiciones = 0) {
+      var s = x.toString();
+      var l = s.length;
+      var decimalLength = s.indexOf(".") + 1;
+
+      if (l - decimalLength <= posiciones) {
+        return x;
+      }
+      // Parte decimal del número
+      var isNeg = x < 0;
+      var decimal = x % 1;
+      var entera = isNeg ? Math.ceil(x) : Math.floor(x);
+      // Parte decimal como número entero
+      // Ejemplo: parte decimal = 0.77
+      // decimalFormated = 0.77 * (10^posiciones)
+      // si posiciones es 2 ==> 0.77 * 100
+      // si posiciones es 3 ==> 0.77 * 1000
+      var decimalFormated = Math.floor(
+        Math.abs(decimal) * Math.pow(10, posiciones)
+      );
+      // Sustraemos del número original la parte decimal
+      // y le sumamos la parte decimal que hemos formateado
+      var finalNum =
+        entera +
+        (decimalFormated / Math.pow(10, posiciones)) * (isNeg ? -1 : 1);
+
+      return finalNum;
     }
   }
 };
