@@ -65,8 +65,11 @@
                     style="margin-right:5px"
                     @click="pay(props)"
                   >
-                    <q-icon style="margin-right:5px" size="20px" name="paid" />
-                    <div style="font-size:12px">Pagar</div>
+                    <q-tooltip>
+                      Pagar
+                    </q-tooltip>
+                    <q-icon style="margin-right:0px" size="20px" name="paid" />
+                    <!--<div style="font-size:12px">Pagar</div>-->
                   </q-btn>
                   <q-btn
                     class="gt-sm"
@@ -76,8 +79,11 @@
                     style="margin-right:5px"
                     @click="detail(props)"
                   >
-                    <q-icon style="margin-right:5px" size="20px" name="info" />
-                    <div style="font-size:12px">Ver Detalle</div>
+                    <q-tooltip>
+                      Ver Detalle
+                    </q-tooltip>
+                    <q-icon style="margin-right:0px" size="20px" name="info" />
+                    <!--<div style="font-size:12px">Ver Detalle</div>-->
                   </q-btn>
 
                   <q-btn
@@ -92,12 +98,15 @@
                         props.cols[1].value > 0
                     "
                   >
+                    <q-tooltip>
+                      Registrar Transferencia
+                    </q-tooltip>
                     <q-icon
-                      style="margin-right:5px"
+                      style="margin-right:0px"
                       size="20px"
                       name="credit_score"
                     />
-                    <div style="font-size:12px">Registrar Transferencia</div>
+                    <!--<div style="font-size:12px">Registrar Transferencia</div>-->
                   </q-btn>
                 </div>
               </template>
