@@ -279,7 +279,7 @@ export default {
       let splitNumber = balance.toString().split(".");
       let integer = this.formatNumber(parseInt(splitNumber[0])).toString();
       let decimals = splitNumber[1];
-
+      return integer;
       if (decimals) {
         return `${integer},${decimals}`;
       } else {
