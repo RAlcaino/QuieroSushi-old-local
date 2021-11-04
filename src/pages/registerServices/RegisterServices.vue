@@ -376,7 +376,6 @@ export default {
                 service_type: "destacado"
               });
             });
-
             if (pendingWeeklyPay.length !== 0) {
               this.addWeeklyPay(pendingWeeklyPay);
             }
@@ -404,6 +403,7 @@ export default {
                 flag: true
               });
 
+              console.log(this.serviceSelected);
               this.total += +this.serviceSelected.pricev2;
             } else {
               this.serviceSelected = this.services[0];
@@ -483,9 +483,18 @@ export default {
         .then(response => {
           if (response.data.status === "success") {
             this.weeklyPays = response.data.result;
-            let weeklyPay = this.weeklyPays.find(
+            let weeklyPay = [];
+
+            if (this.props) {
+              this.localSelected = this.locals.find(
+                item => item.value === this.props.row.local.id_local
+              );
+            }
+
+            weeklyPay = this.weeklyPays.find(
               item => item.id_local === this.localSelected.value
             );
+
             this.getPrices(weeklyPay.saldos_pendientes);
           } else {
             this.showNotification(response.data.message, "negative", "error");
