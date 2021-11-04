@@ -181,7 +181,7 @@ export default {
         }
       } else {
         this.showNotification(
-          /*error.message*/ "Ha ocurrido un error con el servidor",
+          error.message, //"Ha ocurrido un error con el servidor",
           "negative",
           "error"
         );

@@ -144,11 +144,15 @@ const mutations = {
       },
       {
         name: "comments",
-        link: "/comments" 
+        link: "/comments"
       },
       {
         name: "status.postpago",
-        link: "/status_post_pago" 
+        link: "/status_post_pago"
+      },
+      {
+        name: "weekly.pay",
+        link: "/pay_weekly"
       }
     ];
   }

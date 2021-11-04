@@ -42,7 +42,7 @@
                 >{{ scope.opt.label }}
                 <strong
                   >${{
-                    scope.opt.value === "psp"
+                    scope.opt.value.includes("psp")
                       ? formatNumberCustom(scope.opt.price)
                       : scope.opt.price
                   }}</strong
@@ -57,7 +57,7 @@
                   <q-item-label
                     v-html="
                       `${scope.opt.label} <strong>$${
-                        scope.opt.value === 'psp'
+                        scope.opt.value.includes('psp')
                           ? formatNumberCustom(scope.opt.price)
                           : scope.opt.price
                       }</strong>`
@@ -109,7 +109,7 @@
             style="display: flex; flex-direction: row;justify-content: space-between; padding-bottom:10px;"
           >
             <strong style="font-size: 16px;">Resumen </strong>
-            <strong v-if="total !== 0" style="font-size: 16px;"
+            <strong v-if="total > 0" style="font-size: 16px;"
               >Total: ${{ formatNumberCustom(total) }}
             </strong>
           </div>
@@ -145,7 +145,7 @@
                     <i class="fas fa-check"></i> {{ item2.label }}
                     <strong
                       >${{
-                        item2.value === "psp"
+                        item2.value.includes("psp")
                           ? formatNumberCustom(item2.price)
                           : item2.price
                       }}</strong
@@ -221,7 +221,8 @@ export default {
       file_selected: null,
       serviceSelected: {},
       services: [],
-      total: 0
+      total: 0,
+      weeklyPays: []
     };
   },
   computed: {
@@ -234,7 +235,7 @@ export default {
     sync() {},
     init() {
       this.formatLocals();
-      this.getPrices();
+      this.getData();
     },
     formatLocals() {
       this.locals = [];
@@ -246,20 +247,15 @@ export default {
       if (val !== null) {
         this.localSelected = val;
 
-        let index = this.services.findIndex(item => item.localId !== undefined);
+        this.services = this.services.filter(
+          item => item.localId === undefined
+        );
+        let weeklyPay = this.weeklyPays.find(
+          item => item.id_local === this.localSelected.value
+        );
 
-        if (index !== -1) {
-          if (this.services[index].localId !== this.localSelected.value) {
-            this.deleteWeeklyPay();
-            this.serviceSelected = this.services[0];
-          }
-        } else {
-          if (this.props !== undefined) {
-            if (this.props.row.local.id_local === this.localSelected.value) {
-              this.addWeeklyPay();
-            }
-          }
-        }
+        this.addWeeklyPay(weeklyPay.saldos_pendientes);
+        this.serviceSelected = this.services[0];
       }
     },
     changeService(val) {
@@ -280,13 +276,21 @@ export default {
 
       if (index !== -1) {
         for (var i = 0; i < this.servicesAdded.length; i++) {
-          let indexWeeklyPay = this.servicesAdded[i].services.findIndex(
-            item => item.value === "psp"
+          let indexWeeklyPay = this.servicesAdded[i].services.findIndex(item =>
+            item.value.includes("psp")
           );
           if (indexWeeklyPay !== -1) {
-            if (this.serviceSelected.value === "psp") {
+            let onlyWeeklyPays = this.servicesAdded[i].services.filter(
+              item => item.id_postpago !== undefined
+            );
+
+            let validation = onlyWeeklyPays.some(
+              item => item.id_postpago === this.serviceSelected.id_postpago
+            );
+
+            if (validation) {
               this.showNotification(
-                "Ya se agrego el pago semanal del local",
+                "Ya se agrego ese pago semanal al local",
                 "negative",
                 "error"
               );
@@ -334,7 +338,7 @@ export default {
         this.hideLoading();
       }, 2000);
     },
-    getPrices() {
+    getPrices(pendingWeeklyPay) {
       var url = this.$store.getters["routes/getRoute"]("services.prices");
       this.$axios
         .get(url, {
@@ -352,7 +356,8 @@ export default {
                 label: `${item.qty} Subir`,
                 price: this.formatNumber(item.price),
                 pricev2: item.price,
-                disable: false
+                disable: false,
+                service_type: "subir"
               });
             });
 
@@ -367,16 +372,31 @@ export default {
                     : `${item.qty} Destacados`,
                 price: this.formatNumber(item.price),
                 pricev2: item.price,
-                disable: false
+                disable: false,
+                service_type: "destacado"
               });
             });
 
+            if (pendingWeeklyPay.length !== 0) {
+              this.addWeeklyPay(pendingWeeklyPay);
+            }
             if (this.props) {
-              this.addWeeklyPay();
-
               this.localSelected = this.locals.find(
                 item => item.value === this.props.row.local.id_local
               );
+
+              this.serviceSelected = this.services.find(item => {
+                if (item.id_postpago !== undefined) {
+                  if (item.id_postpago === this.props.row.id) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                } else {
+                  return false;
+                }
+              });
+
               this.servicesAdded.push({
                 id: Math.random(),
                 services: [{ id: Math.random(), ...this.serviceSelected }],
@@ -410,20 +430,19 @@ export default {
         return integer;
       }
     },
-    addWeeklyPay() {
-      this.services.unshift({
-        value: `psp`,
-        label: `Pago Semanal`,
-        price: this.props.row.saldo_a_pagar,
-        pricev2: this.props.row.saldo_a_pagar,
-        disable: false,
-        localId: this.props.row.local.id_local
+    addWeeklyPay(pendingWeeklyPay) {
+      let map = pendingWeeklyPay.map(item => {
+        this.services.unshift({
+          value: `psp${item.id}`,
+          label: `Pago Semanal`,
+          price: item.saldo_a_pagar,
+          pricev2: item.saldo_a_pagar,
+          disable: false,
+          localId: item.id_local,
+          id_postpago: item.id,
+          service_type: "pago_semanal"
+        });
       });
-
-      this.serviceSelected = this.services[0];
-    },
-    deleteWeeklyPay() {
-      this.services = this.services.filter(item => item.value !== "psp");
     },
     truncNum(x, posiciones = 0) {
       var s = x.toString();
@@ -452,6 +471,29 @@ export default {
         (decimalFormated / Math.pow(10, posiciones)) * (isNeg ? -1 : 1);
 
       return finalNum;
+    },
+    getData() {
+      var url = this.$store.getters["routes/getRoute"]("weekly.pay");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.weeklyPays = response.data.result;
+            let weeklyPay = this.weeklyPays.find(
+              item => item.id_local === this.localSelected.value
+            );
+            this.getPrices(weeklyPay.saldos_pendientes);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     }
   }
 };
