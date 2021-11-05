@@ -64,12 +64,13 @@
                     size="sm"
                     style="margin-right:5px"
                     @click="pay(props)"
+                    label="Pagar"
                   >
-                    <q-tooltip>
+                    <!--<q-tooltip>
                       Pagar
                     </q-tooltip>
                     <q-icon style="margin-right:0px" size="20px" name="paid" />
-                    <!--<div style="font-size:12px">Pagar</div>-->
+                    <div style="font-size:12px">Pagar</div>-->
                   </q-btn>
                   <q-btn
                     class="gt-sm"
@@ -78,12 +79,13 @@
                     size="sm"
                     style="margin-right:5px"
                     @click="detail(props)"
+                    label="Detalle"
                   >
-                    <q-tooltip>
+                    <!--<q-tooltip>
                       Ver Detalle
                     </q-tooltip>
                     <q-icon style="margin-right:0px" size="20px" name="info" />
-                    <!--<div style="font-size:12px">Ver Detalle</div>-->
+                    <div style="font-size:12px">Ver Detalle</div>-->
                   </q-btn>
 
                   <q-btn
@@ -93,12 +95,13 @@
                     size="sm"
                     style="margin-right:5px"
                     @click="registerPay(props)"
+                    label="Registrar Transferencia"
                     v-if="
                       props.row.fecha_pago === '0000-00-00 00:00:00' &&
                         props.cols[1].value > 0
                     "
                   >
-                    <q-tooltip>
+                    <!--<q-tooltip>
                       Registrar Transferencia
                     </q-tooltip>
                     <q-icon
@@ -106,7 +109,7 @@
                       size="20px"
                       name="credit_score"
                     />
-                    <!--<div style="font-size:12px">Registrar Transferencia</div>-->
+                    <div style="font-size:12px">Registrar Transferencia</div>-->
                   </q-btn>
                 </div>
               </template>
