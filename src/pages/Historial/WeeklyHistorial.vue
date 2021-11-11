@@ -63,7 +63,7 @@
                     rounded
                     size="sm"
                     style="margin-right:5px"
-                    @click="pay(props)"
+                    @click="payProcess(props)"
                     label="Pagar"
                   >
                     <!--<q-tooltip>
@@ -232,7 +232,7 @@ export default {
     },
     formatLocals() {
       this.locals = [];
-      this.locals = [...this.getStoreLocals("ACTIVE")];
+      this.locals = [...this.getStoreLocals("ALL")];
 
       this.localSelected = this.locals[0];
     },
@@ -333,10 +333,6 @@ export default {
         return "Diciembre";
       }
     },
-    pay(props) {
-      console.log(props);
-      console.log(props.key);
-    },
     detail(props) {
       console.log(props.key);
     },
@@ -352,6 +348,43 @@ export default {
     changePage() {
       this.bus.$emit("scrollTopPage");
       this.sync();
+    },
+    payProcess(props) {
+      this.showLoading();
+      var data = {
+        id_postpago: props.row.id,
+        payed_amount: props.row.saldo_a_pagar,
+        id_local: props.row.local.id_local
+      };
+
+      var url = `${this.$store.getters["routes/getRoute"]("weekly.payment")}`;
+
+      this.$axios
+        .post(url, data, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.reset();
+            this.hideLoading();
+            this.showNotification(
+              "Pago semanal pagado",
+              "positive",
+              "check_circle"
+            );
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    reset() {
+      this.data = [];
+      this.init();
     }
   }
 };

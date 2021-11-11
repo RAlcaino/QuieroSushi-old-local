@@ -165,6 +165,7 @@
                 label="Registrar"
                 icon="check_circle"
                 @click="register()"
+                :disable="total === 0"
               >
               </q-btn>
             </div>
@@ -239,7 +240,7 @@ export default {
     },
     formatLocals() {
       this.locals = [];
-      this.locals = [...this.getStoreLocals("ACTIVE")];
+      this.locals = [...this.getStoreLocals("ALL")];
 
       this.localSelected = this.locals[0];
     },
@@ -329,14 +330,34 @@ export default {
     register() {
       this.showLoading();
       var data = {
-        total: this.formatNumberCustom(this.total),
+        total: this.total,
         detail: this.servicesAdded
       };
-      console.log(data);
 
-      setTimeout(() => {
-        this.hideLoading();
-      }, 2000);
+      var url = `${this.$store.getters["routes/getRoute"]("transferences")}`;
+
+      this.$axios
+        .post(url, data, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.reset();
+            this.hideLoading();
+            this.showNotification(
+              "Servicios registrados",
+              "positive",
+              "check_circle"
+            );
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     },
     getPrices(pendingWeeklyPay) {
       var url = this.$store.getters["routes/getRoute"]("services.prices");
@@ -396,23 +417,27 @@ export default {
                 }
               });
 
+              if (this.serviceSelected === undefined) {
+                this.serviceSelected = this.services[0];
+                return;
+              }
               this.servicesAdded.push({
                 id: Math.random(),
                 services: [{ id: Math.random(), ...this.serviceSelected }],
                 local: this.localSelected,
                 flag: true
               });
-
-              console.log(this.serviceSelected);
               this.total += +this.serviceSelected.pricev2;
             } else {
               this.serviceSelected = this.services[0];
             }
           } else {
+            console.log("Aqui 1");
             this.showNotification(response.data.message, "negative", "error");
           }
         })
         .catch(error => {
+          console.log("Aqui 2");
           this.errorHandling(error);
         });
     },
@@ -503,6 +528,12 @@ export default {
         .catch(error => {
           this.errorHandling(error);
         });
+    },
+    reset() {
+      this.servicesAdded = [];
+      this.total = 0;
+      this.services = [];
+      this.init();
     }
   }
 };

@@ -185,6 +185,7 @@ export default {
           "negative",
           "error"
         );
+        this.hideLoading();
       }
     },
     serverTime() {

@@ -152,7 +152,15 @@ const mutations = {
       },
       {
         name: "weekly.pay",
-        link: "/pay_weekly"
+        link: "/pay_weekly_local"
+      },
+      {
+        name: "transferences",
+        link: "/transferences"
+      },
+      {
+        name: "weekly.payment",
+        link: "/weekly-payment"
       }
     ];
   }
