@@ -125,6 +125,10 @@
                           clickable
                           @click="payProcess(props)"
                           v-close-popup
+                          v-if="
+                            props.row.fecha_pago === '0000-00-00 00:00:00' &&
+                              props.cols[1].value > 0
+                          "
                         >
                           <q-item-section>Pagar</q-item-section>
                         </q-item>
@@ -137,6 +141,10 @@
                           clickable
                           @click="registerPay(props)"
                           v-close-popup
+                          v-if="
+                            props.row.fecha_pago === '0000-00-00 00:00:00' &&
+                              props.cols[1].value > 0
+                          "
                         >
                           <q-item-section
                             >Registrar Transferencia</q-item-section
