@@ -2517,9 +2517,16 @@ export default {
     padding: 16px 0;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .class-card {
+    width: 100% !important;
+  }
+}
+
 @media screen and (max-width: 550px) {
   .input-style-o {
-    margin-bottom: 10px !important;
+    margin-right: 5px !important;
   }
   .mobile-styles-o {
     justify-content: center !important;

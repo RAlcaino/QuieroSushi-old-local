@@ -111,6 +111,40 @@
                     />
                     <div style="font-size:12px">Registrar Transferencia</div>-->
                   </q-btn>
+                  <q-btn
+                    class="lt-md"
+                    size="12px"
+                    flat
+                    dense
+                    round
+                    icon="more_vert"
+                  >
+                    <q-menu>
+                      <q-list style="min-width: 100px">
+                        <q-item
+                          clickable
+                          @click="payProcess(props)"
+                          v-close-popup
+                        >
+                          <q-item-section>Pagar</q-item-section>
+                        </q-item>
+                        <q-separator />
+                        <q-item clickable @click="detail(props)" v-close-popup>
+                          <q-item-section>Detalle</q-item-section>
+                        </q-item>
+                        <q-separator />
+                        <q-item
+                          clickable
+                          @click="registerPay(props)"
+                          v-close-popup
+                        >
+                          <q-item-section
+                            >Registrar Transferencia</q-item-section
+                          >
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
                 </div>
               </template>
             </q-td>

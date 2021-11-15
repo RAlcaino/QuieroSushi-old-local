@@ -1,5 +1,10 @@
 <template>
-  <base-page title="Estadisticas de ventas" icon="paid" :sync="null" :toolbar="true">
+  <base-page
+    title="Estadisticas de ventas"
+    icon="paid"
+    :sync="null"
+    :toolbar="true"
+  >
     <the-cancel :mode="'sales'"></the-cancel>
     <div
       class="fit column no-wrap justify-center items-center content-center"
@@ -7,7 +12,7 @@
     >
       <q-card class="card-bg" style="width: 95%">
         <q-card-section
-          class="text-h6"
+          class="text-h6 responsive__mode"
           style="
             display: flex;
             flex-direction: row;
@@ -175,7 +180,7 @@
           </div>
           <div>
             <form autocomplete="off">
-              <p style="text-align: right; font-size: 16px">
+              <p class="sales__p">
                 <strong>Total Ventas:</strong> ${{ formatNumber(total) }}
               </p>
             </form>
@@ -203,8 +208,8 @@
             label="Exportar"
             color="primary"
             icon-right="download"
-            style="margin-left: 5px"
             @click="download()"
+            class="btn__download"
           ></q-btn>
         </template>
 
@@ -297,6 +302,7 @@
 <script>
 import TheCancel from "../orders/status_tables/dialogs/TheCancel.vue";
 import BasePage from "src/components/bases/BasePage.vue";
+import $ from "jquery";
 export default {
   name: "OrderStadistics",
   inject: [
@@ -479,6 +485,7 @@ export default {
   },
   mounted() {
     this.localsFilter = this.locals;
+    this.responsiveMode();
   },
   computed: {
     FontSize() {
@@ -781,6 +788,21 @@ export default {
       }
 
       return "Sin fecha";
+    },
+    responsiveMode() {
+      var responsive = window.matchMedia("(max-width: 600px)");
+
+      responsive.addListener(event => {
+        if (event.matches) {
+          let firtsChild = $(".q-table__container > div:first-child");
+          firtsChild.removeClass("row");
+          firtsChild.addClass("column");
+        } else {
+          let firtsChild = $(".q-table__container > div:first-child");
+          firtsChild.removeClass("column");
+          firtsChild.addClass("row");
+        }
+      });
     }
   }
 };
@@ -798,9 +820,40 @@ export default {
   display: flex;
   flex-direction: row;
 }
-@media screen and (max-width: 500px) {
+.firts-options > label {
+  margin-right: 5px !important;
+}
+
+.sales__p {
+  text-align: right;
+  font-size: 16px;
+}
+@media screen and (max-width: 600px) {
   .input-schedule {
     width: 30%;
+  }
+
+  .responsive__mode {
+    flex-direction: column !important;
+  }
+
+  .sales__p {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .firts-options > label {
+    width: 44% !important;
+    margin-right: 0px !important;
+  }
+
+  form > label {
+    width: 44% !important;
+    margin-right: 5px !important;
+  }
+
+  .btn__download {
+    margin-bottom: 15px !important;
   }
 }
 </style>

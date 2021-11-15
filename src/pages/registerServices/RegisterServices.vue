@@ -7,10 +7,8 @@
     style="display: flex; flex-direction: column; align-items: center;"
   >
     <q-card class="card__styles" v-if="services.length !== 0">
-      <q-card-section horizontal style="height: 100%">
-        <q-card-section
-          style="width: 50%; display: flex; flex-direction: column;"
-        >
+      <q-card-section :horizontal="responsiveMobile">
+        <q-card-section class="firts__section">
           <strong style="font-size: 16px;">Servicios </strong>
 
           <q-select
@@ -102,9 +100,12 @@
           </div>-->
         </q-card-section>
 
-        <q-separator vertical></q-separator>
+        <q-separator
+          :vertical="responsiveMobile"
+          :horizontal="!responsiveMobile"
+        ></q-separator>
 
-        <q-card-section style="width: 50%;">
+        <q-card-section class="second__section">
           <div
             style="display: flex; flex-direction: row;justify-content: space-between; padding-bottom:10px;"
           >
@@ -114,13 +115,8 @@
             </strong>
           </div>
 
-          <div
-            style="position: relative; width: 100%; height: 90%;"
-            v-if="servicesAdded.length !== 0"
-          >
-            <div
-              style="position: absolute; max-height: 85% ; width: 100%; overflow-y: auto; overflow-x: hidden; top: 0;"
-            >
+          <div class="stores__container" v-if="servicesAdded.length !== 0">
+            <div class="store__added">
               <div v-for="item of servicesAdded" :key="item.id">
                 <q-chip
                   v-model="item.flag"
@@ -134,14 +130,8 @@
                   {{ item.local.label }}
                 </q-chip>
 
-                <div
-                  style="margin-left: 20px; margin-top: 10px; display: flex; flex-wrap:wrap; "
-                >
-                  <p
-                    v-for="item2 of item.services"
-                    :key="item2.id"
-                    style="margin:0; width: 50%;"
-                  >
+                <div class="services__store__container">
+                  <p v-for="item2 of item.services" :key="item2.id">
                     <i class="fas fa-check"></i> {{ item2.label }}
                     <strong
                       >${{
@@ -150,14 +140,19 @@
                           : item2.price
                       }}</strong
                     >
+                    <q-icon
+                      name="delete"
+                      color="primary"
+                      size="sm"
+                      style="margin-bottom: 3px; margin-left: 2px;cursor: pointer;"
+                      @click="deleteService(item.id, item2.id)"
+                    />
                   </p>
                 </div>
               </div>
             </div>
 
-            <div
-              style="position: absolute; height: 25px ; width: 100%; bottom: 0; display: flex; justify-content: flex-end;"
-            >
+            <div class="btn__register">
               <q-btn
                 color="green"
                 rounded
@@ -172,7 +167,7 @@
           </div>
 
           <div
-            class="fit column wrap justify-center items-center content-center"
+            style="display:flex; flex-direction: column; width:100%; height: 92%; justify-content:center; align-items:center"
             v-if="servicesAdded.length === 0"
           >
             <img src="~/assets/icons8-sad.gif" alt="sad" width="130" />
@@ -223,14 +218,21 @@ export default {
       serviceSelected: {},
       services: [],
       total: 0,
-      weeklyPays: []
+      weeklyPays: [],
+      responsiveMobile: true
     };
   },
   computed: {
     validation() {}
   },
   created() {
+    if (screen.width < 1098) {
+      this.responsiveMobile = false;
+    }
     this.init();
+  },
+  mounted() {
+    this.responsiveMode();
   },
   methods: {
     sync() {},
@@ -534,6 +536,41 @@ export default {
       this.total = 0;
       this.services = [];
       this.init();
+    },
+    deleteService(storeId, serviceId) {
+      let serviceAdded = this.servicesAdded.find(item => item.id === storeId);
+      let serviceAddedIndex = this.servicesAdded.findIndex(
+        item => item.id === storeId
+      );
+
+      if (serviceAdded.services.length === 1) {
+        this.deleteLocal(storeId);
+        return;
+      }
+
+      let serviceToDelete = serviceAdded.services.find(
+        item => item.id === serviceId
+      );
+
+      this.total -= serviceToDelete.pricev2;
+
+      let services = serviceAdded.services.filter(
+        item => item.id !== serviceId
+      );
+
+      this.servicesAdded[serviceAddedIndex].services = [...services];
+    },
+    responsiveMode() {
+      var responsive = window.matchMedia("(max-width: 1098px)");
+
+      responsive.addListener(event => {
+        if (event.matches) {
+          this.responsiveMobile = false;
+          console.log(this.responsiveMobile);
+        } else {
+          this.responsiveMobile = true;
+        }
+      });
     }
   }
 };
@@ -545,5 +582,87 @@ export default {
   height: 500px;
   border-radius: 20px;
   margin: 25px 0;
+}
+
+.firts__section {
+  width: 50%;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.second__section {
+  width: 50%;
+  height: 500px;
+}
+
+.stores__container {
+  position: relative;
+  width: 100%;
+  height: 90%;
+}
+
+.btn__register {
+  position: absolute;
+  height: 25px;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.store__added {
+  position: absolute;
+  max-height: 85%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  top: 0;
+}
+
+.services__store__container {
+  margin-left: 20px;
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.services__store__container > p {
+  margin: 0;
+  width: 50%;
+}
+@media screen and (max-width: 1098px) {
+  .firts__section {
+    width: 100% !important;
+    height: 50% !important;
+  }
+  .second__section {
+    width: 100% !important;
+    height: auto;
+  }
+  .store__added,
+  .btn__register,
+  .stores__container {
+    position: initial !important;
+  }
+
+  .store__added {
+    background: #f2f2f2 !important;
+    border-radius: 10px !important;
+    padding: 0 20px !important;
+    padding-bottom: 20px !important;
+    margin-bottom: 50px !important;
+  }
+
+  .card__styles {
+    height: auto !important;
+  }
+
+  .services__store__container > p {
+    width: 100% !important;
+  }
+}
+
+@media screen and (max-width: 550px) {
 }
 </style>
