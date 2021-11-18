@@ -31,7 +31,6 @@
       </div>
       <div
         class="fit row wrap justify-left items-start content-start"
-        style="padding-left: 20px "
         v-if="searching === false"
       >
         <q-card

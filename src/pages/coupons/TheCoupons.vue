@@ -613,7 +613,15 @@ export default {
             .then(response => {
               if (response) {
                 this.hideLoading();
-                this.sync(true);
+                this.Swal.fire({
+                  text: "Cupón Destacado",
+                  icon: "success",
+                  confirmButtonText: "Ok",
+                  confirmButtonColor: "#21ba45",
+                  timer: 5000,
+                  timerProgressBar: true
+                });
+                this.sync();
               }
             })
             .catch(error => {
@@ -650,7 +658,15 @@ export default {
             .then(response => {
               if (response) {
                 this.hideLoading();
-                this.sync(true);
+                this.Swal.fire({
+                  text: "El cupón esta en la posición N° 1",
+                  icon: "success",
+                  confirmButtonText: "Ok",
+                  confirmButtonColor: "#21ba45",
+                  timer: 5000,
+                  timerProgressBar: true
+                });
+                this.sync();
               }
             })
             .catch(error => {

@@ -348,11 +348,15 @@ export default {
           if (response.data.status === "success") {
             this.reset();
             this.hideLoading();
-            this.showNotification(
-              "Servicios registrados",
-              "positive",
-              "check_circle"
-            );
+
+            this.Swal.fire({
+              text: "Servicios Registrados",
+              icon: "success",
+              confirmButtonText: "Ok",
+              confirmButtonColor: "#21ba45",
+              timer: 5000,
+              timerProgressBar: true
+            });
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }

@@ -28,12 +28,11 @@
           src="~/assets/maki-roll2.gif"
           alt="sad"
           width="130"
-          style="border-radius:200%"
+          style="border-radius:100%"
         />
       </div>
       <div
         class="fit row wrap justify-left items-start content-start"
-        style="padding-left: 20px "
         v-if="searching === false"
       >
         <q-card

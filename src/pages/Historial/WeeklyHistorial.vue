@@ -31,8 +31,7 @@
         :loading="loadingPage"
         :pagination-label="getPaginationLabel"
         no-results-label="No se encontraron cobros. Intenten de nuevo."
-        style=" width: 80%; border-radius: 15px; margin-top: 15px;"
-        class="my-sticky-header-table"
+        class="table__weekly__historial"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -64,7 +63,7 @@
                     size="sm"
                     style="margin-right:5px"
                     @click="payProcess(props)"
-                    label="Pagar"
+                    label="Pagar Online"
                   >
                     <!--<q-tooltip>
                       Pagar
@@ -130,7 +129,7 @@
                               props.cols[1].value > 0
                           "
                         >
-                          <q-item-section>Pagar</q-item-section>
+                          <q-item-section>Pagar Online</q-item-section>
                         </q-item>
                         <q-separator />
                         <q-item clickable @click="detail(props)" v-close-popup>
@@ -438,10 +437,21 @@ export default {
   width: 90% !important;
 }
 
+.table__weekly__historial {
+  width: 80%;
+  border-radius: 15px;
+  margin-top: 15px;
+}
+
 @media screen and (max-width: 500px) {
   .q__select__wh {
     justify-content: center;
     width: 100% !important;
+  }
+  .table__weekly__historial {
+    width: 100%;
+    border-radius: 15px;
+    margin-top: 15px;
   }
 }
 </style>

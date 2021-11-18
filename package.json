@@ -21,6 +21,7 @@
     "pusher-js": "^7.0.3",
     "quasar": "^1.15.9",
     "secure-ls": "^1.2.6",
+    "sweetalert2": "^11.1.10",
     "to-unix-timestamp": "^1.0.1",
     "vue-apexcharts": "^1.5.2",
     "vue-echarts-v3": "^2.0.1",

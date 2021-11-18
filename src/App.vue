@@ -180,8 +180,14 @@ export default {
           this.bus.$emit("logout");
         }
       } else {
+        let msg = "";
+        if (error.message === "Network Error") {
+          msg = "Revise su conexión a Internet";
+        } else {
+          msg = error.message;
+        }
         this.showNotification(
-          error.message, //"Ha ocurrido un error con el servidor",
+          msg, //"Ha ocurrido un error con el servidor",
           "negative",
           "error"
         );

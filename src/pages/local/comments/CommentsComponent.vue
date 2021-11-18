@@ -37,7 +37,7 @@
         <q-list bordered class="rounded-borders" style="max-width: 100%">
           <q-item-label header>Recientes</q-item-label>
 
-          <div v-for="comment in getData" :key="comment.comentario_id">
+          <div v-for="comment in comments" :key="comment.comentario_id">
             <q-item style="margin: 10px">
               <q-item-section avatar top class="avatar__responsive">
                 <q-avatar icon="person" color="primary" text-color="white" />
@@ -83,13 +83,13 @@
         </q-list>
       </q-card>
       <q-pagination
-        v-if="comments.length > perPage"
+        v-if="meta.total > perPage"
         v-model="page"
-        :max="getMaxPages"
+        :max="meta.lastPage"
         style="padding-top:25px"
         color="primary"
         input
-        @input="scrollTop()"
+        @input="getComments()"
       />
     </div>
     <div
@@ -148,33 +148,15 @@ export default {
       comments: [],
       flag: false,
       page: 1,
-      perPage: 6,
+      perPage: 15,
       status: ["Todos", "Sin replicas", "Con replicas"],
       statusSelected: "Todos",
-      filteredComments: []
-    };
-  },
-  computed: {
-    getData() {
-      if (this.statusSelected === "Todos") {
-        this.filteredComments = [...this.comments];
-      } else if (this.statusSelected === "Sin replicas") {
-        this.filteredComments = [
-          ...this.comments.filter(item => item.replica_id === null)
-        ];
-      } else if (this.statusSelected === "Con replicas") {
-        this.filteredComments = [
-          ...this.comments.filter(item => item.replica_id !== null)
-        ];
+      filteredComments: [],
+      meta: {
+        lastPage: 0,
+        total: 0
       }
-      return this.filteredComments.slice(
-        (this.page - 1) * this.perPage,
-        (this.page - 1) * this.perPage + this.perPage
-      );
-    },
-    getMaxPages() {
-      return Math.ceil(this.filteredComments.length / this.perPage);
-    }
+    };
   },
   methods: {
     init() {
@@ -197,13 +179,15 @@ export default {
     changeStatus(val) {
       if (val !== null) {
         this.page = 1;
+        this.getComments();
       }
     },
     getComments() {
       this.flag = true;
-      var url = this.$store.getters["routes/getRoute"]("get.comments", {
+      var filters = this.filters();
+      var url = `${this.$store.getters["routes/getRoute"]("get.comments", {
         localId: this.localSelected.value
-      });
+      })}${filters}`;
       this.$axios
         .get(url, {
           headers: {
@@ -212,18 +196,29 @@ export default {
         })
         .then(response => {
           if (response.data.status === "success") {
-            this.comments = response.data.result.filter(
-              comment =>
-                comment.comentario !== "-- Usuario no ha dejado comentario --"
-            );
+            this.comments = response.data.result.data;
             this.flag = false;
+            this.meta = {
+              lastPage: response.data.result.last_page,
+              total: response.data.result.total
+            };
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
         })
         .catch(error => {
           this.errorHandling(error);
+          this.flag = false;
         });
+    },
+    filters() {
+      if (this.statusSelected === "Con replicas") {
+        return `?reply=1&page=${this.page}`;
+      } else if (this.statusSelected === "Sin replicas") {
+        return `?reply=0&page=${this.page}`;
+      }else{
+        return `?page=${this.page}`;
+      }
     }
   }
 };
