@@ -380,7 +380,7 @@ export default {
             pricesGoUp.map(item => {
               this.services.push({
                 value: `${item.qty}s`,
-                label: `${item.qty} Subir`,
+                label: `Pack ${item.qty} Subir`,
                 price: this.formatNumber(item.price),
                 pricev2: item.price,
                 disable: false,
@@ -393,10 +393,7 @@ export default {
             pricesStandOut.map(item => {
               this.services.push({
                 value: `${item.qty}d`,
-                label:
-                  item.qty === 1
-                    ? `${item.qty} Destacado`
-                    : `${item.qty} Destacados`,
+                label: `Pack ${item.qty} Destacados`,
                 price: this.formatNumber(item.price),
                 pricev2: item.price,
                 disable: false,
@@ -582,7 +579,7 @@ export default {
 
 <style lang="scss" scoped>
 .card__styles {
-  width: 80%;
+  width: 90%;
   height: 500px;
   border-radius: 20px;
   margin: 25px 0;

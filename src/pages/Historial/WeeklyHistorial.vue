@@ -410,17 +410,15 @@ export default {
           if (response.data.status === "success") {
             this.reset();
             this.hideLoading();
-            this.showNotification(
-              "Pago semanal pagado",
-              "positive",
-              "check_circle"
-            );
+            window.location.href = response.data.result.link;
           } else {
-            this.showNotification(response.data.message, "negative", "error");
+            this.showNotification("Ha ocurrido un error", "negative", "error");
+            this.hideLoading();
           }
         })
         .catch(error => {
           this.errorHandling(error);
+          this.hideLoading();
         });
     },
     reset() {

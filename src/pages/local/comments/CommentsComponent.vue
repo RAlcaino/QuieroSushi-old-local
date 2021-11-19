@@ -115,7 +115,7 @@
       >
         <img src="../../../assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size:16px; font-weight:bold;text-align:center">
-          No se encontraron comentarios
+          No se encontraron comentarios {{ this.statusSelected.toLowerCase() }}
         </p>
       </div>
     </div>
@@ -149,8 +149,8 @@ export default {
       flag: false,
       page: 1,
       perPage: 15,
-      status: ["Todos", "Sin replicas", "Con replicas"],
-      statusSelected: "Todos",
+      status: ["Sin replicas", "Con replicas"],
+      statusSelected: "Sin replicas",
       filteredComments: [],
       meta: {
         lastPage: 0,
@@ -171,7 +171,7 @@ export default {
     change(val) {
       if (val !== null) {
         this.localSelected = val;
-        this.statusSelected = "Todos";
+        this.statusSelected = "Sin replicas";
         this.page = 1;
         this.getComments(true);
       }
@@ -199,8 +199,8 @@ export default {
             this.comments = response.data.result.data;
             this.flag = false;
             this.meta = {
-              lastPage: response.data.result.last_page,
-              total: response.data.result.total
+              lastPage: response.data.result.meta.total_pages,
+              total: response.data.result.meta.total
             };
           } else {
             this.showNotification(response.data.message, "negative", "error");
@@ -216,8 +216,6 @@ export default {
         return `?reply=1&page=${this.page}`;
       } else if (this.statusSelected === "Sin replicas") {
         return `?reply=0&page=${this.page}`;
-      }else{
-        return `?page=${this.page}`;
       }
     }
   }

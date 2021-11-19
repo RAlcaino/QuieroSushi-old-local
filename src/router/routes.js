@@ -240,7 +240,7 @@ const routes = [
   },
   {
     name: "payment-sucess",
-    path: "/pago-exito",
+    path: "/pago-exito/:type",
     component: () => import("src/pages/payment/TheConfirm.vue"),
     beforeEnter: (to, from, next) => {
       if (isAuthenticated()) {
@@ -252,7 +252,7 @@ const routes = [
   },
   {
     name: "payment-error",
-    path: "/pago-error",
+    path: "/pago-error/:type",
     component: () => import("src/pages/payment/TheError.vue"),
     beforeEnter: (to, from, next) => {
       if (isAuthenticated()) {
