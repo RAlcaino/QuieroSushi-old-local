@@ -410,7 +410,7 @@ export default {
           if (response.data.status === "success") {
             this.reset();
             this.hideLoading();
-            window.location.href = response.data.result.link;
+            window.location.href = response.data.result;
           } else {
             this.showNotification("Ha ocurrido un error", "negative", "error");
             this.hideLoading();
