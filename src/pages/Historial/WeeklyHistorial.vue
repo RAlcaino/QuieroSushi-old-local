@@ -195,7 +195,8 @@ export default {
     "hideLoading",
     "errorHandling",
     "getStoreLocals",
-    "formatNumber"
+    "formatNumber",
+    "setCurrentLocal"
   ],
   data() {
     return {
@@ -274,12 +275,18 @@ export default {
     formatLocals() {
       this.locals = [];
       this.locals = [...this.getStoreLocals("ALL")];
-
-      this.localSelected = this.locals[0];
+      this.localSelected = this.locals.find(
+        item => item.value === this.$store.getters["auth/getDataLocal"].id
+      );
+      if (this.localSelected === undefined) {
+        this.localSelected = this.locals[0];
+        this.setCurrentLocal(this.localSelected);
+      }
     },
     change(val) {
       if (val !== null) {
         this.localSelected = val;
+        this.setCurrentLocal(this.localSelected);
         this.data = [];
         this.page = 1;
         this.sync();
@@ -322,13 +329,7 @@ export default {
     formatNumberCustom(balance) {
       let splitNumber = balance.toString().split(".");
       let integer = this.formatNumber(parseInt(splitNumber[0])).toString();
-      let decimals = splitNumber[1];
       return integer;
-      if (decimals) {
-        return `${integer},${decimals}`;
-      } else {
-        return integer;
-      }
     },
     weekDay(day) {
       if (day === 0) {
@@ -408,7 +409,6 @@ export default {
         })
         .then(response => {
           if (response.data.status === "success") {
-            this.reset();
             this.hideLoading();
             window.location.href = response.data.result;
           } else {
@@ -420,10 +420,6 @@ export default {
           this.errorHandling(error);
           this.hideLoading();
         });
-    },
-    reset() {
-      this.data = [];
-      this.init();
     }
   }
 };

@@ -211,7 +211,8 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getStoreLocals"
+    "getStoreLocals",
+    "setCurrentLocal"
   ],
   components: {
     StatusComponent,
@@ -455,6 +456,7 @@ export default {
       var vue = this;
       if (val !== null) {
         this.local = val;
+        this.setCurrentLocal(this.local);
       }
     },
     allLocals() {

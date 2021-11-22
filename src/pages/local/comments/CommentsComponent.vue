@@ -127,7 +127,13 @@ import InputComments from "../../../components/bases/InputComments.vue";
 import BasePage from "../../../components/bases/BasePage.vue";
 
 export default {
-  inject: ["showNotification", "errorHandling", "scrollTop", "getStoreLocals"],
+  inject: [
+    "showNotification",
+    "errorHandling",
+    "scrollTop",
+    "getStoreLocals",
+    "setCurrentLocal"
+  ],
   components: {
     InputComments,
     BasePage
@@ -166,12 +172,19 @@ export default {
       this.locals = [];
       this.locals = [...this.getStoreLocals("ACTIVE")];
 
-      this.localSelected = this.locals[0];
+      this.localSelected = this.locals.find(
+        item => item.value === this.$store.getters["auth/getDataLocal"].id
+      );
+      if (this.localSelected === undefined) {
+        this.localSelected = this.locals[0];
+        this.setCurrentLocal(this.localSelected);
+      }
     },
     change(val) {
       if (val !== null) {
         this.localSelected = val;
         this.statusSelected = "Sin replicas";
+        this.setCurrentLocal(this.localSelected);
         this.page = 1;
         this.getComments(true);
       }

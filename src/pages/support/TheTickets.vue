@@ -1,11 +1,14 @@
 <template>
-  <base-page title="Mis Tickets" icon="confirmation_number" :sync="sync" :toolbar="true">
+  <base-page
+    title="Mis Tickets"
+    icon="confirmation_number"
+    :sync="sync"
+    :toolbar="true"
+  >
     <the-chat :sync="syncComments"></the-chat>
     <new-ticket :locals="locals" :sync="sync"></new-ticket>
     <close-ticket></close-ticket>
-    <div
-      class="text-h6 tickets__container__select"
-    >
+    <div class="text-h6 tickets__container__select">
       <div>
         <q-btn
           rounded
@@ -176,7 +179,8 @@ export default {
     "hideLoading",
     "errorHandling",
     "getStoreLocals",
-    "scrollTop"
+    "scrollTop",
+    "setCurrentLocal"
   ],
   created() {
     this.init();
@@ -226,11 +230,18 @@ export default {
       this.locals = [];
       this.locals = [...this.getStoreLocals("ACTIVE")];
 
-      this.localSelected = this.locals[0];
+      this.localSelected = this.locals.find(
+        item => item.value === this.$store.getters["auth/getDataLocal"].id
+      );
+      if (this.localSelected === undefined) {
+        this.localSelected = this.locals[0];
+        this.setCurrentLocal(this.localSelected);
+      }
     },
     change(val) {
       if (val !== null) {
         this.localSelected = val;
+        this.setCurrentLocal(this.localSelected);
         this.page = 1;
         this.statusSelected = "Abierto";
         this.sync(false);

@@ -56,7 +56,8 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getStoreLocals"
+    "getStoreLocals",
+    "setCurrentLocal"
   ],
   components: {
     EditPhoto,
@@ -184,12 +185,12 @@ export default {
     change(val) {
       if (val !== null) {
         this.localSelected = val;
+        this.setCurrentLocal(this.localSelected);
         this.getDataLocal();
       }
     },
     init() {
       this.formatLocals();
-      this.localSelected = this.locals[0];
       this.getDataLocal();
     },
     setLocalSelected(locals) {
@@ -221,6 +222,13 @@ export default {
     formatLocals() {
       this.locals = [];
       this.locals = [...this.getStoreLocals("ACTIVE")];
+      this.localSelected = this.locals.find(
+        item => item.value === this.$store.getters["auth/getDataLocal"].id
+      );
+      if (this.localSelected === undefined) {
+        this.localSelected = this.locals[0];
+        this.setCurrentLocal(this.localSelected);
+      }
     },
     weekStructure(semana) {
       let week = [];

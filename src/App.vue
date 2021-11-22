@@ -66,7 +66,8 @@ export default {
       installPromptEvent: this.installPromptEvent,
       getServerTime: this.serverTime,
       scrollTop: this.scrollTop,
-      getStoreLocals: this.getStoreLocals
+      getStoreLocals: this.getStoreLocals,
+      setCurrentLocal: this.setCurrentLocal
     };
   },
   methods: {
@@ -250,6 +251,15 @@ export default {
         if ($("html").scrollTop() !== 0) {
           $("html").animate({ scrollTop: 0 }, 1000);
         }
+      });
+    },
+    setCurrentLocal(val) {
+      this.$store.commit("auth/setCurrentLocal", {
+        id: val.value,
+        name: val.name,
+        image: val.image,
+        commune: val.commune,
+        cartStatus: val.cartStatus
       });
     }
   }
