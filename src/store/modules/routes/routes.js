@@ -161,6 +161,10 @@ const mutations = {
       {
         name: "weekly.payment",
         link: "/weekly-payment"
+      },
+      {
+        name: "report",
+        link: "/report/{idPostpago}"
       }
     ];
   }

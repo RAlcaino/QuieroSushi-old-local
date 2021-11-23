@@ -5,6 +5,7 @@
     title="Histórico Cobro Semanal"
     :toolbar="true"
   >
+    <the-detail></the-detail>
     <div class="row no-wrap justify-end q__select__wh">
       <q-select
         v-if="locals.length > 1"
@@ -186,9 +187,9 @@
 
 <script>
 import BasePage from "src/components/bases/BasePage.vue";
-import { dataHistorial } from "../../data/WeeklyHistorial";
+import TheDetail from "./dialogs/TheDetail.vue";
 export default {
-  components: { BasePage },
+  components: { BasePage, TheDetail },
   inject: [
     "showNotification",
     "showLoading",
@@ -376,7 +377,10 @@ export default {
       }
     },
     detail(props) {
-      console.log(props.key);
+      this.bus.$emit("open-details-postpago", {
+        ...props,
+        week: this.generateWeek(props.row.timestamp_cobro)
+      });
     },
     registerPay(props) {
       var data = { ...props };
