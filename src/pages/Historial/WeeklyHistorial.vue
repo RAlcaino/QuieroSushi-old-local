@@ -171,16 +171,23 @@
       </div>
     </div>
     <div
-      style="margin-top:150px"
       class="fit column wrap justify-center items-center content-center"
       v-else
     >
-      <img
-        src="~/assets/maki-roll2.gif"
-        alt="sad"
-        width="130"
-        style="border-radius:100%"
-      />
+      <div v-if="data.length === 0 && !loadingPage" class="not__found">
+        <img src="~src/assets/icons8-sad.gif" alt="sad" width="130" />
+        <p style="font-size:16px; font-weight:bold;text-align:center">
+          No se encontraron pagos semanal
+        </p>
+      </div>
+      <div v-if="loadingPage" style="margin-top:150px">
+        <img
+          src="~/assets/maki-roll2.gif"
+          alt="sad"
+          width="130"
+          style="border-radius:100%"
+        />
+      </div>
     </div>
   </base-page>
 </template>
@@ -397,7 +404,8 @@ export default {
     },
     payProcess(props) {
       this.showLoading();
-      var data = {
+      var data = {       
+        pay_type: "Pago Online",
         id_postpago: props.row.id,
         payed_amount: props.row.saldo_a_pagar,
         id_local: props.row.local.id_local
@@ -439,6 +447,14 @@ export default {
   width: 80%;
   border-radius: 15px;
   margin-top: 15px;
+}
+
+.not__found {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 150px;
 }
 
 @media screen and (max-width: 500px) {

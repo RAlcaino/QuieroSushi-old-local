@@ -332,6 +332,7 @@ export default {
     register() {
       this.showLoading();
       var data = {
+        pay_type: "Transferencia",
         total: this.total,
         detail: this.servicesAdded
       };
@@ -452,11 +453,6 @@ export default {
       let decimals = splitNumber[1];
 
       return integer;
-      if (decimals) {
-        return `${integer},${decimals}`;
-      } else {
-        return integer;
-      }
     },
     addWeeklyPay(pendingWeeklyPay) {
       let map = pendingWeeklyPay.map(item => {
