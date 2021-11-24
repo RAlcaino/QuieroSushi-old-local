@@ -404,11 +404,12 @@ export default {
     },
     payProcess(props) {
       this.showLoading();
-      var data = {       
+      var data = {
         pay_type: "Pago Online",
         id_postpago: props.row.id,
         payed_amount: props.row.saldo_a_pagar,
-        id_local: props.row.local.id_local
+        id_local: props.row.local.id_local,
+        domain: window.location.origin
       };
 
       var url = `${this.$store.getters["routes/getRoute"]("weekly.payment")}`;

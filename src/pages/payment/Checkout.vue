@@ -131,7 +131,8 @@ export default {
               commerceOrder: Math.round(
                 Math.random() * (99999999999999 - 1) + 1
               ),
-              detail: this.data
+              detail: this.data,
+              domain: window.location.origin
             },
             {
               headers: {
