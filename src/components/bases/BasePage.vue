@@ -2,7 +2,11 @@
   <q-page
     id="page-main"
     class="q-pa-sm"
-    style="background:white; max-height: 600px; padding-bottom: 20px ; overflow: auto;"
+    :style="
+      `background: ${
+        bgColor === undefined ? 'white' : bgColor
+      }; max-height: 600px; padding-bottom: 20px ; overflow: auto;`
+    "
   >
     <q-toolbar
       v-if="toolbar"
@@ -29,7 +33,7 @@
 <script>
 import $ from "jquery";
 export default {
-  props: ["title", "sync", "icon", "toolbar"],
+  props: ["title", "sync", "icon", "toolbar", "bgColor"],
 
   created() {
     this.bus.$on("scrollTopPage", () => {

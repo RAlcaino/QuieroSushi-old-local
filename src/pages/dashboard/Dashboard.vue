@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex flex-center" style="padding-bottom:125px">
+  <!--<q-page class="flex flex-center" style="padding-bottom:125px">
     <q-card class="bg-transparent no-border no-shadow">
       <div class="row items-center full-width justify-center q-col-gutter-lg">
         <q-icon
@@ -27,28 +27,34 @@
         </div>
       </div>
     </q-card>
-  </q-page>
-  <!--<q-page class="q-pa-sm" style="padding-bottom:125px">
-   <card-social icon_position="left" />
-
-    <card-charts />
-
-    <div class="row q-col-gutter-sm  q-py-sm">
-      <tab-social />
-      <card-with-image />
-    </div>
-
-    <div class="row q-col-gutter-sm  q-py-sm">
-      <todo-list />
-
-      <card-time-line />
-    </div>
-
-    <table-visits />
   </q-page>-->
+  <base-page
+    title=""
+    icon=""
+    :sync="false"
+    :toolbar="false"
+    :bgColor="`#eff4f7`"
+    style="padding: 30px;"
+  >
+    <card-social icon_position="right" />
+    
+
+    <div style="display:flex; flex-wrap: wrap; justify-content: space-between;">
+      <area-chart></area-chart>
+      <pie-chart></pie-chart>
+      <bar-chart></bar-chart>
+      <bar-horizontal-chart></bar-horizontal-chart>
+    </div>
+  </base-page>
 </template>
 
 <script>
+import BasePage from "src/components/bases/BasePage.vue";
+import AreaChart from "src/components/charts/AreaChart.vue";
+import PieChart from 'src/components/charts/PieChart.vue';
+import BarChart from 'src/components/charts/BarChart.vue';
+import BarHorizontalChart from 'src/components/charts/BarHorizontalChart.vue';
+
 export default {
   name: "PageIndex",
   components: {
@@ -58,11 +64,14 @@ export default {
     CardWithImage: () => import("components/cards/CardWithImage"),
     CardTimeLine: () => import("components/cards/CardTimeLine"),
     TodoList: () => import("components/list/TodoList"),
-    TableVisits: () => import("components/tables/TableVisits")
+    TableVisits: () => import("components/tables/TableVisits"),
+    BasePage,
+    AreaChart,
+    PieChart,
+    BarChart,
+    BarHorizontalChart
   },
-  mounted() {
-    console.log("dashboard mounted");
-  },
+
   data() {
     return {
       mode: "list",
@@ -116,4 +125,18 @@ export default {
     };
   }
 };
+
+/*<div class="row q-col-gutter-sm  q-py-sm">
+      <tab-social />
+      <card-with-image />
+    </div>
+
+    <card-charts />
+    <div class="row q-col-gutter-sm  q-py-sm">
+      <todo-list />
+
+      <card-time-line />
+      
+    <table-visits />
+    </div>*/
 </script>

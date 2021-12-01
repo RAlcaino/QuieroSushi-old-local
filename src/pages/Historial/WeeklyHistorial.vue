@@ -255,7 +255,9 @@ export default {
       this.loadingPage = true;
       var url = `${this.$store.getters["routes/getRoute"](
         "status.postpago"
-      )}?idLocal=${this.localSelected.value}&page=${this.page}`;
+      )}?idLocal=${this.localSelected.value}&sort=timestamp_cobro,desc&page=${
+        this.page
+      }`;
 
       this.$axios
         .get(url, {
