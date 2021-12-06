@@ -110,6 +110,34 @@ export default {
               value: "82",
               color1: "#f88c2b",
               color2: "#3e51b5"
+            },
+            {
+              title: "Monthly Income",
+              icon: "fas fa-dollar-sign",
+              value: "$ 20k",
+              color1: "#546bfa",
+              color2: "#3e51b5"
+            },
+            {
+              title: "Weekly Sales",
+              icon: "fas fa-chart-bar",
+              value: "20",
+              color1: "#3a9688",
+              color2: "#3e51b5"
+            },
+            {
+              title: "New Customers",
+              icon: "fas fa-chart-line",
+              value: "321",
+              color1: "#7cb342",
+              color2: "#3e51b5"
+            },
+            {
+              title: "Active Users",
+              icon: "person",
+              value: "82",
+              color1: "#f88c2b",
+              color2: "#3e51b5"
             }
           ];
     }

@@ -18,7 +18,7 @@
       </q-btn>
     </q-card-section>-->
     <p class="title__styles">
-      Custom Bar Chart
+      Ventas
     </p>
     <q-card-section class="q-pa-none q-pt-md">
       <IEcharts
@@ -56,21 +56,21 @@ export default {
     },
     onReady(instance, echarts) {
       this.echarts = echarts;
-      let dataAxis = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
+      let dataAxis = ["Enero", "Febrero"];
+      let data = [
+        {
+          value: 220,
+          itemStyle: {
+            color: "#a90000"
+          }
+        },
+        {
+          value: 100,
+          itemStyle: {
+            color: "#1167b1"
+          }
+        }
       ];
-      let data = [220, 182, 191, 234, 290, 330, 310, 442, 321, 90, 149, 210];
       let yMax = 500;
       let dataShadow = [];
       for (let i = 0; i < data.length; i++) {
@@ -121,9 +121,9 @@ export default {
         },
         series: [
           {
-            name: "Direct",
+            name: "Monto",
             type: "bar",
-            barWidth: "60%",
+            barWidth: "50%",
             data: data
           }
         ]

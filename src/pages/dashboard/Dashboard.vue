@@ -37,23 +37,20 @@
     style="padding: 30px;"
   >
     <card-social icon_position="right" />
-    
 
     <div style="display:flex; flex-wrap: wrap; justify-content: space-between;">
-      <area-chart></area-chart>
-      <pie-chart></pie-chart>
       <bar-chart></bar-chart>
-      <bar-horizontal-chart></bar-horizontal-chart>
+      <pie-chart></pie-chart>
     </div>
   </base-page>
 </template>
 
 <script>
 import BasePage from "src/components/bases/BasePage.vue";
+import PieChart from "src/components/charts/PieChart.vue";
+import BarChart from "src/components/charts/BarChart.vue";
+import BarHorizontalChart from "src/components/charts/BarHorizontalChart.vue";
 import AreaChart from "src/components/charts/AreaChart.vue";
-import PieChart from 'src/components/charts/PieChart.vue';
-import BarChart from 'src/components/charts/BarChart.vue';
-import BarHorizontalChart from 'src/components/charts/BarHorizontalChart.vue';
 
 export default {
   name: "PageIndex",
