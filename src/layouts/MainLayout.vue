@@ -1034,7 +1034,8 @@ export default {
         });
     },
     sortAndFilter(locals) {
-      locals.sort((a, b) => {
+      let newLocals = [...locals];
+      newLocals.sort((a, b) => {
         if (a.name > b.name) {
           return 1;
         }
@@ -1044,7 +1045,7 @@ export default {
         return 0;
       });
 
-      return locals.filter(item => item.localStatus === "normal");
+      return newLocals.filter(item => item.localStatus === "normal");
     }
   }
 };

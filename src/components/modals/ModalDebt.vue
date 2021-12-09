@@ -10,18 +10,23 @@
           icon="error"
           text-color="primary"
         />
-        <span class="q-ml-sm" style="font-size:20px; text-align:center"
-          >¡Tienes todos tus locales bloqueados!</span
-        >
+        <span class="q-ml-sm" style="font-size:20px; text-align:center">{{
+          this.$store.getters["auth/getDataLocals"].every(
+            item => item.localStatus === "bloqueado"
+          )
+            ? "¡Tienes todos tus locales bloqueados!"
+            : "¡Tienes algunos de tus locales bloqueados!"
+        }}</span>
       </q-card-section>
 
       <q-card-actions align="center">
         <q-btn
           rounded
           color="primary"
-          label="Cerrar Sesion"
+          label="Cerrar"
           style="font-size: 11px !important"
-          @click="logout()"
+          v-close-popup
+          @click="closeModalDebt()"
         />
       </q-card-actions>
     </q-card>
@@ -31,7 +36,11 @@
 <script>
 export default {
   props: ["open"],
-  inject:["logout"]
+  methods: {
+    closeModalDebt() {
+      this.$store.commit("auth/setDebt", false);
+    }
+  }
 };
 </script>
 

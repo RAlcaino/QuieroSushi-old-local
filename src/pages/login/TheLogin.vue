@@ -258,7 +258,12 @@ export default {
               };
               this.bus.$emit("login", data);
               this.hideLoading();
-              this.$router.push({ path: "/pedidos" });
+
+              if (data.availableMenuOptions.length == 2) {
+                this.$router.push({ path: "/historico-cobro-semanal" });
+              } else {
+                this.$router.push({ path: "/pedidos" });
+              }
               this.html[0].style.overflow = "auto";
             } else {
               this.hideLoading();

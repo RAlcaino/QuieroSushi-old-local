@@ -13,7 +13,7 @@
       class="row wrap justify-end items-end content-end mobile-styles-o"
       style="margin: 20px auto; width: 90%;"
     >
-      <div v-if="getStoreLocals('ACTIVE').length > 1">
+      <div>
         <q-select
           ref="select"
           rounded
@@ -31,7 +31,7 @@
           <template v-slot:prepend>
             <q-icon name="store" />
           </template>
-          <template v-slot:before-options>
+          <template v-slot:before-options v-if="getStoreLocals('ACTIVE').length > 1">
             <q-item>
               <q-item-section class="text-grey">
                 <input

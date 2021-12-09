@@ -31,7 +31,6 @@
           @input="changeStatus"
         />
         <q-select
-          v-if="locals.length > 1"
           outlined
           rounded
           dense
@@ -39,7 +38,45 @@
           :options="locals"
           label="Locales"
           @input="change"
-        />
+        >
+          <template v-slot:prepend>
+            <q-icon name="store" />
+          </template>
+          <template v-slot:before-options v-if="locals.length > 1">
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item dense clickable @click="allOrders()">
+              <q-item-section>Todos</q-item-section>
+            </q-item>
+          </template>
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-grey">
+                Sin Resultados
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
       </div>
     </div>
     <div
@@ -322,6 +359,17 @@ export default {
     },
     syncComments(data) {
       this.sync(true, data);
+    },
+    filterFn(val) {
+      if (val === "") {
+        this.localsFilter = this.locals;
+        return;
+      }
+
+      const needle = val.toLowerCase();
+      this.localsFilter = this.locals.filter(
+        v => v.label.toLowerCase().indexOf(needle) > -1
+      );
     }
   }
 };

@@ -20,7 +20,7 @@
           "
         >
           <div>
-            <div class="firts-options" v-if="locals.length > 1">
+            <div class="firts-options">
               <q-select
                 ref="select"
                 rounded
@@ -39,7 +39,7 @@
                 <template v-slot:prepend>
                   <q-icon name="store" />
                 </template>
-                <template v-slot:before-options>
+                <template v-slot:before-options v-if="locals.length > 1">
                   <q-item>
                     <q-item-section class="text-grey">
                       <input
@@ -567,14 +567,18 @@ export default {
       this.locals = [];
       this.locals = [...this.getStoreLocals("ACTIVE")];
 
-      this.localSelected = {
-        label: "Todos",
-        value: null,
-        image: null,
-        commune: null,
-        name: null,
-        cartStatus: null
-      };
+      if (this.locals.length > 1) {
+        this.localSelected = {
+          label: "Todos",
+          value: null,
+          image: null,
+          commune: null,
+          name: null,
+          cartStatus: null
+        };
+      } else {
+        this.localSelected = this.locals[0];
+      }
     },
     filterFn(val) {
       if (val === "") {

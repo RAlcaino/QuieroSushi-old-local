@@ -51,21 +51,21 @@ const mutations = {
 
     let locals = [...payload.locals];
 
-    if (payload.locals.length === 0) {
+    if (locals.some(item => item.localStatus === "bloqueado")) {
       state.user.debt = true;
-    } else {
-      if (payload.locals.length > 1) {
-        state.currentLocal.id = -1;
-        state.currentLocal.name = "Todos";
-        if (state.user.id === -1) {
-          state.currentLocal.image = "icons/favicon-128.png";
-        } else {
-          state.currentLocal.image = sortAndFilter(locals)[0].image;
-        }
-        state.currentLocal.commune = null;
+    }
+
+    if (payload.locals.length > 1) {
+      state.currentLocal.id = -1;
+      state.currentLocal.name = "Todos";
+      if (state.user.id === -1) {
+        state.currentLocal.image = "icons/favicon-128.png";
       } else {
-        state.currentLocal = sortAndFilter(locals)[0];
+        state.currentLocal.image = sortAndFilter(locals)[0].image;
       }
+      state.currentLocal.commune = null;
+    } else {
+      state.currentLocal = sortAndFilter(locals)[0];
     }
 
     if (payload.role.name.trim() === "God") {
@@ -187,6 +187,9 @@ const mutations = {
   },
   setServerTime(state, payload) {
     state.serverTime = payload;
+  },
+  setDebt(state, payload) {
+    state.user.debt = payload;
   }
 };
 const actions = {};
@@ -263,7 +266,7 @@ const getters = {
   }
 };
 
-const sortAndFilter = (locals) => {
+const sortAndFilter = locals => {
   locals.sort((a, b) => {
     if (a.name > b.name) {
       return 1;
@@ -274,7 +277,13 @@ const sortAndFilter = (locals) => {
     return 0;
   });
 
-  return locals.filter(item => item.localStatus ==="normal");
+  let result = locals.filter(item => item.localStatus === "normal");
+
+  if (result.length === 0) {
+    return locals;
+  } else {
+    return result;
+  }
 };
 
 export default {

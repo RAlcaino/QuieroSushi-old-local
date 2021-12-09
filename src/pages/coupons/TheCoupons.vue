@@ -23,7 +23,7 @@
           />Subir: <strong>{{ availableGoUp }}</strong> disponibles
         </p>
       </div>
-      <div class="c-q-select-responsive" v-if="locals.length > 1">
+      <div class="c-q-select-responsive">
         <q-select
           rounded
           outlined
@@ -40,7 +40,7 @@
           <template v-slot:prepend>
             <q-icon name="store" />
           </template>
-          <template v-slot:before-options>
+          <template v-slot:before-options v-if="locals.length > 1">
             <q-item>
               <q-item-section class="text-grey">
                 <input

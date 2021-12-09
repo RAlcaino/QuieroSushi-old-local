@@ -19,7 +19,7 @@
           @focus="resetPage()"
         />
       </div>
-      <div v-if="locals.length > 1">
+      <div>
         <q-select
           ref="select"
           rounded
@@ -37,7 +37,7 @@
           <template v-slot:prepend>
             <q-icon name="store" />
           </template>
-          <template v-slot:before-options>
+          <template v-slot:before-options v-if="locals.length > 1">
             <q-item>
               <q-item-section class="text-grey">
                 <input
@@ -2435,22 +2435,29 @@ export default {
       this.locals = [];
       this.locals = [...this.getStoreLocals("ACTIVE")];
 
-      this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-      this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
-      this.localSelected.commune = this.$store.getters[
-        "auth/getDataLocal"
-      ].commune;
-      this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
-      this.localSelected.cartStatus = this.$store.getters[
-        "auth/getDataLocal"
-      ].cartStatus;
-
-      if (this.localSelected.value !== -1) {
-        this.localSelected.label =
-          this.localSelected.name + ", " + this.localSelected.commune;
+      if (this.locals.length === 1) {
+        this.localSelected = this.locals[0];
       } else {
-        this.localSelected.label = this.localSelected.name;
+        this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
+        this.localSelected.image = this.$store.getters[
+          "auth/getDataLocal"
+        ].image;
+        this.localSelected.commune = this.$store.getters[
+          "auth/getDataLocal"
+        ].commune;
+        this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
+        this.localSelected.cartStatus = this.$store.getters[
+          "auth/getDataLocal"
+        ].cartStatus;
+
+        if (this.localSelected.value !== -1) {
+          this.localSelected.label =
+            this.localSelected.name + ", " + this.localSelected.commune;
+        } else {
+          this.localSelected.label = this.localSelected.name;
+        }
       }
+
       this.local.value = this.localSelected.value;
       this.local.label = this.localSelected.label;
     },
