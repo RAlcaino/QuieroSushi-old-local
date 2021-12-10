@@ -223,7 +223,6 @@ export default {
     this.init();
     this.sync(false);
     this.bus.$on("sync-tickets", local => {
-      console.log(local);
       if (local !== undefined) {
         this.localSelected = local;
       }

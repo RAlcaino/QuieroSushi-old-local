@@ -316,7 +316,6 @@ export default {
         localName,
         "$n"
       );
-      console.log(this.currentTitleTemplate);
       this.item.price = row.price;
     });
   },
@@ -429,7 +428,6 @@ export default {
         condiciones: this.item.conditions.replaceAll("\n", ".-")
         //delivery: this.formatComunes()
       };
-      console.log(data);
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
@@ -542,7 +540,6 @@ export default {
       return result.slice(0, -1);
     },
     changeTitles(val) {
-      console.log(val);
       this.currentTitleTemplate = val;
       var localName=this.$store.getters["auth/getDataLocal"].name;
       this.titleDetails.shortTitle = this.currentTitleTemplate.label.replaceAll(

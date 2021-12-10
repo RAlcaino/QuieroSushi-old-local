@@ -920,6 +920,10 @@ export default {
                 "auth/setAvailableMenuOptions",
                 response.data.result.availableMenuOptions
               );
+
+              this.optionsAvailable = this.$store.getters[
+                "auth/getAvailableMenuOptions"
+              ];
               if (flag) {
                 this.getLocals(true, syncComponent);
               } else {

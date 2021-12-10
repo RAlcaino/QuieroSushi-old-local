@@ -96,8 +96,6 @@ export default {
     if (this.data === undefined) {
       vue.$router.push({ path: "/cupones" });
     }
-    console.log(this.data);
-    console.log(this.total);
   },
   data() {
     return {

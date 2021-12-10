@@ -325,7 +325,6 @@ export default {
         var url = this.$store.getters["routes/getRoute"]("locals.update", {
           localId: this.localSelected.value
         });
-        console.log(url);
         this.$axios
           .put(
             url,
@@ -433,7 +432,6 @@ export default {
                 // a must be equal to b
                 return 0;
               });
-              //console.log(locals);
               this.$store.commit("auth/setLocals", locals);
               this.bus.$emit("sync-locals-settings");
               this.bus.$emit("refresh-cartstatus");

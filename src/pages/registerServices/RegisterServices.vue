@@ -207,7 +207,8 @@ export default {
     "errorHandling",
     "getStoreLocals",
     "scrollTop",
-    "formatNumber"
+    "formatNumber",
+    "refreshToken"
   ],
   data() {
     return {
@@ -358,6 +359,8 @@ export default {
               timer: 5000,
               timerProgressBar: true
             });
+
+            this.refreshToken(true, false);
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -436,12 +439,10 @@ export default {
               this.serviceSelected = this.services[0];
             }
           } else {
-            console.log("Aqui 1");
             this.showNotification(response.data.message, "negative", "error");
           }
         })
         .catch(error => {
-          console.log("Aqui 2");
           this.errorHandling(error);
         });
     },
@@ -563,7 +564,6 @@ export default {
       responsive.addListener(event => {
         if (event.matches) {
           this.responsiveMobile = false;
-          console.log(this.responsiveMobile);
         } else {
           this.responsiveMobile = true;
         }

@@ -479,7 +479,6 @@ export default {
           }
         }, 3000);
       } else {
-        //console.log(this.localSelected);
         var url = this.$store.getters["routes/getRoute"]("resource.coupons", {
           localId: this.localSelected.value
         });

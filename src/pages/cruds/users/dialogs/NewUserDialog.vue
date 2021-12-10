@@ -491,7 +491,6 @@ export default {
       this.form.storesSelected = this.form.storesSelected.filter(
         item => item.value !== storeId
       );
-      console.log(this.form.storesSelected);
     },
     allOrders() {
       if (this.$refs.select !== undefined) {
