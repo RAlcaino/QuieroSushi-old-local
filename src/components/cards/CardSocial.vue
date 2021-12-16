@@ -28,7 +28,6 @@
               >
               <q-item-label
                 v-else
-                class="text-white text-h6 text-weight-bolder"
               >
                 <q-spinner-facebook color="white" size="sm"
               /></q-item-label>
@@ -136,86 +135,22 @@ export default {
     };
   },
   mounted() {
-    this.getInfo();
+    this.bus.$on("sync-dashboard-card-data", data => {
+      this.sync(data);
+    });
+    this.bus.$on("reset-dashboard-card-data", () => {
+      this.items.map(item => (item.visible = false));
+    });
   },
   methods: {
-    getInfo() {
-      setTimeout(() => {
-        this.items = [
-          {
-            id: 1,
-            title: "Ventas del mes",
-            icon: "fas fa-dollar-sign",
-            value: "$2000",
-            color1: "#546bfa",
-            color2: "#3e51b5",
-            visible: true
-          },
-          {
-            id: 2,
-            title: "Ventas Confirmadas",
-            icon: "fas fa-check-circle",
-            value: "50",
-            color1: "#3a9688",
-            color2: "#3e51b5",
-            visible: true
-          },
-          {
-            id: 3,
-            title: "Ventas Anuladas",
-            icon: "fas fa-times",
-            value: "50",
-            color1: "#7cb342",
-            color2: "#3e51b5",
-            visible: true
-          },
-          {
-            id: 4,
-            title: "Conectividad",
-            icon: "fas fa-percentage",
-            value: "85%",
-            color1: "#f88c2b",
-            color2: "#3e51b5",
-            visible: true
-          },
-          {
-            id: 5,
-            title: "Demora en Confirmar",
-            icon: "fas fa-hourglass-half",
-            value: "20 Minutos",
-            color1: "#546bfa",
-            color2: "#3e51b5",
-            visible: true
-          },
-          {
-            id: 6,
-            title: "Tiempo de Entrega",
-            icon: "fas fa-clock",
-            value: "1 Hora",
-            color1: "#3a9688",
-            color2: "#3e51b5",
-            visible: true
-          },
-          {
-            id: 7,
-            title: "Puntaje",
-            icon: "fas fa-star",
-            value: "4/5",
-            color1: "#7cb342",
-            color2: "#3e51b5",
-            visible: true
-          },
-          {
-            id: 8,
-            title: "Numero de Comentarios",
-            icon: "fas fa-comments",
-            value: "150",
-            color1: "#f88c2b",
-            color2: "#3e51b5",
-            visible: true
-          }
-        ];
-      }, 5000);
+    sync(data) {
+      data.map(item => {
+        let index = this.items.findIndex(card => card.id === item.id);
+        if (index !== -1) {
+          this.items[index].value = item.value;
+          this.items[index].visible = true;
+        }
+      });
     }
   }
 };

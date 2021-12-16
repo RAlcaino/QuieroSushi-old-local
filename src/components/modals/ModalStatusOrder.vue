@@ -225,7 +225,7 @@ export default {
     };
   },
   mounted() {
-    this.bus.$on("modal-status-order-?", data => {
+    this.bus.$on("modal-status-order", data => {
       this.open = true;
       this.text = null;
       this.sendingMsg = false;

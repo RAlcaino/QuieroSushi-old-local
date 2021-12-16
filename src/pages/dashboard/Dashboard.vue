@@ -36,6 +36,55 @@
     :bgColor="`#eff4f7`"
     style="padding: 30px;"
   >
+    <div style="display:flex; justify-content: center; margin-bottom: 25px;">
+      <q-select
+        rounded
+        outlined
+        dense
+        :options="localsFilter"
+        :options-dense="true"
+        hide-hint
+        label="Locales"
+        v-model="localSelected"
+        @input="change"
+      >
+        <template v-slot:prepend>
+          <q-icon name="store" />
+        </template>
+        <template v-slot:before-options v-if="locals.length > 1">
+          <q-item>
+            <q-item-section class="text-grey">
+              <input
+                v-model="localFilter"
+                @input="filterFn(localFilter)"
+                type="text"
+                placeholder="Buscar"
+                style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+              />
+            </q-item-section>
+          </q-item>
+        </template>
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey">
+              <input
+                v-model="localFilter"
+                @input="filterFn(localFilter)"
+                type="text"
+                placeholder="Buscar"
+                style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+              />
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section class="text-grey">
+              Sin Resultados
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+    </div>
+
     <card-social icon_position="right" />
 
     <div style="display:flex; flex-wrap: wrap; justify-content: space-between;">
@@ -54,6 +103,13 @@ import AreaChart from "src/components/charts/AreaChart.vue";
 
 export default {
   name: "PageIndex",
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
   components: {
     CardSocial: () => import("components/cards/CardSocial"),
     CardCharts: () => import("components/cards/CardCharts"),
@@ -68,61 +124,96 @@ export default {
     BarChart,
     BarHorizontalChart
   },
-
+  mounted() {
+    this.initLocals();
+    this.localsFilter = this.locals;
+    this.getData();
+  },
   data() {
     return {
-      mode: "list",
-      messages: [
-        {
-          id: 5,
-          name: "Pratik Patel",
-          msg:
-            " -- I'll be in your neighborhood doing errands this\n" +
-            "            weekend. Do you want to grab brunch?",
-          avatar: "https://avatars2.githubusercontent.com/u/34883558?s=400&v=4",
-          time: "10:42 PM"
-        },
-        {
-          id: 6,
-          name: "Winfield Stapforth",
-          msg:
-            " -- I'll be in your neighborhood doing errands this\n" +
-            "            weekend. Do you want to grab brunch?",
-          avatar: "https://cdn.quasar.dev/img/avatar6.jpg",
-          time: "11:17 AM"
-        },
-        {
-          id: 1,
-          name: "Boy",
-          msg:
-            " -- I'll be in your neighborhood doing errands this\n" +
-            "            weekend. Do you want to grab brunch?",
-          avatar: "https://cdn.quasar.dev/img/boy-avatar.png",
-          time: "5:17 AM"
-        },
-        {
-          id: 2,
-          name: "Jeff Galbraith",
-          msg:
-            " -- I'll be in your neighborhood doing errands this\n" +
-            "            weekend. Do you want to grab brunch?",
-          avatar: "https://cdn.quasar.dev/team/jeff_galbraith.jpg",
-          time: "5:17 AM"
-        },
-        {
-          id: 3,
-          name: "Razvan Stoenescu",
-          msg:
-            " -- I'll be in your neighborhood doing errands this\n" +
-            "            weekend. Do you want to grab brunch?",
-          avatar: "https://cdn.quasar.dev/team/razvan_stoenescu.jpeg",
-          time: "5:17 AM"
-        }
-      ]
+      locals: [],
+      localFilter: "",
+      localsFilter: [],
+      localSelected: {
+        label: null,
+        value: null,
+        image: null,
+        commune: null,
+        name: null,
+        cartStatus: null
+      }
     };
+  },
+  methods: {
+    initLocals() {
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
+
+      if (this.$store.getters["auth/getDataLocal"].id === -1) {
+        this.localSelected = {
+          ...this.locals[0],
+          name: `${this.locals[0].name}, ${this.locals[0].commune}`
+        };
+
+        this.$store.commit("auth/setCurrentLocal", {
+          ...this.localSelected,
+          id: this.localSelected.value
+        });
+      } else {
+        this.localSelected = {
+          ...this.$store.getters["auth/getDataLocal"],
+          value: this.$store.getters["auth/getDataLocal"].id,
+          label: `${this.$store.getters["auth/getDataLocal"].name}, ${this.$store.getters["auth/getDataLocal"].commune}`
+        };
+      }
+    },
+    filterFn(val) {
+      if (val === "") {
+        this.localsFilter = this.locals;
+        return;
+      }
+
+      const needle = val.toLowerCase();
+      this.localsFilter = this.locals.filter(
+        v => v.label.toLowerCase().indexOf(needle) > -1
+      );
+    },
+    change(val) {
+      if (val !== null) {
+        this.bus.$emit("reset-dashboard-card-data");
+        this.localSelected = { ...val };
+        this.getData();
+        this.$store.commit("auth/setCurrentLocal", {
+          ...this.localSelected,
+          id: this.localSelected.value
+        });
+      }
+    },
+    getData() {
+      var url = this.$store.getters["routes/getRoute"]("sales.amount", {
+        idLocal: this.localSelected.value
+      });
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.bus.$emit("sync-dashboard-card-data", [
+              ...response.data.result
+            ]);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    }
   }
 };
-
 /*<div class="row q-col-gutter-sm  q-py-sm">
       <tab-social />
       <card-with-image />

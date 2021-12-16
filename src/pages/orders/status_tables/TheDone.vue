@@ -254,7 +254,7 @@ export default {
       };
 
       //this.sendWs(row.id);
-      this.bus.$emit("modal-status-order-?", data);
+      this.bus.$emit("modal-status-order", data);
     }
   }
 };

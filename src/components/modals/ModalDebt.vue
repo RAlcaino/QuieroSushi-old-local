@@ -23,9 +23,8 @@
         <q-btn
           rounded
           color="primary"
-          label="Cerrar"
+          :label="getLabel()"
           style="font-size: 11px !important"
-          v-close-popup
           @click="closeModalDebt()"
         />
       </q-card-actions>
@@ -35,10 +34,35 @@
 
 <script>
 export default {
+  inject: ["logout"],
   props: ["open"],
   methods: {
     closeModalDebt() {
       this.$store.commit("auth/setDebt", false);
+      if (
+        this.$store.getters["auth/getDataLocals"].every(
+          item => item.localStatus === "bloqueado"
+        )
+      ) {
+        if (this.$store.getters["auth/getDataUser"].role === "Cajero") {
+          this.logout();
+        }
+      }
+    },
+    getLabel() {
+      if (
+        this.$store.getters["auth/getDataLocals"].every(
+          item => item.localStatus === "bloqueado"
+        )
+      ) {
+        if (this.$store.getters["auth/getDataUser"].role === "Cajero") {
+          return "Cerrar Sesión";
+        } else {
+          return "Cerrar";
+        }
+      } else {
+        return "Cerrar";
+      }
     }
   }
 };

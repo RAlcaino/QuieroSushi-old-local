@@ -172,7 +172,7 @@
           >
             <img src="~/assets/icons8-sad.gif" alt="sad" width="130" />
             <p style="font-size:16px; font-weight:bold;text-align:center">
-              Sin servicios registrados
+              Sin servicios agregados
             </p>
           </div>
         </q-card-section>
@@ -306,7 +306,7 @@ export default {
           id: Math.random(),
           ...this.serviceSelected
         });
-        this.total += this.serviceSelected.pricev2;
+        this.total += this.serviceSelected.price;
         return;
       }
 
@@ -317,13 +317,13 @@ export default {
         flag: true
       });
 
-      this.total += this.serviceSelected.pricev2;
+      this.total += this.serviceSelected.price;
     },
     deleteLocal(storeId) {
       let item = this.servicesAdded.find(item => item.id === storeId);
 
       item.services.map(item => {
-        this.total -= item.pricev2;
+        this.total -= item.price;
       });
 
       this.servicesAdded = this.servicesAdded.filter(
@@ -385,8 +385,7 @@ export default {
               this.services.push({
                 value: `${item.qty}s`,
                 label: `Pack ${item.qty} Subir`,
-                price: this.formatNumber(item.price),
-                pricev2: item.price,
+                price: Math.round(item.price),
                 disable: false,
                 service_type: "subir"
               });
@@ -398,8 +397,7 @@ export default {
               this.services.push({
                 value: `${item.qty}d`,
                 label: `Pack ${item.qty} Destacados`,
-                price: this.formatNumber(item.price),
-                pricev2: item.price,
+                price: Math.round(item.price),
                 disable: false,
                 service_type: "destacado"
               });
@@ -434,7 +432,7 @@ export default {
                 local: this.localSelected,
                 flag: true
               });
-              this.total += +this.serviceSelected.pricev2;
+              this.total += +this.serviceSelected.price;
             } else {
               this.serviceSelected = this.services[0];
             }
@@ -447,55 +445,20 @@ export default {
         });
     },
     formatNumberCustom(num) {
-      let splitNumber = this.truncNum(num, 2)
-        .toString()
-        .split(".");
-      let integer = this.formatNumber(parseInt(splitNumber[0])).toString();
-      let decimals = splitNumber[1];
-
-      return integer;
+      return Math.round(num).toString();
     },
     addWeeklyPay(pendingWeeklyPay) {
       let map = pendingWeeklyPay.map(item => {
         this.services.unshift({
           value: `psp${item.id}`,
           label: `Pago Semanal`,
-          price: item.saldo_a_pagar,
-          pricev2: item.saldo_a_pagar,
+          price: Math.round(item.saldo_a_pagar),
           disable: false,
           localId: item.id_local,
           id_postpago: item.id,
           service_type: "pago_semanal"
         });
       });
-    },
-    truncNum(x, posiciones = 0) {
-      var s = x.toString();
-      var l = s.length;
-      var decimalLength = s.indexOf(".") + 1;
-
-      if (l - decimalLength <= posiciones) {
-        return x;
-      }
-      // Parte decimal del número
-      var isNeg = x < 0;
-      var decimal = x % 1;
-      var entera = isNeg ? Math.ceil(x) : Math.floor(x);
-      // Parte decimal como número entero
-      // Ejemplo: parte decimal = 0.77
-      // decimalFormated = 0.77 * (10^posiciones)
-      // si posiciones es 2 ==> 0.77 * 100
-      // si posiciones es 3 ==> 0.77 * 1000
-      var decimalFormated = Math.floor(
-        Math.abs(decimal) * Math.pow(10, posiciones)
-      );
-      // Sustraemos del número original la parte decimal
-      // y le sumamos la parte decimal que hemos formateado
-      var finalNum =
-        entera +
-        (decimalFormated / Math.pow(10, posiciones)) * (isNeg ? -1 : 1);
-
-      return finalNum;
     },
     getData() {
       var url = this.$store.getters["routes/getRoute"]("weekly.pay");
@@ -550,7 +513,7 @@ export default {
         item => item.id === serviceId
       );
 
-      this.total -= serviceToDelete.pricev2;
+      this.total -= serviceToDelete.price;
 
       let services = serviceAdded.services.filter(
         item => item.id !== serviceId

@@ -17,6 +17,7 @@
           label="Buscar"
           v-model="search"
           @focus="resetPage()"
+          style="margin-bottom: 5px;"
         />
       </div>
       <div>
@@ -33,6 +34,7 @@
           @input="change"
           @popup-hide="allLocals()"
           :virtual-scroll-sticky-size-start="80"
+          style="margin-bottom: 5px;"
         >
           <template v-slot:prepend>
             <q-icon name="store" />
@@ -2438,24 +2440,16 @@ export default {
       if (this.locals.length === 1) {
         this.localSelected = this.locals[0];
       } else {
-        this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-        this.localSelected.image = this.$store.getters[
-          "auth/getDataLocal"
-        ].image;
-        this.localSelected.commune = this.$store.getters[
-          "auth/getDataLocal"
-        ].commune;
-        this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
-        this.localSelected.cartStatus = this.$store.getters[
-          "auth/getDataLocal"
-        ].cartStatus;
+        let dataLocal = { ...this.$store.getters["auth/getDataLocal"] };
 
-        if (this.localSelected.value !== -1) {
-          this.localSelected.label =
-            this.localSelected.name + ", " + this.localSelected.commune;
-        } else {
-          this.localSelected.label = this.localSelected.name;
-        }
+        this.localSelected = {
+          ...dataLocal,
+          value: dataLocal.id,
+          label:
+            dataLocal.id !== -1
+              ? `${dataLocal.name}, ${dataLocal.commune}`
+              : `${dataLocal.name}`
+        };
       }
 
       this.local.value = this.localSelected.value;

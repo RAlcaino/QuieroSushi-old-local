@@ -714,36 +714,21 @@ export default {
       this.locals = [...this.getStoreLocals("ACTIVE")];
 
       if (this.$store.getters["auth/getDataLocal"].id === -1) {
-        this.localSelected.value = this.locals[0].value;
-        this.localSelected.image = this.locals[0].image;
-        this.localSelected.commune = this.locals[0].commune;
-        this.localSelected.name = this.locals[0].name;
-        this.localSelected.label =
-          this.localSelected.name + ", " + this.localSelected.commune;
-        this.localSelected.cartStatus = this.locals[0].cartStatus;
+        this.localSelected = {
+          ...this.locals[0],
+          label: `${this.locals[0].name}, ${this.locals[0].commune}`
+        };
 
         this.$store.commit("auth/setCurrentLocal", {
-          id: this.localSelected.value,
-          name: this.localSelected.name,
-          image: this.localSelected.image,
-          commune: this.localSelected.commune,
-          cartStatus: this.localSelected.cartStatus
+          ...this.localSelected,
+          id: this.localSelected.value
         });
       } else {
-        this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-        this.localSelected.image = this.$store.getters[
-          "auth/getDataLocal"
-        ].image;
-        this.localSelected.commune = this.$store.getters[
-          "auth/getDataLocal"
-        ].commune;
-        this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
-        this.localSelected.label =
-          this.localSelected.name + ", " + this.localSelected.commune;
-
-        this.localSelected.cartStatus = this.$store.getters[
-          "auth/getDataLocal"
-        ].cartStatus;
+        this.localSelected = {
+          ...this.$store.getters["auth/getDataLocal"],
+          value: this.$store.getters["auth/getDataLocal"].id,
+          label: `${this.$store.getters["auth/getDataLocal"].name}, ${this.$store.getters["auth/getDataLocal"].commune}`
+        };
       }
     },
     upploadNew(coupon) {

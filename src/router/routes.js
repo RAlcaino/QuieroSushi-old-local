@@ -20,6 +20,17 @@ const routes = [
     component: () => import("layouts/MainLayout.vue"),
     children: [
       {
+        path: "/bienvenido",
+        component: () => import("pages/welcome/TheWelcome.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            next();
+          } else {
+            next("/login");
+          }
+        }
+      },
+      {
         path: "",
         component: () => import("pages/dashboard/Dashboard.vue"),
         beforeEnter: (to, from, next) => {

@@ -8,7 +8,6 @@
     <the-detail></the-detail>
     <div class="row no-wrap justify-end q__select__wh">
       <q-select
-        v-if="locals.length > 1"
         outlined
         rounded
         dense
@@ -336,10 +335,8 @@ export default {
         return `Pagado $${this.formatNumberCustom(balance)}`;
       }
     },
-    formatNumberCustom(balance) {
-      let splitNumber = balance.toString().split(".");
-      let integer = this.formatNumber(parseInt(splitNumber[0])).toString();
-      return integer;
+    formatNumberCustom(num) {
+      return Math.round(num).toString();
     },
     weekDay(day) {
       if (day === 0) {
@@ -409,7 +406,7 @@ export default {
       var data = {
         pay_type: "Pago Online",
         id_postpago: props.row.id,
-        payed_amount: props.row.saldo_a_pagar,
+        payed_amount: Math.round(props.row.saldo_a_pagar),
         id_local: props.row.local.id_local,
         domain: window.location.origin
       };

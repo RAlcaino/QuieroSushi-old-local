@@ -7,6 +7,7 @@
     <modal-sync-page></modal-sync-page>
     <modal-debt :open="$store.getters['auth/getDataUser'].debt"></modal-debt>
     <modal-status-order></modal-status-order>
+    <modal-order-canceled></modal-order-canceled>
     <!---->
     <q-header class="bg-header">
       <q-toolbar>
@@ -20,9 +21,16 @@
         />
         <q-toolbar-title>
           <img
-            src="../assets/brand/logo-qs-400x72-white.png"
+            v-if="!this.responsiveMobile"
+            src="~/assets/brand/logo-qs-400x72-white.png"
             alt="QuieroSushi.cl Panel"
-            :style="responsiveMode"
+            :style="{ width: '50%', paddingTop: '5px' }"
+          />
+          <img
+            v-else
+            src="~/assets/brand/Q.png"
+            alt="QuieroSushi.cl Panel"
+            :style="{ width: '50%', paddingTop: '10px'}"
           />
         </q-toolbar-title>
         <q-space />
@@ -124,6 +132,17 @@
             </q-chip>
           </div>
         </div>
+        <div>
+          <q-item to="/bienvenido" active-class="q-item-no-link-highlighting">
+            <q-item-section avatar>
+              <q-icon name="home" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Inicio</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-separator color="grey-11" inset />
+        </div>
         <div v-for="option in optionsAvailable" :key="option.label">
           <q-item :to="option.link" active-class="q-item-no-link-highlighting">
             <q-item-section avatar>
@@ -133,12 +152,11 @@
               <q-item-label>{{ option.label }}</q-item-label>
             </q-item-section>
           </q-item>
-          <q-separator color="grey-11" inset />
+          <q-separator
+            color="grey-11"
+            inset
+          />
         </div>
-        <div style="position: absolute; bottom:0px;left:15px;">
-          <p>v{{ this.$store.getters["mode/getVersion"] }}</p>
-        </div>
-
         <!--
         <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
@@ -488,7 +506,7 @@
       <router-view />
     </q-page-container>
 
-    <!--<div style="position: fixed; right: 0; bottom:0;">
+    <div style="position: fixed; right: 10px; bottom:0;">
       <q-toolbar>
         <div class="fit row no-wrap justify-end items-start content-start">
           <q-btn
@@ -496,14 +514,20 @@
             dense
             flat
             color="white"
-            icon="chat"
-            style="font-size:15px; padding: 5px; margin-bottom:10px; background:#333;"
-            @click="rightDrawerOpen = !rightDrawerOpen"
+            icon="whatsapp"
+            style="font-size:15px; padding: 5px; margin-bottom:10px; background:#25D366;"
+            @click="whatsapp()"
           >
           </q-btn>
         </div>
       </q-toolbar>
-    </div>-->
+    </div>
+    <div
+      style="position: fixed; bottom:0;"
+      :style="leftDrawerOpen ? 'left: 250px' : 'left: 10px'"
+    >
+      <p>v{{ this.$store.getters["mode/getVersion"] }}</p>
+    </div>
   </q-layout>
 </template>
 
@@ -517,6 +541,7 @@ import ModalBlock from "../components/modals/ModalBlock.vue";
 import ModalSyncPage from "../components/modals/ModalSyncPage.vue";
 import ModalStatusOrder from "../components/modals/ModalStatusOrder.vue";
 import SecureLS from "secure-ls";
+import ModalOrderCanceled from "src/components/modals/ModalOrderCanceled.vue";
 
 export default {
   inject: [
@@ -536,7 +561,8 @@ export default {
     ModalDebt,
     ModalBlock,
     ModalSyncPage,
-    ModalStatusOrder
+    ModalStatusOrder,
+    ModalOrderCanceled
   },
   created() {
     this.updateTime();
@@ -707,7 +733,9 @@ export default {
         if (data.tipo === "Bloqueo") {
           this.bus.$emit("modal-block", data);
         } else if (data.tipo === "conversacion-local") {
-          this.bus.$emit("modal-status-order-?", data);
+          this.bus.$emit("modal-status-order", data);
+        } else if (data.tipo === "Anulacion-Pedido") {
+          this.bus.$emit("modal-order-canceled", data);
         }
       });
       this.privateChannelSync.listen(".Notificacion", data => {
@@ -1050,6 +1078,9 @@ export default {
       });
 
       return newLocals.filter(item => item.localStatus === "normal");
+    },
+    whatsapp() {
+      window.open("https://wa.me/+56934909418");
     }
   }
 };

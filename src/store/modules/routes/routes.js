@@ -165,7 +165,11 @@ const mutations = {
       {
         name: "report",
         link: "/report/{idPostpago}"
-      }
+      },
+      {
+        name: "sales.amount",
+        link: "/sales_amount/{idLocal}"
+      },
     ];
   }
 };
