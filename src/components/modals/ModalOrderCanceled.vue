@@ -31,6 +31,7 @@
 
 <script>
 export default {
+  props: ["refresh"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("modal-order-canceled", data => {
@@ -46,6 +47,7 @@ export default {
   },
   methods: {
     sync() {
+      this.refresh(true, false);
       if (this.$route.path === "/pedidos") {
         this.bus.$emit("sync-orders");
       }

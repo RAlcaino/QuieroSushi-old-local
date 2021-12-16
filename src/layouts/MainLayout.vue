@@ -7,7 +7,7 @@
     <modal-sync-page></modal-sync-page>
     <modal-debt :open="$store.getters['auth/getDataUser'].debt"></modal-debt>
     <modal-status-order></modal-status-order>
-    <modal-order-canceled></modal-order-canceled>
+    <modal-order-canceled :refresh="refreshToken"></modal-order-canceled>
     <!---->
     <q-header class="bg-header">
       <q-toolbar>
@@ -1079,7 +1079,9 @@ export default {
       return newLocals.filter(item => item.localStatus === "normal");
     },
     whatsapp() {
-      window.open("https://wa.me/+56934909418");
+      window.open(
+        "https://web.whatsapp.com/send/?phone=%2B56934909418&text&app_absent=0"
+      );
     }
   }
 };
