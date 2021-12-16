@@ -30,7 +30,7 @@
             v-else
             src="~/assets/brand/Q.png"
             alt="QuieroSushi.cl Panel"
-            :style="{ width: '50%', paddingTop: '10px'}"
+            :style="{ width: '50%', paddingTop: '10px' }"
           />
         </q-toolbar-title>
         <q-space />
@@ -152,10 +152,7 @@
               <q-item-label>{{ option.label }}</q-item-label>
             </q-item-section>
           </q-item>
-          <q-separator
-            color="grey-11"
-            inset
-          />
+          <q-separator color="grey-11" inset />
         </div>
         <!--
         <q-item to="/" active-class="q-item-no-link-highlighting">
@@ -513,11 +510,13 @@
             round
             dense
             flat
-            color="white"
-            icon="whatsapp"
             style="font-size:15px; padding: 5px; margin-bottom:10px; background:#25D366;"
             @click="whatsapp()"
           >
+            <i
+              class="fab fa-whatsapp"
+              style="color: white; font-size: 25px;"
+            ></i>
           </q-btn>
         </div>
       </q-toolbar>
