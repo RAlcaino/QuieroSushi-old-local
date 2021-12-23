@@ -1,8 +1,8 @@
 {
-  "name": "quasar-admin",
+  "name": "quiero-sushi",
   "version": "0.0.1",
-  "description": "A Quasar Framework app",
-  "productName": "Quasar Admin",
+  "description": "QuieroSushi",
+  "productName": "QuieroSushi",
   "author": "pratikpatelpp802@gmail.com",
   "private": true,
   "scripts": {

@@ -325,7 +325,7 @@ export default {
     formatBalance(balance, props) {
       if (balance < 0) {
         balance *= -1;
-        return `A favor $${this.formatNumber(balance)}`;
+        return `A favor $${this.formatNumberCustom(balance)}`;
       } else if (
         balance > 0 &&
         props.row.fecha_pago === "0000-00-00 00:00:00"
@@ -336,7 +336,7 @@ export default {
       }
     },
     formatNumberCustom(num) {
-      return Math.round(num).toString();
+      return this.formatNumber(Math.round(num));
     },
     weekDay(day) {
       if (day === 0) {

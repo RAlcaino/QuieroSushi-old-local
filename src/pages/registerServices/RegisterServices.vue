@@ -39,11 +39,7 @@
               <span v-if="scope.opt.label !== null"
                 >{{ scope.opt.label }}
                 <strong
-                  >${{
-                    scope.opt.value.includes("psp")
-                      ? formatNumberCustom(scope.opt.price)
-                      : scope.opt.price
-                  }}</strong
+                  >${{ formatNumberCustom(scope.opt.price) }}</strong
                 ></span
               >
               <span v-else>Seleccionar...</span>
@@ -54,11 +50,9 @@
                 <q-item-section>
                   <q-item-label
                     v-html="
-                      `${scope.opt.label} <strong>$${
-                        scope.opt.value.includes('psp')
-                          ? formatNumberCustom(scope.opt.price)
-                          : scope.opt.price
-                      }</strong>`
+                      `${scope.opt.label} <strong>$${formatNumberCustom(
+                        scope.opt.price
+                      )}</strong>`
                     "
                   />
                 </q-item-section>
@@ -133,13 +127,7 @@
                 <div class="services__store__container">
                   <p v-for="item2 of item.services" :key="item2.id">
                     <i class="fas fa-check"></i> {{ item2.label }}
-                    <strong
-                      >${{
-                        item2.value.includes("psp")
-                          ? formatNumberCustom(item2.price)
-                          : item2.price
-                      }}</strong
-                    >
+                    <strong>${{ formatNumberCustom(item2.price) }}</strong>
                     <q-icon
                       name="delete"
                       color="primary"
@@ -445,7 +433,7 @@ export default {
         });
     },
     formatNumberCustom(num) {
-      return Math.round(num).toString();
+      return this.formatNumber(Math.round(num));
     },
     addWeeklyPay(pendingWeeklyPay) {
       let map = pendingWeeklyPay.map(item => {

@@ -260,9 +260,17 @@ export default {
               this.hideLoading();
 
               if (data.availableMenuOptions.length == 2) {
-                this.$router.push({ path: "/historico-cobro-semanal" });
+                data.availableMenuOptions.some(
+                  item => item.link === "/historico-cobro-semanal"
+                )
+                  ? this.$router.push({ path: "/historico-cobro-semanal" })
+                  : this.$router.push({ path: "/bienvenido" });
               } else {
-                this.$router.push({ path: "/pedidos" });
+                data.availableMenuOptions.some(
+                  item => item.link === "/pedidos"
+                )
+                  ? this.$router.push({ path: "/pedidos" })
+                  : this.$router.push({ path: "/bienvenido" });
               }
               this.html[0].style.overflow = "auto";
             } else {

@@ -26,9 +26,7 @@
                 class="text-white text-h6 text-weight-bolder"
                 >{{ item.value }}</q-item-label
               >
-              <q-item-label
-                v-else
-              >
+              <q-item-label v-else>
                 <q-spinner-facebook color="white" size="sm"
               /></q-item-label>
               <q-item-label>{{ item.title }}</q-item-label>
@@ -147,10 +145,56 @@ export default {
       data.map(item => {
         let index = this.items.findIndex(card => card.id === item.id);
         if (index !== -1) {
-          this.items[index].value = item.value;
+          this.items[index].value = this.formats(item);
           this.items[index].visible = true;
         }
       });
+    },
+    formats(item) {
+      let hr = "";
+      let min = "";
+      switch (item.id) {
+        case 1:
+          return `$${this.formatNumber(item.value)}`;
+        case 4:
+          return `${item.value}%`;
+        case 5:
+          hr = item.value.split(":")[0];
+          min = item.value.split(":")[1];
+
+          if (parseInt(min) < 10) {
+            min = `0${min}`;
+          }
+          return `${hr}:${min} Hr`;
+        case 6:
+          hr = item.value.split(":")[0];
+          min = item.value.split(":")[1];
+
+          if (parseInt(min) < 10) {
+            min = `0${min}`;
+          }
+          return `${hr}:${min} Hr`;
+        case 7:
+          return `${item.value} de 5`;
+
+        default:
+          return item.value;
+      }
+    },
+    formatNumber(num) {
+      if (!num || num == "NaN") return "0";
+      if (num == "Infinity") return "&#x221e;";
+      num = num.toString().replace(/\$|\,/g, "");
+      if (isNaN(num)) num = "0";
+      let sign = num == (num = Math.abs(num));
+      num = Math.floor(num * 100 + 0.50000000001);
+      num = Math.floor(num / 100).toString();
+      for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+        num =
+          num.substring(0, num.length - (4 * i + 3)) +
+          "." +
+          num.substring(num.length - (4 * i + 3));
+      return (sign ? "" : "-") + num;
     }
   }
 };
