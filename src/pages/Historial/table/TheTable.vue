@@ -25,7 +25,7 @@
                 col.name === 'pago_online'
             "
           >
-            ${{ formatNumber(col.value) }}
+            ${{ formatNumber(Math.round(col.value)) }}
           </template>
           <template v-else>
             {{ col.value }}
@@ -44,7 +44,7 @@
           <strong v-if="col.name === 'fecha' || col.name === 'comprador'">{{
             col.value
           }}</strong>
-          <strong v-else>${{ formatNumber(col.value) }}</strong>
+          <strong v-else>${{ formatNumber(Math.round(col.value)) }}</strong>
         </q-td>
       </q-tr>
     </template>
