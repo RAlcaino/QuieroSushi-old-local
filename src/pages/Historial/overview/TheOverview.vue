@@ -27,36 +27,32 @@ export default {
       items: [
         {
           title: "Comisión Ventas (12% + IVA): ",
-          value: this.data.generalData.comision.toString().split(".")[0],
+          value: Math.round(this.data.generalData.comision),
           flag: false
         },
         {
           title: "Comisión Pago Online (3% + IVA): ",
-          value: this.data.generalData.comision_online.toString().split(".")[0],
+          value: Math.round(this.data.generalData.comision_online),
           flag: false
         },
         {
           title: "Comisión Pago Online Ventas Anuladas (3% + IVA): ",
-          value: this.data.generalData.onlinePayCancelledComission
-            .toString()
-            .split(".")[0],
+          value: Math.round(this.data.generalData.onlinePayCancelledComission),
           flag: false
         },
         {
           title: "Servicio Devolución Ventas Anuladas (300 + IVA):",
-          value: this.data.generalData.serviceReturnCancelledOrders
-            .toString()
-            .split(".")[0],
+          value: Math.round(this.data.generalData.serviceReturnCancelledOrders),
           flag: false
         },
         {
           title: "Total a Pagar: ",
-          value: this.data.generalData.totalToPay.toString().split(".")[0],
+          value: Math.round(this.data.generalData.totalToPay),
           flag: false
         },
         {
           title: "Pagos Recibidos Online: ",
-          value: this.data.generalData.pago_online.toString().split(".")[0],
+          value: Math.round(this.data.generalData.pago_online),
           flag: false
         },
         {
@@ -65,7 +61,7 @@ export default {
               ? "Total a pagar: "
               : "Monto a recibir:"
           } `,
-          value: this.data.generalData.saldo_a_pagar.toString().split(".")[0],
+          value: Math.round(this.data.generalData.saldo_a_pagar),
           flag: true
         }
       ]
