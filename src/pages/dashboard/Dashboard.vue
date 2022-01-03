@@ -34,14 +34,14 @@
     :sync="false"
     :toolbar="false"
     :bgColor="`#eff4f7`"
-    style="padding: 30px;"
+    style="padding: 20px 10px;"
   >
     <div style="display:flex; justify-content: center; margin-bottom: 25px;">
       <q-select
         rounded
         outlined
         dense
-        :options="localsFilter"
+        :options="localsList"
         :options-dense="true"
         hide-hint
         label="Locales"
@@ -126,14 +126,16 @@ export default {
   },
   mounted() {
     this.initLocals();
-    this.localsFilter = this.locals;
+    this.localsList = this.locals;
     this.getData();
+    this.getBarChart();
+    this.getPieChart();
   },
   data() {
     return {
       locals: [],
       localFilter: "",
-      localsFilter: [],
+      localsList: [],
       localSelected: {
         label: null,
         value: null,
@@ -169,20 +171,24 @@ export default {
     },
     filterFn(val) {
       if (val === "") {
-        this.localsFilter = this.locals;
+        this.localsList = this.locals;
         return;
       }
 
       const needle = val.toLowerCase();
-      this.localsFilter = this.locals.filter(
+      this.localsList = this.locals.filter(
         v => v.label.toLowerCase().indexOf(needle) > -1
       );
     },
     change(val) {
       if (val !== null) {
         this.bus.$emit("reset-dashboard-card-data");
+        this.bus.$emit("change-local-bar-chart");
+        this.bus.$emit("change-local-pie-chart");
         this.localSelected = { ...val };
         this.getData();
+        this.getBarChart();
+        this.getPieChart();
         this.$store.commit("auth/setCurrentLocal", {
           ...this.localSelected,
           id: this.localSelected.value
@@ -203,6 +209,52 @@ export default {
           if (response.data.status === "success") {
             this.bus.$emit("sync-dashboard-card-data", [
               ...response.data.result
+            ]);
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    getBarChart() {
+      var url = this.$store.getters["routes/getRoute"]("charts.bar", {
+        idLocal: this.localSelected.value
+      });
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.bus.$emit("sync-dashboard-bar-chart", {
+              ...response.data.result.data
+            });
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    getPieChart() {
+      var url = this.$store.getters["routes/getRoute"]("charts.pie", {
+        idLocal: this.localSelected.value
+      });
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.bus.$emit("sync-dashboard-pie-chart", [
+              ...response.data.result.data
             ]);
           } else {
             this.showNotification(response.data.message, "negative", "error");

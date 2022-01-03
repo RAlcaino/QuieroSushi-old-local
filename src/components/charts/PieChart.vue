@@ -1,17 +1,42 @@
 <template>
   <q-card
-    class="q-pa-sm"
-    style="background-color: white;padding:20px; width: 49%; border-radius:20px; margin-top: 15px;"
+    class="q-pa-sm responsive__pie__chart"
+    style="background-color: white;padding:20px; width: 49%; border-radius:20px; margin-top: 15px; height: 450px;"
   >
     <p class="title__styles">
-      Custom Pie Chart
+      Porcentaje de ventas de cada promoción
+      <q-spinner-facebook color="black" size="sm" v-if="isLoading" />
     </p>
     <q-card-section class="q-pa-none q-pt-md">
-      <IEcharts
-        style="height: 350px;"
-        :option="getPieChartOptions"
-        :resizable="true"
-      ></IEcharts>
+      <div
+        v-if="pieData.length === 0 && isLoading === false"
+        style="margin-top: 75px"
+        class="fit column wrap justify-center items-center content-center"
+      >
+        <img src="~/assets/icons8-sad.gif" alt="sad" width="130" />
+        <p style="font-size:16px; font-weight:bold;text-align:center">
+          Sin información
+        </p>
+      </div>
+      <div
+        v-if="isLoading === true"
+        style="margin-top: 100px"
+        class="fit column wrap justify-center items-center content-center"
+      >
+        <img
+          src="~/assets/maki-roll.gif"
+          alt="sad"
+          width="130"
+          style="border-radius:100%"
+        />
+      </div>
+      <div :style="pieStyle">
+        <IEcharts
+          style="height: 350px;"
+          :option="pie"
+          :resizable="true"
+        ></IEcharts>
+      </div>
     </q-card-section>
   </q-card>
 </template>
@@ -24,29 +49,46 @@ export default {
   components: {
     IEcharts
   },
+  data() {
+    return {
+      pie: {},
+      pieData: [],
+      isLoading: true
+    };
+  },
   computed: {
-    getPieChartOptions() {
-      return {
+    pieStyle() {
+      if (this.pieData.length === 0) {
+        return { display: "none" };
+      } else {
+        return { display: "block" };
+      }
+    }
+  },
+  mounted() {
+    this.bus.$on("sync-dashboard-pie-chart", data => {
+      this.sync(data);
+      this.isLoading = false;
+    });
+    this.bus.$on("change-local-pie-chart", () => {
+      this.pieData = [];
+      this.isLoading = true;
+    });
+  },
+  methods: {
+    sync(pieData) {
+      this.pieData = pieData;
+      console.log(this.pieData);
+      this.pie = {
         tooltip: {
-          trigger: "item",
-        },
-        legend: {
-          orient: "vertical",
-          bottom: "0%",
-          left: "right"
+          trigger: "item"
         },
         series: [
           {
-            name: "Access From (%)",
+            name: "Cantidad de venta de la promoción",
             type: "pie",
             radius: "80%",
-            data: [
-              { value: 20, name: "Search Engine" },
-              { value: 20, name: "Direct" },
-              { value: 20, name: "Email" },
-              { value: 20, name: "Union Ads" },
-              { value: 20, name: "Video Ads" }
-            ],
+            data: pieData,
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
@@ -72,5 +114,11 @@ export default {
   font-weight: 900;
   fill: rgb(38, 50, 56);
   color: #263238;
+}
+
+@media screen and (max-width: 500px) {
+  .responsive__pie__chart {
+    width: 100% !important;
+  }
 }
 </style>

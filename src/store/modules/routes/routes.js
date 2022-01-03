@@ -170,6 +170,14 @@ const mutations = {
         name: "sales.amount",
         link: "/sales_amount/{idLocal}"
       },
+      {
+        name: "charts.bar",
+        link: "/charts/{idLocal}"
+      },
+      {
+        name: "charts.pie",
+        link: "/sales_pie/{idLocal}"
+      }
     ];
   }
 };
