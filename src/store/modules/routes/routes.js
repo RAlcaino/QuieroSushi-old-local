@@ -177,6 +177,10 @@ const mutations = {
       {
         name: "charts.pie",
         link: "/sales_pie/{idLocal}"
+      },
+      {
+        name: "get.notifications",
+        link: "/notifications/{idUser}"
       }
     ];
   }

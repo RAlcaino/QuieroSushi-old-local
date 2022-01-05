@@ -15,7 +15,8 @@ module.exports = function (ctx) {
       'bell',
       'unix',
       'maps',
-      'sweetalert2'
+      'sweetalert2',
+      'notif'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css

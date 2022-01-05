@@ -69,25 +69,32 @@
             v-if="$q.screen.gt.sm"
           >
           </q-btn>
-          <!--<q-btn round dense flat color="white" icon="notifications">
+          <q-btn round dense flat color="white" icon="notifications">
             <q-badge color="red" text-color="white" floating>
-              5
+              {{ this.$store.getters["auth/getUserNotifications"].length }}
             </q-badge>
             <q-menu>
-              <q-list style="min-width: 100px">
+              <q-list style="min-width: 150px">
                 <messages></messages>
-                <q-card class="text-center no-shadow no-border">
+                <q-card
+                  class="text-center no-shadow no-border"
+                  v-if="
+                    this.$store.getters['auth/getUserNotifications'].length ===
+                      0
+                  "
+                >
                   <q-btn
-                    label="View All"
-                    style="max-width: 120px !important;"
+                    label="Sin Notificaciones"
+                    style="max-width: 200px !important;"
                     flat
                     dense
-                    class="text-indigo-8"
+                    class="text-primary"
+                    no-caps
                   ></q-btn>
                 </q-card>
               </q-list>
             </q-menu>
-          </q-btn>-->
+          </q-btn>
 
           <q-btn round dense flat color="white" icon="logout" @click="logout()">
           </q-btn>
@@ -626,6 +633,7 @@ export default {
     this.getTitles();
     this.getRoles();
     this.getServerTime();
+    this.getNotifications();
   },
   computed: {
     responsiveMode() {
@@ -735,6 +743,15 @@ export default {
           this.bus.$emit("modal-status-order", data);
         } else if (data.tipo === "Anulacion-Pedido") {
           this.bus.$emit("modal-order-canceled", data);
+        } else if (data.tipo === "Notificacion-Usuario") {
+          this.$store.commit("auth/setNotifications", {
+            type: 2,
+            item: {
+              msg: data.data.msg,
+              date: data.data.date
+            }
+          });
+          this.notif.play();
         }
       });
       this.privateChannelSync.listen(".Notificacion", data => {
@@ -1082,6 +1099,64 @@ export default {
       window.open(
         "https://web.whatsapp.com/send/?phone=%2B56934909418&text&app_absent=0"
       );
+    },
+    getNotifications() {
+      /*var url = this.$store.getters["routes/getRoute"]("get.notifications");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.$store.commit("auth/setNotifications", {type: 1, items: response.data.result});
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+        */
+
+      setTimeout(() => {
+        this.$store.commit("auth/setNotifications", {
+          type: 1,
+          items: [
+            {
+              msg:
+                " I'll be in your neighborhood doing errands this\n" +
+                "            weekend. Do you want to grab brunch?",
+              date: "01-02-2022 10:20"
+            },
+            {
+              msg:
+                " I'll be in your neighborhood doing errands this\n" +
+                "            weekend. Do you want to grab brunch?",
+              date: "01-03-2022 10:20"
+            },
+            {
+              msg:
+                " I'll be in your neighborhood doing errands this\n" +
+                "            weekend. Do you want to grab brunch?",
+              date: "01-04-2022 10:20"
+            },
+            {
+              msg:
+                " I'll be in your neighborhood doing errands this\n" +
+                "            weekend. Do you want to grab brunch?",
+              date: "01-05-2022 10:20"
+            },
+            {
+              msg:
+                " I'll be in your neighborhood doing errands this\n" +
+                "            weekend. Do you want to grab brunch?",
+              date: "01-06-2022 10:20"
+            }
+          ]
+        });
+      }, 3000);
     }
   }
 };

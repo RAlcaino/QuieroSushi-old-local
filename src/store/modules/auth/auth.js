@@ -12,7 +12,8 @@ const state = {
     email: "",
     role: "",
     locals: [],
-    debt: false
+    debt: false,
+    notifications: []
   },
   availableMenuOptions: [],
   currentLocal: {
@@ -83,6 +84,7 @@ const mutations = {
     state.user.role = "";
     state.user.locals = [];
     state.user.debt = false;
+    state.user.notifications = [];
 
     state.token = "";
     state.availableMenuOptions = [];
@@ -190,6 +192,13 @@ const mutations = {
   },
   setDebt(state, payload) {
     state.user.debt = payload;
+  },
+  setNotifications(state, payload) {
+    if (payload.type === 1) {
+      state.user.notifications = payload.items;
+    } else {
+      state.user.notifications.unshift(payload.item);
+    }
   }
 };
 const actions = {};
@@ -263,6 +272,9 @@ const getters = {
   },
   getServerTime(state) {
     return state.serverTime;
+  },
+  getUserNotifications(state) {
+    return state.user.notifications;
   }
 };
 
