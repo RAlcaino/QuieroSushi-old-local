@@ -70,11 +70,18 @@
           >
           </q-btn>
           <q-btn round dense flat color="white" icon="notifications">
-            <q-badge color="red" text-color="white" floating>
+            <q-badge
+              color="red"
+              text-color="white"
+              floating
+              v-if="
+                this.$store.getters['auth/getUserNotifications'].length !== 0
+              "
+            >
               {{ this.$store.getters["auth/getUserNotifications"].length }}
             </q-badge>
             <q-menu>
-              <q-list style="min-width: 150px">
+              <q-list style="width: auto !important;">
                 <messages></messages>
                 <q-card
                   class="text-center no-shadow no-border"
@@ -633,7 +640,7 @@ export default {
     this.getTitles();
     this.getRoles();
     this.getServerTime();
-    this.getNotifications();
+    this.getNotifications(false);
   },
   computed: {
     responsiveMode() {
@@ -744,14 +751,7 @@ export default {
         } else if (data.tipo === "Anulacion-Pedido") {
           this.bus.$emit("modal-order-canceled", data);
         } else if (data.tipo === "Notificacion-Usuario") {
-          this.$store.commit("auth/setNotifications", {
-            type: 2,
-            item: {
-              msg: data.data.msg,
-              date: data.data.date
-            }
-          });
-          this.notif.play();
+          this.getNotifications(true);
         }
       });
       this.privateChannelSync.listen(".Notificacion", data => {
@@ -1100,8 +1100,11 @@ export default {
         "https://web.whatsapp.com/send/?phone=%2B56934909418&text&app_absent=0"
       );
     },
-    getNotifications() {
-      /*var url = this.$store.getters["routes/getRoute"]("get.notifications");
+    getNotifications(notif) {
+      var context = new AudioContext();
+      var url = this.$store.getters["routes/getRoute"]("get.notifications", {
+        idUser: this.$store.getters["auth/getDataUser"].id
+      });
       this.$axios
         .get(url, {
           headers: {
@@ -1110,7 +1113,15 @@ export default {
         })
         .then(response => {
           if (response.data.status === "success") {
-            this.$store.commit("auth/setNotifications", {type: 1, items: response.data.result});
+            this.$store.commit("auth/setNotifications", {
+              type: 1,
+              items: response.data.result
+            });
+
+            if (notif) {
+              this.notif.play();
+              context.resume();
+            }
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -1118,45 +1129,6 @@ export default {
         .catch(error => {
           this.errorHandling(error);
         });
-        */
-
-      setTimeout(() => {
-        this.$store.commit("auth/setNotifications", {
-          type: 1,
-          items: [
-            {
-              msg:
-                " I'll be in your neighborhood doing errands this\n" +
-                "            weekend. Do you want to grab brunch?",
-              date: "01-02-2022 10:20"
-            },
-            {
-              msg:
-                " I'll be in your neighborhood doing errands this\n" +
-                "            weekend. Do you want to grab brunch?",
-              date: "01-03-2022 10:20"
-            },
-            {
-              msg:
-                " I'll be in your neighborhood doing errands this\n" +
-                "            weekend. Do you want to grab brunch?",
-              date: "01-04-2022 10:20"
-            },
-            {
-              msg:
-                " I'll be in your neighborhood doing errands this\n" +
-                "            weekend. Do you want to grab brunch?",
-              date: "01-05-2022 10:20"
-            },
-            {
-              msg:
-                " I'll be in your neighborhood doing errands this\n" +
-                "            weekend. Do you want to grab brunch?",
-              date: "01-06-2022 10:20"
-            }
-          ]
-        });
-      }, 3000);
     }
   }
 };

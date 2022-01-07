@@ -144,7 +144,10 @@
                 >Hora Solicitada: {{ item.requestedTime.split(" ")[1] }}</strong
               >
             </div>
-            <div style="font-size:14px;font-family:'Roboto'">
+            <div
+              style="font-size:14px;font-family:'Roboto'"
+              v-if="item.local.tiene_anulacion_automatica === 1"
+            >
               <the-timer :timestamp_inicio="item.startTimestamp"></the-timer>
             </div>
           </q-card-section>
