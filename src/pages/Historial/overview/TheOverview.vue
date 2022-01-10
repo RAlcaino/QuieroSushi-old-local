@@ -51,6 +51,11 @@ export default {
           flag: false
         },
         {
+          title: "Total descuento pagado por Quierosushi.cl: ",
+          value: Math.round(this.data.generalData.confirmedQsDiscountPayed),
+          flag: false
+        },
+        {
           title: "Pagos Recibidos Online: ",
           value: Math.round(this.data.generalData.pago_online),
           flag: false

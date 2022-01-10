@@ -3,7 +3,10 @@
     <div v-for="(msg, index) in messages" :key="msg.date">
       <q-item style="max-width: 420px; padding: 5 16px;" clickable v-ripple>
         <q-item-section avatar top class="avatar__notif__styles">
-          <q-avatar icon="email" text-color="primary" />
+          <div>
+            <div class="live-c" v-if="msg.visto === 0"></div>
+            <q-avatar icon="email" text-color="primary" />
+          </div>
           <p style="margin: 0; font-size: 12.5px;">
             {{ msg.fecha.substring(0, 16) }}
           </p>
@@ -36,5 +39,22 @@ export default {
 .avatar__notif__styles {
   display: flex;
   align-items: center !important;
+}
+
+.live-c {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background-color: red;
+  border-radius: 100%;
+  margin-bottom: 2px;
+  animation: live-animation 1s linear infinite;
+}
+
+@keyframes live-animation {
+  50% {
+    opacity: 0.2;
+    color: red;
+  }
 }
 </style>

@@ -22,7 +22,8 @@
                 col.name === 'total' ||
                 col.name === 'comision' ||
                 col.name === 'despacho' ||
-                col.name === 'pago_online'
+                col.name === 'pago_online' ||
+                col.name === 'descuento_qs'
             "
           >
             ${{ formatNumber(Math.round(col.value)) }}
@@ -34,7 +35,7 @@
       </q-tr>
     </template>
 
-    <template v-slot:bottom-row v-if="data.length>0">
+    <template v-slot:bottom-row v-if="data.length > 0">
       <q-tr>
         <q-td
           v-for="col in bottomRow"
@@ -106,6 +107,13 @@ export default {
           align: "center"
         },
         {
+          name: "descuento_qs",
+          label: "Descuento pagado por Quierosushi.cl",
+          field: "descuento_pagado_por_qs",
+          sortable: true,
+          align: "center"
+        },
+        {
           name: "pago_online",
           label: "Pago Online",
           field: "pago_online",
@@ -139,6 +147,10 @@ export default {
           value: 0
         },
         {
+          name: "descuento_qs",
+          value: 0
+        },
+        {
           name: "pago_online",
           value: 0
         }
@@ -152,7 +164,9 @@ export default {
         this.bottomRow[3].value = this.bottomRow[3].value + item.comision;
         this.bottomRow[4].value = this.bottomRow[4].value + item.costo_despacho;
         this.bottomRow[5].value = this.bottomRow[5].value + item.total;
-        this.bottomRow[6].value = this.bottomRow[6].value + item.pago_online;
+        this.bottomRow[6].value =
+          this.bottomRow[6].value + item.descuento_pagado_por_qs;
+        this.bottomRow[7].value = this.bottomRow[7].value + item.pago_online;
       });
     },
     resetBottomRow() {
@@ -161,6 +175,7 @@ export default {
       this.bottomRow[4].value = 0;
       this.bottomRow[5].value = 0;
       this.bottomRow[6].value = 0;
+      this.bottomRow[7].value = 0;
     }
   }
 };
