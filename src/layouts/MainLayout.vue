@@ -75,10 +75,10 @@
               text-color="white"
               floating
               v-if="
-                this.$store.getters['auth/getUserNotifications'].length !== 0
+                getCount() !== 0
               "
             >
-              {{ this.$store.getters["auth/getUserNotifications"].length }}
+              {{ getCount() }}
             </q-badge>
             <q-menu>
               <q-list style="width: auto !important;">
@@ -1102,9 +1102,12 @@ export default {
     },
     getNotifications(notif) {
       var context = new AudioContext();
-      var url = this.$store.getters["routes/getRoute"]("get.notifications", {
-        idUser: this.$store.getters["auth/getDataUser"].id
-      });
+      var url = this.$store.getters["routes/getRoute"](
+        "resources.notifications",
+        {
+          id: this.$store.getters["auth/getDataUser"].id
+        }
+      );
       this.$axios
         .get(url, {
           headers: {
@@ -1129,6 +1132,15 @@ export default {
         .catch(error => {
           this.errorHandling(error);
         });
+    },
+    getCount() {
+      let count = 0;
+      this.$store.getters["auth/getUserNotifications"].map(item => {
+        if (item.visto === 0) {
+          count++;
+        }
+      });
+      return count;
     }
   }
 };

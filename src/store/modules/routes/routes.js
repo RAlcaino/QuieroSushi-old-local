@@ -179,8 +179,8 @@ const mutations = {
         link: "/sales_pie/{idLocal}"
       },
       {
-        name: "get.notifications",
-        link: "/notifications/{idUser}"
+        name: "resources.notifications",
+        link: "/notifications/{id}"
       }
     ];
   }

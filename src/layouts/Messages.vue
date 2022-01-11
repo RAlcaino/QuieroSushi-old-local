@@ -1,7 +1,12 @@
 <template>
   <div>
     <div v-for="(msg, index) in messages" :key="msg.date">
-      <q-item style="max-width: 420px; padding: 5 16px;" clickable v-ripple>
+      <q-item
+        style="max-width: 420px; padding: 5 16px;"
+        clickable
+        v-ripple
+        @click="viewed(msg)"
+      >
         <q-item-section avatar top class="avatar__notif__styles">
           <div>
             <div class="live-c" v-if="msg.visto === 0"></div>
@@ -25,12 +30,48 @@
 export default {
   name: "Messages",
   mounted() {
-    this.messages = this.$store.getters["auth/getUserNotifications"];
+    this.messages = [...this.$store.getters["auth/getUserNotifications"]];
   },
   data() {
     return {
       messages: []
     };
+  },
+  methods: {
+    viewed(item) {
+      var url = this.$store.getters["routes/getRoute"](
+        "resources.notifications",
+        {
+          id: item.id
+        }
+      );
+      this.$axios
+        .put(
+          url,
+          { visto: 1 },
+          {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          }
+        )
+        .then(response => {
+          if (response.data.status === "success") {
+            let index = this.messages.findIndex(it => it.id === item.id);
+
+            if (index !== -1) {
+              this.$store.commit("auth/setNotificationViewed", {
+                index: index
+              });
+            }
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    }
   }
 };
 </script>

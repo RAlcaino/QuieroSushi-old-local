@@ -195,10 +195,15 @@ const mutations = {
   },
   setNotifications(state, payload) {
     if (payload.type === 1) {
-      state.user.notifications = payload.items;
+      state.user.notifications = payload.items.sort(function(a, b) {
+        return new Date(b.fecha) - new Date(a.fecha);
+      });
     } else {
       state.user.notifications.unshift(payload.item);
     }
+  },
+  setNotificationViewed(state, payload) {
+    state.user.notifications[payload.index].visto = 1;
   }
 };
 const actions = {};
