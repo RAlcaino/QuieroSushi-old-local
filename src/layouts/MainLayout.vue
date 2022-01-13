@@ -8,6 +8,7 @@
     <modal-debt :open="$store.getters['auth/getDataUser'].debt"></modal-debt>
     <modal-status-order></modal-status-order>
     <modal-order-canceled :refresh="refreshToken"></modal-order-canceled>
+    <modal-notification></modal-notification>
     <!---->
     <q-header class="bg-header">
       <q-toolbar>
@@ -555,6 +556,7 @@ import ModalSyncPage from "../components/modals/ModalSyncPage.vue";
 import ModalStatusOrder from "../components/modals/ModalStatusOrder.vue";
 import SecureLS from "secure-ls";
 import ModalOrderCanceled from "src/components/modals/ModalOrderCanceled.vue";
+import ModalNotification from "src/components/modals/ModalNotification.vue";
 
 export default {
   inject: [
@@ -575,7 +577,8 @@ export default {
     ModalBlock,
     ModalSyncPage,
     ModalStatusOrder,
-    ModalOrderCanceled
+    ModalOrderCanceled,
+    ModalNotification
   },
   created() {
     this.updateTime();

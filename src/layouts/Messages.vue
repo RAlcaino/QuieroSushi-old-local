@@ -18,7 +18,7 @@
         </q-item-section>
 
         <q-item-section>
-          <q-item-label>{{ msg.mensaje }}</q-item-label>
+          <q-item-label>{{ msg.titulo }}</q-item-label>
         </q-item-section>
       </q-item>
       <q-separator v-if="index + 1 !== messages.length" spaced inset />
@@ -39,6 +39,7 @@ export default {
   },
   methods: {
     viewed(item) {
+      this.bus.$emit("modal-notification", item);
       var url = this.$store.getters["routes/getRoute"](
         "resources.notifications",
         {
