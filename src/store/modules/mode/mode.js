@@ -1,29 +1,27 @@
 const state = {
-    prod:true,             //TRUE if you wanna test with backend or in a production environment 
-                            //otherwise FALSE
-    version:null
-}
+  prod: true, //TRUE if you wanna test with backend or in a production environment
+  //otherwise FALSE
+  version: null
+};
 const mutations = {
-    setVersion(state){
-		state.version=1.10;
-    }
-}
-const actions = {
-
-}
+  setVersion(state) {
+    state.version = "1.10";
+  }
+};
+const actions = {};
 const getters = {
-    getMode: (state) => {
-        return state.prod;
-    },
-    getVersion: (state) => {
-        return state.version;
-    },
-}
+  getMode: state => {
+    return state.prod;
+  },
+  getVersion: state => {
+    return state.version;
+  }
+};
 
 export default {
-    namespaced: true,
-    state,
-    mutations,
-    actions,
-    getters
-}
+  namespaced: true,
+  state,
+  mutations,
+  actions,
+  getters
+};

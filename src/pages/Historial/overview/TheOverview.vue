@@ -37,7 +37,7 @@ export default {
       items: [
         {
           name: "comision_ventas",
-          title: "Comisión Ventas (12% + IVA): ",
+          title: "Comisión Ventas: ",
           value: Math.round(this.data.generalData.comision),
           flag: false
         },
