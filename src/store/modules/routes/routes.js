@@ -71,10 +71,6 @@ const mutations = {
         link: "/goUpCoupon"
       },
       {
-        name: "change.password",
-        link: "/usuarios/{userId}"
-      },
-      {
         name: "get.titles",
         link: "/title"
       },

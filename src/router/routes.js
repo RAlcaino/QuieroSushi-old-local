@@ -1,4 +1,3 @@
-import jwt_decode from "jwt-decode";
 import SecureLS from "secure-ls";
 import { Store } from "../store/index.js";
 
@@ -248,6 +247,10 @@ const routes = [
         next();
       }
     }
+  },
+  {
+    path: "/cambio-clave/:token",
+    component: () => import("pages/passwordRecovery/PasswordRecovery.vue")
   },
   {
     name: "payment-sucess",

@@ -61,7 +61,7 @@ module.exports = function (ctx) {
         'Notify',
         'LoadingBar',
         'Loading',
-        'Dialog'
+        'Dialog',
       ],
       config:{
         loadingBar:{
