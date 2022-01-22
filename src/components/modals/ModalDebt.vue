@@ -14,7 +14,9 @@
           this.$store.getters["auth/getDataLocals"].every(
             item => item.localStatus === "bloqueado"
           )
-            ? "¡Tienes todos tus locales bloqueados!"
+            ? this.$store.getters["auth/getDataLocals"].length > 1
+              ? "¡Tienes todos tus locales bloqueados!"
+              : "¡Tu local esta bloqueado!"
             : "¡Tienes algunos de tus locales bloqueados!"
         }}</span>
       </q-card-section>

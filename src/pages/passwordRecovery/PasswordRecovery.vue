@@ -40,7 +40,12 @@
                   style="margin-bottom:10px; margin-top:8px; border-radius: 20px; width: 100%;"
                   @click="setPassword()"
                   class="text-capitalize bg-green text-white"
-                  >Guardar
+                  ><p style="margin:0; margin-left: 15px;">GUARDAR</p>
+                  <q-spinner-hourglass
+                    :color="!loading ? 'green' : 'white'"
+                    size="sm"
+                    style="margin-left: 10px;"
+                  />
                 </q-btn>
               </div>
             </q-form>
@@ -65,7 +70,9 @@ export default {
         new_password: ""
       },
       user: null,
-      token: ""
+      token: "",
+      tokenDecode: {},
+      loading: false
     };
   },
   mounted() {
@@ -79,9 +86,9 @@ export default {
     if (this.token.length < 135 || tokenSplit.length < 3) {
       this.redirect("El link de cambio de contraseña no es válido");
     } else {
-      let tokenDecode = jwt_decode(this.token);
+      this.tokenDecode = jwt_decode(this.token);
 
-      if (this.unix(new Date()) > tokenDecode.exp) {
+      if (this.unix(new Date()) > this.tokenDecode.exp) {
         this.redirect("El link de cambio de contraseña ha expirado");
       }
     }
@@ -101,15 +108,15 @@ export default {
 
       let condition1 =
         this.password_dict.confirm_new_password === undefined ||
-        this.password_dict.confirm_new_password === "" ||
+        this.password_dict.confirm_new_password.trim() === "" ||
         this.password_dict.new_password === undefined ||
-        this.password_dict.new_password === "";
+        this.password_dict.new_password.trim() === "";
 
       if (
         this.password_dict.confirm_new_password !== undefined &&
-        this.password_dict.confirm_new_password !== "" &&
+        this.password_dict.confirm_new_password.trim() !== "" &&
         this.password_dict.new_password !== undefined &&
-        this.password_dict.new_password !== ""
+        this.password_dict.new_password.trim() !== ""
       ) {
         if (
           this.password_dict.confirm_new_password ===
@@ -133,9 +140,9 @@ export default {
     alertMinPassword() {
       if (
         this.password_dict.confirm_new_password !== undefined &&
-        this.password_dict.confirm_new_password !== "" &&
+        this.password_dict.confirm_new_password.trim() !== "" &&
         this.password_dict.new_password !== undefined &&
-        this.password_dict.new_password !== ""
+        this.password_dict.new_password.trim() !== ""
       ) {
         if (this.password_dict.new_password.length < 6) {
           return true;
@@ -149,9 +156,9 @@ export default {
     alertDifferentPassword() {
       if (
         this.password_dict.new_password !== undefined &&
-        this.password_dict.new_password !== "" &&
+        this.password_dict.new_password.trim() !== "" &&
         this.password_dict.confirm_new_password !== undefined &&
-        this.password_dict.confirm_new_password !== ""
+        this.password_dict.confirm_new_password.trim() !== ""
       ) {
         if (
           this.password_dict.new_password !==
@@ -168,38 +175,42 @@ export default {
   },
   methods: {
     setPassword() {
-      this.showLoading();
+      this.loading = true;
 
       var data = {
-        contrasena_nueva: this.password_dict.new_password
+        password: this.password_dict.new_password.trim(),
+        password_confirmation: this.password_dict.confirm_new_password.trim()
       };
-      if (!this.prod) {
-        setTimeout(() => {
-          this.hideLoading();
-        }, 3000);
-      } else {
-        var url = this.$store.getters["routes/getRoute"]("resource.users", {
-          localId: this.user.id
+      var url = this.$store.getters["routes/getRoute"]("change.password", {
+        idUser: this.tokenDecode.id
+      });
+      this.$axios
+        .post(url, data, {
+          headers: {
+            Authorization: this.token
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.loading = false;
+            this.showNotification(
+              "Su contraseña ha sido cambiada",
+              "positive",
+              "check"
+            );
+
+            this.$router.push("/login");
+          } else {
+            this.loading = false;
+            this.showNotification(response.data.message, "negative", "error");
+          }
+
+          this.loading = false;
+        })
+        .catch(error => {
+          this.loading = false;
+          this.errorHandling(error);
         });
-        this.$axios
-          .put(url, data, {
-            headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
-          })
-          .then(response => {
-            if (response.data.status === "success") {
-              this.card = false;
-            } else {
-              this.showNotification(response.data.message, "negative", "error");
-            }
-            this.hideLoading();
-          })
-          .catch(error => {
-            this.hideLoading();
-            this.errorHandling(error);
-          });
-      }
     },
     redirect(msg) {
       this.$router.push("/login");

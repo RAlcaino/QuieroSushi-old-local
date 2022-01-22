@@ -2,7 +2,13 @@
   <q-layout style="position: relative; overflow: hidden">
     <q-page-container>
       <q-page class="flex bg-image flex-center">
-        <q-card class="card-styles-login" style="border-radius: 20px">
+        <q-card
+          class="card-styles-login"
+          style="border-radius: 20px; position:relative;"
+        >
+          <div class="back__login" @click="changeView(false)" v-if="recovery">
+            <q-icon name="arrow_back" size="sm"></q-icon>
+          </div>
           <q-card-section>
             <q-avatar size="103px" class="absolute-center shadow-10">
               <img src="icons/favicon-128.png" />
@@ -10,19 +16,22 @@
           </q-card-section>
           <q-card-section>
             <div class="text-center q-pt-lg">
-              <div class="col text-h6 ellipsis">Bienvenido</div>
+              <div class="col text-h6 ellipsis">
+                {{ recovery ? "Indique su correo electrónico" : "Bienvenido" }}
+              </div>
             </div>
           </q-card-section>
           <q-card-section>
-            <q-form class="q-gutter-md form-login">
+            <q-form class="q-gutter-md form-login" @keypress.enter.prevent>
               <q-input
                 v-model.lazy="user.email"
-                label="Correo electronico"
+                label="Correo electrónico"
                 lazy-rules
                 style="width: 80%"
               />
 
               <q-input
+                v-if="!recovery"
                 type="password"
                 v-model.lazy="user.password"
                 label="Contraseña"
@@ -31,16 +40,21 @@
 
               <div>
                 <q-btn
-                  style="border-radius: 20px"
-                  label="Iniciar Sesión"
-                  @click="login()"
+                  style="border-radius: 20px; margin-left: 25px;"
+                  :label="recovery ? 'Enviar' : 'Iniciar Sesión'"
+                  @click="recovery ? passwordRecovery() : login()"
                   type="button"
                   color="primary"
                 />
+                <q-spinner-hourglass
+                  :color="loading ? 'primary' : 'white'"
+                  size="sm"
+                  style="position: relative; left: 10px"
+                />
               </div>
 
-              <div>
-                <a @click="passwordRecovery()" class="password__recovery"
+              <div v-if="!recovery">
+                <a @click="changeView(true)" class="password__recovery"
                   >¿Has olvidado la contraseña?</a
                 >
               </div>
@@ -94,7 +108,11 @@ export default {
         event.keyCode === 13 &&
         this.$router.currentRoute.fullPath === "/login"
       ) {
-        this.login();
+        if (this.recovery) {
+          this.passwordRecovery();
+        } else {
+          this.login();
+        }
       }
     });
   },
@@ -106,7 +124,9 @@ export default {
         password: ""
       },
       prod: null,
-      dialog: null
+      dialog: null,
+      recovery: false,
+      loading: false
     };
   },
   methods: {
@@ -114,8 +134,9 @@ export default {
       if (this.validate(this.user, 1)) {
         return;
       }
+      this.loading = true;
       var ls = new SecureLS({ isCompression: false });
-      this.showLoading();
+      //this.showLoading();
 
       var url = this.$store.getters["routes/getRoute"]("login");
       this.$axios
@@ -142,13 +163,16 @@ export default {
                 : this.$router.push({ path: "/bienvenido" });
             }
             this.html[0].style.overflow = "auto";
+            this.loading = false;
           } else {
             this.hideLoading();
+            this.loading = false;
             this.showNotification(response.data.message, "negative", "error");
           }
         })
         .catch(error => {
           this.hideLoading();
+          this.loading = false;
           this.errorHandling(error);
         });
     },
@@ -242,27 +266,42 @@ export default {
         }
       });
     },
+    changeView(flag) {
+      this.recovery = flag;
+    },
     passwordRecovery() {
       if (this.validate(this.user, 2)) {
         return;
       }
-
-      setTimeout(() => {
-        this.Swal.fire({
-          title: "¡Te hemos enviado un correo!",
-          text: `Verifica tu correo electronico para continuar con los siguientes pasos`,
-          icon: "success",
-          allowOutsideClick: true,
-          allowEscapeKey: false,
-          allowEnterKey: false,
-          showConfirmButton: false,
-          timer: 10000,
-          timerProgressBar: true
-        }).then(result => {
-          /* Read more about isConfirmed, isDenied below */
-          this.redirectTo();
+      this.loading = true;
+      var url = this.$store.getters["routes/getRoute"]("password.recovery");
+      this.$axios
+        .post(url, { email: this.user.email.trim() })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.Swal.fire({
+              title: "¡Te hemos enviado un correo!",
+              text: `Verifica tu correo electrónico para continuar con los siguientes pasos.`,
+              icon: "success",
+              allowOutsideClick: true,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              showConfirmButton: false,
+              timer: 6000,
+              timerProgressBar: true
+            }).then(() => {
+              this.recovery = false;
+              this.loading = false;
+            });
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+            this.loading = false;
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+          this.loading = false;
         });
-      }, 2000);
     }
   }
 };
@@ -284,6 +323,15 @@ export default {
 }
 .card-styles-login {
   width: 30% !important;
+}
+
+.back__login {
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+.back__login:hover {
+  cursor: pointer !important;
 }
 
 .password__recovery {

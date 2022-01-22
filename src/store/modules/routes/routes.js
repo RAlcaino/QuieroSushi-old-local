@@ -177,6 +177,14 @@ const mutations = {
       {
         name: "resources.notifications",
         link: "/notifications/{id}"
+      },
+      {
+        name: "password.recovery",
+        link: "/password-recovery"
+      },
+      {
+        name: "change.password",
+        link: "/change-password/{idUser}"
       }
     ];
   }
