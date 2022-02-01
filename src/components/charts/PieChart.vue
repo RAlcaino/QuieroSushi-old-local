@@ -1,7 +1,7 @@
 <template>
   <q-card
     class="q-pa-sm responsive__pie__chart"
-    style="background-color: white;padding:20px; width: 49%; border-radius:20px; margin-top: 15px; height: 450px;"
+    style="background-color: white;padding:20px; width: 49%; border-radius:20px; margin-top: 15px; height: 450px; margin-bottom: 50px;"
   >
     <p class="title__styles">
       Porcentaje de ventas de cada promoción
@@ -116,7 +116,7 @@ export default {
   color: #263238;
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 650px) {
   .responsive__pie__chart {
     width: 100% !important;
   }

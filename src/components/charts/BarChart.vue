@@ -65,7 +65,7 @@ export default {
   },
   computed: {
     barStyle() {
-      if (this.barData[0] === 0 && this.barData[1] === 0) {
+      if ((this.barData[0] === 0 && this.barData[1] === 0) || this.isLoading) {
         return { display: "none" };
       } else {
         return { display: "block" };
@@ -90,7 +90,10 @@ export default {
         this.bar = {};
         return;
       }
-      let dataAxis = barData.months;
+      let dataAxis = [
+        this.translate(barData.months[0]),
+        this.translate(barData.months[1])
+      ];
       let data = [
         {
           value: barData.values[0],
@@ -115,6 +118,21 @@ export default {
           trigger: "axis",
           axisPointer: {
             type: "shadow"
+          },
+          formatter: params => {
+            var result = "";
+            params.forEach(item => {
+              result +=
+                item.axisValueLabel +
+                ": </br>" +
+                item.marker +
+                " " +
+                item.seriesName +
+                ": " +
+                this.format(item.value) +
+                "</br>";
+            });
+            return result;
           }
         },
         xAxis: {
@@ -141,23 +159,29 @@ export default {
           right: "5%"
         },
         yAxis: {
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
+          type: "value",
+          splitNumber: 2,
           axisLabel: {
-            textStyle: {
-              color: "#000"
+            formatter: value => {
+              if (value >= 1000000) {
+                let val = this.format(value / 1000000);
+                return val + "M";
+              }
+              if (value < 1000000 && value !== 0) {
+                let val = this.format(value / 1000);
+                return val + "K";
+              } else {
+                let val = this.format(value);
+                return val;
+              }
             }
           }
         },
         series: [
           {
-            name: "Monto ($)",
+            name: "Monto",
             type: "bar",
-            barWidth: "50%",
+            barWidth: "45%",
             data: data,
             label: {
               normal: {
@@ -170,7 +194,7 @@ export default {
                   }
                 },
                 show: true,
-                position: "inside"
+                position: "top"
               }
             }
           }
@@ -183,6 +207,35 @@ export default {
         style: "currency",
         currency: "CLP"
       })}`;
+    },
+    translate(month) {
+      if (month === "January") {
+        return "Enero";
+      } else if (month === "February") {
+        return "Febrero";
+      } else if (month === "March") {
+        return "Marzo";
+      } else if (month === "April") {
+        return "Abril";
+      } else if (month === "May") {
+        return "Mayo";
+      } else if (month === "June") {
+        return "Junio";
+      } else if (month === "July") {
+        return "Julio";
+      } else if (month === "August") {
+        return "Agosto";
+      } else if (month === "September") {
+        return "Septiembre";
+      } else if (month === "October") {
+        return "Octubre";
+      } else if (month === "November") {
+        return "Noviembre";
+      } else if (month === "December") {
+        return "Diciembre";
+      } else {
+        return month;
+      }
     }
   },
   components: {
