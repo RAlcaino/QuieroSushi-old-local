@@ -31,15 +31,15 @@
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
-    "@quasar/app": "^2.2.3",
+    "@quasar/app": "2.2.10",
     "@quasar/quasar-app-extension-dotenv": "^1.1.0",
     "@quasar/quasar-app-extension-qcalendar": "^3.3.1",
     "quasar-app-extension-qhierarchy": "^0.0.5",
     "workbox-webpack-plugin": "^5.1.4"
   },
   "engines": {
-    "node": ">= 10.18.1",
-    "npm": ">= 6.13.4",
+    "node": "14.17.3",
+    "npm": "6.14.13",
     "yarn": ">= 1.21.1"
   },
   "browserslist": [
