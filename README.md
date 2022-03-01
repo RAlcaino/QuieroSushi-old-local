@@ -24,3 +24,12 @@ quasar build
 
 ### Customize the configuration
 See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+
+
+### Versions
+
+"node": "14.17.3",
+"npm": "6.14.13",
+"@quasar/app": "2.2.10",
+"vue": "2.6.14",
+"webpack": "4.44.2"
