@@ -130,7 +130,6 @@ export default {
     },
     fileAdded(files) {
       this.file_selected = files[0];
-      console.log(this.file_selected);
     },
     fileRemoved(files) {
       this.file_selected = null;

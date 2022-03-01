@@ -71,10 +71,6 @@ const mutations = {
         link: "/goUpCoupon"
       },
       {
-        name: "change.password",
-        link: "/usuarios/{userId}"
-      },
-      {
         name: "get.titles",
         link: "/title"
       },
@@ -122,7 +118,74 @@ const mutations = {
         name: "send.ws",
         link: "/sendWhatsApp"
       },
-      
+      {
+        name: "get.serverTime",
+        link: "/serverTime"
+      },
+      {
+        name: "get.comments",
+        link: "/comentarios/{localId}"
+      },
+      {
+        name: "do.reply",
+        link: "/replies"
+      },
+      {
+        name: "tickets.all",
+        link: "/tickets"
+      },
+      {
+        name: "tickets.resources",
+        link: "/tickets/{id}" //id = idLocal or idTicket
+      },
+      {
+        name: "comments",
+        link: "/comments"
+      },
+      {
+        name: "status.postpago",
+        link: "/status_post_pago"
+      },
+      {
+        name: "weekly.pay",
+        link: "/pay_weekly_local"
+      },
+      {
+        name: "transferences",
+        link: "/transferences"
+      },
+      {
+        name: "weekly.payment",
+        link: "/weekly-payment"
+      },
+      {
+        name: "report",
+        link: "/report/{idPostpago}"
+      },
+      {
+        name: "sales.amount",
+        link: "/sales_amount/{idLocal}"
+      },
+      {
+        name: "charts.bar",
+        link: "/charts/{idLocal}"
+      },
+      {
+        name: "charts.pie",
+        link: "/sales_pie/{idLocal}"
+      },
+      {
+        name: "resources.notifications",
+        link: "/notifications/{id}"
+      },
+      {
+        name: "password.recovery",
+        link: "/password-recovery"
+      },
+      {
+        name: "change.password",
+        link: "/change-password/{idUser}"
+      }
     ];
   }
 };

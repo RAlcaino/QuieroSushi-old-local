@@ -1,12 +1,15 @@
 <template>
- <div class="bg-image" style="width: 100%;height:100vh;display:flex; flex-direction:column; justify-content:center;align-items:center;" >
-    <div class="col-lg-4 col-md-4 col-xs-12 col-sm-12">
+  <div
+    class="bg-image"
+    style="width: 100%;height:100vh;display:flex; flex-direction:column; justify-content:center;align-items:center;"
+  >
+    <!--<div class="col-lg-4 col-md-4 col-xs-12 col-sm-12">
       <card-sucess
         style="border-radius: 20px; margin-bottom:20px"
         class="q-mt-lg"
         :background_image="background_img1"
       ></card-sucess>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -14,7 +17,22 @@
 export default {
   name: "SucessPayment",
   components: {
-    CardSucess: () => import("components/cards/CardSucess"),
+    CardSucess: () => import("components/cards/CardSucess")
+  },
+  mounted() {
+    this.Swal.fire({
+      title: "¡Su pago se realizó correctamente!",
+      icon: "success",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false,
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true
+    }).then(result => {
+      /* Read more about isConfirmed, isDenied below */
+      this.redirectTo();
+    });
   },
   data() {
     return {
@@ -22,6 +40,17 @@ export default {
       background_img2:
         "linear-gradient(87deg, rgb(45, 206, 137), rgb(45, 206, 204)) !important"
     };
+  },
+  methods: {
+    redirectTo() {
+      if (this.$route.params.type == 1) {
+        this.$router.push("/cupones");
+      } else if (this.$route.params.type == 2) {
+        this.$router.push("/historico-cobro-semanal");
+      } else {
+        this.$router.push("/pedidos");
+      }
+    }
   }
 };
 </script>

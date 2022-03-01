@@ -1,6 +1,7 @@
 <template>
   <div style="padding-bottom:100px;">
     <more-details></more-details>
+    <the-cancel :mode="'orders'"></the-cancel>
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top:3%;"
@@ -21,7 +22,7 @@
         v-if="flag === true"
       >
         <img
-          src="~/assets/maki-roll.gif"
+          src="~/assets/maki-roll2.gif"
           alt="sad"
           width="130"
           style="border-radius:100%"
@@ -29,7 +30,6 @@
       </div>
       <div
         class="fit row wrap justify-left items-start content-start"
-        style="padding-left: 20px;"
         v-if="searching === false"
       >
         <q-card
@@ -164,6 +164,15 @@
             <q-btn
               rounded
               size="sm"
+              color="primary"
+              style="font-size:10.5px; margin-right:5px"
+              @click="cancelDialog(item)"
+            >
+              Anular
+            </q-btn>
+            <q-btn
+              rounded
+              size="sm"
               color="amber-9"
               style="font-size:10.5px; margin-right:5px"
               @click="openChat(item)"
@@ -189,13 +198,15 @@
 <script>
 import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
+import TheCancel from "./dialogs/TheCancel.vue";
 
 export default {
   props: ["ordersDone", "sendWs"],
   inject: ["formatNumber", "capitalize"],
   components: {
     BaseMoreComponent,
-    MoreDetails
+    MoreDetails,
+    TheCancel
   },
   created() {
     this.bus.$on("reset-page", () => {
@@ -239,7 +250,6 @@ export default {
     };
   },
   beforeDestroy() {
-    console.log("Before Unmount NC");
     this.flag = false;
   },
   methods: {
@@ -249,13 +259,16 @@ export default {
     callEvent(val) {
       this.bus.$emit("scroll-up");
     },
+    cancelDialog(row) {
+      this.bus.$emit("the-cancel", row);
+    },
     openChat(row) {
       var data = {
         id_venta: row.id
       };
 
-      this.sendWs(row.id);
-      this.bus.$emit("modal-status-order-?", data);
+      //this.sendWs(row.id);
+      this.bus.$emit("modal-status-order", data);
     }
   }
 };

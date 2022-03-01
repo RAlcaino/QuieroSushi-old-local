@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="card" persistent>
-    <q-card
+    <!--<q-card
       class="my-card"
       style="width: 350px; height:270px; border-radius:10px"
     >
@@ -24,9 +24,9 @@
           v-close-popup
         />
       </q-card-actions>
-    </q-card>
+    </q-card>-->
 
-    <!--<q-card
+    <q-card
       style="border-radius:10px;width: 700px; max-width: 80vw;overflow:hidden; "
     >
       <q-card-section
@@ -168,7 +168,7 @@
                   />
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+              <!--<q-item class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
                     ref="select"
@@ -256,7 +256,7 @@
                     {{ comune.label }}
                   </q-chip>
                 </q-item-section>
-              </q-item>
+              </q-item>-->
             </q-list>
           </div>
         </div>
@@ -271,7 +271,7 @@
           >
         </q-card-actions>
       </q-card-section>
-    </q-card>-->
+    </q-card>
   </q-dialog>
 </template>
 
@@ -316,7 +316,6 @@ export default {
         localName,
         "$n"
       );
-      console.log(this.currentTitleTemplate);
       this.item.price = row.price;
     });
   },
@@ -429,7 +428,6 @@ export default {
         condiciones: this.item.conditions.replaceAll("\n", ".-")
         //delivery: this.formatComunes()
       };
-      console.log(data);
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
@@ -542,7 +540,6 @@ export default {
       return result.slice(0, -1);
     },
     changeTitles(val) {
-      console.log(val);
       this.currentTitleTemplate = val;
       var localName=this.$store.getters["auth/getDataLocal"].name;
       this.titleDetails.shortTitle = this.currentTitleTemplate.label.replaceAll(

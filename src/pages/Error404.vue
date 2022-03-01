@@ -6,7 +6,7 @@
         >(404)</strong
       >
     </p>
-    <q-btn rounded color="primary" style="width:200px;" to="/" label="Volver" />
+    <q-btn rounded color="primary" style="width:200px;" to="/bienvenido" label="Volver" />
   </div>
 </template>
 

@@ -2,7 +2,13 @@
   <q-layout style="position: relative; overflow: hidden">
     <q-page-container>
       <q-page class="flex bg-image flex-center">
-        <q-card class="card-styles-login" style="border-radius: 20px">
+        <q-card
+          class="card-styles-login"
+          style="border-radius: 20px; position:relative;"
+        >
+          <div class="back__login" @click="changeView(false)" v-if="recovery">
+            <q-icon name="arrow_back" size="sm"></q-icon>
+          </div>
           <q-card-section>
             <q-avatar size="103px" class="absolute-center shadow-10">
               <img src="icons/favicon-128.png" />
@@ -10,19 +16,22 @@
           </q-card-section>
           <q-card-section>
             <div class="text-center q-pt-lg">
-              <div class="col text-h6 ellipsis">Bienvenido</div>
+              <div class="col text-h6 ellipsis">
+                {{ recovery ? "Indique su correo electrónico" : "Bienvenido" }}
+              </div>
             </div>
           </q-card-section>
           <q-card-section>
-            <q-form class="q-gutter-md form-login">
+            <q-form class="q-gutter-md form-login" @keypress.enter.prevent>
               <q-input
                 v-model.lazy="user.email"
-                label="Correo electronico"
+                label="Correo electrónico"
                 lazy-rules
                 style="width: 80%"
               />
 
               <q-input
+                v-if="!recovery"
                 type="password"
                 v-model.lazy="user.password"
                 label="Contraseña"
@@ -31,12 +40,23 @@
 
               <div>
                 <q-btn
-                  style="border-radius: 20px"
-                  label="Iniciar Sesión"
-                  @click="login()"
+                  style="border-radius: 20px; margin-left: 25px;"
+                  :label="recovery ? 'Enviar' : 'Iniciar Sesión'"
+                  @click="recovery ? passwordRecovery() : login()"
                   type="button"
                   color="primary"
                 />
+                <q-spinner-hourglass
+                  :color="loading ? 'primary' : 'white'"
+                  size="sm"
+                  style="position: relative; left: 10px"
+                />
+              </div>
+
+              <div v-if="!recovery">
+                <a @click="changeView(true)" class="password__recovery"
+                  >¿Has olvidado la contraseña?</a
+                >
               </div>
             </q-form>
           </q-card-section>
@@ -72,6 +92,7 @@
 <script>
 import SecureLS from "secure-ls";
 import { QSpinnerGears } from "quasar";
+import { LoginServices } from "../../services/LoginServices/LoginServices";
 
 export default {
   inject: ["showNotification", "errorHandling"],
@@ -84,8 +105,15 @@ export default {
   },
   mounted() {
     window.addEventListener("keyup", event => {
-      if (event.keyCode === 13 && this.$router.currentRoute.fullPath==="/login") {
-        this.login();
+      if (
+        event.keyCode === 13 &&
+        this.$router.currentRoute.fullPath === "/login"
+      ) {
+        if (this.recovery) {
+          this.passwordRecovery();
+        } else {
+          this.login();
+        }
       }
     });
   },
@@ -97,200 +125,106 @@ export default {
         password: ""
       },
       prod: null,
-      dialog: null
+      dialog: null,
+      recovery: false,
+      loading: false
     };
   },
   methods: {
-    login() {
-      var availableMenuOptions = [
-        {
-          label: "Mis Locales",
-          link: "/locales",
-          icon: "store"
-        },
-        {
-          label: "Home",
-          link: "/home",
-          icon: "dashboard"
-        },
-        {
-          label: "Pedidos",
-          link: "/pedidos",
-          icon: "delivery_dining"
-        },
-        {
-          label: "Cupones",
-          link: "/cupones",
-          icon: "confirmation_number"
-        },
-        {
-          label: "Usuarios",
-          link: "/administrar-usuarios",
-          icon: "group"
-        },
-        {
-          label: "Ventas",
-          link: "/ventas",
-          icon: "paid"
-        }
-      ];
-      if (this.validate(this.user)) {
+    async login() {
+      if (this.validate(this.user, 1)) {
         return;
       }
+      this.loading = true;
       var ls = new SecureLS({ isCompression: false });
-      this.showLoading();
-      if (!this.prod) {
-        //Without backend
-        this.$q.loadingBar.start();
-        setTimeout(() => {
-          if (this.user.email === "cajero@cajero.com") {
-            ls.set(
-              "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJDYWplcm8iLCJndWFyZF9uYW1lIjoiYXBpIiwiY3JlYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoifSwiaWF0IjoxNjE2NTI4Mzg4LCJleHAiOjE2MTcxMzMxODh9.cADPBjQxGBIqab2zyqf3XvNyb70p_godxTT3HHSvDqM"
-            );
-          } else if (this.user.email === "gerente@gerente.com") {
-            ls.set(
-              "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJHZXJlbnRlIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ.4f4WgpFJA_veiJj6hpnMFXSYdvxAHgDrvgGhfLPQVv4"
-            );
-          } else if (this.user.email === "sudo@sudo.com") {
-            ls.set(
-              "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJTdXBlciBBZG1pbiIsImd1YXJkX25hbWUiOiJhcGkiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIiwidXBkYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiJ9LCJpYXQiOjE2MTY1MjgzODgsImV4cCI6MTYxNzEzMzE4OH0.F4ldHxzfuGISfFTkTqMrjGyFIU_L36ufYSWckZ8YFvs"
-            );
-          } else if (this.user.email === "admin@admin.com") {
-            ls.set(
-              "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjU3LCJlbWFpbCI6ImRhbmllbCIsInJvbGUiOnsiaWQiOjEsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiZ3VhcmRfbmFtZSI6ImFwaSIsImNyZWF0ZWRfYXQiOiIyMDIxLTAyLTA4VDIxOjQxOjI0LjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIn0sImlhdCI6MTYxNjUyODM4OCwiZXhwIjoxNjE3MTMzMTg4fQ.HdvKZItN90loQ7GUwFNZrmhrD20LAnueCAYi8Fi2TCY"
-            );
-          } else if (this.user.email === "god@god.com") {
-            ls.set(
-              "token",
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6LTEsImVtYWlsIjoiZGFuaWVsIiwicm9sZSI6eyJpZCI6MSwibmFtZSI6IkdvZCIsImd1YXJkX25hbWUiOiJhcGkiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMi0wOFQyMTo0MToyNC4wMDAwMDBaIiwidXBkYXRlZF9hdCI6IjIwMjEtMDItMDhUMjE6NDE6MjQuMDAwMDAwWiJ9LCJpYXQiOjE2MTY1MjgzODgsImV4cCI6MTYxNzEzMzE4OH0.ikYg6IeS9yOXbvZTYAFu2dqBS6zmVfFJfHWn-hgviAo"
-            );
-          } else {
-            this.$q.loadingBar.stop();
-            this.hideLoading();
-            this.showNotification(
-              "Credenciales Incorrectas",
-              "negative",
-              "error"
-            );
-            return;
-          }
-          let locals = [
-            /*{
-              id: 129,
-              name: "Sushi Venezuela",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "Los Santos",
-              cartStatus: 0,
-              deliveryTime: 10,
-              preparationTime: 30
-            },
-            {
-              id: 130,
-              name: "Sushi Chile",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "Vice City",
-              cartStatus: 0,
-              deliveryTime: 10,
-              preparationTime: 30
-            },
-            {
-              id: 131,
-              name: "Sushi Colombia",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "San Andreas",
-              cartStatus: 0,
-              deliveryTime: 10,
-              preparationTime: 30
-            },
-            {
-              id: 132,
-              name: "Sushi EEUU",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "Liberty City",
-              cartStatus: 0,
-              deliveryTime: 10,
-              preparationTime: 30
-            },
-            {
-              id: 133,
-              name: "Sushi UK",
-              image: "http://quierosushi.cl/locales/giro-sushi322.jpg",
-              commune: "La Paz",
-              cartStatus: 0,
-              deliveryTime: 10,
-              preparationTime: 30
-            }*/
-          ];
+
+      const service = new LoginServices();
+
+      try {
+        let response = await service.login(this.user.email, this.user.password);
+        if (response.data.status === "success") {
+          ls.set("token", response.data.result.token);
           let data = {
-            locals: locals,
-            availableMenuOptions: availableMenuOptions
+            locals: response.data.result.locals,
+            availableMenuOptions: response.data.result.availableMenuOptions
           };
           this.bus.$emit("login", data);
-          this.$q.loadingBar.stop();
           this.hideLoading();
-          this.$router.push({ path: "/pedidos" });
-        }, 3000);
-      } else {
-        //With backend
-        var url = this.$store.getters["routes/getRoute"]("login");
-        this.$axios
-          .post(url, this.user)
-          .then(response => {
-            if (response.data.status === "success") {
-              //console.log(response.data.result);
-              ls.set("token", response.data.result.token);
-              let data = {
-                locals: response.data.result.locals,
-                availableMenuOptions: response.data.result.availableMenuOptions
-                //availableMenuOptions: availableMenuOptions
-              };
-              this.bus.$emit("login", data);
-              this.hideLoading();
-              this.$router.push({ path: "/pedidos" });
-              this.html[0].style.overflow = "auto";
-            } else {
-              this.hideLoading();
-              this.showNotification(response.data.message, "negative", "error");
-            }
-          })
-          .catch(error => {
-            this.hideLoading();
-            this.errorHandling(error);
-          });
+
+          if (data.availableMenuOptions.length == 2) {
+            data.availableMenuOptions.some(
+              item => item.link === "/historico-cobro-semanal"
+            )
+              ? this.$router.push({ path: "/historico-cobro-semanal" })
+              : this.$router.push({ path: "/bienvenido" });
+          } else {
+            data.availableMenuOptions.some(item => item.link === "/pedidos")
+              ? this.$router.push({ path: "/pedidos" })
+              : this.$router.push({ path: "/bienvenido" });
+          }
+          this.html[0].style.overflow = "auto";
+          this.loading = false;
+        } else {
+          this.hideLoading();
+          this.loading = false;
+          this.showNotification(response.data.message, "negative", "error");
+        }
+      } catch (error) {
+        this.hideLoading();
+        this.loading = false;
+        this.errorHandling(error);
       }
     },
-    validate(user) {
+    validate(user, mode) {
       let flag = false;
 
-      if (user.email === "" && user.password === "") {
-        this.showNotification("El correo es obligatorio", "negative", "error");
-        this.showNotification(
-          "La contraseña es obligatoria",
-          "negative",
-          "error"
-        );
-        flag = true;
-      } else if (user.email == "" && user.password !== "") {
-        this.showNotification("El correo es obligatorio", "negative", "error");
-        flag = true;
-      } else if (user.email !== "" && user.password == "") {
-        this.showNotification(
-          "La contraseña es obligatoria",
-          "negative",
-          "error"
-        );
-        flag = true;
-      } else if (!user.email.includes("@")) {
-        this.showNotification(
-          "Debe ingresar un correo valido",
-          "negative",
-          "error"
-        );
-        flag = true;
+      if (mode === 1) {
+        if (user.email === "" && user.password === "") {
+          this.showNotification(
+            "El correo es obligatorio",
+            "negative",
+            "error"
+          );
+          this.showNotification(
+            "La contraseña es obligatoria",
+            "negative",
+            "error"
+          );
+          flag = true;
+        } else if (user.email == "" && user.password !== "") {
+          this.showNotification(
+            "El correo es obligatorio",
+            "negative",
+            "error"
+          );
+          flag = true;
+        } else if (user.email !== "" && user.password == "") {
+          this.showNotification(
+            "La contraseña es obligatoria",
+            "negative",
+            "error"
+          );
+          flag = true;
+        } else if (!user.email.includes("@")) {
+          this.showNotification(
+            "Debe ingresar un correo valido",
+            "negative",
+            "error"
+          );
+          flag = true;
+        }
+      } else {
+        if (user.email == "") {
+          this.showNotification("Debe indicar su correo", "negative", "error");
+          flag = true;
+        } else if (!user.email.includes("@")) {
+          this.showNotification(
+            "Debe ingresar un correo valido",
+            "negative",
+            "error"
+          );
+          flag = true;
+        }
       }
 
       return flag;
@@ -330,6 +264,43 @@ export default {
           console.log("User dismissed the A2HS prompt");
         }
       });
+    },
+    changeView(flag) {
+      this.recovery = flag;
+    },
+    passwordRecovery() {
+      if (this.validate(this.user, 2)) {
+        return;
+      }
+      this.loading = true;
+      var url = this.$store.getters["routes/getRoute"]("password.recovery");
+      this.$axios
+        .post(url, { email: this.user.email.trim() })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.Swal.fire({
+              title: "¡Te hemos enviado un correo!",
+              text: `Verifica tu correo electrónico para continuar con los siguientes pasos.`,
+              icon: "success",
+              allowOutsideClick: true,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              showConfirmButton: false,
+              timer: 6000,
+              timerProgressBar: true
+            }).then(() => {
+              this.recovery = false;
+              this.loading = false;
+            });
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+            this.loading = false;
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+          this.loading = false;
+        });
     }
   }
 };
@@ -352,12 +323,28 @@ export default {
 .card-styles-login {
   width: 30% !important;
 }
-@media screen and (max-width: 768px) {
+
+.back__login {
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+.back__login:hover {
+  cursor: pointer !important;
+}
+
+.password__recovery {
+  cursor: pointer;
+}
+.password__recovery:hover {
+  color: #ff2d2d;
+}
+@media screen and (max-width: 850px) {
   .card-styles-login {
-    width: 40% !important;
+    width: 50% !important;
   }
 }
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
   .card-styles-login {
     width: 80% !important;
   }

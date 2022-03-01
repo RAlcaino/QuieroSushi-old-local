@@ -128,7 +128,7 @@
                 {{ item.qty }} Subir
               </q-chip>
               <p class="price-a">${{ formatNumber(item.price) }}</p>
-              <p class="cu-a">${{ item.cu }} c/u</p>
+              <p class="cu-a">${{ item.price/item.qty }} c/u</p>
               <input
                 v-model="qtyGoUp[index]"
                 type="number"
@@ -156,6 +156,7 @@
         <q-card-actions align="center">
           <q-btn
             @click="buy()"
+            :disable="getTotal===0"
             size="sm"
             style="font-size:12px;padding: 0px 15px !important; margin-bottom:20px"
             rounded

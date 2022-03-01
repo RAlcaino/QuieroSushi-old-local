@@ -92,7 +92,7 @@
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
-                    v-if="$store.getters['auth/getDataLocals'].length > 1"
+                    v-if="getStoreLocals('ALL').length > 1"
                     ref="select"
                     rounded
                     outlined
@@ -103,6 +103,7 @@
                     v-model="localSelected"
                     @input="change"
                     @popup-hide="allLocals()"
+                    label-color="black"
                     class="q-select-coupon q-select-s"
                     style="margin-bottom: 15px;"
                     :virtual-scroll-sticky-size-start="80"
@@ -113,12 +114,32 @@
                     <template v-slot:option="scope">
                       <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
                         <q-item-section>
-                          <q-item-label v-html="'<strong>'+scope.opt.value+'</strong> - '+scope.opt.label" />
+                          <q-item-label
+                            v-html="
+                              '<strong>' +
+                                scope.opt.value +
+                                '</strong> - ' +
+                                scope.opt.label +
+                                '<strong> (' +
+                                scope.opt.localStatus +
+                                ')</strong> '
+                            "
+                          />
                         </q-item-section>
                       </q-item>
                     </template>
                     <template v-slot:selected-item="scope">
-                     <div><strong v-if="scope.opt.value!==-1">{{scope.opt.value}} -</strong> {{scope.opt.label.length>18?scope.opt.label.substring(0,18)+'...':scope.opt.label}}</div>
+                      <div>
+                        <strong v-if="scope.opt.value !== -1"
+                          >{{ scope.opt.value }} -</strong
+                        >
+                        {{
+                          scope.opt.label.length > 14
+                            ? scope.opt.label.substring(0, 14) + "..."
+                            : scope.opt.label
+                        }}
+                        <!--{{ scope.opt.localStatus ? '('+scope.opt.localStatus+')':''}}-->
+                      </div>
                     </template>
                     <template v-slot:before-options>
                       <q-item>
@@ -166,6 +187,10 @@
                   <q-icon size="20px" name="add" />
                 </q-btn>
               </q-item>
+              <q-item v-if="!getStatusLocalHint" style="margin: 0">
+                <p style="margin: 0" v-html="getStatusLocal"/>
+              </q-item>
+
               <q-item
                 v-if="form.storesSelected.length !== 0"
                 class="col-lg-10 col-md-10 col-sm-12 col-xs-12"
@@ -210,7 +235,27 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
+  computed: {
+    getStatusLocal() {
+      if (this.localSelected.localStatus) {
+        return "<strong>Estado del local: </strong>" + this.localSelected.localStatus;
+      }
+    },
+    getStatusLocalHint() {
+      if (this.localSelected.localStatus === null) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.initLocals();
@@ -227,19 +272,20 @@ export default {
       this.form.storesSelected = [];
       var vue = this;
       if (this.user.locals.length !== 0) {
-        this.user.locals.map(function(item) {
-          let result = vue.$store.getters["auth/getDataLocals"].find(
-            item2 => item2.id === item.id_local
+        this.user.locals.map(item => {
+          let result = this.getStoreLocals("ALL").find(
+            item2 => item2.value === item.id_local
           );
           let row = {
-            value: result.id,
+            value: result.value,
             label: result.name + ", " + result.commune,
             image: result.image,
             commune: result.commune,
             name: result.name,
             deliveryTime: result.deliveryTime,
             preparationTime: result.preparationTime,
-            cart: result.cartStatus
+            cart: result.cartStatus,
+            localStatus: result.localStatus
           };
           vue.form.storesSelected.push(row);
         });
@@ -272,7 +318,8 @@ export default {
         name: null,
         preparationTime: 0,
         deliveryTime: 0,
-        cart: null
+        cart: null,
+        localStatus: null
       },
       locals: [],
       localsFilter: [],
@@ -351,35 +398,12 @@ export default {
       }
     },
     initLocals() {
-      var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          deliveryTime: item.deliveryTime,
-          preparationTime: item.preparationTime,
-          cart: item.cartStatus
-        };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ALL")];
     },
     filterFn(val) {
       if (val === "") {
-        this.localsFilter = this.locals;
+        this.localsFilter = [...this.locals];
         return;
       }
 
@@ -390,7 +414,7 @@ export default {
     },
     change(val) {
       if (val !== null) {
-        this.localSelected = val;
+        this.localSelected = { ...val };
       }
     },
     addLocal() {
@@ -434,7 +458,7 @@ export default {
       this.localFilter = "";
     },
     reset() {
-      if (this.$store.getters["auth/getDataLocals"].length !== 1) {
+      if (this.getStoreLocals("ALL").length !== 1) {
         this.storesSelected = [];
         this.localSelected = {
           label: "Todos",
@@ -444,7 +468,8 @@ export default {
           name: null,
           preparationTime: 0,
           deliveryTime: 0,
-          cart: null
+          cart: null,
+          localStatus: null
         };
       }
     },
@@ -463,4 +488,9 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style scoped>
+.q-field--dense .q-field__bottom {
+  color: black !important;
+  font-size: 13px !important;
+}
+</style>

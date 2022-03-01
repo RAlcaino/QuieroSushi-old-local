@@ -1,21 +1,13 @@
 <template>
-  <q-page class="q-pa-sm" style="background:white;">
-    <q-toolbar class="bg-primary text-white" style="border-radius:50px">
-      <q-btn flat round dense icon="delivery_dining" />
-      <q-toolbar-title :style="FontSize"> Pedidos</q-toolbar-title>
-      <q-btn
-        flat
-        round
-        dense
-        icon="sync"
-        class="q-mr-xs"
-        @click="sync(false)"
-      />
-    </q-toolbar>
-
+  <base-page
+    title="Pedidos"
+    icon="delivery_dining"
+    :sync="sync"
+    :toolbar="true"
+  >
     <div
-      class="fit row wrap justify-between items-center content-center mobile-styles-o"
-      style="margin: 20px 0"
+      class="row wrap justify-between items-center content-center mobile-styles-o"
+      style="margin: 20px auto; width: 90%"
     >
       <div class="input-style-o">
         <q-input
@@ -25,9 +17,10 @@
           label="Buscar"
           v-model="search"
           @focus="resetPage()"
+          style="margin-bottom: 5px;"
         />
       </div>
-      <div v-if="locals.length > 1">
+      <div>
         <q-select
           ref="select"
           rounded
@@ -40,14 +33,13 @@
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"
-          style="margin-right:46px;"
           :virtual-scroll-sticky-size-start="80"
-          class="q-select-responsive"
+          style="margin-bottom: 5px;"
         >
           <template v-slot:prepend>
             <q-icon name="store" />
           </template>
-          <template v-slot:before-options>
+          <template v-slot:before-options v-if="locals.length > 1">
             <q-item>
               <q-item-section class="text-grey">
                 <input
@@ -135,21 +127,29 @@
         </q-tab-panels>
       </div>
     </div>
-  </q-page>
+  </base-page>
 </template>
 
 <script>
 import NotConfirmed from "./status_tables/NotConfirmed.vue";
 import TheConfirmed from "./status_tables/TheConfirmed.vue";
 import TheDone from "./status_tables/TheDone.vue";
+import BasePage from "src/components/bases/BasePage.vue";
 
 export default {
   props: ["toAll"],
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
   components: {
     NotConfirmed,
     TheConfirmed,
-    TheDone
+    TheDone,
+    BasePage
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
@@ -2382,7 +2382,7 @@ export default {
         image:
           this.$store.getters["auth/getDataUser"].id === -1
             ? "icons/favicon-128.png"
-            : this.$store.getters["auth/getDataLocals"][0].image,
+            : this.getStoreLocals("ACTIVE")[0].image,
         commune: null,
         cartStatus: null
       };
@@ -2434,45 +2434,24 @@ export default {
       this.bus.$emit("reset-page");
     },
     initLocals() {
-      var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
-      this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-      this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
-      this.localSelected.commune = this.$store.getters[
-        "auth/getDataLocal"
-      ].commune;
-      this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
-      this.localSelected.cartStatus = this.$store.getters[
-        "auth/getDataLocal"
-      ].cartStatus;
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
 
-      if (this.localSelected.value !== -1) {
-        this.localSelected.label =
-          this.localSelected.name + ", " + this.localSelected.commune;
+      if (this.locals.length === 1) {
+        this.localSelected = this.locals[0];
       } else {
-        this.localSelected.label = this.localSelected.name;
+        let dataLocal = { ...this.$store.getters["auth/getDataLocal"] };
+
+        this.localSelected = {
+          ...dataLocal,
+          value: dataLocal.id,
+          label:
+            dataLocal.id !== -1
+              ? `${dataLocal.name}, ${dataLocal.commune}`
+              : `${dataLocal.name}`
+        };
       }
+
       this.local.value = this.localSelected.value;
       this.local.label = this.localSelected.label;
     },
@@ -2526,10 +2505,6 @@ export default {
   padding: 0px 46px 0px 16px;
 }
 
-.input-style-o {
-  margin-left: 50px;
-  margin-top: 5px;
-}
 @media screen and (max-width: 900px) {
   .dropdown-container {
     padding-top: 3%;
@@ -2542,15 +2517,17 @@ export default {
   .dropdown-locals {
     padding: 16px 0;
   }
-  .q-select-responsive {
-    margin-left: 60px;
-    margin-top: 10px;
+}
+
+@media screen and (max-width: 768px) {
+  .class-card {
+    width: 100% !important;
   }
 }
-@media screen and (max-width: 450px) {
+
+@media screen and (max-width: 550px) {
   .input-style-o {
-    margin-top: 0px !important;
-    margin-left: 5px !important;
+    margin-right: 5px !important;
   }
   .mobile-styles-o {
     justify-content: center !important;

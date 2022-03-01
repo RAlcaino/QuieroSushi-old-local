@@ -1,4 +1,12 @@
 /* app global scss */
+html {
+  overflow: hidden !important;
+}
+
+.q-drawer--left.q-drawer--bordered {
+  border-right: none !important;
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500&family=Roboto+Condensed:wght@300;400;700&family=Roboto:wght@300;400;500;700&display=swap");
 .q-table__title {
   font-size: 18px !important;

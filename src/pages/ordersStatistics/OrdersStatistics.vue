@@ -1,19 +1,18 @@
 <template>
-  <q-page class="q-pa-sm" style="padding-bottom: 100px">
+  <base-page
+    title="Estadisticas de ventas"
+    icon="paid"
+    :sync="null"
+    :toolbar="true"
+  >
     <the-cancel :mode="'sales'"></the-cancel>
-    <q-toolbar class="bg-primary text-white" style="border-radius: 50px">
-      <q-btn flat round dense icon="paid" />
-      <q-toolbar-title :style="FontSize"
-        >Estadisticas de ventas</q-toolbar-title
-      >
-    </q-toolbar>
     <div
       class="fit column no-wrap justify-center items-center content-center"
       style="margin-top: 20px"
     >
       <q-card class="card-bg" style="width: 95%">
         <q-card-section
-          class="text-h6"
+          class="text-h6 responsive__mode"
           style="
             display: flex;
             flex-direction: row;
@@ -21,7 +20,7 @@
           "
         >
           <div>
-            <div class="firts-options" v-if="locals.length > 1">
+            <div class="firts-options">
               <q-select
                 ref="select"
                 rounded
@@ -40,7 +39,7 @@
                 <template v-slot:prepend>
                   <q-icon name="store" />
                 </template>
-                <template v-slot:before-options>
+                <template v-slot:before-options v-if="locals.length > 1">
                   <q-item>
                     <q-item-section class="text-grey">
                       <input
@@ -181,7 +180,7 @@
           </div>
           <div>
             <form autocomplete="off">
-              <p style="text-align: right; font-size: 16px">
+              <p class="sales__p">
                 <strong>Total Ventas:</strong> ${{ formatNumber(total) }}
               </p>
             </form>
@@ -209,8 +208,8 @@
             label="Exportar"
             color="primary"
             icon-right="download"
-            style="margin-left: 5px"
             @click="download()"
+            class="btn__download"
           ></q-btn>
         </template>
 
@@ -253,18 +252,6 @@
 
         <template v-slot:body="props">
           <q-tr :props="props">
-            <!--<q-td>
-              <div style="width: 100%; display: flex; justify-content: center">
-                <q-btn
-                  color="primary"
-                  round
-                  size="sm"
-                  @click="dialogCancel(props.row)"
-                >
-                  <q-icon size="20px" name="undo" />
-                </q-btn>
-              </div>
-            </q-td>-->
             <q-td v-for="col in props.cols" :key="col.name" :props="props">
               <template>
                 {{ col.value }}
@@ -303,17 +290,19 @@
       v-if="flag === true"
     >
       <img
-        src="~/assets/maki-roll.gif"
+        src="~/assets/maki-roll2.gif"
         alt="sad"
         width="130"
         style="border-radius: 100%"
       />
     </div>
-  </q-page>
+  </base-page>
 </template>
 
 <script>
 import TheCancel from "../orders/status_tables/dialogs/TheCancel.vue";
+import BasePage from "src/components/bases/BasePage.vue";
+import $ from "jquery";
 export default {
   name: "OrderStadistics",
   inject: [
@@ -322,10 +311,12 @@ export default {
     "hideLoading",
     "errorHandling",
     "formatNumber",
-    "capitalize"
+    "capitalize",
+    "getStoreLocals"
   ],
   components: {
-    TheCancel
+    TheCancel,
+    BasePage
   },
   data() {
     return {
@@ -351,29 +342,15 @@ export default {
         {
           name: "id",
           required: true,
-          label: "Id",
+          label: "# Orden",
           align: "center",
           field: "id",
           sortable: true
         },
         {
-          name: "localName",
-          align: "left",
-          label: "Nombre Local",
-          field: "localName",
-          sortable: true
-        },
-        {
-          name: "comuneLocal",
-          align: "left",
-          label: "Comuna Local",
-          field: "comuneLocal",
-          sortable: true
-        },
-        {
           name: "customerName",
           required: true,
-          label: "Nombre Cliente",
+          label: "Cliente",
           align: "center",
           field: "customerName"
         },
@@ -406,10 +383,17 @@ export default {
           sortable: true
         },
         {
-          name: "confirmationDate",
+          name: "date",
           align: "center",
-          label: "Fecha Confirmación",
-          field: "confirmationDate",
+          label: "Fecha",
+          field: "date",
+          sortable: true
+        },
+        {
+          name: "localName",
+          align: "center",
+          label: "Local",
+          field: "localName",
           sortable: true
         }
       ],
@@ -486,8 +470,8 @@ export default {
       },
       localFilter: "",
       more31days: false,
-      statusOptions: ["Todos", "Confirmados", "Anulados"],
-      currentStatus: "Todos"
+      statusOptions: ["Confirmados", "Anulados"],
+      currentStatus: "Confirmados"
     };
   },
   created() {
@@ -501,6 +485,7 @@ export default {
   },
   mounted() {
     this.localsFilter = this.locals;
+    this.responsiveMode();
   },
   computed: {
     FontSize() {
@@ -580,35 +565,20 @@ export default {
     },
     initLocals() {
       this.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(item => {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
+      this.locals = [...this.getStoreLocals("ACTIVE")];
+
+      if (this.locals.length > 1) {
+        this.localSelected = {
+          label: "Todos",
+          value: null,
+          image: null,
+          commune: null,
+          name: null,
+          cartStatus: null
         };
-        this.locals.push(row);
-        this.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
-      this.localSelected = {
-        label: "Todos",
-        value: null,
-        image: null,
-        commune: null,
-        name: null,
-        cartStatus: null
-      };
+      } else {
+        this.localSelected = this.locals[0];
+      }
     },
     filterFn(val) {
       if (val === "") {
@@ -702,18 +672,14 @@ export default {
       this.data = [];
       var each = response.map(item => {
         let row = {
-          id: item.id,
-          localName: item.local.name,
-          comuneLocal: item.local.commune,
+          id: item.internalCode,
+          localName: `${item.local.name}, ${item.local.commune} `,
           customerName: item.payDetail.user,
           saleType: item.orderType,
           subtotal: this.formatNumber(item.subtotal),
           delivery: this.formatNumber(item.deliveryCost),
           total: this.formatNumber(item.total),
-          confirmationDate:
-            item.dateConfirmation !== null
-              ? item.dateConfirmation.replaceAll("-", "/")
-              : "Sin Fecha"
+          date: this.getProperlyDate(item)
         };
         this.data.push(row);
         this.data.sort(function(a, b) {
@@ -761,7 +727,6 @@ export default {
           }
         )
         .then(response => {
-          console.log(response.data);
           const url = URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
@@ -815,6 +780,32 @@ export default {
       this.startDate = this.finalDate = dateString;
 
       this.getHistory();
+    },
+    getProperlyDate(item) {
+      if (item.dateConfirmation !== null) {
+        return item.dateConfirmation.replaceAll("-", "/");
+      }
+
+      if (item.dateCancelled !== null) {
+        return item.dateCancelled.replaceAll("-", "/");
+      }
+
+      return "Sin fecha";
+    },
+    responsiveMode() {
+      var responsive = window.matchMedia("(max-width: 600px)");
+
+      responsive.addListener(event => {
+        if (event.matches) {
+          let firtsChild = $(".q-table__container > div:first-child");
+          firtsChild.removeClass("row");
+          firtsChild.addClass("column");
+        } else {
+          let firtsChild = $(".q-table__container > div:first-child");
+          firtsChild.removeClass("column");
+          firtsChild.addClass("row");
+        }
+      });
     }
   }
 };
@@ -832,9 +823,40 @@ export default {
   display: flex;
   flex-direction: row;
 }
-@media screen and (max-width: 500px) {
+.firts-options > label {
+  margin-right: 5px !important;
+}
+
+.sales__p {
+  text-align: right;
+  font-size: 16px;
+}
+@media screen and (max-width: 600px) {
   .input-schedule {
     width: 30%;
+  }
+
+  .responsive__mode {
+    flex-direction: column !important;
+  }
+
+  .sales__p {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .firts-options > label {
+    width: 44% !important;
+    margin-right: 0px !important;
+  }
+
+  form > label {
+    width: 44% !important;
+    margin-right: 5px !important;
+  }
+
+  .btn__download {
+    margin-bottom: 15px !important;
   }
 }
 </style>

@@ -1,27 +1,19 @@
 <template>
-  <q-page class="q-pa-sm" style="background:white; padding-bottom:125px">
+  <base-page
+    title="Administrar usuarios"
+    icon="group"
+    :sync="sync"
+    :toolbar="true"
+  >
     <new-user-dialog></new-user-dialog>
     <edit-user-dialog></edit-user-dialog>
     <delete-user-dialog></delete-user-dialog>
     <change-password></change-password>
-    <q-toolbar class="bg-primary text-white" style="border-radius:50px;">
-      <q-btn flat round dense icon="group" />
-      <q-toolbar-title :style="FontSize"> Administrar usuarios</q-toolbar-title>
-      <q-btn
-        flat
-        round
-        dense
-        icon="sync"
-        class="q-mr-xs"
-        @click="sync(false)"
-      />
-    </q-toolbar>
-
     <div
-      class="fit row wrap justify-end items-center content-center mobile-styles-o"
-      style="margin: 20px 0"
+      class="row wrap justify-end items-end content-end mobile-styles-o"
+      style="margin: 20px auto; width: 90%;"
     >
-      <div v-if="locals.length > 1">
+      <div>
         <q-select
           ref="select"
           rounded
@@ -34,14 +26,12 @@
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"
-          style="margin-right:46px;"
           :virtual-scroll-sticky-size-start="80"
-          class="q-select-responsive"
         >
           <template v-slot:prepend>
             <q-icon name="store" />
           </template>
-          <template v-slot:before-options>
+          <template v-slot:before-options v-if="getStoreLocals('ACTIVE').length > 1">
             <q-item>
               <q-item-section class="text-grey">
                 <input
@@ -98,7 +88,7 @@
         v-if="flag === true"
       >
         <img
-          src="~/assets/maki-roll.gif"
+          src="~/assets/maki-roll2.gif"
           alt="sad"
           width="130"
           style="border-radius:100%"
@@ -134,7 +124,13 @@
           </form>
         </template>
         <template v-slot:top-left>
-          <q-btn color="green" rounded size="sm" @click="dialogNew()">
+          <q-btn
+            color="green"
+            rounded
+            size="sm"
+            @click="dialogNew()"
+            style="margin-bottom: 10px;"
+          >
             <q-icon style="margin-right:5px" size="20px" name="add_circle" />
             <div style="font-size:12px">Nuevo</div>
           </q-btn>
@@ -197,7 +193,7 @@
         </template>
       </q-table>
     </div>
-  </q-page>
+  </base-page>
 </template>
 
 <script>
@@ -207,15 +203,24 @@ import NewUserDialog from "./dialogs/NewUserDialog.vue";
 import DeleteUserDialog from "./dialogs/DeleteUserDialog.vue";
 import EditUserDialog from "./dialogs/EditUserDialog.vue";
 import ChangePassword from "./dialogs/ChangePassword.vue";
+import BasePage from "src/components/bases/BasePage.vue";
 
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals",
+    "setCurrentLocal"
+  ],
   components: {
     StatusComponent,
     NewUserDialog,
     DeleteUserDialog,
     EditUserDialog,
-    ChangePassword
+    ChangePassword,
+    BasePage
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
@@ -251,7 +256,7 @@ export default {
           } else {
             return false;
           }
-        }else{
+        } else {
           return false;
         }
       });
@@ -451,6 +456,7 @@ export default {
       var vue = this;
       if (val !== null) {
         this.local = val;
+        this.setCurrentLocal(this.local);
       }
     },
     allLocals() {
@@ -468,36 +474,16 @@ export default {
         image:
           this.$store.getters["auth/getDataUser"].id === -1
             ? "icons/favicon-128.png"
-            : this.$store.getters["auth/getDataLocals"][0].image,
+            : getStoreLocals("ACTIVE")[0].image,
         commune: null,
         cartStatus: null
       };
       this.local = this.localSelected;
     },
     initLocals() {
-      var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
+
       this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
       this.localSelected.image = this.$store.getters["auth/getDataLocal"].image;
       this.localSelected.commune = this.$store.getters[
@@ -521,4 +507,10 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+@media screen and (max-width: 450px) {
+  .mobile-styles-o {
+    justify-content: center !important;
+  }
+}
+</style>

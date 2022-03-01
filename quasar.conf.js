@@ -15,6 +15,8 @@ module.exports = function (ctx) {
       'bell',
       'unix',
       'maps',
+      'sweetalert2',
+      'notif'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -59,7 +61,7 @@ module.exports = function (ctx) {
         'Notify',
         'LoadingBar',
         'Loading',
-        'Dialog'
+        'Dialog',
       ],
       config:{
         loadingBar:{

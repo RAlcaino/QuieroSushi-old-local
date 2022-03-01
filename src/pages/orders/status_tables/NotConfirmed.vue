@@ -25,7 +25,7 @@
         v-if="flag === true"
       >
         <img
-          src="~/assets/maki-roll.gif"
+          src="~/assets/maki-roll2.gif"
           alt="sad"
           width="130"
           style="border-radius:100%"
@@ -33,7 +33,6 @@
       </div>
       <div
         class="fit row wrap justify-left items-start content-start"
-        style="padding-left: 20px "
         v-if="searching === false"
       >
         <q-card
@@ -102,7 +101,10 @@
               <p style="margin:0; font-weight:bold">
                 {{ item.payDetail.user }}
               </p>
-              <p style="margin:0;font-family:'Roboto'">
+              <p
+                v-if="item.local.tiene_anulacion_automatica === 0"
+                style="margin:0;font-family:'Roboto'"
+              >
                 {{ item.payDetail.userPhone }}
               </p>
               <p style="margin:0;font-family:'Roboto'">
@@ -131,7 +133,7 @@
             </div>
           </q-card-section>
           <q-card-section
-            class="fit row wrap justify-center items-center content-center"
+            class="fit column wrap justify-center items-center content-center"
           >
             <div style="font-size:14px;font-family:'Roboto'">
               <q-icon
@@ -141,6 +143,12 @@
               /><strong
                 >Hora Solicitada: {{ item.requestedTime.split(" ")[1] }}</strong
               >
+            </div>
+            <div
+              style="font-size:14px;font-family:'Roboto'"
+              v-if="item.local.tiene_anulacion_automatica === 1"
+            >
+              <the-timer :timestamp_inicio="item.startTimestamp"></the-timer>
             </div>
           </q-card-section>
 
@@ -210,15 +218,17 @@ import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
 import TheConfirm from "./dialogs/TheConfirm.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
+import TheTimer from "../timer/TheTimer.vue";
 
 export default {
-  props: ["ordersNotConfirmed", "refresh","sendWs"],
+  props: ["ordersNotConfirmed", "refresh", "sendWs"],
   inject: ["formatNumber", "capitalize"],
   components: {
     BaseMoreComponent,
     MoreDetails,
     TheConfirm,
-    TheCancel
+    TheCancel,
+    TheTimer
   },
   created() {
     this.flag = this.refresh;
@@ -284,8 +294,8 @@ export default {
       var data = {
         id_venta: row.id
       };
-      this.sendWs(row.id);
-      this.bus.$emit("modal-status-order-?", data);
+      //this.sendWs(row.id);
+      this.bus.$emit("modal-status-order", data);
     }
   }
 };

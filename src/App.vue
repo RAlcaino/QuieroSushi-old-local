@@ -40,6 +40,14 @@ export default {
   },
   mounted() {
     console.log("app mounted");
+    //SERVER TIME
+    setInterval(() => {
+      if (this.$store.getters["auth/getServerTime"] !== null) {
+        let date = new Date(this.$store.getters["auth/getServerTime"]);
+        date.setSeconds(date.getSeconds() + 1);
+        this.$store.commit("auth/setServerTime", date.toString());
+      }
+    }, 1000);
     this.init();
   },
   data() {
@@ -55,7 +63,11 @@ export default {
       showLoading: this.showLoading,
       hideLoading: this.hideLoading,
       errorHandling: this.errorHandling,
-      installPromptEvent: this.installPromptEvent
+      installPromptEvent: this.installPromptEvent,
+      getServerTime: this.serverTime,
+      scrollTop: this.scrollTop,
+      getStoreLocals: this.getStoreLocals,
+      setCurrentLocal: this.setCurrentLocal
     };
   },
   methods: {
@@ -155,28 +167,100 @@ export default {
             }
           } else {
             this.showNotification(
-              //error.response.data.message,
-              "Ha ocurrido un error con el servidor",
+              error.response.data.message,
               "negative",
               "error"
             );
           }
         } else if (error.response.status == 401) {
           this.showNotification(
-            //error.response.data.message,
-            "Ha ocurrido un error con el servidor",
+            error.response.data.message,
             "negative",
             "error"
           );
           this.bus.$emit("logout");
         }
       } else {
+        let msg = "";
+        if (error.message === "Network Error") {
+          msg = "Revise su conexión a Internet";
+        } else {
+          msg = error.message;
+        }
         this.showNotification(
-          /*error.message*/ "Ha ocurrido un error con el servidor",
+          msg, //"Ha ocurrido un error con el servidor",
           "negative",
           "error"
         );
+        this.hideLoading();
       }
+    },
+    serverTime() {
+      let date = new Date(this.$store.getters["auth/getServerTime"]);
+      let time = "";
+      let serverTime = "";
+
+      time += date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      time +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+      time +=
+        date.getSeconds() < 10
+          ? ":0" + date.getSeconds()
+          : ":" + date.getSeconds(); // get seconds
+
+      serverTime =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        time;
+
+      return serverTime;
+    },
+    getStoreLocals(option) {
+      var locals = [];
+      var each = this.$store.getters["auth/getDataLocals"].map(item => {
+        let row = {
+          value: item.id,
+          label: item.name + ", " + item.commune,
+          image: item.image,
+          commune: item.commune,
+          name: item.name,
+          cartStatus: item.cartStatus,
+          localStatus: item.localStatus,
+          preparationTime: item.preparationTime,
+          deliveryTime: item.deliveryTime
+        };
+        locals.push(row);
+      });
+
+      if (option === "ALL") {
+        return locals;
+      } else if (option === "ACTIVE") {
+        return locals.filter(item => item.localStatus === "normal");
+      }
+    },
+    scrollTop() {
+      $(document).ready(function() {
+        if ($("html").scrollTop() !== 0) {
+          $("html").animate({ scrollTop: 0 }, 1000);
+        }
+      });
+    },
+    setCurrentLocal(val) {
+      this.$store.commit("auth/setCurrentLocal", {
+        id: val.value,
+        name: val.name,
+        image: val.image,
+        commune: val.commune,
+        cartStatus: val.cartStatus
+      });
     }
   }
 };

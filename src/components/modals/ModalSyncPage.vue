@@ -35,7 +35,6 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("modal-sync-page", data => {
-      console.log(data);
       this.open = true;
       this.message = data.mensaje;
     });

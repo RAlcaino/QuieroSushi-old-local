@@ -89,8 +89,6 @@ export default {
             }
           })
           .then(response => {
-            console.log(response.data);
-
             if (response.data.status === "success") {
               this.hideLoading();
               if (this.mode === "orders") {

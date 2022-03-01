@@ -7,11 +7,12 @@
     <q-card class="my-card" style="width: 450px; border-radius:10px;">
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
-          <q-tab name="one">
+          <q-tab name="one" style="text-transform: capitalize;">
             <strong v-if="$store.getters['auth/getDataUser'].role === 'God'"
-              >N° Pedido: {{ orderDetail.id }}</strong
+              >N° Pedido: {{ orderDetail.id }} -
+              {{ orderDetail.internalCode }}</strong
             >
-            <strong v-else>Detalle</strong>
+            <strong v-else>N° Pedido:{{ orderDetail.internalCode }}</strong>
           </q-tab>
         </q-tabs>
 

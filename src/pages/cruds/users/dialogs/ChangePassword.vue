@@ -207,42 +207,6 @@ export default {
           });
       }
     }
-    /*setPassword() {
-      let data = {
-        //contrasena_actual: this.password_dict.current_password,
-        contrasena_nueva: this.password_dict.new_password
-      };
-      this.showLoading();
-      if (!this.prod) {
-        setTimeout(() => {
-          this.hideLoading();
-        }, 3000);
-      } else {
-        var url = this.$store.getters["routes/getRoute"]("change.password", {
-          userId: this.user.id
-        });
-        this.$axios
-          .put(url, data, {
-            headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
-          })
-          .then(response => {
-            if (response.data.status === "success") {
-              this.password_dict = {};
-              this.hideLoading();
-              this.close();
-            } else {
-              this.hideLoading();
-              this.showNotification(response.data.message, "negative", "error");
-            }
-          })
-          .catch(error => {
-            this.hideLoading();
-            this.errorHandling(error);
-          });
-      }
-    }*/
   }
 };
 </script>

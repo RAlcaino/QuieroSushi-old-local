@@ -23,7 +23,7 @@
         v-if="flag === true"
       >
         <img
-          src="~/assets/maki-roll.gif"
+          src="~/assets/maki-roll2.gif"
           alt="sad"
           width="130"
           style="border-radius:100%"
@@ -31,7 +31,6 @@
       </div>
       <div
         class="fit row wrap justify-left items-start content-start"
-        style="padding-left: 20px "
         v-if="searching === false"
       >
         <q-card
@@ -285,8 +284,8 @@ export default {
         id_venta: row.id
       };
 
-      this.sendWs(row.id);
-      this.bus.$emit("modal-status-order-?", data);
+      //this.sendWs(row.id);
+      this.bus.$emit("modal-status-order", data);
     }
   }
 };

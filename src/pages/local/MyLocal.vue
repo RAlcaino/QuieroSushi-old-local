@@ -1,11 +1,7 @@
 <template>
-  <q-page
-    v-if="dataLocal.nombre !== ''"
-    class="q-pa-sm"
-    style="padding-bottom:100px"
-  >
+  <base-page :toolbar="false">
     <edit-photo></edit-photo>
-    <div class="row q-col-gutter-sm">
+    <div class="row q-col-gutter-sm" v-if="dataLocal.nombre !== ''">
       <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12">
         <local-info
           :dataLocal="dataLocal"
@@ -29,7 +25,18 @@
         ></local-communes>
       </div>
     </div>
-  </q-page>
+    <div
+      v-else
+      style="margin-top:30vh"
+      class="fit column wrap justify-center items-center content-center"
+    >
+      <img
+        src="~/assets/maki-roll2.gif"
+        alt="sad"
+        width="130"
+        style="border-radius:100%"
+      /></div
+  ></base-page>
 </template>
 
 <script>
@@ -40,21 +47,31 @@ import LocalInfo from "./cards/LocalInfo.vue";
 import LocalSchedule from "./cards/LocalSchedule.vue";
 import LocalOwner from "./cards/LocalOwner.vue";
 import LocalCommunes from "./cards/LocalCommunes.vue";
+import BasePage from "src/components/bases/BasePage.vue";
 
 export default {
   name: "UserProfile",
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals",
+    "setCurrentLocal"
+  ],
   components: {
     EditPhoto,
     LocalInfo,
     LocalSchedule,
     LocalOwner,
-    LocalCommunes
+    LocalCommunes,
+    BasePage
   },
   provide() {
     return {
       change: this.change,
-      setLocalSelected: this.setLocalSelected
+      setLocalSelected: this.setLocalSelected,
+      weekDay: this.weekDay
     };
   },
   data() {
@@ -135,7 +152,7 @@ export default {
   },
   methods: {
     getDataLocal() {
-      this.showLoading();
+      //this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -168,12 +185,12 @@ export default {
     change(val) {
       if (val !== null) {
         this.localSelected = val;
+        this.setCurrentLocal(this.localSelected);
         this.getDataLocal();
       }
     },
     init() {
       this.formatLocals();
-      this.localSelected = this.locals[0];
       this.getDataLocal();
     },
     setLocalSelected(locals) {
@@ -197,33 +214,21 @@ export default {
           value: data.region.id,
           label: data.region.nombre
         },
-        semana: this.weekStructure(data.semana),
+        semana: this.weekStructure(data.semana)
       };
       this.dataLocalOriginal = { ...this.dataLocal };
-      this.bus.$emit("sync-communes",this.dataLocal);
+      this.bus.$emit("sync-communes", this.dataLocal);
     },
     formatLocals() {
       this.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(item => {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus
-        };
-        this.locals.push(row);
-        this.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          return 0;
-        });
-      });
+      this.locals = [...this.getStoreLocals("ACTIVE")];
+      this.localSelected = this.locals.find(
+        item => item.value === this.$store.getters["auth/getDataLocal"].id
+      );
+      if (this.localSelected === undefined) {
+        this.localSelected = this.locals[0];
+        this.setCurrentLocal(this.localSelected);
+      }
     },
     weekStructure(semana) {
       let week = [];

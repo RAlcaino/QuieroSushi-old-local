@@ -114,11 +114,26 @@
 <script>
 export default {
   props: ["dataLocal", "localSelected"],
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "weekDay"
+  ],
   methods: {
     updateSchedule() {
       let week = this.dataLocal.semana;
       let weekWithoutLabel = [];
+      let weekToFormat = {
+        lunes: "",
+        martes: "",
+        miercoles: "",
+        jueves: "",
+        viernes: "",
+        sabado: "",
+        domingo: ""
+      };
       let eachday = week.map(item => {
         if (item.estado) {
           let day = {
@@ -126,11 +141,25 @@ export default {
             hora_apertura: item.hora_apertura,
             hora_cierre: item.hora_cierre
           };
+          weekToFormat[
+            this.weekDay(item.dia_semana).toLowerCase()
+          ] = `${item.hora_apertura}-${item.hora_cierre}`;
           weekWithoutLabel.push(day);
+        } else {
+          weekToFormat[this.weekDay(item.dia_semana).toLowerCase()] = `cerrado`;
         }
       });
       let data = {
-        semana: weekWithoutLabel
+        semana: weekWithoutLabel,
+        semanaParaFormato: {
+          lunes: weekToFormat.lunes,
+          martes: weekToFormat.martes,
+          miercoles: weekToFormat.miercoles,
+          jueves:weekToFormat.jueves,
+          viernes: weekToFormat.viernes,
+          sabado: weekToFormat.sabado,
+          domingo: weekToFormat.domingo
+        }
       };
       this.showLoading();
 

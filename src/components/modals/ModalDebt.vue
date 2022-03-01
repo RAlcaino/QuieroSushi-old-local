@@ -10,18 +10,24 @@
           icon="error"
           text-color="primary"
         />
-        <span class="q-ml-sm" style="font-size:20px; text-align:center"
-          >¡Tienes todos tus locales bloqueados!</span
-        >
+        <span class="q-ml-sm" style="font-size:20px; text-align:center">{{
+          this.$store.getters["auth/getDataLocals"].every(
+            item => item.localStatus === "bloqueado"
+          )
+            ? this.$store.getters["auth/getDataLocals"].length > 1
+              ? "¡Tienes todos tus locales bloqueados!"
+              : "¡Tu local esta bloqueado!"
+            : "¡Tienes algunos de tus locales bloqueados!"
+        }}</span>
       </q-card-section>
 
       <q-card-actions align="center">
         <q-btn
           rounded
           color="primary"
-          label="Cerrar Sesion"
+          :label="getLabel()"
           style="font-size: 11px !important"
-          @click="logout()"
+          @click="closeModalDebt()"
         />
       </q-card-actions>
     </q-card>
@@ -30,8 +36,37 @@
 
 <script>
 export default {
+  inject: ["logout"],
   props: ["open"],
-  inject:["logout"]
+  methods: {
+    closeModalDebt() {
+      this.$store.commit("auth/setDebt", false);
+      if (
+        this.$store.getters["auth/getDataLocals"].every(
+          item => item.localStatus === "bloqueado"
+        )
+      ) {
+        if (this.$store.getters["auth/getDataUser"].role === "Cajero") {
+          this.logout();
+        }
+      }
+    },
+    getLabel() {
+      if (
+        this.$store.getters["auth/getDataLocals"].every(
+          item => item.localStatus === "bloqueado"
+        )
+      ) {
+        if (this.$store.getters["auth/getDataUser"].role === "Cajero") {
+          return "Cerrar Sesión";
+        } else {
+          return "Cerrar";
+        }
+      } else {
+        return "Cerrar";
+      }
+    }
+  }
 };
 </script>
 
