@@ -92,6 +92,7 @@
 <script>
 import SecureLS from "secure-ls";
 import { QSpinnerGears } from "quasar";
+import { LoginServices } from "../../services/LoginServices/LoginServices";
 
 export default {
   inject: ["showNotification", "errorHandling"],
@@ -130,51 +131,49 @@ export default {
     };
   },
   methods: {
-    login() {
+    async login() {
       if (this.validate(this.user, 1)) {
         return;
       }
       this.loading = true;
       var ls = new SecureLS({ isCompression: false });
-      //this.showLoading();
 
-      var url = this.$store.getters["routes/getRoute"]("login");
-      this.$axios
-        .post(url, this.user)
-        .then(response => {
-          if (response.data.status === "success") {
-            ls.set("token", response.data.result.token);
-            let data = {
-              locals: response.data.result.locals,
-              availableMenuOptions: response.data.result.availableMenuOptions
-            };
-            this.bus.$emit("login", data);
-            this.hideLoading();
+      const service = new LoginServices();
 
-            if (data.availableMenuOptions.length == 2) {
-              data.availableMenuOptions.some(
-                item => item.link === "/historico-cobro-semanal"
-              )
-                ? this.$router.push({ path: "/historico-cobro-semanal" })
-                : this.$router.push({ path: "/bienvenido" });
-            } else {
-              data.availableMenuOptions.some(item => item.link === "/pedidos")
-                ? this.$router.push({ path: "/pedidos" })
-                : this.$router.push({ path: "/bienvenido" });
-            }
-            this.html[0].style.overflow = "auto";
-            this.loading = false;
+      try {
+        let response = await service.login(this.user.email, this.user.password);
+        if (response.data.status === "success") {
+          ls.set("token", response.data.result.token);
+          let data = {
+            locals: response.data.result.locals,
+            availableMenuOptions: response.data.result.availableMenuOptions
+          };
+          this.bus.$emit("login", data);
+          this.hideLoading();
+
+          if (data.availableMenuOptions.length == 2) {
+            data.availableMenuOptions.some(
+              item => item.link === "/historico-cobro-semanal"
+            )
+              ? this.$router.push({ path: "/historico-cobro-semanal" })
+              : this.$router.push({ path: "/bienvenido" });
           } else {
-            this.hideLoading();
-            this.loading = false;
-            this.showNotification(response.data.message, "negative", "error");
+            data.availableMenuOptions.some(item => item.link === "/pedidos")
+              ? this.$router.push({ path: "/pedidos" })
+              : this.$router.push({ path: "/bienvenido" });
           }
-        })
-        .catch(error => {
+          this.html[0].style.overflow = "auto";
+          this.loading = false;
+        } else {
           this.hideLoading();
           this.loading = false;
-          this.errorHandling(error);
-        });
+          this.showNotification(response.data.message, "negative", "error");
+        }
+      } catch (error) {
+        this.hideLoading();
+        this.loading = false;
+        this.errorHandling(error);
+      }
     },
     validate(user, mode) {
       let flag = false;
