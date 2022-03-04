@@ -313,7 +313,8 @@ export default {
 .class-card {
   width: 48%;
   margin-top: 2%;
-  margin-right: 2%;
+  margin-right: 1%;
+  margin-left: 1%;
   border-radius: 15px;
   border: 1px solid rgba(0, 0, 0, 0.3);
 }
