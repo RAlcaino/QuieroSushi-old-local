@@ -42,11 +42,7 @@ export default {
     console.log("app mounted");
     //SERVER TIME
     setInterval(() => {
-      if (this.$store.getters["auth/getServerTime"] !== null) {
-        let date = new Date(this.$store.getters["auth/getServerTime"]);
-        date.setSeconds(date.getSeconds() + 1);
-        this.$store.commit("auth/setServerTime", date.toString());
-      }
+      this.serverTime();
     }, 1000);
     this.init();
   },
@@ -196,7 +192,11 @@ export default {
       }
     },
     serverTime() {
-      let date = new Date(this.$store.getters["auth/getServerTime"]);
+      let santiagoTime = new Date().toLocaleString("en-US", {
+        timeZone: "America/Santiago"
+      });
+      let date = new Date(santiagoTime);
+      this.$store.commit("auth/setServerTime", date.toString());
       let time = "";
       let serverTime = "";
 

@@ -360,7 +360,7 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling", "refreshServerTime", "getServerTime"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling", "getServerTime"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-confirm", data => {
@@ -374,7 +374,7 @@ export default {
       this.autoMode = true;
       this.calculatePreparationTime(true);
       this.updateTime();
-      this.refreshServerTime();
+      this.getServerTime();
       setInterval(() => {
         this.updateTime();
       }, 1000);
@@ -481,8 +481,6 @@ export default {
     },
     updateTime() {
       let date = new Date(this.$store.getters["auth/getServerTime"]);
-      /*this.current.hour = date.getHours();
-      this.current.minutes = date.getMinutes();*/
       this.serverTime = new Date(this.$store.getters["auth/getServerTime"]);
       date.setMinutes(
         date.getMinutes() +

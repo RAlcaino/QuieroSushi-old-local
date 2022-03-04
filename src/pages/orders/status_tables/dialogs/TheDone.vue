@@ -29,13 +29,14 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling", "getServerTime"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-done", row => {
       this.card = true;
       this.orderId = row.id;
       this.orderType = row.orderType;
+      console.log(this.getServerTime());
     });
   },
   data() {
@@ -50,7 +51,7 @@ export default {
     DoDone() {
       let data = {
         orderID: this.orderId,
-        doneTimestamp: this.currentTimestamp()
+        doneTimestamp: this.getServerTime()
         //doneTimestamp: '2021-03-08 23:00:00',
       };
 
@@ -85,32 +86,6 @@ export default {
       }
       this.card = false;
     },
-    currentTimestamp() {
-      let currentTime = "";
-      let date = new Date(Date.now());
-      currentTime +=
-        date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
-      currentTime +=
-        date.getMinutes() < 10
-          ? ":0" + date.getMinutes()
-          : ":" + date.getMinutes(); // get minutes
-      currentTime +=
-        date.getSeconds() < 10
-          ? ":0" + date.getSeconds()
-          : ":" + date.getSeconds(); //get seconds
-
-      let currentTimestamp =
-        date.getFullYear() +
-        "-" +
-        (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) +
-        "-" +
-        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
-        " " +
-        currentTime;
-      return currentTimestamp;
-    }
   }
 };
 </script>

@@ -42,7 +42,7 @@
 <script>
 export default {
   props: ["mode"],
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling", "getServerTime"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-cancel", row => {
@@ -70,7 +70,7 @@ export default {
       }
       let data = {
         orderID: this.orderId,
-        canceledTimestamp: this.currentTimestamp(),
+        canceledTimestamp: this.getServerTime(),
         cancellationReason: this.cancellationReason
       };
       this.showLoading();
@@ -112,32 +112,6 @@ export default {
       this.card = false;
       this.cancellationReason = "";
     },
-    currentTimestamp() {
-      let currentTime = "";
-      let date = new Date(Date.now());
-      currentTime +=
-        date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
-      currentTime +=
-        date.getMinutes() < 10
-          ? ":0" + date.getMinutes()
-          : ":" + date.getMinutes(); // get minutes
-      currentTime +=
-        date.getSeconds() < 10
-          ? ":0" + date.getSeconds()
-          : ":" + date.getSeconds(); //get seconds
-
-      let currentTimestamp =
-        date.getFullYear() +
-        "-" +
-        (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) +
-        "-" +
-        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
-        " " +
-        currentTime;
-      return currentTimestamp;
-    }
   }
 };
 </script>

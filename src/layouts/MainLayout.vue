@@ -75,9 +75,7 @@
               color="red"
               text-color="white"
               floating
-              v-if="
-                getCount() !== 0
-              "
+              v-if="getCount() !== 0"
             >
               {{ getCount() }}
             </q-badge>
@@ -642,7 +640,6 @@ export default {
     this.getZones();
     this.getTitles();
     this.getRoles();
-    this.getServerTime();
     this.getNotifications(false);
   },
   computed: {
@@ -677,8 +674,7 @@ export default {
   provide() {
     return {
       logout: this.logout,
-      refreshToken: this.refreshToken,
-      refreshServerTime: this.getServerTime
+      refreshToken: this.refreshToken
     };
   },
   methods: {
@@ -1063,26 +1059,6 @@ export default {
         }
       }
       return flag;
-    },
-    getServerTime() {
-      var url = this.$store.getters["routes/getRoute"]("get.serverTime");
-      this.$axios
-        .get(url, {
-          headers: {
-            Authorization: this.$store.getters["auth/getToken"]
-          }
-        })
-        .then(response => {
-          if (response.data.status === "success") {
-            let date = new Date(response.data.result);
-            this.$store.commit("auth/setServerTime", date.toString());
-          } else {
-            this.showNotification(response.data.message, "negative", "error");
-          }
-        })
-        .catch(error => {
-          this.errorHandling(error);
-        });
     },
     sortAndFilter(locals) {
       let newLocals = [...locals];
