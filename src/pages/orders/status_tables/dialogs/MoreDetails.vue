@@ -102,15 +102,53 @@
             </div>
             <div class="tab-overview-footer">
               <q-list>
-                <q-item v-if="orderDetail.aditionalMessage !== ''">
+                <q-item
+                  v-if="
+                    orderDetail.aditionalMessage !== '' &&
+                      orderDetail.aditionalMessage !== null
+                  "
+                >
                   <q-item-section avatar>
                     <q-icon name="message" color="primary" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label>Mensaje del cliente</q-item-label>
-                    <q-item-label caption>{{
+                    <q-item-label style="font-weight: bold;"
+                      >Mensaje del cliente</q-item-label
+                    >
+                    <q-item-label>{{
                       orderDetail.aditionalMessage
                     }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item v-if="orderDetail.delivery_id !== null">
+                  <q-item-section avatar>
+                    <q-icon name="delivery_dining" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label style="font-weight: bold;"
+                      >Estado del delivery:
+                      <q-icon
+                        name="refresh"
+                        size="1.3em"
+                        style="cursor: pointer;"
+                        @click="getStatus()"
+                      ></q-icon>
+                    </q-item-label>
+                    <q-item-label
+                      v-if="
+                        deliveryStatus !== '' && deliveryStatusObject !== {}
+                      "
+                      >{{ deliveryStatus }}
+                      <a
+                        @click="
+                          goToTrackingUrl(deliveryStatusObject.tracking_url)
+                        "
+                        >Ver más detalles</a
+                      ></q-item-label
+                    >
+                    <q-item-label v-else>
+                      <q-spinner-facebook color="primary" size="2em"
+                    /></q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -130,19 +168,87 @@
 
 <script>
 export default {
-  inject: ["formatNumber"],
+  props: ["currentTab"],
+  inject: ["formatNumber", "errorHandling"],
   mounted() {
     this.bus.$on("more-details", data => {
       this.card = !this.card;
       this.orderDetail = data;
+      this.deliveryStatus = "";
+      this.deliveryStatusObject = {};
+      if (this.currentTab === "confirmed") {
+        this.getStatus();
+      }
     });
   },
   data() {
     return {
       card: false,
       tab: "one",
-      orderDetail: {}
+      orderDetail: {},
+      deliveryStatus: "",
+      deliveryStatusObject: {},
+      flag: 1
     };
+  },
+  methods: {
+    getStatus() {
+      this.deliveryStatus = "";
+      if (this.orderDetail.delivery_id !== null) {
+        var url = this.$store.getters["routes/getRoute"](
+          "get.delivery.status",
+          {
+            delivery_id: this.orderDetail.delivery_id
+            //delivery_id: "del_gALMXHSKQp2wlI1cVWl9Gw"
+          }
+        );
+        this.$axios
+          .get(url, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            this.setDeliveryStatus(response.data.status);
+            this.deliveryStatusObject = { ...response.data };
+          })
+          .catch(error => {
+            this.errorHandling(error);
+          });
+      }
+    },
+    setDeliveryStatus(status) {
+      if (status === "pending") {
+        this.deliveryStatus = "La asignación del repartidor aún esta pendiente";
+      }
+      if (status === "pickup") {
+        this.deliveryStatus =
+          "El repartidor está en camino al punto de recolección";
+      }
+      if (status === "pickup_complete") {
+        this.deliveryStatus =
+          "el repartidor recibió la orden y está en camino al punto de entrega";
+      }
+      if (status === "dropoff") {
+        this.deliveryStatus =
+          "El repartidor ha dejado la orden en el punto de entrega";
+      }
+      if (status === "delivered") {
+        this.deliveryStatus = "El repartidor ha entregado el pedido";
+      }
+      if (status === "ongoing") {
+        this.deliveryStatus = "El repartidor va en camino";
+      }
+      if (status === "returned") {
+        this.deliveryStatus = "El repartidor se ha regresado";
+      }
+      if (status === "canceled") {
+        this.deliveryStatus = "El repartidor ha cancelado el envio de la orden";
+      }
+    },
+    goToTrackingUrl(url) {
+      window.open(url);
+    }
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div style="padding-bottom:100px;">
-    <more-details></more-details>
+    <more-details currentTab="confirmed"></more-details>
     <the-done></the-done>
     <the-cancel :mode="'orders'"></the-cancel>
     <div
@@ -268,7 +268,7 @@ export default {
   },
   methods: {
     moreDetails(row) {
-      this.bus.$emit("more-details", row);
+      this.bus.$emit("more-details", { ...row, getStatus: true });
     },
     doneDialog(row) {
       this.bus.$emit("the-done", row);

@@ -185,6 +185,10 @@ const mutations = {
       {
         name: "change.password",
         link: "/change-password/{idUser}"
+      },
+      {
+        name: "get.delivery.status",
+        link: "/get-delivery/{delivery_id}"
       }
     ];
   }

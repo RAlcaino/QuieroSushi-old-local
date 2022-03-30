@@ -360,7 +360,13 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling", "getServerTime"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getServerTime"
+  ],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-confirm", data => {
@@ -389,13 +395,14 @@ export default {
     currentTime() {
       let timeValue = "";
       timeValue +=
-        this.serverTime.getHours() < 10 ? "0" + this.serverTime.getHours() : this.serverTime.getHours(); // get hour
+        this.serverTime.getHours() < 10
+          ? "0" + this.serverTime.getHours()
+          : this.serverTime.getHours(); // get hour
       timeValue +=
         this.serverTime.getMinutes() < 10
           ? ":0" + this.serverTime.getMinutes()
           : ":" + this.serverTime.getMinutes(); // get minutes
-      return timeValue
-      ;
+      return timeValue;
     }
   },
   data() {
@@ -458,6 +465,16 @@ export default {
             if (response.data.status === "success") {
               this.hideLoading();
               this.bus.$emit("sync-orders");
+              if (response.data.result.uber !== undefined) {
+                let { code } = response.data.result.uber;
+                if (code !== undefined) {
+                  this.showNotification(
+                    this.getTranslate(code),
+                    "negative",
+                    "error"
+                  );
+                }
+              }
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
@@ -553,6 +570,17 @@ export default {
         (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
         " " +
         tempFinalDetail;
+    },
+    getTranslate(code) {
+      if (code === "address_undeliverable") {
+        return "La ubicación especificada no se encuentra en un área de entrega.";
+      } else if (code === "invalid_params") {
+        return "Los parámetros de su solicitud no son válidos.";
+      } else if (code === "unknown_location") {
+        return "No se entendió la ubicación especificada.";
+      } else {
+        return "Error desconocido al crear el delivery.";
+      }
     }
   }
 };

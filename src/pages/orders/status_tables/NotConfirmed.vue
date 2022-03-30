@@ -1,6 +1,6 @@
 <template>
   <div style="padding-bottom:100px;">
-    <more-details></more-details>
+    <more-details currentTab="not-confirmed"></more-details>
     <keep-alive>
       <the-confirm></the-confirm>
     </keep-alive>

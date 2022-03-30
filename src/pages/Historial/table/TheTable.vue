@@ -162,7 +162,11 @@ export default {
       data.map(item => {
         this.bottomRow[2].value = this.bottomRow[2].value + item.subtotal;
         this.bottomRow[3].value = this.bottomRow[3].value + item.comision;
-        this.bottomRow[4].value = this.bottomRow[4].value + item.costo_despacho;
+
+        if (!isNaN(item.costo_despacho)) {
+          this.bottomRow[4].value =
+            this.bottomRow[4].value + item.costo_despacho;
+        }
         this.bottomRow[5].value = this.bottomRow[5].value + item.total;
         this.bottomRow[6].value =
           this.bottomRow[6].value + item.descuento_pagado_por_qs;

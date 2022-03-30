@@ -1,6 +1,6 @@
 <template>
   <div style="padding-bottom:100px;">
-    <more-details></more-details>
+    <more-details currentTab="done"></more-details>
     <the-cancel :mode="'orders'"></the-cancel>
     <div
       class="fit row wrap justify-center items-center content-center"
