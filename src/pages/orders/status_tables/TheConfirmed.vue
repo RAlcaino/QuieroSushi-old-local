@@ -61,7 +61,11 @@
                     "
                     style="font-size:20px; padding-bottom:5px"
                     class="i-icon"
-                  />{{ capitalize(item.orderType) }}
+                  />{{
+                    `${capitalize(item.orderType)} ${
+                      item.es_uber === 1 ? "- Uber" : ""
+                    }`
+                  }}
                 </div>
                 <div>
                   <q-icon
@@ -151,11 +155,22 @@
                 size="sm"
                 color="green"
                 style="font-size:10.5px; margin-right:5px"
+                v-if="item.es_uber !== 1"
               >
                 <template v-if="item.orderType === 'retiro'">
                   Listo para Retiro</template
                 >
                 <template v-else>En camino</template>
+              </q-btn>
+              <q-btn
+                @click="changeDelivery(item)"
+                rounded
+                size="sm"
+                color="green"
+                style="font-size:10.5px; margin-right:5px"
+                v-else
+              >
+                <template>Cambiar Hora Uber</template>
               </q-btn>
               <q-btn
                 @click="moreDetails(item)"
@@ -278,6 +293,9 @@ export default {
     },
     cancelDialog(row) {
       this.bus.$emit("the-cancel", row);
+    },
+    changeDelivery(row) {
+      this.bus.$emit("the-change-delivery", row);
     },
     openChat(row) {
       var data = {

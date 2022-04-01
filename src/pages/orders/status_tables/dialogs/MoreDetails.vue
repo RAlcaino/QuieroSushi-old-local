@@ -4,16 +4,26 @@
     transition-show="slide-down"
     transition-hide="slide-up"
   >
-    <q-card class="my-card" style="width: 450px; border-radius:10px;">
+    <q-card class="my-card" style="width: 550px; border-radius:10px;">
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
-          <q-tab name="one" style="text-transform: capitalize;">
-            <strong v-if="$store.getters['auth/getDataUser'].role === 'God'"
-              >N° Pedido: {{ orderDetail.id }} -
-              {{ orderDetail.internalCode }}</strong
-            >
-            <strong v-else>N° Pedido:{{ orderDetail.internalCode }}</strong>
-          </q-tab>
+          <q-tab
+            name="one"
+            style="text-transform: capitalize;"
+            :label="
+              `${
+                $store.getters['auth/getDataUser'].role === 'God'
+                  ? `N° Pedido: ${orderDetail.id} - ${orderDetail.internalCode}`
+                  : `N° Pedido: ${orderDetail.internalCode}`
+              }`
+            "
+          />
+          <q-tab
+            v-if="orderDetail.es_uber === 1 && orderDetail.delivery_id !== null"
+            label="Uber"
+            name="two"
+            @click="getStatus()"
+          />
         </q-tabs>
 
         <q-tab-panels v-model="tab" animated>
@@ -88,7 +98,7 @@
                   formatNumber(orderDetail.subtotal)
                 }}
               </p>
-              <p style="font-size:14px">
+              <p style="font-size:14px" v-if="orderDetail.es_uber !== 1">
                 <strong style="color: #333;">Costo Despacho: </strong> ${{
                   formatNumber(orderDetail.deliveryCost)
                 }}
@@ -120,39 +130,122 @@
                     }}</q-item-label>
                   </q-item-section>
                 </q-item>
-                <q-item v-if="orderDetail.delivery_id !== null">
-                  <q-item-section avatar>
-                    <q-icon name="delivery_dining" color="primary" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label style="font-weight: bold;"
-                      >Estado del delivery:
-                      <q-icon
-                        name="refresh"
-                        size="1.3em"
-                        style="cursor: pointer;"
-                        @click="getStatus()"
-                      ></q-icon>
-                    </q-item-label>
-                    <q-item-label
-                      v-if="
-                        deliveryStatus !== '' && deliveryStatusObject !== {}
-                      "
-                      >{{ deliveryStatus }}
-                      <a
-                        @click="
-                          goToTrackingUrl(deliveryStatusObject.tracking_url)
-                        "
-                        >Ver más detalles</a
-                      ></q-item-label
-                    >
-                    <q-item-label v-else>
-                      <q-spinner-facebook color="primary" size="2em"
-                    /></q-item-label>
-                  </q-item-section>
-                </q-item>
               </q-list>
             </div>
+          </q-tab-panel>
+          <q-tab-panel name="two" class="tab-panel">
+            <q-list>
+              <q-item v-if="orderDetail.delivery_id !== null">
+                <q-item-section avatar>
+                  <q-icon name="delivery_dining" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold;"
+                    >Estado del delivery:
+                    <q-icon
+                      name="refresh"
+                      size="1.3em"
+                      style="cursor: pointer;"
+                      @click="getStatus()"
+                    ></q-icon>
+                  </q-item-label>
+                  <q-item-label
+                    v-if="deliveryStatus !== '' && deliveryStatusObject !== {}"
+                    >{{ deliveryStatus }}
+                    <a
+                      @click="
+                        goToTrackingUrl(deliveryStatusObject.tracking_url)
+                      "
+                      >Ver más detalles</a
+                    ></q-item-label
+                  >
+                  <q-item-label v-else>
+                    <q-spinner-facebook color="primary" size="2em"
+                  /></q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item v-if="orderDetail.delivery_id !== null">
+                <q-item-section avatar>
+                  <q-icon name="schedule" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold;"
+                    >Hora estimada en llegar al local:
+                  </q-item-label>
+                  <q-item-label
+                    v-if="pickup_eta !== '' && deliveryStatusObject !== {}"
+                    >{{ pickup_eta }}
+                  </q-item-label>
+                  <q-item-label v-else>
+                    <q-spinner-facebook color="primary" size="2em"
+                  /></q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item v-if="orderDetail.delivery_id !== null">
+                <q-item-section avatar>
+                  <q-icon name="schedule" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold;"
+                    >Hora estimada en llegar al destino:
+                  </q-item-label>
+                  <q-item-label
+                    v-if="dropoff_eta !== '' && deliveryStatusObject !== {}"
+                    >{{ dropoff_eta }}
+                  </q-item-label>
+                  <q-item-label v-else>
+                    <q-spinner-facebook color="primary" size="2em"
+                  /></q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item v-if="orderDetail.delivery_id !== null">
+                <q-item-section avatar>
+                  <q-icon name="message" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <div>
+                    <q-input
+                      v-model="msg"
+                      filled
+                      type="textarea"
+                      hint="Mensaje para el delivery"
+                    />
+                  </div>
+                  <q-item-label
+                    style="display:flex; justify-content: center; margin-top: 10px"
+                  >
+                    <q-btn
+                      size="sm"
+                      v-close-popup
+                      rounded
+                      color="primary"
+                      label="Enviar"
+                    />
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-if="
+                  orderDetail.delivery_id !== null &&
+                    deliveryShortStatus === 'canceled'
+                "
+              >
+                <q-item-section>
+                  <q-item-label
+                    style="display:flex; justify-content: center; margin-top: 10px"
+                  >
+                    <q-btn
+                      size="sm"
+                      v-close-popup
+                      rounded
+                      color="primary"
+                      label="Pedir otro delivery"
+                    />
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
           </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
@@ -170,15 +263,17 @@
 export default {
   props: ["currentTab"],
   inject: ["formatNumber", "errorHandling"],
-  mounted() {
+  created() {
     this.bus.$on("more-details", data => {
+      this.tab = "one";
       this.card = !this.card;
       this.orderDetail = data;
       this.deliveryStatus = "";
+      this.msg = "";
+      this.pickup_eta = "";
+      this.dropoff_eta = "";
+      this.deliveryShortStatus = "";
       this.deliveryStatusObject = {};
-      if (this.currentTab === "confirmed") {
-        this.getStatus();
-      }
     });
   },
   data() {
@@ -187,8 +282,12 @@ export default {
       tab: "one",
       orderDetail: {},
       deliveryStatus: "",
+      pickup_eta: "",
+      dropoff_eta: "",
       deliveryStatusObject: {},
-      flag: 1
+      deliveryShortStatus: "",
+      flag: 1,
+      msg: ""
     };
   },
   methods: {
@@ -210,6 +309,9 @@ export default {
           })
           .then(response => {
             this.setDeliveryStatus(response.data.status);
+            this.deliveryShortStatus = response.data.status;
+            this.pickup_eta = this.formatDate(response.data.pickup_eta);
+            this.dropoff_eta = this.formatDate(response.data.dropoff_eta);
             this.deliveryStatusObject = { ...response.data };
           })
           .catch(error => {
@@ -248,6 +350,33 @@ export default {
     },
     goToTrackingUrl(url) {
       window.open(url);
+    },
+    formatDate(date_eta) {
+      let date = new Date(date_eta);
+      let time = "";
+      let timestamp = "";
+
+      time += date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      time +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+      time +=
+        date.getSeconds() < 10
+          ? ":0" + date.getSeconds()
+          : ":" + date.getSeconds(); // get seconds
+
+      timestamp =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        time;
+      return timestamp;
     }
   }
 };

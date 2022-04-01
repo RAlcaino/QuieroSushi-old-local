@@ -63,7 +63,11 @@
                     "
                     style="font-size:20px; padding-bottom:5px"
                     class="i-icon"
-                  />{{ capitalize(item.orderType) }}
+                  />{{
+                    `${capitalize(item.orderType)} ${
+                      item.es_uber === 1 ? "- Uber" : ""
+                    }`
+                  }}
                 </div>
                 <div>
                   <q-icon

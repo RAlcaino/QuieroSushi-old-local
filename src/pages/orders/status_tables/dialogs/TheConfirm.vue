@@ -145,8 +145,8 @@
               </div>
             </div>
 
-            <q-separator />
-            <div class="tab-overview-c">
+            <q-separator v-if="orderDetail.es_uber !== 1" />
+            <div class="tab-overview-c" v-if="orderDetail.es_uber !== 1">
               <div class="tab-overview-items-c">
                 <strong style="color: #333; text-align: center">
                   Tiempo de Despacho
@@ -373,9 +373,16 @@ export default {
       this.card = !this.card;
       this.orderDetail = data;
       this.finalDateManual = this.orderDetail.requestedTime;
-      this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
-      this.constDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
-      this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
+      if (this.orderDetail.es_uber === 1) {
+        this.deliveryTime = 0;
+        this.constDeliveryTime = 0;
+        this.minDeliveryTime = 0;
+        this.orderDetail.gmapsDeliveryTime = 0;
+      } else {
+        this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
+        this.constDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
+        this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
+      }
       this.doAlgorithm = false;
       this.autoMode = true;
       this.calculatePreparationTime(true);
