@@ -442,16 +442,29 @@ export default {
   },
   methods: {
     confirm() {
+      let pickup_ready_dt = new Date(
+        this.tab === "one" ? this.finalDateDetail : this.finalDateManual
+      );
+      let pickup_deadline_dt = new Date(
+        this.tab === "one" ? this.finalDateDetail : this.finalDateManual
+      );
+      pickup_deadline_dt = pickup_deadline_dt.setMinutes(
+        pickup_deadline_dt.getMinutes() + 10
+      );
+
+      pickup_deadline_dt = new Date(pickup_deadline_dt);
+      pickup_ready_dt = new Date(pickup_ready_dt);
+
       var data = {
         orderID: this.orderDetail.id,
         confirmationTimestamp:
-          this.tab === "one"
-            ? this.finalDateDetail + ":00"
-            : this.finalDateManual,
+          this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
         //confirmationTimestamp: '2021-03-08 23:00:00',
         deliveryTime: +this.deliveryTime,
         preparationTime: +this.preparationTime,
-        doAlgorithm: this.doAlgorithm
+        doAlgorithm: this.doAlgorithm,
+        pickup_ready_dt: pickup_ready_dt.toISOString(),
+        pickup_deadline_dt: pickup_deadline_dt.toISOString()
       };
       this.showLoading();
 
@@ -566,6 +579,10 @@ export default {
         date.getMinutes() < 10
           ? ":0" + date.getMinutes()
           : ":" + date.getMinutes(); // get minutes
+      tempFinalDetail +=
+        date.getSeconds() < 10
+          ? ":0" + date.getSeconds()
+          : ":" + date.getSeconds(); // get seconds
 
       this.finalDateDetail =
         date.getFullYear() +

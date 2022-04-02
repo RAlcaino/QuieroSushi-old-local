@@ -4,7 +4,7 @@
     transition-show="slide-down"
     transition-hide="slide-up"
   >
-    <q-card class="my-card" style="width: 550px; border-radius:10px;">
+    <q-card class="my-card" style="width: 650px; border-radius:10px;">
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
           <q-tab
@@ -152,16 +152,54 @@
                   <q-item-label
                     v-if="deliveryStatus !== '' && deliveryStatusObject !== {}"
                     >{{ deliveryStatus }}
-                    <a
-                      @click="
-                        goToTrackingUrl(deliveryStatusObject.tracking_url)
-                      "
-                      >Ver más detalles</a
-                    ></q-item-label
-                  >
+                    <q-item-label
+                      style="display:flex; justify-content: center; margin-top: 10px"
+                      v-if="deliveryShortStatus === 'canceled'"
+                    >
+                      <q-btn
+                        size="sm"
+                        v-close-popup
+                        rounded
+                        color="green"
+                        label="Pedir otro delivery"
+                      />
+                    </q-item-label>
+                  </q-item-label>
                   <q-item-label v-else>
-                    <q-spinner-facebook color="primary" size="2em"
-                  /></q-item-label>
+                    <q-spinner-facebook color="primary" size="2em" />
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-if="orderDetail.delivery_id !== null && courier !== null"
+              >
+                <q-item-section avatar>
+                  <q-icon name="location_on" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold;"
+                    >Ubicación del delivery:
+                  </q-item-label>
+                  <q-item-label v-if="courier !== null">
+                    <GmapMap
+                      :center="{
+                        lat: courier.location.lat,
+                        lng: courier.location.lng
+                      }"
+                      :zoom="18"
+                      map-type-id="terrain"
+                      style="width: 100%; height: 226px; border-radius:10px;"
+                    >
+                      <GmapMarker
+                        v-for="(marker, index) in markers"
+                        :key="index"
+                        :position="marker"
+                        :clickable="true"
+                      /> </GmapMap
+                  ></q-item-label>
+                  <q-item-label v-else>
+                    <q-spinner-facebook color="primary" size="2em" />
+                  </q-item-label>
                 </q-item-section>
               </q-item>
               <q-item v-if="orderDetail.delivery_id !== null">
@@ -219,28 +257,8 @@
                       size="sm"
                       v-close-popup
                       rounded
-                      color="primary"
+                      color="green"
                       label="Enviar"
-                    />
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item
-                v-if="
-                  orderDetail.delivery_id !== null &&
-                    deliveryShortStatus === 'canceled'
-                "
-              >
-                <q-item-section>
-                  <q-item-label
-                    style="display:flex; justify-content: center; margin-top: 10px"
-                  >
-                    <q-btn
-                      size="sm"
-                      v-close-popup
-                      rounded
-                      color="primary"
-                      label="Pedir otro delivery"
                     />
                   </q-item-label>
                 </q-item-section>
@@ -265,6 +283,8 @@ export default {
   inject: ["formatNumber", "errorHandling"],
   created() {
     this.bus.$on("more-details", data => {
+      this.markers = [];
+      this.courier = null;
       this.tab = "one";
       this.card = !this.card;
       this.orderDetail = data;
@@ -286,8 +306,13 @@ export default {
       dropoff_eta: "",
       deliveryStatusObject: {},
       deliveryShortStatus: "",
+      courier: null,
       flag: 1,
-      msg: ""
+      msg: "",
+      markers: [],
+      apiKey: process.env.API_GOOGLE,
+      baseUrl:
+        "https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={apikeyGoogle}"
     };
   },
   methods: {
@@ -313,6 +338,11 @@ export default {
             this.pickup_eta = this.formatDate(response.data.pickup_eta);
             this.dropoff_eta = this.formatDate(response.data.dropoff_eta);
             this.deliveryStatusObject = { ...response.data };
+            this.courier =
+              response.data.courier === null
+                ? null
+                : { ...response.data.courier };
+            this.getMarkers();
           })
           .catch(error => {
             this.errorHandling(error);
@@ -377,6 +407,18 @@ export default {
         " " +
         time;
       return timestamp;
+    },
+    getMarkers() {
+      this.markers = [];
+
+      if (this.courier !== null) {
+        let marker = {
+          lat: this.courier.location.lat,
+          lng: this.courier.location.lng
+        };
+
+        this.markers.push(marker);
+      }
     }
   }
 };
