@@ -3,6 +3,7 @@
     <more-details currentTab="confirmed"></more-details>
     <the-done></the-done>
     <the-cancel :mode="'orders'"></the-cancel>
+    <the-change-uber />
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top:3%;"
@@ -226,6 +227,7 @@ import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
 import TheDone from "./dialogs/TheDone.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
+import TheChangeUber from "./dialogs/TheChangeUber.vue";
 
 export default {
   props: ["ordersConfirmed", "sendWs"],
@@ -234,7 +236,8 @@ export default {
     BaseMoreComponent,
     MoreDetails,
     TheDone,
-    TheCancel
+    TheCancel,
+    TheChangeUber
   },
   created() {
     this.bus.$on("reset-page", () => {
@@ -295,7 +298,7 @@ export default {
       this.bus.$emit("the-cancel", row);
     },
     changeDelivery(row) {
-      this.bus.$emit("the-change-delivery", row);
+      this.bus.$emit("the-change-uber", row);
     },
     openChat(row) {
       var data = {

@@ -42,12 +42,19 @@
 <script>
 export default {
   props: ["mode"],
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling", "getServerTime"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getServerTime"
+  ],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-cancel", row => {
       this.card = true;
       this.orderId = row.id;
+      this.orderDetail = { ...row };
     });
   },
   data() {
@@ -55,7 +62,8 @@ export default {
       card: false,
       orderId: null,
       prod: null,
-      cancellationReason: ""
+      cancellationReason: "",
+      orderDetail: {}
     };
   },
   methods: {
@@ -92,7 +100,7 @@ export default {
             if (response.data.status === "success") {
               this.hideLoading();
               if (this.mode === "orders") {
-                this.bus.$emit("sync-orders");
+                this.cancelDelivery();
               } else {
                 this.bus.$emit("sync-page-after-refund");
               }
@@ -112,6 +120,29 @@ export default {
       this.card = false;
       this.cancellationReason = "";
     },
+    cancelDelivery() {
+      this.showLoading();
+      var url = this.$store.getters["routes/getRoute"]("uber.cancel");
+      let data = {
+        delivery_id: this.orderDetail.delivery_id
+      };
+      this.$axios
+        .post(url, data, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          console.log(response);
+          this.bus.$emit("sync-orders");
+          this.hideLoading();
+          this.card = false;
+        })
+        .catch(error => {
+          this.hideLoading();
+          this.errorHandling(error);
+        });
+    }
   }
 };
 </script>

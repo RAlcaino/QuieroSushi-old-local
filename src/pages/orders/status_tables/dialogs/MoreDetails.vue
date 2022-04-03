@@ -158,7 +158,7 @@
                     >
                       <q-btn
                         size="sm"
-                        v-close-popup
+                        @click="createDelivery()"
                         rounded
                         color="green"
                         label="Pedir otro delivery"
@@ -280,7 +280,14 @@
 <script>
 export default {
   props: ["currentTab"],
-  inject: ["formatNumber", "errorHandling"],
+  inject: [
+    "formatNumber",
+    "errorHandling",
+    "getServerTime",
+    "showNotification",
+    "showLoading",
+    "hideLoading"
+  ],
   created() {
     this.bus.$on("more-details", data => {
       this.markers = [];
@@ -419,6 +426,42 @@ export default {
 
         this.markers.push(marker);
       }
+    },
+    createDelivery() {
+      this.showLoading();
+      var url2 = this.$store.getters["routes/getRoute"]("uber.create");
+      let serverTime = this.getServerTime();
+      let data2 = {
+        orderId: this.orderDetail.id,
+        local_name: this.orderDetail.local.name,
+        local_address: this.orderDetail.local.address,
+        pickup_ready_dt: this.getTime(5, serverTime),
+        pickup_deadline_dt: this.getTime(20, serverTime)
+      };
+      this.$axios
+        .post(url2, data2, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          console.log(response);
+          this.bus.$emit("sync-orders");
+          this.hideLoading();
+          this.card = false;
+        })
+        .catch(error => {
+          this.hideLoading();
+          this.errorHandling(error);
+        });
+    },
+    getTime(value, serverTime) {
+      let time = new Date(serverTime);
+      if (value !== 0) {
+        time = time.setMinutes(time.getMinutes() + value);
+      }
+
+      return new Date(time).toISOString();
     }
   }
 };

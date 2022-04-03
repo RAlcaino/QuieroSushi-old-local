@@ -189,6 +189,14 @@ const mutations = {
       {
         name: "get.delivery.status",
         link: "/get-delivery/{delivery_id}"
+      },
+      {
+        name: "uber.cancel",
+        link: "/cancel-delivery"
+      },
+      {
+        name: "uber.create",
+        link: "/create-delivery"
       }
     ];
   }
