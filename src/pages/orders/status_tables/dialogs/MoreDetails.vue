@@ -257,8 +257,37 @@
                       size="sm"
                       v-close-popup
                       rounded
+                      @click="updateDelivery('msg')"
                       color="green"
                       label="Enviar"
+                    />
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item v-if="orderDetail.delivery_id !== null">
+                <q-item-section avatar>
+                  <q-icon name="attach_money" color="primary" />
+                </q-item-section>
+                <q-item-section style="display: flex; flex-direction: column;">
+                  <div>
+                    <q-input
+                      v-model="tip"
+                      filled
+                      type="number"
+                      hint="Propina para el delivery (CLP)"
+                    />
+                  </div>
+                  <q-item-label
+                    style="display:flex; justify-content: center; margin-top: 10px"
+                  >
+                    <q-btn
+                      size="sm"
+                      v-close-popup
+                      rounded
+                      color="green"
+                      @click="updateDelivery('tip')"
+                      label="Agregar"
                     />
                   </q-item-label>
                 </q-item-section>
@@ -293,6 +322,7 @@ export default {
       this.markers = [];
       this.courier = null;
       this.tab = "one";
+      this.tip = null;
       this.card = !this.card;
       this.orderDetail = data;
       this.deliveryStatus = "";
@@ -319,7 +349,8 @@ export default {
       markers: [],
       apiKey: process.env.API_GOOGLE,
       baseUrl:
-        "https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={apikeyGoogle}"
+        "https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={apikeyGoogle}",
+      tip: null
     };
   },
   methods: {
@@ -462,6 +493,56 @@ export default {
       }
 
       return new Date(time).toISOString();
+    },
+    updateDelivery(type) {
+      this.showLoading();
+      var url = this.$store.getters["routes/getRoute"]("uber.update");
+
+      if (type === "msg") {
+        var data = {
+          delivery_id: this.orderDetail.delivery_id,
+          dropoff_notes: this.msg
+        };
+      } else {
+        var data = {
+          delivery_id: this.orderDetail.delivery_id,
+          tip_by_customer: this.tip
+        };
+      }
+
+      this.$axios
+        .post(url, data, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.kind === "error") {
+            if (response.data.code === "tip_already_recorded") {
+              this.showNotification(
+                "Ya agrego la propina anteriormente",
+                "negative",
+                "error"
+              );
+            }
+          } else {
+            this.bus.$emit("sync-orders");
+            this.showNotification(
+              type === "msg"
+                ? "Mensaje enviado al delivery"
+                : "Propina agregada",
+              "positive",
+              "check"
+            );
+          }
+
+          this.hideLoading();
+          this.card = false;
+        })
+        .catch(error => {
+          this.hideLoading();
+          this.errorHandling(error);
+        });
     }
   }
 };

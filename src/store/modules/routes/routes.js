@@ -197,6 +197,10 @@ const mutations = {
       {
         name: "uber.create",
         link: "/create-delivery"
+      },
+      {
+        name: "uber.update",
+        link: "/update-delivery"
       }
     ];
   }
