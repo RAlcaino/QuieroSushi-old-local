@@ -260,6 +260,7 @@
                       @click="updateDelivery('msg')"
                       color="green"
                       label="Enviar"
+                      :disabled="msg === null || msg === ''"
                     />
                   </q-item-label>
                 </q-item-section>
@@ -288,6 +289,7 @@
                       color="green"
                       @click="updateDelivery('tip')"
                       label="Agregar"
+                      :disabled="tip === null || tip === ''"
                     />
                   </q-item-label>
                 </q-item-section>
