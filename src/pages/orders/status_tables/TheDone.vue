@@ -105,7 +105,10 @@
               <p style="margin:0;font-family:'Roboto'">
                 {{ item.payDetail.userPhone }}
               </p>
-              <p style="margin:0;font-family:'Roboto'">
+              <p
+                style="margin:0;font-family:'Roboto'"
+                v-if="item.es_uber !== 1"
+              >
                 {{ item.payDetail.address.trim() }}.
                 <template v-if="item.payDetail.address2 != ''">
                   <span v-if="item.payDetail.address2.search('dpto') == -1"

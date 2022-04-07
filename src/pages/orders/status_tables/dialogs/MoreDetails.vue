@@ -141,7 +141,7 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label style="font-weight: bold;"
-                    >Estado del delivery:
+                    >Estado del repartidor:
                     <q-icon
                       name="refresh"
                       size="1.3em"
@@ -170,15 +170,41 @@
                   </q-item-label>
                 </q-item-section>
               </q-item>
+
               <q-item
-                v-if="orderDetail.delivery_id !== null && courier !== null"
+                v-if="
+                  orderDetail.delivery_id !== null && deliveryShortStatus !== ''
+                "
+              >
+                <q-item-section avatar>
+                  <q-icon name="phone" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="display: flex;">
+                    <p style="font-weight: bold; margin: 0;">
+                      Télefono de soporte de Uber:
+                    </p>
+                    <p style="margin: 0; margin-left: 6px;">
+                      {{ orderDetail.phone_uber }}
+                    </p>
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item
+                v-if="
+                  orderDetail.delivery_id !== null &&
+                    courier !== null &&
+                    deliveryShortStatus !== 'pending' &&
+                    deliveryShortStatus !== ''
+                "
               >
                 <q-item-section avatar>
                   <q-icon name="location_on" color="primary" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label style="font-weight: bold;"
-                    >Ubicación del delivery:
+                    >Ubicación del repartidor:
                   </q-item-label>
                   <q-item-label v-if="courier !== null">
                     <GmapMap
@@ -202,34 +228,134 @@
                   </q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item v-if="orderDetail.delivery_id !== null">
+
+              <q-item>
+                <q-item-section avatar>
+                  <q-icon name="location_on" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold;"
+                    >Ubicación del repartidor:
+                  </q-item-label>
+                  <q-item-label>
+                    <GmapMap
+                      :center="{
+                        lat: -35.675147,
+                        lng: -71.542969
+                      }"
+                      :zoom="12"
+                      style="width: 100%; height: 226px; border-radius:10px;"
+                    >
+                      <GmapMarker
+                        v-for="(marker, index) in markers"
+                        :key="index"
+                        :position="marker"
+                        :clickable="true"
+                        :icon="{
+                          url: require('../../../../assets/moto.png'),
+                          size: { width: 60, height: 60, f: 'px', b: 'px' },
+                          scaledSize: {
+                            width: 45,
+                            height: 45,
+                            f: 'px',
+                            b: 'px'
+                          }
+                        }"
+                      /> </GmapMap
+                  ></q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item
+                v-if="
+                  orderDetail.delivery_id !== null &&
+                    deliveryShortStatus !== '' &&
+                    (deliveryShortStatus === 'pickup' ||
+                      deliveryShortStatus === 'pickup_complete' ||
+                      deliveryShortStatus === 'dropoff' ||
+                      deliveryShortStatus === 'returned') &&
+                    courier !== null
+                "
+              >
+                <q-item-section avatar>
+                  <q-icon name="face" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="display: flex; flex-direction: column;">
+                    <p style="font-weight: bold; margin: 0;">
+                      Información del repartidor:
+                    </p>
+                    <div style="display: flex; margin-top: 15px;">
+                      <img
+                        style="border-radius: 100%"
+                        width="80px"
+                        :src="courier.img_href"
+                        alt="foto uber"
+                      />
+                      <div style="margin-left: 10px">
+                        <p style="margin: 0; margin-bottom: 3px">
+                          <label style="font-weight: bold;">Nombre: </label
+                          >{{ courier.name }}
+                        </p>
+                        <p style="margin: 0; margin-bottom: 3px">
+                          <label style="font-weight: bold;">Télefono: </label
+                          >{{ courier.phone_number }}
+                        </p>
+                      </div>
+                    </div>
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-if="
+                  orderDetail.delivery_id !== null &&
+                    (deliveryShortStatus === 'pickup' ||
+                      deliveryShortStatus === 'pickup_complete') &&
+                    deliveryShortStatus !== ''
+                "
+              >
                 <q-item-section avatar>
                   <q-icon name="schedule" color="primary" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label style="font-weight: bold;"
-                    >Hora estimada en llegar al local:
-                  </q-item-label>
                   <q-item-label
                     v-if="pickup_eta !== '' && deliveryStatusObject !== {}"
-                    >{{ pickup_eta }}
+                    style="display: flex;"
+                  >
+                    <p style="font-weight: bold; margin: 0;">
+                      Hora estimada en llegar al local:
+                    </p>
+                    <p style="margin: 0; margin-left: 6px;">
+                      {{ pickup_eta.split(" ")[1].slice(0, 5) }}
+                    </p>
                   </q-item-label>
                   <q-item-label v-else>
                     <q-spinner-facebook color="primary" size="2em"
                   /></q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item v-if="orderDetail.delivery_id !== null">
+              <q-item
+                v-if="
+                  orderDetail.delivery_id !== null &&
+                    (deliveryShortStatus === 'dropoff' ||
+                      deliveryShortStatus === 'returned') &&
+                    deliveryShortStatus !== ''
+                "
+              >
                 <q-item-section avatar>
                   <q-icon name="schedule" color="primary" />
                 </q-item-section>
-                <q-item-section>
-                  <q-item-label style="font-weight: bold;"
-                    >Hora estimada en llegar al destino:
-                  </q-item-label>
+                <q-item-section style="display: flex;">
                   <q-item-label
                     v-if="dropoff_eta !== '' && deliveryStatusObject !== {}"
-                    >{{ dropoff_eta }}
+                    style="display: flex;"
+                  >
+                    <p style="font-weight: bold; margin: 0;">
+                      Hora estimada en llegar al destino:
+                    </p>
+                    <p style="margin: 0; margin-left: 6px;">
+                      {{ dropoff_eta.split(" ")[1].slice(0, 5) }}
+                    </p>
                   </q-item-label>
                   <q-item-label v-else>
                     <q-spinner-facebook color="primary" size="2em"
@@ -237,7 +363,13 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="orderDetail.delivery_id !== null">
+              <q-item
+                v-if="
+                  orderDetail.delivery_id !== null &&
+                    deliveryShortStatus !== 'pending' &&
+                    deliveryShortStatus !== ''
+                "
+              >
                 <q-item-section avatar>
                   <q-icon name="message" color="primary" />
                 </q-item-section>
@@ -266,7 +398,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="orderDetail.delivery_id !== null">
+              <!--<q-item v-if="orderDetail.delivery_id !== null">
                 <q-item-section avatar>
                   <q-icon name="attach_money" color="primary" />
                 </q-item-section>
@@ -293,7 +425,7 @@
                     />
                   </q-item-label>
                 </q-item-section>
-              </q-item>
+              </q-item>-->
             </q-list>
           </q-tab-panel>
         </q-tab-panels>
@@ -391,31 +523,27 @@ export default {
     },
     setDeliveryStatus(status) {
       if (status === "pending") {
-        this.deliveryStatus = "La asignación del repartidor aún esta pendiente";
+        this.deliveryStatus = "Estamos buscando un repartidor...";
       }
       if (status === "pickup") {
-        this.deliveryStatus =
-          "El repartidor está en camino al punto de recolección";
+        this.deliveryStatus = " El repartidor llegará al local en 15 minutos";
       }
       if (status === "pickup_complete") {
-        this.deliveryStatus =
-          "el repartidor recibió la orden y está en camino al punto de entrega";
+        this.deliveryStatus = " El repartidor llegará al local en 15 minutos";
       }
       if (status === "dropoff") {
-        this.deliveryStatus =
-          "El repartidor ha dejado la orden en el punto de entrega";
+        this.deliveryStatus = "El pedido llegará a destino en 21 minutos";
       }
       if (status === "delivered") {
-        this.deliveryStatus = "El repartidor ha entregado el pedido";
-      }
-      if (status === "ongoing") {
-        this.deliveryStatus = "El repartidor va en camino";
+        this.deliveryStatus = `El pedido fue recibido a las ${this.orderDetail.confirmationTimestamp
+          .split(" ")[1]
+          .slice(0, 5)}`;
       }
       if (status === "returned") {
-        this.deliveryStatus = "El repartidor se ha regresado";
+        this.deliveryStatus = "El pedido llegará de vuelta al local";
       }
       if (status === "canceled") {
-        this.deliveryStatus = "El repartidor ha cancelado el envio de la orden";
+        this.deliveryStatus = "El pedido fue cancelado";
       }
     },
     goToTrackingUrl(url) {
@@ -451,10 +579,10 @@ export default {
     getMarkers() {
       this.markers = [];
 
-      if (this.courier !== null) {
+      if (this.courier === null) {
         let marker = {
-          lat: this.courier.location.lat,
-          lng: this.courier.location.lng
+          lat: -35.675147,
+          lng: -71.542969
         };
 
         this.markers.push(marker);
