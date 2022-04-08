@@ -370,6 +370,7 @@ export default {
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-confirm", data => {
+      this.$store.commit("auth/setRefreshOrders", false);
       this.card = !this.card;
       this.orderDetail = data;
       this.finalDateManual = this.orderDetail.requestedTime;
@@ -508,6 +509,7 @@ export default {
       this.close();
     },
     close() {
+      this.$store.commit("auth/setRefreshOrders", true);
       this.card = !this.card;
       this.finalDateManual = null;
       this.tab = "one";

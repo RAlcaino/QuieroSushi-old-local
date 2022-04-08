@@ -7,6 +7,7 @@ const state = {
     currentMinute: null,
     currentSecond: null
   },
+  refreshOrders: true,
   user: {
     id: 0,
     email: "",
@@ -114,6 +115,9 @@ const mutations = {
   },
   setCurrentLocal(state, payload) {
     state.currentLocal = payload;
+  },
+  setRefreshOrders(state, payload) {
+    state.refreshOrders = payload;
   },
   setInstallPromptEvent(state, payload) {
     state.installPromptEvent = payload;
@@ -280,6 +284,9 @@ const getters = {
   },
   getUserNotifications(state) {
     return state.user.notifications;
+  },
+  getRefreshOrders(state) {
+    return state.refreshOrders;
   }
 };
 

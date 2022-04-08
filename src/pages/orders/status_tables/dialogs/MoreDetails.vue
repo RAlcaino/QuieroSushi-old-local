@@ -185,7 +185,7 @@
                       Télefono de soporte de Uber:
                     </p>
                     <p style="margin: 0; margin-left: 6px;">
-                      {{ orderDetail.phone_uber }}
+                      +56-800231021
                     </p>
                   </q-item-label>
                 </q-item-section>
@@ -212,37 +212,6 @@
                         lat: courier.location.lat,
                         lng: courier.location.lng
                       }"
-                      :zoom="18"
-                      map-type-id="terrain"
-                      style="width: 100%; height: 226px; border-radius:10px;"
-                    >
-                      <GmapMarker
-                        v-for="(marker, index) in markers"
-                        :key="index"
-                        :position="marker"
-                        :clickable="true"
-                      /> </GmapMap
-                  ></q-item-label>
-                  <q-item-label v-else>
-                    <q-spinner-facebook color="primary" size="2em" />
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item>
-                <q-item-section avatar>
-                  <q-icon name="location_on" color="primary" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label style="font-weight: bold;"
-                    >Ubicación del repartidor:
-                  </q-item-label>
-                  <q-item-label>
-                    <GmapMap
-                      :center="{
-                        lat: -35.675147,
-                        lng: -71.542969
-                      }"
                       :zoom="12"
                       style="width: 100%; height: 226px; border-radius:10px;"
                     >
@@ -252,8 +221,13 @@
                         :position="marker"
                         :clickable="true"
                         :icon="{
-                          url: require('../../../../assets/moto.png'),
-                          size: { width: 60, height: 60, f: 'px', b: 'px' },
+                          url: require(`../../../../assets/${marker.icon}`),
+                          size: {
+                            width: 60,
+                            height: 60,
+                            f: 'px',
+                            b: 'px'
+                          },
                           scaledSize: {
                             width: 45,
                             height: 45,
@@ -263,6 +237,9 @@
                         }"
                       /> </GmapMap
                   ></q-item-label>
+                  <q-item-label v-else>
+                    <q-spinner-facebook color="primary" size="2em" />
+                  </q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -465,6 +442,16 @@ export default {
       this.dropoff_eta = "";
       this.deliveryShortStatus = "";
       this.deliveryStatusObject = {};
+      this.dataLocal = {
+        lat: null,
+        lng: null
+      };
+      this.dataUser = {
+        lat: null,
+        lng: null
+      };
+
+      this.getLocations();
     });
   },
   data() {
@@ -484,7 +471,15 @@ export default {
       apiKey: process.env.API_GOOGLE,
       baseUrl:
         "https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={apikeyGoogle}",
-      tip: null
+      tip: null,
+      dataLocal: {
+        lat: null,
+        lng: null
+      },
+      dataUser: {
+        lat: null,
+        lng: null
+      }
     };
   },
   methods: {
@@ -579,13 +574,30 @@ export default {
     getMarkers() {
       this.markers = [];
 
-      if (this.courier === null) {
-        let marker = {
-          lat: -35.675147,
-          lng: -71.542969
+      if (this.courier !== null) {
+        let markerCourier = {
+          lat: this.courier.location.lat,
+          lng: this.courier.location.lng,
+          icon: "moto-copy.png"
         };
 
-        this.markers.push(marker);
+        this.markers.push(markerCourier);
+
+        let markerCustomer = {
+          lat: this.dataUser.lat,
+          lng: this.dataUser.lng,
+          icon: "home-copy.png"
+        };
+
+        this.markers.push(markerCustomer);
+
+        let markerLocal = {
+          lat: this.dataLocal.lat,
+          lng: this.dataLocallng,
+          icon: "store-copy.png"
+        };
+
+        this.markers.push(markerLocal);
       }
     },
     createDelivery() {
@@ -671,6 +683,40 @@ export default {
         })
         .catch(error => {
           this.hideLoading();
+          this.errorHandling(error);
+        });
+    },
+
+    getLocations() {
+      var addressLocal = `${this.orderDetail.local.address}, ${this.orderDetail.local.commune}`;
+      var addressCustomer = `${this.orderDetail.payDetail.address}, ${this.orderDetail.payDetail.userCommune}`;
+
+      var finalAddressLocal = addressLocal.trim().replace(/ /g, "+");
+      var url = this.baseUrl.replace("{address}", finalAddressLocal);
+      url = url.replace("{apikeyGoogle}", this.apiKey);
+
+      var finalAddressCustomer = addressCustomer.trim().replace(/ /g, "+");
+      var url2 = this.baseUrl.replace("{address}", finalAddressCustomer);
+      url2 = url2.replace("{apikeyGoogle}", this.apiKey);
+
+      this.$axios
+        .get(url)
+        .then(response => {
+          let location = response.data.results[0].geometry.location;
+          this.dataLocal.lat = location.lat;
+          this.dataLocal.lng = location.lng;
+          this.$axios
+            .get(url2)
+            .then(response => {
+              let location = response.data.results[0].geometry.location;
+              this.dataUser.lat = location.lat;
+              this.dataUser.lng = location.lng;
+            })
+            .catch(error => {
+              this.errorHandling(error);
+            });
+        })
+        .catch(error => {
           this.errorHandling(error);
         });
     }
