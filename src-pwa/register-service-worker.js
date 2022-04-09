@@ -25,7 +25,7 @@ register(process.env.SERVICE_WORKER_FILE, {
   },
 
   registered(registration) {
-    console.log("Service worker has been registered."); 
+    console.log("Service worker has been registered.");
     loading.hide();
   },
 
@@ -33,8 +33,9 @@ register(process.env.SERVICE_WORKER_FILE, {
     console.log("Content has been cached for offline use.");
   },
 
-  updatefound (registration) {
-    console.log('New content is downloading!');
+  updatefound(registration) {
+    registration.update();
+    console.log("New content is downloading!");
     loading.show({
       spinner: QSpinnerGears,
       message: "Espere un momento..."

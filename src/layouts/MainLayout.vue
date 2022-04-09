@@ -621,7 +621,6 @@ export default {
     }
     this.privateChannel = this.Echo.channel(this.channelName);
     this.privateChannelAlt = this.Echo2.channel(this.channelNameAlt);
-    this.privateChannelAlt2 = this.Echo2.channel("Private-notificacion--1gr");
     this.privateChannelSync = this.Echo2.channel("Private-Notificacion");
 
     this.listenEvent();
@@ -662,7 +661,6 @@ export default {
       prod: null,
       privateChannel: null,
       privateChannelAlt: null,
-      privateChannelAlt2: null,
       privateChannelSync: null,
       channelName: "",
       channelNameAlt: "",
@@ -712,9 +710,6 @@ export default {
       this.optionsAvailable = [];
       this.privateChannel = this.Echo.leaveChannel(this.channelName);
       this.privateChannelAlt = this.Echo2.leaveChannel(this.channelNameAlt);
-      this.privateChannelAlt2 = this.Echo2.leaveChannel(
-        "Private-notificacion--1gr"
-      );
       this.privateChannelSync = this.Echo2.leaveChannel("Private-Notificacion");
       this.channelName = "";
       this.channelNameAlt = "";
@@ -757,13 +752,7 @@ export default {
           this.bus.$emit("modal-order-canceled", data);
         } else if (data.tipo === "Notificacion-Usuario") {
           this.getNotifications(true);
-        } else if (data.tipo === "Actualizar-Pedidor") {
-          this.bus.$emit("sync-orders");
-        }
-      });
-
-      this.privateChannelAlt2.listen(".Notificacion", data => {
-        if (
+        } else if (
           data.tipo === "Actualizar-Pedidos" &&
           this.$store.getters["auth/getRefreshOrders"]
         ) {

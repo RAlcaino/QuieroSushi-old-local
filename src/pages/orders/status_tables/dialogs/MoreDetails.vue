@@ -3,8 +3,9 @@
     v-model="card"
     transition-show="slide-down"
     transition-hide="slide-up"
+    style="width: 800px;"
   >
-    <q-card class="my-card" style="width: 650px; border-radius:10px;">
+    <q-card class="my-card" style="width: 100%; border-radius:10px;">
       <q-card-section class="q-pt-none" style="padding-bottom:0">
         <q-tabs v-model="tab" class="text-blacklight">
           <q-tab
@@ -22,7 +23,12 @@
             v-if="orderDetail.es_uber === 1 && orderDetail.delivery_id !== null"
             label="Uber"
             name="two"
-            @click="getStatus()"
+            @click="
+              () => {
+                getStatus();
+                getLocations();
+              }
+            "
           />
         </q-tabs>
 
@@ -173,29 +179,10 @@
 
               <q-item
                 v-if="
-                  orderDetail.delivery_id !== null && deliveryShortStatus !== ''
-                "
-              >
-                <q-item-section avatar>
-                  <q-icon name="phone" color="primary" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label style="display: flex;">
-                    <p style="font-weight: bold; margin: 0;">
-                      Télefono de soporte de Uber:
-                    </p>
-                    <p style="margin: 0; margin-left: 6px;">
-                      +56-800231021
-                    </p>
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item
-                v-if="
                   orderDetail.delivery_id !== null &&
                     courier !== null &&
                     deliveryShortStatus !== 'pending' &&
+                    deliveryShortStatus !== 'delivered' &&
                     deliveryShortStatus !== ''
                 "
               >
@@ -212,7 +199,7 @@
                         lat: courier.location.lat,
                         lng: courier.location.lng
                       }"
-                      :zoom="12"
+                      :zoom="18"
                       style="width: 100%; height: 226px; border-radius:10px;"
                     >
                       <GmapMarker
@@ -223,14 +210,14 @@
                         :icon="{
                           url: require(`../../../../assets/${marker.icon}`),
                           size: {
-                            width: 60,
-                            height: 60,
+                            width: 30,
+                            height: 30,
                             f: 'px',
                             b: 'px'
                           },
                           scaledSize: {
-                            width: 45,
-                            height: 45,
+                            width: 30,
+                            height: 30,
                             f: 'px',
                             b: 'px'
                           }
@@ -344,6 +331,7 @@
                 v-if="
                   orderDetail.delivery_id !== null &&
                     deliveryShortStatus !== 'pending' &&
+                    deliveryShortStatus !== 'delivered' &&
                     deliveryShortStatus !== ''
                 "
               >
@@ -371,6 +359,26 @@
                       label="Enviar"
                       :disabled="msg === null || msg === ''"
                     />
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item
+                v-if="
+                  orderDetail.delivery_id !== null && deliveryShortStatus !== ''
+                "
+              >
+                <q-item-section avatar>
+                  <q-icon name="phone" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="display: flex;">
+                    <p style="font-weight: bold; margin: 0;">
+                      Télefono de soporte de Uber:
+                    </p>
+                    <p style="margin: 0; margin-left: 6px;">
+                      +56-800231021
+                    </p>
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -450,8 +458,6 @@ export default {
         lat: null,
         lng: null
       };
-
-      this.getLocations();
     });
   },
   data() {
@@ -500,7 +506,6 @@ export default {
             }
           })
           .then(response => {
-            this.setDeliveryStatus(response.data.status);
             this.deliveryShortStatus = response.data.status;
             this.pickup_eta = this.formatDate(response.data.pickup_eta);
             this.dropoff_eta = this.formatDate(response.data.dropoff_eta);
@@ -510,6 +515,7 @@ export default {
                 ? null
                 : { ...response.data.courier };
             this.getMarkers();
+            this.setDeliveryStatus(response.data.status);
           })
           .catch(error => {
             this.errorHandling(error);
@@ -521,18 +527,24 @@ export default {
         this.deliveryStatus = "Estamos buscando un repartidor...";
       }
       if (status === "pickup") {
-        this.deliveryStatus = " El repartidor llegará al local en 15 minutos";
+        this.deliveryStatus = `El repartidor llegará al local en ${this.getMinutesDiff(
+          this.pickup_eta
+        )}`;
       }
       if (status === "pickup_complete") {
-        this.deliveryStatus = " El repartidor llegará al local en 15 minutos";
+        this.deliveryStatus = `El repartidor llegará al local en ${this.getMinutesDiff(
+          this.pickup_eta
+        )}`;
       }
       if (status === "dropoff") {
-        this.deliveryStatus = "El pedido llegará a destino en 21 minutos";
+        this.deliveryStatus = `El pedido llegará a destino en ${this.getMinutesDiff(
+          this.dropoff_eta
+        )}`;
       }
       if (status === "delivered") {
-        this.deliveryStatus = `El pedido fue recibido a las ${this.orderDetail.confirmationTimestamp
+        this.deliveryStatus = `El pedido fue recibido a las ${this.dropoff_eta
           .split(" ")[1]
-          .slice(0, 5)}`;
+          .slice(0, 5)} `;
       }
       if (status === "returned") {
         this.deliveryStatus = "El pedido llegará de vuelta al local";
@@ -554,10 +566,6 @@ export default {
         date.getMinutes() < 10
           ? ":0" + date.getMinutes()
           : ":" + date.getMinutes(); // get minutes
-      time +=
-        date.getSeconds() < 10
-          ? ":0" + date.getSeconds()
-          : ":" + date.getSeconds(); // get seconds
 
       timestamp =
         date.getFullYear() +
@@ -593,7 +601,7 @@ export default {
 
         let markerLocal = {
           lat: this.dataLocal.lat,
-          lng: this.dataLocallng,
+          lng: this.dataLocal.lng,
           icon: "store-copy.png"
         };
 
@@ -719,6 +727,23 @@ export default {
         .catch(error => {
           this.errorHandling(error);
         });
+    },
+
+    getMinutesDiff(time) {
+      let santiagoTime = new Date().toLocaleString("en-US", {
+        timeZone: "America/Santiago"
+      });
+      let serverTime = new Date(santiagoTime);
+      let endTime = new Date(time);
+
+      let diffMs = endTime.getTime() - serverTime.getTime();
+      let diffMins = Math.round(Math.round(diffMs / 60000)); // minutes
+
+      if (diffMins <= 1) {
+        return `menos de 1 minuto`;
+      } else {
+        return `${diffMins} minutos`;
+      }
     }
   }
 };

@@ -67,7 +67,34 @@ export default {
     };
   },
   methods: {
-    DoCancel() {
+    async getStatus() {
+      if (this.orderDetail.delivery_id !== null) {
+        var url = this.$store.getters["routes/getRoute"](
+          "get.delivery.status",
+          {
+            delivery_id: this.orderDetail.delivery_id
+            //delivery_id: "del_gALMXHSKQp2wlI1cVWl9Gw"
+          }
+        );
+        let resp = await this.$axios.get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        });
+
+        return resp;
+      }
+    },
+    async DoCancel() {
+      let resp = await this.getStatus();
+      if (resp.data.status === "delivered") {
+        this.showNotification(
+          "El pedido ya fue entregado por Uber",
+          "negative",
+          "error"
+        );
+        return;
+      }
       if (this.cancellationReason === "") {
         this.showNotification(
           "El motivo de anulación es obligatorio",

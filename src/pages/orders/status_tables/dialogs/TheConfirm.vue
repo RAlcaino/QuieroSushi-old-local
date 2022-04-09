@@ -443,6 +443,14 @@ export default {
   },
   methods: {
     confirm() {
+      if (this.orderDetail.es_uber === 1 && this.preparationTime < 10) {
+        this.showNotification(
+          "El tiempo de preparación debe ser de al menos 10 minutos",
+          "negative",
+          "error"
+        );
+        return;
+      }
       let pickup_ready_dt = new Date(
         this.tab === "one" ? this.finalDateDetail : this.finalDateManual
       );
