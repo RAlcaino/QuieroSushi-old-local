@@ -494,7 +494,7 @@ export default {
             if (response.data.status === "success") {
               this.hideLoading();
               this.bus.$emit("sync-orders");
-              if (response.data.result.uber !== undefined) {
+              if (response.data.result.uber !== null) {
                 let { code } = response.data.result.uber;
                 if (code !== undefined) {
                   this.showNotification(

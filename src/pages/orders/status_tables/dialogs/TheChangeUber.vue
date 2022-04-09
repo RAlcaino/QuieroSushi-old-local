@@ -8,14 +8,14 @@
     <q-card style="width: 450px; border-radius:10px">
       <q-card-section class="column items-center">
         <span
-          style="font-size:15px; margin-bottom: 15px; font-weight: 500;"
+          style="font-size:16px; margin-bottom: 15px; font-weight: 500;"
           class="q-ml-sm"
         >
           ¿A que hora quieres que llegue el Uber?
         </span>
 
         <q-input
-          v-if="date !== null"
+          v-if="date !== null && deliveryStatus !== 'delivered'"
           filled
           v-model="date"
           readonly
@@ -57,6 +57,14 @@
           </template>
         </q-input>
 
+        <p
+          style="font-size:15px; margin-bottom: 15px; text-align: center"
+          class="q-ml-sm"
+          v-if="deliveryStatus === 'delivered'"
+        >
+          El pedido ya fue entregado
+        </p>
+
         <q-item-label v-if="date === null">
           <q-spinner-facebook color="primary" size="2em"
         /></q-item-label>
@@ -69,6 +77,7 @@
           rounded
           label="Cambiar"
           color="green"
+          :disabled="deliveryStatus === 'delivered'"
         />
         <q-btn
           size="sm"
@@ -101,6 +110,7 @@ export default {
       this.orderDetail = { ...row };
       this.card = true;
       this.orderId = row.id;
+      this.deliveryStatus = "delivered";
       this.getStatus();
     });
   },
@@ -118,7 +128,8 @@ export default {
       option: { value: 10, label: "10 minutos" },
       pickup_ready: null,
       timePickupReady: null,
-      date: null
+      date: null,
+      deliveryStatus: "delivered"
     };
   },
   methods: {
@@ -187,7 +198,7 @@ export default {
       return dateISO.toISOString();
     },
     getStatus() {
-      this.deliveryStatus = "";
+      this.deliveryStatus = "delivered";
       if (this.orderDetail.delivery_id !== null) {
         var url = this.$store.getters["routes/getRoute"](
           "get.delivery.status",
@@ -205,6 +216,7 @@ export default {
             this.date = this.formatDate(response.data.pickup_ready);
             this.timePickupReady = this.formatDate(response.data.pickup_ready);
             this.pickup_ready = response.data.pickup_ready;
+            this.deliveryStatus = response.data.status;
           })
           .catch(error => {
             this.errorHandling(error);

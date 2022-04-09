@@ -86,21 +86,26 @@ export default {
       }
     },
     async DoCancel() {
+      this.showLoading();
       let resp = await this.getStatus();
-      if (resp.data.status === "delivered") {
-        this.showNotification(
-          "El pedido ya fue entregado por Uber",
-          "negative",
-          "error"
-        );
-        return;
-      }
       if (this.cancellationReason === "") {
         this.showNotification(
           "El motivo de anulación es obligatorio",
           "negative",
           "error"
         );
+
+        this.hideLoading();
+        return;
+      }
+      if (resp.data.status === "delivered") {
+        this.showNotification(
+          "El pedido ya fue entregado por Uber",
+          "negative",
+          "error"
+        );
+
+        this.hideLoading();
         return;
       }
       let data = {
@@ -108,7 +113,6 @@ export default {
         canceledTimestamp: this.getServerTime(),
         cancellationReason: this.cancellationReason
       };
-      this.showLoading();
 
       if (!this.prod) {
         setTimeout(() => {
