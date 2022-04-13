@@ -183,6 +183,7 @@
                     courier !== null &&
                     deliveryShortStatus !== 'pending' &&
                     deliveryShortStatus !== 'delivered' &&
+                    deliveryShortStatus !== 'returned' &&
                     deliveryShortStatus !== ''
                 "
               >
@@ -332,6 +333,7 @@
                   orderDetail.delivery_id !== null &&
                     deliveryShortStatus !== 'pending' &&
                     deliveryShortStatus !== 'delivered' &&
+                    deliveryShortStatus !== 'canceled' &&
                     deliveryShortStatus !== ''
                 "
               >
@@ -378,6 +380,20 @@
                     </p>
                     <p style="margin: 0; margin-left: 6px;">
                       +56-800231021
+                    </p>
+                  </q-item-label>
+                  <q-item-label
+                    style="display: flex;"
+                    v-if="
+                      orderDetail.uuid !== null &&
+                        orderDetail.uuid !== undefined
+                    "
+                  >
+                    <p style="font-weight: bold; margin: 0;">
+                      uuid:
+                    </p>
+                    <p style="margin: 0; margin-left: 6px;">
+                      {{ orderDetail.uuid }}
                     </p>
                   </q-item-label>
                 </q-item-section>

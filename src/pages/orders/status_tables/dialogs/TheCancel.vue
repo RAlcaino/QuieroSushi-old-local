@@ -88,6 +88,18 @@ export default {
     async DoCancel() {
       this.showLoading();
       let resp = await this.getStatus();
+
+      if (resp === undefined) {
+        this.showNotification(
+          "El pedido no tiene un delivery asignado. Pedido inconsistente",
+          "negative",
+          "error"
+        );
+
+        this.hideLoading();
+        return;
+      }
+
       if (this.cancellationReason === "") {
         this.showNotification(
           "El motivo de anulación es obligatorio",
