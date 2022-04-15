@@ -386,7 +386,8 @@
                     style="display: flex;"
                     v-if="
                       orderDetail.uuid !== null &&
-                        orderDetail.uuid !== undefined
+                        orderDetail.uuid !== undefined &&
+                        $store.getters['auth/getDataUser'].role === 'God'
                     "
                   >
                     <p style="font-weight: bold; margin: 0;">
