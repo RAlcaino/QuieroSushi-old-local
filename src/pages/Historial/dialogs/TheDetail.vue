@@ -131,6 +131,7 @@ export default {
         .then(response => {
           if (response.data.status === "success") {
             this.data = response.data.result;
+            this.dataFormat();
             this.loading = false;
           } else {
             this.showNotification(response.data.message, "negative", "error");
@@ -147,6 +148,37 @@ export default {
       this.loading = true;
       this.week = "";
       this.bus.$emit("reset-row-bottom");
+    },
+    dataFormat() {
+      let cancelledOrdersFormated = [];
+      let confirmedOrdersFormated = [];
+      let generalData = { ...this.data.generalData };
+      this.data.cancelledOrdersData.map(item => {
+        if (item.es_uber === 1) {
+          cancelledOrdersFormated.push({ ...item, costo_despacho: "UBER" });
+        } else {
+          cancelledOrdersFormated.push({
+            ...item,
+            costo_despacho: +item.costo_despacho
+          });
+        }
+      });
+      this.data.confirmedOrdersData.map(item => {
+        if (item.es_uber === 1) {
+          confirmedOrdersFormated.push({ ...item, costo_despacho: "UBER" });
+        } else {
+          confirmedOrdersFormated.push({
+            ...item,
+            costo_despacho: +item.costo_despacho
+          });
+        }
+      });
+
+      this.data = {
+        cancelledOrdersData: cancelledOrdersFormated,
+        confirmedOrdersData: confirmedOrdersFormated,
+        generalData
+      };
     }
   }
 };

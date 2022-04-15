@@ -26,7 +26,11 @@
                 col.name === 'descuento_qs'
             "
           >
-            ${{ formatNumber(Math.round(col.value)) }}
+            {{
+              col.value === "UBER"
+                ? "UBER"
+                : `$${formatNumber(Math.round(col.value))}`
+            }}
           </template>
           <template v-else>
             {{ col.value }}

@@ -43,19 +43,19 @@ export default {
         },
         {
           name: "comision_online",
-          title: "Comisión Pago Online (3% + IVA): ",
+          title: "Comisión Pago Online: ",
           value: Math.round(this.data.generalData.comision_online),
           flag: false
         },
         {
           name: "comision_online_anuladas",
-          title: "Comisión Pago Online Ventas Anuladas (3% + IVA): ",
+          title: "Comisión Pago Online Ventas Anuladas: ",
           value: Math.round(this.data.generalData.onlinePayCancelledComission),
           flag: false
         },
         {
           name: "devolucion_ventas_anuladas",
-          title: "Servicio Devolución Ventas Anuladas (300 + IVA):",
+          title: "Servicio Devolución Ventas Anuladas:",
           value: Math.round(this.data.generalData.serviceReturnCancelledOrders),
           flag: false
         },

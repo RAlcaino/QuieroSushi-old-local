@@ -676,9 +676,13 @@ export default {
           localName: `${item.local.name}, ${item.local.commune} `,
           customerName: item.payDetail.user,
           saleType: item.orderType,
-          subtotal: this.formatNumber(item.subtotal),
-          delivery: this.formatNumber(item.deliveryCost),
-          total: this.formatNumber(item.total),
+          subtotal: `$${this.formatNumber(item.subtotal)}`,
+          delivery: `${
+            item.es_uber === 1
+              ? "UBER"
+              : `$${this.formatNumber(item.deliveryCost)}`
+          }`,
+          total: `$${this.formatNumber(item.total)}`,
           date: this.getProperlyDate(item)
         };
         this.data.push(row);
