@@ -89,18 +89,7 @@ export default {
       this.showLoading();
       let resp = await this.getStatus();
 
-      if (resp === undefined) {
-        this.showNotification(
-          "El pedido no tiene un delivery asignado. Pedido inconsistente",
-          "negative",
-          "error"
-        );
-
-        this.hideLoading();
-        return;
-      }
-
-      if (this.cancellationReason === "") {
+      if (this.cancellationReason.trim() === "") {
         this.showNotification(
           "El motivo de anulación es obligatorio",
           "negative",
@@ -110,15 +99,18 @@ export default {
         this.hideLoading();
         return;
       }
-      if (resp.data.status === "delivered") {
-        this.showNotification(
-          "El pedido ya fue entregado por Uber",
-          "negative",
-          "error"
-        );
 
-        this.hideLoading();
-        return;
+      if (resp !== undefined) {
+        if (resp.data.status === "delivered") {
+          this.showNotification(
+            "El pedido ya fue entregado por Uber",
+            "negative",
+            "error"
+          );
+
+          this.hideLoading();
+          return;
+        }
       }
       let data = {
         orderID: this.orderId,
@@ -143,7 +135,15 @@ export default {
             if (response.data.status === "success") {
               this.hideLoading();
               if (this.mode === "orders") {
-                this.cancelDelivery();
+                if (resp !== undefined) {
+                  if (resp.data.status !== "canceled") {
+                    this.cancelDelivery();
+                  }
+                } else {
+                  this.bus.$emit("sync-orders");
+                  this.hideLoading();
+                  this.card = false;
+                }
               } else {
                 this.bus.$emit("sync-page-after-refund");
               }
