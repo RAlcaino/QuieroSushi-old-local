@@ -15,7 +15,11 @@
         </span>
 
         <q-input
-          v-if="date !== null && deliveryStatus !== 'delivered'"
+          v-if="
+            date !== null &&
+              deliveryStatus !== 'delivered' &&
+              deliveryStatus !== 'canceled'
+          "
           filled
           v-model="date"
           readonly
@@ -47,7 +51,7 @@
                 transition-show="scale"
                 transition-hide="scale"
               >
-                <q-time v-model="date" mask="YYYY-MM-DD HH:mm" format24h>
+                <q-time v-model="date" mask="YYYY-MM-DD HH:mm">
                   <div class="row items-center justify-end">
                     <q-btn v-close-popup label="Cerrar" color="primary" flat />
                   </div>
@@ -57,13 +61,23 @@
           </template>
         </q-input>
 
-        <p
-          style="font-size:15px; margin-bottom: 15px; text-align: center"
-          class="q-ml-sm"
-          v-if="deliveryStatus === 'delivered'"
-        >
-          El pedido ya fue entregado
-        </p>
+        <div v-if="deliveryStatusObject !== {}">
+          <p
+            style="font-size:15px; margin-bottom: 15px; text-align: center"
+            class="q-ml-sm"
+            v-if="deliveryStatus === 'delivered'"
+          >
+            El pedido ya fue entregado
+          </p>
+
+          <p
+            style="font-size:15px; margin-bottom: 15px; text-align: center"
+            class="q-ml-sm"
+            v-if="deliveryStatus === 'canceled'"
+          >
+            El pedido ya fue cancelado
+          </p>
+        </div>
 
         <q-item-label v-if="date === null">
           <q-spinner-facebook color="primary" size="2em"
@@ -77,7 +91,10 @@
           rounded
           label="Cambiar"
           color="green"
-          :disabled="deliveryStatus === 'delivered'"
+          :disabled="
+            deliveryStatusObject !== {} &&
+              (deliveryStatus === 'delivered' || deliveryStatus === 'canceled')
+          "
         />
         <q-btn
           size="sm"
@@ -110,7 +127,8 @@ export default {
       this.orderDetail = { ...row };
       this.card = true;
       this.orderId = row.id;
-      this.deliveryStatus = "delivered";
+      this.deliveryStatus = "";
+      this.deliveryStatusObject = {};
       this.getStatus();
     });
   },
@@ -129,7 +147,8 @@ export default {
       pickup_ready: null,
       timePickupReady: null,
       date: null,
-      deliveryStatus: "delivered"
+      deliveryStatus: "",
+      deliveryStatusObject: {}
     };
   },
   methods: {
@@ -198,7 +217,6 @@ export default {
       return dateISO.toISOString();
     },
     getStatus() {
-      this.deliveryStatus = "delivered";
       if (this.orderDetail.delivery_id !== null) {
         var url = this.$store.getters["routes/getRoute"](
           "get.delivery.status",
@@ -217,6 +235,7 @@ export default {
             this.timePickupReady = this.formatDate(response.data.pickup_ready);
             this.pickup_ready = response.data.pickup_ready;
             this.deliveryStatus = response.data.status;
+            this.deliveryStatusObject = { ...response.data };
           })
           .catch(error => {
             this.errorHandling(error);

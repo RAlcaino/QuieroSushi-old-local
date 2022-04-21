@@ -148,7 +148,7 @@
                 style="font-size:22px; padding-bottom:5px"
                 class="i-icon"
               /><strong
-                >Hora Solicitada: {{ item.requestedTime.split(" ")[1] }}</strong
+                >Hora Solicitada: {{ item.requestedTime.split(" ")[1].slice(0,5)  }}</strong
               >
             </div>
             <div

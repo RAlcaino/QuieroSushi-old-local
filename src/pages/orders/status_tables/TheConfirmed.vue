@@ -150,7 +150,7 @@
                 style="font-size:22px; padding-bottom:5px"
                 class="i-icon"
               /><strong
-                >Hora Prometida: {{ item.kitchenTime.split(" ")[1] }}</strong
+                >Hora Prometida: {{ item.kitchenTime.split(" ")[1].slice(0,5) }}</strong
               >
             </div>
           </q-card-section>

@@ -12,7 +12,7 @@ import $ from "jquery";
 export default {
   name: "App",
   created() {
-    import(`quasar/lang/es`).then(language => {
+    import(`src/utils/lang/es`).then(language => {
       this.$q.lang.set(language.default);
     });
     this.$store.commit("routes/setLinks");
