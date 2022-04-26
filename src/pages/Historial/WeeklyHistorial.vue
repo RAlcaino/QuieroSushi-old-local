@@ -6,6 +6,7 @@
     :toolbar="true"
   >
     <the-detail></the-detail>
+    <modal-uber :parentPayProcess="payProcess"></modal-uber>
     <div class="row no-wrap justify-end q__select__wh">
       <q-select
         outlined
@@ -62,7 +63,7 @@
                     rounded
                     size="sm"
                     style="margin-right:5px"
-                    @click="payProcess(props)"
+                    @click="openEmailConfirmation(props)"
                     label="Pagar Online"
                   >
                     <!--<q-tooltip>
@@ -122,7 +123,7 @@
                       <q-list style="min-width: 100px">
                         <q-item
                           clickable
-                          @click="payProcess(props)"
+                          @click="openEmailConfirmation(props)"
                           v-close-popup
                           v-if="
                             props.row.fecha_pago === '0000-00-00 00:00:00' &&
@@ -194,8 +195,9 @@
 <script>
 import BasePage from "src/components/bases/BasePage.vue";
 import TheDetail from "./dialogs/TheDetail.vue";
+import ModalUber from "src/components/modals/ModalUber.vue";
 export default {
-  components: { BasePage, TheDetail },
+  components: { BasePage, TheDetail, ModalUber },
   inject: [
     "showNotification",
     "showLoading",
@@ -401,6 +403,11 @@ export default {
       this.bus.$emit("scrollTopPage");
       this.sync();
     },
+
+    openEmailConfirmation(props) {
+      this.bus.$emit("modal-email-confirmation", props);
+    },
+
     payProcess(props) {
       this.showLoading();
       var data = {
@@ -408,7 +415,8 @@ export default {
         id_postpago: props.row.id,
         payed_amount: Math.round(props.row.saldo_a_pagar),
         id_local: props.row.local.id_local,
-        domain: window.location.origin
+        domain: window.location.origin,
+        email: props.email
       };
 
       var url = `${this.$store.getters["routes/getRoute"]("weekly.payment")}`;
@@ -429,7 +437,17 @@ export default {
           }
         })
         .catch(error => {
-          this.errorHandling(error);
+          if (error.response) {
+            if (error.response.data.error_code) {
+              this.showNotification(
+                error.response.data.message,
+                "negative",
+                "error"
+              );
+            } else {
+              this.errorHandling(error);
+            }
+          }
           this.hideLoading();
         });
     }

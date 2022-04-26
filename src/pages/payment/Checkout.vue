@@ -1,5 +1,6 @@
 <template>
   <q-page class="q-pa-sm bg-white" style="´padding: 30px">
+    <modal-uber :parentPayProcess="pay"></modal-uber>
     <div
       v-if="data !== undefined"
       class="row q-col-gutter-sm"
@@ -45,7 +46,7 @@
         </div>
         <q-card-actions align="center">
           <q-btn
-            @click="pay()"
+            @click="openEmailConfirmation()"
             size="sm"
             style="font-size:12px;padding: 0px 15px !important; margin-bottom:20px"
             rounded
@@ -80,8 +81,10 @@
 </template>
 
 <script>
+import ModalUber from "src/components/modals/ModalUber.vue";
 export default {
   name: "Checkout",
+  components: { ModalUber },
   props: ["data", "total"],
   inject: [
     "showNotification",
@@ -111,7 +114,17 @@ export default {
     }
   },
   methods: {
-    pay() {
+    openEmailConfirmation() {
+      let props = {
+        idLocal: this.$store.getters["auth/getDataLocal"].id,
+        amount: this.total,
+        commerceOrder: Math.round(Math.random() * (99999999999999 - 1) + 1),
+        detail: this.data,
+        domain: window.location.origin
+      };
+      this.bus.$emit("modal-email-confirmation", props);
+    },
+    pay(data) {
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
@@ -121,23 +134,11 @@ export default {
       } else {
         var url = this.$store.getters["routes/getRoute"]("get.url.pay");
         this.$axios
-          .post(
-            url,
-            {
-              idLocal: this.$store.getters["auth/getDataLocal"].id,
-              amount: this.total,
-              commerceOrder: Math.round(
-                Math.random() * (99999999999999 - 1) + 1
-              ),
-              detail: this.data,
-              domain: window.location.origin
-            },
-            {
-              headers: {
-                Authorization: this.$store.getters["auth/getToken"]
-              }
+          .post(url, data, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
             }
-          )
+          })
           .then(response => {
             this.hideLoading();
             if (response.data.status === "success") {
@@ -151,12 +152,22 @@ export default {
             }
           })
           .catch(error => {
+            if (error.response) {
+              if (error.response.data.error_code) {
+                this.showNotification(
+                  error.response.data.message,
+                  "negative",
+                  "error"
+                );
+              } else {
+                this.showNotification(
+                  "Error al procesar el pago. Contacte al administrador del sistema.",
+                  "negative",
+                  "error"
+                );
+              }
+            }
             this.hideLoading();
-            this.showNotification(
-              "Error al procesar el pago. Contacte al administrador del sistema.",
-              "negative",
-              "error"
-            );
           });
       }
     }

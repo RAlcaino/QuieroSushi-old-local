@@ -510,8 +510,18 @@ export default {
             }
           })
           .catch(error => {
+            if (error.response) {
+              if (error.response.data.error_code) {
+                this.showNotification(
+                  error.response.data.message,
+                  "negative",
+                  "error"
+                );
+              } else {
+                this.errorHandling(error);
+              }
+            }
             this.hideLoading();
-            this.errorHandling(error);
           });
       }
       this.close();
