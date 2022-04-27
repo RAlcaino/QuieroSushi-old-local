@@ -116,7 +116,7 @@
                 v-if="item.es_uber !== 1"
               >
                 {{ item.payDetail.address.trim() }}.
-                <template v-if="item.payDetail.address2 != ''">
+                <template v-if="item.payDetail.address2 !== '' && item.payDetail.address2 !== null">
                   <span v-if="item.payDetail.address2.search('dpto') == -1"
                     >Dpto/Ubicacion:</span
                   >
