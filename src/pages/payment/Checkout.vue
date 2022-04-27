@@ -46,7 +46,7 @@
         </div>
         <q-card-actions align="center">
           <q-btn
-            @click="openEmailConfirmation()"
+            @click="pay()"
             size="sm"
             style="font-size:12px;padding: 0px 15px !important; margin-bottom:20px"
             rounded
@@ -114,18 +114,21 @@ export default {
     }
   },
   methods: {
-    openEmailConfirmation() {
-      let props = {
-        idLocal: this.$store.getters["auth/getDataLocal"].id,
-        amount: this.total,
-        commerceOrder: Math.round(Math.random() * (99999999999999 - 1) + 1),
-        detail: this.data,
-        domain: window.location.origin
-      };
-      this.bus.$emit("modal-email-confirmation", props);
-    },
-    pay(data) {
+    pay(props) {
       this.showLoading();
+      let data = {};
+      if (props === undefined) {
+        data = {
+          idLocal: this.$store.getters["auth/getDataLocal"].id,
+          amount: this.total,
+          commerceOrder: Math.round(Math.random() * (99999999999999 - 1) + 1),
+          detail: this.data,
+          domain: window.location.origin
+        };
+      } else {
+        data = { ...props };
+      }
+
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -152,6 +155,7 @@ export default {
             }
           })
           .catch(error => {
+            this.hideLoading();
             if (error.response) {
               if (error.response.data.error_code) {
                 this.showNotification(
@@ -159,6 +163,7 @@ export default {
                   "negative",
                   "error"
                 );
+                this.bus.$emit("modal-email-confirmation", data);
               } else {
                 this.showNotification(
                   "Error al procesar el pago. Contacte al administrador del sistema.",
@@ -167,7 +172,6 @@ export default {
                 );
               }
             }
-            this.hideLoading();
           });
       }
     }

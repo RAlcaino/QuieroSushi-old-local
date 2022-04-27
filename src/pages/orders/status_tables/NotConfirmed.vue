@@ -148,7 +148,12 @@
                 style="font-size:22px; padding-bottom:5px"
                 class="i-icon"
               /><strong
-                >Hora Solicitada: {{ item.requestedTime.split(" ")[1].slice(0,5)  }}</strong
+                >Hora Solicitada:
+                {{
+                  item.es_uber === 1
+                    ? getRequestedTime(item)
+                    : item.requestedTime.split(" ")[1].slice(0, 5)
+                }}</strong
               >
             </div>
             <div
@@ -209,7 +214,7 @@
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersNotConfirmed.length > 8 && searching === false"
+        v-if="ordersNotConfirmed.length > 15 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top:25px"
@@ -268,13 +273,13 @@ export default {
       );
     },
     getMaxPages() {
-      return Math.ceil(this.ordersNotConfirmed.length / 8);
+      return Math.ceil(this.ordersNotConfirmed.length / 15);
     }
   },
   data() {
     return {
       page: 1,
-      perPage: 8,
+      perPage: 15,
       filter: "",
       flag: false,
       searching: false
@@ -285,14 +290,49 @@ export default {
     this.flag = false;
   },
   methods: {
+    getRequestedTime(item) {
+      let requestedTime = new Date(item.requestedTime);
+      return this.format(
+        requestedTime.setMinutes(
+          requestedTime.getMinutes() - item.gmapsDeliveryTime
+        )
+      )
+        .split(" ")[1]
+        .slice(0, 5);
+    },
+    format(d) {
+      let date = new Date(d);
+      let time = "";
+      let formated = "";
+
+      time += date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      time +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+
+      formated =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        time;
+
+      return formated;
+    },
     moreDetailsDialog(row) {
-      this.bus.$emit("more-details", row);
+      this.bus.$emit("more-details", { ...row });
     },
     confirmDialog(row) {
-      this.bus.$emit("the-confirm", row);
+      let uberTime = row.gmapsDeliveryTime;
+      this.bus.$emit("the-confirm", { ...row, uberTime });
     },
     cancelDialog(row) {
-      this.bus.$emit("the-cancel", row);
+      this.bus.$emit("the-cancel", { ...row });
     },
     callEvent(val) {
       this.bus.$emit("scroll-up");

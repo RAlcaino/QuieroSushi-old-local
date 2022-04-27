@@ -63,7 +63,7 @@
                     rounded
                     size="sm"
                     style="margin-right:5px"
-                    @click="openEmailConfirmation(props)"
+                    @click="payProcess(props, true)"
                     label="Pagar Online"
                   >
                     <!--<q-tooltip>
@@ -123,7 +123,7 @@
                       <q-list style="min-width: 100px">
                         <q-item
                           clickable
-                          @click="openEmailConfirmation(props)"
+                          @click="payProcess(props, true)"
                           v-close-popup
                           v-if="
                             props.row.fecha_pago === '0000-00-00 00:00:00' &&
@@ -404,20 +404,20 @@ export default {
       this.sync();
     },
 
-    openEmailConfirmation(props) {
-      this.bus.$emit("modal-email-confirmation", props);
-    },
-
-    payProcess(props) {
+    payProcess(props, flag) {
       this.showLoading();
-      var data = {
-        pay_type: "Pago Online",
-        id_postpago: props.row.id,
-        payed_amount: Math.round(props.row.saldo_a_pagar),
-        id_local: props.row.local.id_local,
-        domain: window.location.origin,
-        email: props.email
-      };
+      let data = {};
+      if (flag) {
+        data = {
+          pay_type: "Pago Online",
+          id_postpago: props.row.id,
+          payed_amount: Math.round(props.row.saldo_a_pagar),
+          id_local: props.row.local.id_local,
+          domain: window.location.origin
+        };
+      } else {
+        data = { ...props };
+      }
 
       var url = `${this.$store.getters["routes/getRoute"]("weekly.payment")}`;
 
@@ -437,6 +437,7 @@ export default {
           }
         })
         .catch(error => {
+          this.hideLoading();
           if (error.response) {
             if (error.response.data.error_code) {
               this.showNotification(
@@ -444,11 +445,12 @@ export default {
                 "negative",
                 "error"
               );
+
+              this.bus.$emit("modal-email-confirmation", data);
             } else {
               this.errorHandling(error);
             }
           }
-          this.hideLoading();
         });
     }
   }

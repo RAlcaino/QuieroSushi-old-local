@@ -367,14 +367,20 @@ export default {
     "errorHandling",
     "getServerTime"
   ],
-  created() {
+  mounted() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-confirm", data => {
       this.$store.commit("auth/setRefreshOrders", false);
       this.card = !this.card;
-      this.orderDetail = data;
-      this.finalDateManual = this.orderDetail.requestedTime;
+      this.orderDetail = { ...data };
       if (this.orderDetail.es_uber === 1) {
+        let requestedTime = new Date(this.orderDetail.requestedTime);
+        this.orderDetail.requestedTime = this.format(
+          requestedTime.setMinutes(
+            requestedTime.getMinutes() - this.orderDetail.uberTime
+          )
+        );
+        this.finalDateManual = this.orderDetail.requestedTime;
         this.deliveryTime = 0;
         this.constDeliveryTime = 0;
         this.minDeliveryTime = 0;
@@ -442,6 +448,30 @@ export default {
     };
   },
   methods: {
+    format(d) {
+      let date = new Date(d);
+      let time = "";
+      let formated = "";
+
+      time += date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      time +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+
+      formated =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        time;
+
+      return formated;
+    },
     confirm() {
       if (this.orderDetail.es_uber === 1 && this.preparationTime < 10) {
         this.showNotification(
@@ -467,7 +497,9 @@ export default {
       var data = {
         orderID: this.orderDetail.id,
         confirmationTimestamp:
-          this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
+          this.tab === "one"
+            ? `${this.finalDateDetail}:00`
+            : this.finalDateManual,
         //confirmationTimestamp: '2021-03-08 23:00:00',
         deliveryTime: +this.deliveryTime,
         preparationTime: +this.preparationTime,
@@ -493,7 +525,13 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               this.hideLoading();
-              this.bus.$emit("sync-orders");
+              if (response.data.result.uber === undefined) {
+                this.showNotification(
+                  response.data.result,
+                  "negative",
+                  "error"
+                );
+              }
               if (response.data.result.uber !== null) {
                 let { code } = response.data.result.uber;
                 if (code !== undefined) {
@@ -504,6 +542,7 @@ export default {
                   );
                 }
               }
+              this.bus.$emit("sync-orders");
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
@@ -599,10 +638,10 @@ export default {
         date.getMinutes() < 10
           ? ":0" + date.getMinutes()
           : ":" + date.getMinutes(); // get minutes
-      tempFinalDetail +=
+      /*tempFinalDetail +=
         date.getSeconds() < 10
           ? ":0" + date.getSeconds()
-          : ":" + date.getSeconds(); // get seconds
+          : ":" + date.getSeconds(); // get seconds*/
 
       this.finalDateDetail =
         date.getFullYear() +

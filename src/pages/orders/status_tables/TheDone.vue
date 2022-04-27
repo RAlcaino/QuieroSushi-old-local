@@ -198,7 +198,7 @@
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersDone.length > 8 && searching === false"
+        v-if="ordersDone.length > 15 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top:25px"
@@ -252,13 +252,13 @@ export default {
       );
     },
     getMaxPages() {
-      return Math.ceil(this.ordersDone.length / 8);
+      return Math.ceil(this.ordersDone.length / 15);
     }
   },
   data() {
     return {
       page: 1,
-      perPage: 8,
+      perPage: 15,
       filter: "",
       flag: false,
       searching: false

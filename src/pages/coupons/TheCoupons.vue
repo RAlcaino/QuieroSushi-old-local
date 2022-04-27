@@ -261,7 +261,7 @@
         </div>
       </q-list>
       <q-pagination
-        v-if="data.length > 6 && searching === false"
+        v-if="data.length > 15 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top:25px"
@@ -317,7 +317,7 @@ export default {
       );
     },
     getMaxPages() {
-      return Math.ceil(this.data.length / 6);
+      return Math.ceil(this.data.length / 15);
     },
     FontSize() {
       if (this.responsiveMobile) {
@@ -343,7 +343,7 @@ export default {
       searching: false,
       flag: false,
       page: 1,
-      perPage: 6,
+      perPage: 15,
       prod: null,
       responsiveMobile: false,
       value: true,
