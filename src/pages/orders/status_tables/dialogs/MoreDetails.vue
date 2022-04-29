@@ -100,16 +100,17 @@
                 }}
               </p>
               <p style="font-size:14px">
-                <strong style="color: #333;">Subtotal: </strong> ${{
-                  formatNumber(orderDetail.subtotal)
-                }}
+                <strong style="color: #333;"
+                  >{{ `${orderDetail.es_uber !== 1 ? "Subtotal:" : "Total:"}` }}
+                </strong>
+                ${{ formatNumber(orderDetail.subtotal) }}
               </p>
               <p style="font-size:14px" v-if="orderDetail.es_uber !== 1">
                 <strong style="color: #333;">Costo Despacho: </strong> ${{
                   formatNumber(orderDetail.deliveryCost)
                 }}
               </p>
-              <p style="font-size:14px">
+              <p style="font-size:14px" v-if="orderDetail.es_uber !== 1">
                 <strong style="color: #333;">Total: </strong>
                 <span style="color:#ff2d2d; font-weight:bold"
                   >${{ formatNumber(orderDetail.total) }}</span

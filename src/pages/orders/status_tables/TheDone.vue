@@ -128,7 +128,7 @@
                 <template
                   v-if="
                     item.payDetail.address2 != '' &&
-                    item.payDetail.address2 !== null
+                      item.payDetail.address2 !== null
                   "
                 >
                   <span v-if="item.payDetail.address2.search('dpto') == -1"
@@ -154,7 +154,11 @@
                 {{ item.payDetail.pay }}
               </p>
               <p style="margin: 0; font-family: 'Roboto'; text-align: right">
-                ${{ formatNumber(item.total) }}
+                ${{
+                  item.es_uber === 1
+                    ? formatNumber(item.subtotal)
+                    : formatNumber(item.total)
+                }}
               </p>
             </div>
           </q-card-section>
@@ -240,7 +244,7 @@ export default {
   components: {
     BaseMoreComponent,
     MoreDetails,
-    TheCancel,
+    TheCancel
   },
   created() {
     this.bus.$on("reset-page", () => {
@@ -272,7 +276,7 @@ export default {
     },
     getMaxPages() {
       return Math.ceil(this.ordersDone.length / 15);
-    },
+    }
   },
   data() {
     return {
@@ -280,7 +284,7 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false,
+      searching: false
     };
   },
   beforeDestroy() {
@@ -298,13 +302,13 @@ export default {
     },
     openChat(row) {
       var data = {
-        id_venta: row.id,
+        id_venta: row.id
       };
 
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    },
-  },
+    }
+  }
 };
 </script>
 
