@@ -5,7 +5,7 @@ const state = {
 };
 const mutations = {
   setVersion(state) {
-    state.version = "1.11";
+    state.version = "1.12";
   }
 };
 const actions = {};
