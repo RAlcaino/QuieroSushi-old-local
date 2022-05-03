@@ -216,7 +216,8 @@
                 color="green"
                 style="font-size: 10.5px"
                 @click="
-                  item.paymentMethod === 'Transferencia' || item.es_uber === 1
+                  item.paymentMethod.toLowerCase() === 'transferencia' &&
+                  item.es_uber === 1
                     ? areUSure(item)
                     : confirmDialog(item)
                 "
@@ -363,11 +364,11 @@ export default {
       this.bus.$emit("more-details", { ...row });
     },
     areUSure(row) {
-      let uberTime = row.gmapsDeliveryTime;
-      this.bus.$emit("modal-are-you-sure", { ...row, uberTime });
+      this.bus.$emit("modal-are-you-sure", row);
     },
     confirmDialog(row) {
-      this.bus.$emit("the-confirm", { ...row });
+      let uberTime = row.gmapsDeliveryTime;
+      this.bus.$emit("the-confirm", { ...row, uberTime });
     },
     cancelDialog(row) {
       this.bus.$emit("the-cancel", { ...row });
