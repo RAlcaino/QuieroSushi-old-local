@@ -5,6 +5,7 @@
       <the-confirm></the-confirm>
     </keep-alive>
     <the-cancel :mode="'orders'"></the-cancel>
+    <modal-are-u-sure></modal-are-u-sure>
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top: 3%"
@@ -214,7 +215,11 @@
                 size="sm"
                 color="green"
                 style="font-size: 10.5px"
-                @click="confirmDialog(item)"
+                @click="
+                  item.paymentMethod === 'Transferencia' || item.es_uber === 1
+                    ? areUSure(item)
+                    : confirmDialog(item)
+                "
               >
                 Confirmar
               </q-btn>
@@ -254,6 +259,7 @@ import MoreDetails from "./dialogs/MoreDetails.vue";
 import TheConfirm from "./dialogs/TheConfirm.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
 import TheTimer from "../timer/TheTimer.vue";
+import ModalAreUSure from "../../../components/modals/ModalAreUSure.vue";
 
 export default {
   props: ["ordersNotConfirmed", "refresh", "sendWs"],
@@ -263,7 +269,8 @@ export default {
     MoreDetails,
     TheConfirm,
     TheCancel,
-    TheTimer
+    TheTimer,
+    ModalAreUSure
   },
   created() {
     this.flag = this.refresh;
@@ -286,6 +293,11 @@ export default {
     this.bus.$on("end-loader", () => {
       this.flag = false;
       this.searching = false;
+    });
+
+    this.bus.$on("continue-with-confirmation", data => {
+      console.log(data);
+      this.confirmDialog(data);
     });
   },
   computed: {
@@ -350,9 +362,12 @@ export default {
     moreDetailsDialog(row) {
       this.bus.$emit("more-details", { ...row });
     },
-    confirmDialog(row) {
+    areUSure(row) {
       let uberTime = row.gmapsDeliveryTime;
-      this.bus.$emit("the-confirm", { ...row, uberTime });
+      this.bus.$emit("modal-are-you-sure", { ...row, uberTime });
+    },
+    confirmDialog(row) {
+      this.bus.$emit("the-confirm", { ...row });
     },
     cancelDialog(row) {
       this.bus.$emit("the-cancel", { ...row });
