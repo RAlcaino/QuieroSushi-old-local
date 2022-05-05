@@ -3,21 +3,19 @@
     v-model="card"
     transition-show="slide-down"
     transition-hide="slide-up"
-    style="width: 800px;"
+    style="width: 800px"
   >
-    <q-card class="my-card" style="width: 100%; border-radius:10px;">
-      <q-card-section class="q-pt-none" style="padding-bottom:0">
+    <q-card class="my-card" style="width: 100%; border-radius: 10px">
+      <q-card-section class="q-pt-none" style="padding-bottom: 0">
         <q-tabs v-model="tab" class="text-blacklight">
           <q-tab
             name="one"
-            style="text-transform: capitalize;"
-            :label="
-              `${
-                $store.getters['auth/getDataUser'].role === 'God'
-                  ? `N° Pedido: ${orderDetail.id} - ${orderDetail.internalCode}`
-                  : `N° Pedido: ${orderDetail.internalCode}`
-              }`
-            "
+            style="text-transform: capitalize"
+            :label="`${
+              $store.getters['auth/getDataUser'].role === 'God'
+                ? `N° Pedido: ${orderDetail.id} - ${orderDetail.internalCode}`
+                : `N° Pedido: ${orderDetail.internalCode}`
+            }`"
           />
           <q-tab
             v-if="orderDetail.es_uber === 1 && orderDetail.delivery_id !== null"
@@ -44,12 +42,18 @@
                   <img
                     src="~assets/salsas.jpg"
                     width="50"
-                    style="border-radius:10%"
+                    style="border-radius: 10%"
                   />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label
-                    style="text-align: left;color:#333; margin:0;font-weight:bold; font-size: 14px"
+                    style="
+                      text-align: left;
+                      color: #333;
+                      margin: 0;
+                      font-weight: bold;
+                      font-size: 14px;
+                    "
                   >
                     Palitos: {{ orderDetail.extras.chopsticks }} | Jengibre:
                     {{ orderDetail.extras.ginger }} | Wasabi:
@@ -68,7 +72,7 @@
                   <img
                     :src="item.detail.image"
                     width="50"
-                    style="border-radius:10%"
+                    style="border-radius: 10%"
                   />
                 </q-item-section>
                 <q-item-section
@@ -76,12 +80,24 @@
                   style="flex-direction: row !important"
                 >
                   <q-item-label
-                    style="width: 60%; font-weight:bold;font-size: 14px; color: #333"
+                    style="
+                      width: 60%;
+                      font-weight: bold;
+                      font-size: 14px;
+                      color: #333;
+                    "
                   >
                     {{ item.quantity }} x {{ item.detail.name }}
                   </q-item-label>
                   <q-item-label
-                    style="width: 40%; text-align: right; margin:0;font-weight:bold; color:#ff2d2d; font-size: 14px"
+                    style="
+                      width: 40%;
+                      text-align: right;
+                      margin: 0;
+                      font-weight: bold;
+                      color: #ff2d2d;
+                      font-size: 14px;
+                    "
                   >
                     {{ " $" + formatNumber(item.quantity * item.detail.price) }}
                   </q-item-label>
@@ -94,25 +110,25 @@
               </q-item>
             </q-list>
             <div class="tab-overview-footer">
-              <p v-if="orderDetail.discount !== 0" style="font-size:14px">
-                <strong style="color: #333;">Descuento: </strong> ${{
+              <p v-if="orderDetail.discount !== 0" style="font-size: 14px">
+                <strong style="color: #333">Descuento: </strong> ${{
                   formatNumber(orderDetail.discount)
                 }}
               </p>
-              <p style="font-size:14px">
-                <strong style="color: #333;"
+              <p style="font-size: 14px">
+                <strong style="color: #333"
                   >{{ `${orderDetail.es_uber !== 1 ? "Subtotal:" : "Total:"}` }}
                 </strong>
                 ${{ formatNumber(orderDetail.subtotal) }}
               </p>
-              <p style="font-size:14px" v-if="orderDetail.es_uber !== 1">
-                <strong style="color: #333;">Costo Despacho: </strong> ${{
+              <p style="font-size: 14px" v-if="orderDetail.es_uber !== 1">
+                <strong style="color: #333">Costo Despacho: </strong> ${{
                   formatNumber(orderDetail.deliveryCost)
                 }}
               </p>
-              <p style="font-size:14px" v-if="orderDetail.es_uber !== 1">
-                <strong style="color: #333;">Total: </strong>
-                <span style="color:#ff2d2d; font-weight:bold"
+              <p style="font-size: 14px" v-if="orderDetail.es_uber !== 1">
+                <strong style="color: #333">Total: </strong>
+                <span style="color: #ff2d2d; font-weight: bold"
                   >${{ formatNumber(orderDetail.total) }}</span
                 >
               </p>
@@ -122,14 +138,14 @@
                 <q-item
                   v-if="
                     orderDetail.aditionalMessage !== '' &&
-                      orderDetail.aditionalMessage !== null
+                    orderDetail.aditionalMessage !== null
                   "
                 >
                   <q-item-section avatar>
                     <q-icon name="message" color="primary" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label style="font-weight: bold;"
+                    <q-item-label style="font-weight: bold"
                       >Mensaje del cliente</q-item-label
                     >
                     <q-item-label>{{
@@ -147,12 +163,12 @@
                   <q-icon name="delivery_dining" color="primary" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label style="font-weight: bold;"
+                  <q-item-label style="font-weight: bold"
                     >Estado del repartidor:
                     <q-icon
                       name="refresh"
                       size="1.3em"
-                      style="cursor: pointer;"
+                      style="cursor: pointer"
                       @click="getStatus()"
                     ></q-icon>
                   </q-item-label>
@@ -160,7 +176,11 @@
                     v-if="deliveryStatus !== '' && deliveryStatusObject !== {}"
                     >{{ deliveryStatus }}
                     <q-item-label
-                      style="display:flex; justify-content: center; margin-top: 10px"
+                      style="
+                        display: flex;
+                        justify-content: center;
+                        margin-top: 10px;
+                      "
                       v-if="deliveryShortStatus === 'canceled'"
                     >
                       <q-btn
@@ -181,28 +201,28 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                    courier !== null &&
-                    deliveryShortStatus !== 'pending' &&
-                    deliveryShortStatus !== 'delivered' &&
-                    deliveryShortStatus !== 'returned' &&
-                    deliveryShortStatus !== ''
+                  courier !== null &&
+                  deliveryShortStatus !== 'pending' &&
+                  deliveryShortStatus !== 'delivered' &&
+                  deliveryShortStatus !== 'returned' &&
+                  deliveryShortStatus !== ''
                 "
               >
                 <q-item-section avatar>
                   <q-icon name="location_on" color="primary" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label style="font-weight: bold;"
+                  <q-item-label style="font-weight: bold"
                     >Ubicación del repartidor:
                   </q-item-label>
                   <q-item-label v-if="courier !== null">
                     <GmapMap
                       :center="{
                         lat: courier.location.lat,
-                        lng: courier.location.lng
+                        lng: courier.location.lng,
                       }"
                       :zoom="18"
-                      style="width: 100%; height: 226px; border-radius:10px;"
+                      style="width: 100%; height: 226px; border-radius: 10px"
                     >
                       <GmapMarker
                         v-for="(marker, index) in markers"
@@ -215,14 +235,14 @@
                             width: 30,
                             height: 30,
                             f: 'px',
-                            b: 'px'
+                            b: 'px',
                           },
                           scaledSize: {
                             width: 30,
                             height: 30,
                             f: 'px',
-                            b: 'px'
-                          }
+                            b: 'px',
+                          },
                         }"
                       /> </GmapMap
                   ></q-item-label>
@@ -235,23 +255,23 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                    deliveryShortStatus !== '' &&
-                    (deliveryShortStatus === 'pickup' ||
-                      deliveryShortStatus === 'pickup_complete' ||
-                      deliveryShortStatus === 'dropoff' ||
-                      deliveryShortStatus === 'returned') &&
-                    courier !== null
+                  deliveryShortStatus !== '' &&
+                  (deliveryShortStatus === 'pickup' ||
+                    deliveryShortStatus === 'pickup_complete' ||
+                    deliveryShortStatus === 'dropoff' ||
+                    deliveryShortStatus === 'returned') &&
+                  courier !== null
                 "
               >
                 <q-item-section avatar>
                   <q-icon name="face" color="primary" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label style="display: flex; flex-direction: column;">
-                    <p style="font-weight: bold; margin: 0;">
+                  <q-item-label style="display: flex; flex-direction: column">
+                    <p style="font-weight: bold; margin: 0">
                       Información del repartidor:
                     </p>
-                    <div style="display: flex; margin-top: 15px;">
+                    <div style="display: flex; margin-top: 15px">
                       <img
                         style="border-radius: 100%"
                         width="80px"
@@ -260,11 +280,11 @@
                       />
                       <div style="margin-left: 10px">
                         <p style="margin: 0; margin-bottom: 3px">
-                          <label style="font-weight: bold;">Nombre: </label
+                          <label style="font-weight: bold">Nombre: </label
                           >{{ courier.name }}
                         </p>
                         <p style="margin: 0; margin-bottom: 3px">
-                          <label style="font-weight: bold;">Télefono: </label
+                          <label style="font-weight: bold">Télefono: </label
                           >{{ courier.phone_number }}
                         </p>
                       </div>
@@ -275,9 +295,9 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                    (deliveryShortStatus === 'pickup' ||
-                      deliveryShortStatus === 'pickup_complete') &&
-                    deliveryShortStatus !== ''
+                  (deliveryShortStatus === 'pickup' ||
+                    deliveryShortStatus === 'pickup_complete') &&
+                  deliveryShortStatus !== ''
                 "
               >
                 <q-item-section avatar>
@@ -286,12 +306,12 @@
                 <q-item-section>
                   <q-item-label
                     v-if="pickup_eta !== '' && deliveryStatusObject !== {}"
-                    style="display: flex;"
+                    style="display: flex"
                   >
-                    <p style="font-weight: bold; margin: 0;">
+                    <p style="font-weight: bold; margin: 0">
                       Hora estimada en llegar al local:
                     </p>
-                    <p style="margin: 0; margin-left: 6px;">
+                    <p style="margin: 0; margin-left: 6px">
                       {{ pickup_eta.split(" ")[1].slice(0, 5) }}
                     </p>
                   </q-item-label>
@@ -303,23 +323,23 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                    (deliveryShortStatus === 'dropoff' ||
-                      deliveryShortStatus === 'returned') &&
-                    deliveryShortStatus !== ''
+                  (deliveryShortStatus === 'dropoff' ||
+                    deliveryShortStatus === 'returned') &&
+                  deliveryShortStatus !== ''
                 "
               >
                 <q-item-section avatar>
                   <q-icon name="schedule" color="primary" />
                 </q-item-section>
-                <q-item-section style="display: flex;">
+                <q-item-section style="display: flex">
                   <q-item-label
                     v-if="dropoff_eta !== '' && deliveryStatusObject !== {}"
-                    style="display: flex;"
+                    style="display: flex"
                   >
-                    <p style="font-weight: bold; margin: 0;">
+                    <p style="font-weight: bold; margin: 0">
                       Hora estimada en llegar al destino:
                     </p>
-                    <p style="margin: 0; margin-left: 6px;">
+                    <p style="margin: 0; margin-left: 6px">
                       {{ dropoff_eta.split(" ")[1].slice(0, 5) }}
                     </p>
                   </q-item-label>
@@ -332,10 +352,10 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                    deliveryShortStatus !== 'pending' &&
-                    deliveryShortStatus !== 'delivered' &&
-                    deliveryShortStatus !== 'canceled' &&
-                    deliveryShortStatus !== ''
+                  deliveryShortStatus !== 'pending' &&
+                  deliveryShortStatus !== 'delivered' &&
+                  deliveryShortStatus !== 'canceled' &&
+                  deliveryShortStatus !== ''
                 "
               >
                 <q-item-section avatar>
@@ -349,10 +369,15 @@
                       type="textarea"
                       hint="Mensaje para el delivery"
                       placeholder="EJ. El timbre está malo, llamar al cliente"
+                      :maxLength="210"
                     />
                   </div>
                   <q-item-label
-                    style="display:flex; justify-content: center; margin-top: 10px"
+                    style="
+                      display: flex;
+                      justify-content: center;
+                      margin-top: 10px;
+                    "
                   >
                     <q-btn
                       size="sm"
@@ -376,26 +401,22 @@
                   <q-icon name="phone" color="primary" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label style="display: flex;">
-                    <p style="font-weight: bold; margin: 0;">
+                  <q-item-label style="display: flex">
+                    <p style="font-weight: bold; margin: 0">
                       Télefono de soporte de Uber:
                     </p>
-                    <p style="margin: 0; margin-left: 6px;">
-                      +56-800231021
-                    </p>
+                    <p style="margin: 0; margin-left: 6px">+56-800231021</p>
                   </q-item-label>
                   <q-item-label
-                    style="display: flex;"
+                    style="display: flex"
                     v-if="
                       orderDetail.uuid !== null &&
-                        orderDetail.uuid !== undefined &&
-                        $store.getters['auth/getDataUser'].role === 'God'
+                      orderDetail.uuid !== undefined &&
+                      $store.getters['auth/getDataUser'].role === 'God'
                     "
                   >
-                    <p style="font-weight: bold; margin: 0;">
-                      uuid:
-                    </p>
-                    <p style="margin: 0; margin-left: 6px;">
+                    <p style="font-weight: bold; margin: 0">uuid:</p>
+                    <p style="margin: 0; margin-left: 6px">
                       {{ orderDetail.uuid }}
                     </p>
                   </q-item-label>
@@ -453,10 +474,10 @@ export default {
     "getServerTime",
     "showNotification",
     "showLoading",
-    "hideLoading"
+    "hideLoading",
   ],
   created() {
-    this.bus.$on("more-details", data => {
+    this.bus.$on("more-details", (data) => {
       this.markers = [];
       this.courier = null;
       this.tab = "one";
@@ -471,11 +492,11 @@ export default {
       this.deliveryStatusObject = {};
       this.dataLocal = {
         lat: null,
-        lng: null
+        lng: null,
       };
       this.dataUser = {
         lat: null,
-        lng: null
+        lng: null,
       };
     });
   },
@@ -499,12 +520,12 @@ export default {
       tip: null,
       dataLocal: {
         lat: null,
-        lng: null
+        lng: null,
       },
       dataUser: {
         lat: null,
-        lng: null
-      }
+        lng: null,
+      },
     };
   },
   methods: {
@@ -514,17 +535,17 @@ export default {
         var url = this.$store.getters["routes/getRoute"](
           "get.delivery.status",
           {
-            delivery_id: this.orderDetail.delivery_id
+            delivery_id: this.orderDetail.delivery_id,
             //delivery_id: "del_gALMXHSKQp2wlI1cVWl9Gw"
           }
         );
         this.$axios
           .get(url, {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+              Authorization: this.$store.getters["auth/getToken"],
+            },
           })
-          .then(response => {
+          .then((response) => {
             this.deliveryShortStatus = response.data.status;
             this.pickup_eta = this.formatDate(response.data.pickup_eta);
             this.dropoff_eta = this.formatDate(response.data.dropoff_eta);
@@ -536,7 +557,7 @@ export default {
             this.getMarkers();
             this.setDeliveryStatus(response.data.status);
           })
-          .catch(error => {
+          .catch((error) => {
             this.errorHandling(error);
           });
       }
@@ -605,7 +626,7 @@ export default {
         let markerCourier = {
           lat: this.courier.location.lat,
           lng: this.courier.location.lng,
-          icon: "moto-copy.png"
+          icon: "moto-copy.png",
         };
 
         this.markers.push(markerCourier);
@@ -613,7 +634,7 @@ export default {
         let markerCustomer = {
           lat: this.dataUser.lat,
           lng: this.dataUser.lng,
-          icon: "home-copy.png"
+          icon: "home-copy.png",
         };
 
         this.markers.push(markerCustomer);
@@ -621,7 +642,7 @@ export default {
         let markerLocal = {
           lat: this.dataLocal.lat,
           lng: this.dataLocal.lng,
-          icon: "store-copy.png"
+          icon: "store-copy.png",
         };
 
         this.markers.push(markerLocal);
@@ -636,21 +657,21 @@ export default {
         local_name: this.orderDetail.local.name,
         local_address: this.orderDetail.local.address,
         pickup_ready_dt: this.getTime(5, serverTime),
-        pickup_deadline_dt: this.getTime(20, serverTime)
+        pickup_deadline_dt: this.getTime(20, serverTime),
       };
       this.$axios
         .post(url2, data2, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"]
-          }
+            Authorization: this.$store.getters["auth/getToken"],
+          },
         })
-        .then(response => {
+        .then((response) => {
           console.log(response);
           this.bus.$emit("sync-orders");
           this.hideLoading();
           this.card = false;
         })
-        .catch(error => {
+        .catch((error) => {
           this.hideLoading();
           this.errorHandling(error);
         });
@@ -666,28 +687,28 @@ export default {
     updateDelivery(type) {
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("uber.update", {
-        orderId: this.orderDetail.id
+        orderId: this.orderDetail.id,
       });
 
       if (type === "msg") {
         var data = {
           delivery_id: this.orderDetail.delivery_id,
-          dropoff_notes: this.msg
+          dropoff_notes: this.msg,
         };
       } else {
         var data = {
           delivery_id: this.orderDetail.delivery_id,
-          tip_by_customer: this.tip
+          tip_by_customer: this.tip,
         };
       }
 
       this.$axios
         .post(url, data, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"]
-          }
+            Authorization: this.$store.getters["auth/getToken"],
+          },
         })
-        .then(response => {
+        .then((response) => {
           if (response.data.kind === "error") {
             if (response.data.code === "tip_already_recorded") {
               this.showNotification(
@@ -710,7 +731,7 @@ export default {
           this.hideLoading();
           this.card = false;
         })
-        .catch(error => {
+        .catch((error) => {
           this.hideLoading();
           this.errorHandling(error);
         });
@@ -730,29 +751,29 @@ export default {
 
       this.$axios
         .get(url)
-        .then(response => {
+        .then((response) => {
           let location = response.data.results[0].geometry.location;
           this.dataLocal.lat = location.lat;
           this.dataLocal.lng = location.lng;
           this.$axios
             .get(url2)
-            .then(response => {
+            .then((response) => {
               let location = response.data.results[0].geometry.location;
               this.dataUser.lat = location.lat;
               this.dataUser.lng = location.lng;
             })
-            .catch(error => {
+            .catch((error) => {
               this.errorHandling(error);
             });
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorHandling(error);
         });
     },
 
     getMinutesDiff(time) {
       let santiagoTime = new Date().toLocaleString("en-US", {
-        timeZone: "America/Santiago"
+        timeZone: "America/Santiago",
       });
       let serverTime = new Date(santiagoTime);
       let endTime = new Date(time);
@@ -765,8 +786,8 @@ export default {
       } else {
         return `${diffMins} minutos`;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

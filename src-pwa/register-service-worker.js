@@ -4,7 +4,7 @@ import {
   Loading,
   // optional!, for example below
   // with custom spinner
-  QSpinnerGears
+  QSpinnerGears,
 } from "quasar";
 
 const loading = Loading;
@@ -34,12 +34,16 @@ register(process.env.SERVICE_WORKER_FILE, {
   },
 
   updatefound(registration) {
-    registration.update();
     console.log("New content is downloading!");
-    loading.show({
-      spinner: QSpinnerGears,
-      message: "Espere un momento..."
-    });
+    try {
+      registration.update();
+      loading.show({
+        spinner: QSpinnerGears,
+        message: "Espere un momento...",
+      });
+    } catch (err) {
+      console.err("SW update failed:", err);
+    }
   },
 
   updated(registration) {
@@ -53,7 +57,7 @@ register(process.env.SERVICE_WORKER_FILE, {
       timeout: 1500,
       onDismiss() {
         location.reload(true);
-      }
+      },
     });
     console.log("New content is available; please refresh!.");
   },
@@ -66,5 +70,5 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   error(err) {
     console.error("Error during service worker registration:", err);
-  }
+  },
 });
