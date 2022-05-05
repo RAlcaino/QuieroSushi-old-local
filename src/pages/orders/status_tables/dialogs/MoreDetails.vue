@@ -664,7 +664,9 @@ export default {
     },
     updateDelivery(type) {
       this.showLoading();
-      var url = this.$store.getters["routes/getRoute"]("uber.update");
+      var url = this.$store.getters["routes/getRoute"]("uber.update", {
+        orderId: this.orderDetail.id
+      });
 
       if (type === "msg") {
         var data = {

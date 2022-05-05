@@ -200,7 +200,7 @@ const mutations = {
       },
       {
         name: "uber.update",
-        link: "/update-delivery"
+        link: "/update-delivery/{orderId}"
       }
     ];
   }
