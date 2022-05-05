@@ -348,6 +348,7 @@
                       filled
                       type="textarea"
                       hint="Mensaje para el delivery"
+                      placeholder="EJ. El timbre está malo, llamar al cliente"
                     />
                   </div>
                   <q-item-label
