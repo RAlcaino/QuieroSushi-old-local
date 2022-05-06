@@ -83,8 +83,8 @@
               <p
                 v-if="
                   orderDetail.soon === 0 &&
-                    (preparationTime > minPreparationTime ||
-                      deliveryTime > minDeliveryTime)
+                  (preparationTime > minPreparationTime ||
+                    deliveryTime > minDeliveryTime)
                 "
                 style="
                   color: red;
@@ -145,8 +145,8 @@
               </div>
             </div>
 
-            <q-separator v-if="orderDetail.es_uber !== 1" />
-            <div class="tab-overview-c" v-if="orderDetail.es_uber !== 1">
+            <q-separator />
+            <div class="tab-overview-c">
               <div class="tab-overview-items-c">
                 <strong style="color: #333; text-align: center">
                   Tiempo de Despacho
@@ -365,19 +365,19 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getServerTime"
+    "getServerTime",
   ],
   mounted() {
     this.prod = this.$store.getters["mode/getMode"];
-    this.bus.$on("the-confirm", data => {
+    this.bus.$on("the-confirm", (data) => {
       this.$store.commit("auth/setRefreshOrders", false);
       this.card = !this.card;
       this.orderDetail = { ...data };
       if (this.orderDetail.es_uber === 1) {
-        let requestedTime = new Date(this.orderDetail.requestedTime);
-        this.orderDetail.requestedTime = this.format(
-          requestedTime.setMinutes(
-            requestedTime.getMinutes() - this.orderDetail.uberTime
+        this.requestedTimeShow = new Date(this.orderDetail.requestedTime);
+        this.requestedTimeShow = this.format(
+          this.requestedTimeShow.setMinutes(
+            this.requestedTimeShow.getMinutes() - this.orderDetail.uberTime
           )
         );
         this.finalDateManual = this.orderDetail.requestedTime;
@@ -402,7 +402,12 @@ export default {
   },
   computed: {
     time() {
-      let time = this.orderDetail.requestedTime.split(" ")[1];
+      let time = "";
+      if (this.orderDetail.es_uber === 1) {
+        time = this.requestedTimeShow.split(" ")[1];
+      } else {
+        time = this.orderDetail.requestedTime.split(" ")[1];
+      }
       let timeNSec = time.split(":");
       return timeNSec[0] + ":" + timeNSec[1];
     },
@@ -417,7 +422,7 @@ export default {
           ? ":0" + this.serverTime.getMinutes()
           : ":" + this.serverTime.getMinutes(); // get minutes
       return timeValue;
-    }
+    },
   },
   data() {
     return {
@@ -427,12 +432,12 @@ export default {
       orderDetail: {},
       current: {
         hour: null,
-        minutes: null
+        minutes: null,
       },
       final: {
         hour: null,
         minutes: null,
-        seconds: null
+        seconds: null,
       },
       finalDateManual: null,
       finalDateDetail: null,
@@ -444,7 +449,8 @@ export default {
       doAlgorithm: false,
       constDeliveryTime: null,
       constPreparationTime: null,
-      serverTime: null
+      serverTime: null,
+      requestedTimeShow: null,
     };
   },
   methods: {
@@ -505,7 +511,7 @@ export default {
         preparationTime: +this.preparationTime,
         doAlgorithm: this.doAlgorithm,
         pickup_ready_dt: pickup_ready_dt.toISOString(),
-        pickup_deadline_dt: pickup_deadline_dt.toISOString()
+        pickup_deadline_dt: pickup_deadline_dt.toISOString(),
       };
       this.showLoading();
 
@@ -519,10 +525,10 @@ export default {
         this.$axios
           .put(url, data, {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+              Authorization: this.$store.getters["auth/getToken"],
+            },
           })
-          .then(response => {
+          .then((response) => {
             if (response.data.status === "success") {
               this.hideLoading();
               if (response.data.result.uber === undefined) {
@@ -548,7 +554,7 @@ export default {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
-          .catch(error => {
+          .catch((error) => {
             if (error.response) {
               if (error.response.data.error_code) {
                 this.showNotification(
@@ -664,8 +670,8 @@ export default {
       } else {
         return "Error desconocido al crear el delivery.";
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
