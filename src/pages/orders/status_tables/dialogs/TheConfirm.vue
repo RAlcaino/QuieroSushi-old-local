@@ -474,12 +474,14 @@ export default {
     },
     confirm() {
       if (this.orderDetail.es_uber === 1 && this.preparationTime < 10) {
-        this.showNotification(
-          "El tiempo de preparación debe ser de al menos 10 minutos",
-          "negative",
-          "error"
+        this.preparationTime = 10;
+        let date = new Date(this.$store.getters["auth/getServerTime"]);
+        date.setMinutes(
+          date.getMinutes() +
+            (10 + +this.deliveryTime + +this.orderDetail.gmapsDeliveryTime)
         );
-        return;
+
+        this.finalDateDetail = this.format(date);
       }
       let pickup_ready_dt = new Date(
         this.tab === "one" ? this.finalDateDetail : this.finalDateManual
