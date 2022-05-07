@@ -297,7 +297,6 @@ export default {
     });
 
     this.bus.$on("continue-with-confirmation", data => {
-      console.log(data);
       this.confirmDialog(data);
     });
   },

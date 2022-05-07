@@ -633,8 +633,9 @@ export default {
       this.getLocals(false, false);
     });
   },
-  mounted() {
+  async mounted() {
     console.log("main layout mounted");
+
     this.$store.commit("auth/setRefreshOrders", true);
     this.optionsAvailable = this.$store.getters["auth/getAvailableMenuOptions"];
     this.modeResponsive();
@@ -642,6 +643,18 @@ export default {
     this.getTitles();
     this.getRoles();
     this.getNotifications(false);
+    var url = this.$store.getters["routes/getRoute"]("get.serverTime");
+    let res = await this.$axios.get(url, {
+      headers: {
+        Authorization: this.$store.getters["auth/getToken"]
+      }
+    });
+    let date = new Date(res.data.result);
+    this.$store.commit("auth/setServerTime", date.toString());
+
+    setInterval(() => {
+      this.serverTime();
+    }, 1000);
   },
   computed: {
     responsiveMode() {
@@ -675,7 +688,8 @@ export default {
   provide() {
     return {
       logout: this.logout,
-      refreshToken: this.refreshToken
+      refreshToken: this.refreshToken,
+      getServerTime: this.serverTime
     };
   },
   methods: {
@@ -1126,6 +1140,41 @@ export default {
         }
       });
       return count;
+    },
+    serverTime() {
+      // let santiagoTime = new Date().toLocaleString("en-US", {
+      //   timeZone: "America/Santiago"
+      // });
+      // let date = new Date(santiagoTime);
+      let time = "";
+      let serverTime = "";
+      let currentDate = new Date(this.$store.getters["auth/getServerTime"]);
+      let date = new Date(currentDate.setSeconds(currentDate.getSeconds() + 1));
+
+      this.$store.commit("auth/setServerTime", date.toString());
+
+      time += date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      time +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+      time +=
+        date.getSeconds() < 10
+          ? ":0" + date.getSeconds()
+          : ":" + date.getSeconds(); // get seconds
+
+      serverTime =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        time;
+
+      return serverTime;
     }
   }
 };

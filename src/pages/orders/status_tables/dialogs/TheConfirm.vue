@@ -83,8 +83,8 @@
               <p
                 v-if="
                   orderDetail.soon === 0 &&
-                  (preparationTime > minPreparationTime ||
-                    deliveryTime > minDeliveryTime)
+                    (preparationTime > minPreparationTime ||
+                      deliveryTime > minDeliveryTime)
                 "
                 style="
                   color: red;
@@ -338,17 +338,17 @@
             <q-card-actions align="right">
               <q-btn
                 size="sm"
-                rounded
-                color="primary"
-                label="Cerrar"
-                @click="close()"
-              />
-              <q-btn
-                size="sm"
                 @click="confirm()"
                 rounded
                 color="green"
                 label="Confirmar"
+              />
+              <q-btn
+                size="sm"
+                rounded
+                color="primary"
+                label="Cerrar"
+                @click="close()"
               />
             </q-card-actions>
           </q-tab-panel>
@@ -365,11 +365,11 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getServerTime",
+    "getServerTime"
   ],
   mounted() {
     this.prod = this.$store.getters["mode/getMode"];
-    this.bus.$on("the-confirm", (data) => {
+    this.bus.$on("the-confirm", data => {
       this.$store.commit("auth/setRefreshOrders", false);
       this.card = !this.card;
       this.orderDetail = { ...data };
@@ -422,7 +422,7 @@ export default {
           ? ":0" + this.serverTime.getMinutes()
           : ":" + this.serverTime.getMinutes(); // get minutes
       return timeValue;
-    },
+    }
   },
   data() {
     return {
@@ -432,12 +432,12 @@ export default {
       orderDetail: {},
       current: {
         hour: null,
-        minutes: null,
+        minutes: null
       },
       final: {
         hour: null,
         minutes: null,
-        seconds: null,
+        seconds: null
       },
       finalDateManual: null,
       finalDateDetail: null,
@@ -450,7 +450,7 @@ export default {
       constDeliveryTime: null,
       constPreparationTime: null,
       serverTime: null,
-      requestedTimeShow: null,
+      requestedTimeShow: null
     };
   },
   methods: {
@@ -513,7 +513,7 @@ export default {
         preparationTime: +this.preparationTime,
         doAlgorithm: this.doAlgorithm,
         pickup_ready_dt: pickup_ready_dt.toISOString(),
-        pickup_deadline_dt: pickup_deadline_dt.toISOString(),
+        pickup_deadline_dt: pickup_deadline_dt.toISOString()
       };
       this.showLoading();
 
@@ -527,10 +527,10 @@ export default {
         this.$axios
           .put(url, data, {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"],
-            },
+              Authorization: this.$store.getters["auth/getToken"]
+            }
           })
-          .then((response) => {
+          .then(response => {
             if (response.data.status === "success") {
               this.hideLoading();
               if (response.data.result.uber === undefined) {
@@ -556,7 +556,7 @@ export default {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
-          .catch((error) => {
+          .catch(error => {
             if (error.response) {
               if (error.response.data.error_code) {
                 this.showNotification(
@@ -672,8 +672,8 @@ export default {
       } else {
         return "Error desconocido al crear el delivery.";
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

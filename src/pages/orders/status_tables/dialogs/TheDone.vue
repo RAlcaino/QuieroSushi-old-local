@@ -36,7 +36,6 @@ export default {
       this.card = true;
       this.orderId = row.id;
       this.orderType = row.orderType;
-      console.log(this.getServerTime());
     });
   },
   data() {
