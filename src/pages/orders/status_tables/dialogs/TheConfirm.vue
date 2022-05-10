@@ -145,8 +145,8 @@
               </div>
             </div>
 
-            <q-separator />
-            <div class="tab-overview-c">
+            <q-separator v-if="orderDetail.es_uber !== 1" />
+            <div class="tab-overview-c" v-if="orderDetail.es_uber !== 1">
               <div class="tab-overview-items-c">
                 <strong style="color: #333; text-align: center">
                   Tiempo de Despacho
@@ -380,7 +380,9 @@ export default {
             this.requestedTimeShow.getMinutes() - this.orderDetail.uberTime
           )
         );
+        this.orderDetail.requestedTime = this.requestedTimeShow;
         this.finalDateManual = this.orderDetail.requestedTime;
+        this.preparationTimeIsUber = this.orderDetail.gmapsDeliveryTime;
         this.deliveryTime = 0;
         this.constDeliveryTime = 0;
         this.minDeliveryTime = 0;
@@ -450,11 +452,13 @@ export default {
       constDeliveryTime: null,
       constPreparationTime: null,
       serverTime: null,
-      requestedTimeShow: null
+      requestedTimeShow: null,
+      preparationTimeIsUber: null,
+      confirmationTimestamp2: null
     };
   },
   methods: {
-    format(d) {
+    format(d, withSeconds) {
       let date = new Date(d);
       let time = "";
       let formated = "";
@@ -464,6 +468,13 @@ export default {
         date.getMinutes() < 10
           ? ":0" + date.getMinutes()
           : ":" + date.getMinutes(); // get minutes
+
+      if (withSeconds) {
+        time +=
+          date.getSeconds() < 10
+            ? ":0" + date.getSeconds()
+            : ":" + date.getSeconds(); // get seconds
+      }
 
       formated =
         date.getFullYear() +
@@ -487,7 +498,9 @@ export default {
             (10 + +this.deliveryTime + +this.orderDetail.gmapsDeliveryTime)
         );
 
-        this.finalDateDetail = this.format(date);
+        this.finalDateDetail = this.format(date, true);
+      } else {
+        this.finalDateDetail = this.format(this.finalDateDetail, true);
       }
       let pickup_ready_dt = new Date(
         this.tab === "one" ? this.finalDateDetail : this.finalDateManual
@@ -502,14 +515,41 @@ export default {
       pickup_deadline_dt = new Date(pickup_deadline_dt);
       pickup_ready_dt = new Date(pickup_ready_dt);
 
+      if (this.orderDetail.es_uber === 1) {
+        let date =
+          this.tab === "one"
+            ? new Date(this.finalDateDetail)
+            : new Date(this.finalDateManual);
+        let final = date.setMinutes(
+          date.getMinutes() + this.preparationTimeIsUber
+        );
+        this.confirmationTimestamp2 = this.format(final, true);
+      }
+
+      var confirmationFinal;
+      if (this.tab === "one") {
+        if (this.orderDetail.es_uber !== 1) {
+          confirmationFinal = this.finalDateDetail;
+        } else {
+          confirmationFinal = this.confirmationTimestamp2;
+        }
+      } else {
+        if (this.orderDetail.es_uber !== 1) {
+          confirmationFinal = this.finalDateManual;
+        } else {
+          confirmationFinal = this.confirmationTimestamp2;
+        }
+      }
+
       var data = {
         orderID: this.orderDetail.id,
         confirmationTimestamp:
-          this.tab === "one"
-            ? `${this.finalDateDetail}:00`
-            : this.finalDateManual,
-        //confirmationTimestamp: '2021-03-08 23:00:00',
-        deliveryTime: +this.deliveryTime,
+          this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
+        confirmationTimestamp2: confirmationFinal,
+        deliveryTime:
+          this.orderDetail.es_uber === 1
+            ? this.preparationTimeIsUber
+            : +this.deliveryTime,
         preparationTime: +this.preparationTime,
         doAlgorithm: this.doAlgorithm,
         pickup_ready_dt: pickup_ready_dt.toISOString(),
@@ -603,15 +643,18 @@ export default {
     },
     calculatePreparationTime(flag) {
       let date = new Date(this.$store.getters["auth/getServerTime"]);
-      date.setMinutes(
-        date.getMinutes() +
-          this.deliveryTime +
-          this.orderDetail.gmapsDeliveryTime
-      );
+      if (this.orderDetail.es_uber !== 1) {
+        date.setMinutes(
+          date.getMinutes() +
+            this.deliveryTime +
+            this.orderDetail.gmapsDeliveryTime
+        );
+      }
       let date2 = new Date(
         this.orderDetail.requestedTime.replaceAll("-", "/")
         //"2021/07/23 15:00:00"
       );
+
       if (this.autoMode) {
         let diff = Math.ceil((date2.getTime() - date.getTime()) / 60000);
         if (diff >= 0) {
@@ -646,10 +689,6 @@ export default {
         date.getMinutes() < 10
           ? ":0" + date.getMinutes()
           : ":" + date.getMinutes(); // get minutes
-      /*tempFinalDetail +=
-        date.getSeconds() < 10
-          ? ":0" + date.getSeconds()
-          : ":" + date.getSeconds(); // get seconds*/
 
       this.finalDateDetail =
         date.getFullYear() +
