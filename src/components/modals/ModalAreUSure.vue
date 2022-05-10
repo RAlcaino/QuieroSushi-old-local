@@ -2,23 +2,23 @@
   <q-dialog v-model="open" persistent>
     <q-card
       class="my-card"
-      style="width: 350px; height:270px; border-radius:10px"
+      style="width: 350px; height: 270px; border-radius: 10px"
     >
       <q-card-section class="card-section-modal-new-o">
         <q-avatar
-          style="width:80px; height:80px; font-size:110px"
+          style="width: 80px; height: 80px; font-size: 110px"
           icon="warning"
           text-color="primary"
         />
-        <span class="q-ml-sm" style="font-size:18px; text-align:center"
+        <span class="q-ml-sm" style="font-size: 18px; text-align: center"
           >Esta venta es con <strong>Transferencia</strong>
         </span>
 
-        <span class="q-ml-sm" style="font-size:18px; text-align:center">
+        <span class="q-ml-sm" style="font-size: 18px; text-align: center">
           ¿Estás seguro que recibiste el pago para poder continuar?</span
         >
       </q-card-section>
-      <q-card-actions align="right" style="height: 20%;">
+      <q-card-actions align="right" style="height: 20%">
         <q-btn
           rounded
           color="green"
@@ -41,8 +41,9 @@
 
 <script>
 export default {
+  props: ["showConfirm"],
   created() {
-    this.bus.$on("modal-are-you-sure", item => {
+    this.bus.$on("modal-are-you-sure", (item) => {
       this.open = true;
       this.item = { ...item };
     });
@@ -51,15 +52,15 @@ export default {
     return {
       open: false,
       message: "",
-      item: {}
+      item: {},
     };
   },
   methods: {
     yesHandler() {
       this.open = false;
-      this.bus.$emit("continue-with-confirmation", this.item);
-    }
-  }
+      this.showConfirm(this.item);
+    },
+  },
 };
 </script>
 
