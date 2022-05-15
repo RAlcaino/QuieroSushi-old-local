@@ -5,7 +5,7 @@
       <the-confirm :requestServerTime="this.requestServerTime"></the-confirm>
     </keep-alive>
     <the-cancel :mode="'orders'"></the-cancel>
-    <modal-are-u-sure></modal-are-u-sure>
+    <modal-are-u-sure :showConfirm="confirmDialog"></modal-are-u-sure>
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top: 3%"
@@ -129,7 +129,7 @@
                 <template
                   v-if="
                     item.payDetail.address2 !== '' &&
-                      item.payDetail.address2 !== null
+                    item.payDetail.address2 !== null
                   "
                 >
                   <span v-if="item.payDetail.address2.search('dpto') == -1"
@@ -271,7 +271,7 @@ export default {
     TheConfirm,
     TheCancel,
     TheTimer,
-    ModalAreUSure
+    ModalAreUSure,
   },
   created() {
     this.flag = this.refresh;
@@ -296,7 +296,8 @@ export default {
       this.searching = false;
     });
 
-    this.bus.$on("continue-with-confirmation", data => {
+    this.bus.$on("continue-with-confirmation", (data) => {
+      console.log("Hola");
       this.confirmDialog(data);
     });
   },
@@ -309,7 +310,7 @@ export default {
     },
     getMaxPages() {
       return Math.ceil(this.ordersNotConfirmed.length / 15);
-    }
+    },
   },
   data() {
     return {
@@ -317,7 +318,7 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false
+      searching: false,
     };
   },
   beforeDestroy() {
@@ -377,12 +378,12 @@ export default {
     },
     openChat(row) {
       var data = {
-        id_venta: row.id
+        id_venta: row.id,
       };
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    }
-  }
+    },
+  },
 };
 </script>
 

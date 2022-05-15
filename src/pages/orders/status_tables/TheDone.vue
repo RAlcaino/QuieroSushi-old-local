@@ -128,7 +128,7 @@
                 <template
                   v-if="
                     item.payDetail.address2 != '' &&
-                      item.payDetail.address2 !== null
+                    item.payDetail.address2 !== null
                   "
                 >
                   <span v-if="item.payDetail.address2.search('dpto') == -1"
@@ -182,7 +182,11 @@
                 class="i-icon"
               /><strong
                 >Hora Prometida:
-                {{ item.kitchenTime.split(" ")[1].slice(0, 5) }}</strong
+                {{
+                  item.es_uber === 1
+                    ? getPromisedTime(item)
+                    : item.kitchenTime.split(" ")[1].slice(0, 5)
+                }}</strong
               >
             </div>
           </q-card-section>
@@ -244,7 +248,7 @@ export default {
   components: {
     BaseMoreComponent,
     MoreDetails,
-    TheCancel
+    TheCancel,
   },
   created() {
     this.bus.$on("reset-page", () => {
@@ -276,7 +280,7 @@ export default {
     },
     getMaxPages() {
       return Math.ceil(this.ordersDone.length / 15);
-    }
+    },
   },
   data() {
     return {
@@ -284,13 +288,47 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false
+      searching: false,
     };
   },
   beforeDestroy() {
     this.flag = false;
   },
   methods: {
+    format(d) {
+      let date = new Date(d);
+      let time = "";
+      let formated = "";
+
+      time += date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      time +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+
+      formated =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        time;
+
+      return formated;
+    },
+    getPromisedTime(item) {
+      let promisedTime = new Date(item.kitchenTime);
+      return this.format(
+        promisedTime.setMinutes(
+          promisedTime.getMinutes() - item.gmapsDeliveryTime
+        )
+      )
+        .split(" ")[1]
+        .slice(0, 5);
+    },
     moreDetails(row) {
       this.bus.$emit("more-details", row);
     },
@@ -302,13 +340,13 @@ export default {
     },
     openChat(row) {
       var data = {
-        id_venta: row.id
+        id_venta: row.id,
       };
 
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    }
-  }
+    },
+  },
 };
 </script>
 
