@@ -2,7 +2,7 @@
   <div style="padding-bottom: 100px">
     <more-details currentTab="not-confirmed"></more-details>
     <keep-alive>
-      <the-confirm></the-confirm>
+      <the-confirm :requestServerTime="this.requestServerTime"></the-confirm>
     </keep-alive>
     <the-cancel :mode="'orders'"></the-cancel>
     <modal-are-u-sure></modal-are-u-sure>
@@ -264,7 +264,7 @@ import ModalAreUSure from "../../../components/modals/ModalAreUSure.vue";
 
 export default {
   props: ["ordersNotConfirmed", "refresh", "sendWs"],
-  inject: ["formatNumber", "capitalize"],
+  inject: ["formatNumber", "capitalize", "requestServerTime"],
   components: {
     BaseMoreComponent,
     MoreDetails,

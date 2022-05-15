@@ -32,9 +32,14 @@
                   >Hora actual
                   <div class="live-c"></div
                 ></strong>
-                <strong style="color: #333; font-size: 18px">{{
-                  currentTime
-                }}</strong>
+                <q-item-label v-if="readyToView">
+                  <strong style="color: #333; font-size: 18px">
+                    {{ currentTime }}
+                  </strong></q-item-label
+                >
+                <q-item-label v-else>
+                  <q-spinner-facebook color="red" size="sm"
+                /></q-item-label>
               </p>
               <p
                 style="
@@ -53,7 +58,7 @@
 
             <div class="tab-alerts-c" v-if="orderDetail.soon !== null">
               <p
-                v-if="orderDetail.soon === 1"
+                v-if="orderDetail.soon === 1 && readyToView"
                 style="
                   color: green;
                   margin: 0 auto;
@@ -67,7 +72,7 @@
                 posible.
               </p>
               <p
-                v-if="orderDetail.soon === 0"
+                v-if="orderDetail.soon === 0 && readyToView"
                 style="
                   color: green;
                   margin: 0 auto;
@@ -83,6 +88,7 @@
               <p
                 v-if="
                   orderDetail.soon === 0 &&
+                    readyToView &&
                     (preparationTime > minPreparationTime ||
                       deliveryTime > minDeliveryTime)
                 "
@@ -107,6 +113,7 @@
                   Tiempo de preparación
                 </strong>
                 <div
+                  v-if="readyToView"
                   style="
                     display: flex;
                     flex-direction: row;
@@ -128,6 +135,19 @@
                     </template>
                   </q-input>
                 </div>
+                <div
+                  v-else
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                  "
+                >
+                  <q-item-label>
+                    <q-spinner-facebook color="red" size="sm"
+                  /></q-item-label>
+                </div>
                 <p
                   style="
                     color: red;
@@ -137,7 +157,11 @@
                     margin-top: 10px;
                     width: 80%;
                   "
-                  v-if="preparationTime > 60 && orderDetail.soon !== 0"
+                  v-if="
+                    preparationTime > 60 &&
+                      orderDetail.soon !== 0 &&
+                      readyToView
+                  "
                 >
                   Usted está dando {{ preparationTime }} minutos en tiempo de
                   cocina. Intente mejorar sus tiempos.
@@ -151,7 +175,8 @@
                 <strong style="color: #333; text-align: center">
                   Tiempo de Despacho
                 </strong>
-                <p
+                <div
+                  v-if="readyToView"
                   style="
                     display: flex;
                     flex-direction: row;
@@ -178,7 +203,20 @@
                       <q-icon name="moped" />
                     </template>
                   </q-input>
-                </p>
+                </div>
+                <div
+                  v-else
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                  "
+                >
+                  <q-item-label>
+                    <q-spinner-facebook color="red" size="sm"
+                  /></q-item-label>
+                </div>
               </div>
             </div>
 
@@ -189,7 +227,8 @@
                 <strong style="color: #333; text-align: center"
                   >Hora de confirmación final</strong
                 >
-                <p
+                <div
+                  v-if="readyToView"
                   style="
                     display: flex;
                     flex-direction: row;
@@ -203,7 +242,20 @@
                     icon="room_service"
                     :label="finalDateDetail"
                   />
-                </p>
+                </div>
+                <div
+                  v-else
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                  "
+                >
+                  <q-item-label>
+                    <q-spinner-facebook color="red" size="sm"
+                  /></q-item-label>
+                </div>
               </div>
             </div>
 
@@ -216,6 +268,7 @@
                 rounded
                 color="green"
                 label="Confirmar"
+                :disabled="!readyToView"
               />
               <q-btn
                 size="sm"
@@ -245,9 +298,14 @@
                   Hora actual
                   <div class="live-c"></div
                 ></strong>
-                <strong style="color: #333; font-size: 18px">
-                  {{ currentTime }}
-                </strong>
+                <q-item-label v-if="readyToView">
+                  <strong style="color: #333; font-size: 18px">
+                    {{ currentTime }}
+                  </strong></q-item-label
+                >
+                <q-item-label v-else>
+                  <q-spinner-facebook color="red" size="sm"
+                /></q-item-label>
               </p>
               <p
                 style="
@@ -342,6 +400,7 @@
                 rounded
                 color="green"
                 label="Confirmar"
+                :disabled="!readyToView"
               />
               <q-btn
                 size="sm"
@@ -360,13 +419,8 @@
 
 <script>
 export default {
-  inject: [
-    "showNotification",
-    "showLoading",
-    "hideLoading",
-    "errorHandling",
-    "getServerTime"
-  ],
+  props: ["requestServerTime"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
   mounted() {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-confirm", data => {
@@ -388,18 +442,27 @@ export default {
         this.minDeliveryTime = 0;
         this.orderDetail.gmapsDeliveryTime = 0;
       } else {
+        this.finalDateManual = this.orderDetail.requestedTime;
         this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
         this.constDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
         this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       }
       this.doAlgorithm = false;
+      this.readyToView = false;
       this.autoMode = true;
-      this.calculatePreparationTime(true);
-      this.updateTime();
-      this.getServerTime();
-      setInterval(() => {
-        this.updateTime();
-      }, 1000);
+      let promise = this.requestServerTime();
+      promise
+        .then(res => {
+          let date = new Date(res.data.result);
+          this.$store.commit("auth/setServerTime", date.toString());
+          this.calculatePreparationTime(true);
+          this.updateTime();
+          this.readyToView = true;
+          setInterval(() => {
+            this.updateTime();
+          }, 1000);
+        })
+        .catch(error => console.error(error));
     });
   },
   computed: {
@@ -454,7 +517,8 @@ export default {
       serverTime: null,
       requestedTimeShow: null,
       preparationTimeIsUber: null,
-      confirmationTimestamp2: null
+      confirmationTimestamp2: null,
+      readyToView: false
     };
   },
   methods: {
@@ -622,6 +686,7 @@ export default {
       this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
       this.minPreparationTime = null;
       this.minDeliveryTime = null;
+      this.readyToView = false;
     },
     updateTime() {
       let date = new Date(this.$store.getters["auth/getServerTime"]);

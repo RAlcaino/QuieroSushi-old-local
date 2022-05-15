@@ -643,15 +643,9 @@ export default {
     this.getTitles();
     this.getRoles();
     this.getNotifications(false);
-    var url = this.$store.getters["routes/getRoute"]("get.serverTime");
-    let res = await this.$axios.get(url, {
-      headers: {
-        Authorization: this.$store.getters["auth/getToken"]
-      }
-    });
+    let res = await this.requestServerTime();
     let date = new Date(res.data.result);
     this.$store.commit("auth/setServerTime", date.toString());
-
     setInterval(() => {
       this.serverTime();
     }, 1000);
@@ -689,7 +683,8 @@ export default {
     return {
       logout: this.logout,
       refreshToken: this.refreshToken,
-      getServerTime: this.serverTime
+      getServerTime: this.serverTime,
+      requestServerTime: this.requestServerTime
     };
   },
   methods: {
@@ -1142,10 +1137,6 @@ export default {
       return count;
     },
     serverTime() {
-      // let santiagoTime = new Date().toLocaleString("en-US", {
-      //   timeZone: "America/Santiago"
-      // });
-      // let date = new Date(santiagoTime);
       let time = "";
       let serverTime = "";
       let currentDate = new Date(this.$store.getters["auth/getServerTime"]);
@@ -1175,9 +1166,22 @@ export default {
         time;
 
       return serverTime;
+    },
+    async requestServerTime() {
+      var url = this.$store.getters["routes/getRoute"]("get.serverTime");
+      let res = await this.$axios.get(url, {
+        headers: {
+          Authorization: this.$store.getters["auth/getToken"]
+        }
+      });
+      return res;
     }
   }
 };
+// let santiagoTime = new Date().toLocaleString("en-US", {
+//   timeZone: "America/Santiago"
+// });
+// let date = new Date(santiagoTime);
 </script>
 
 <style lang="scss">
