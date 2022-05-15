@@ -346,7 +346,7 @@
                         >
                           <q-time
                             v-model="finalDateManual"
-                            mask="YYYY-MM-DD HH:mm:ss"
+                            mask="HH:mm"
                             format24h
                           >
                             <div class="row items-center justify-end">
@@ -385,7 +385,7 @@
                     color="green"
                     text-color="white"
                     icon="room_service"
-                    :label="finalDateManual"
+                    :label="getFormatForManual(finalDateManual)"
                   />
                 </p>
               </div>
@@ -435,14 +435,16 @@ export default {
           )
         );
         this.orderDetail.requestedTime = this.requestedTimeShow;
-        this.finalDateManual = this.orderDetail.requestedTime;
+        this.finalDateManual = this.orderDetail.requestedTime.split(" ")[1];
         this.preparationTimeIsUber = this.orderDetail.gmapsDeliveryTime;
         this.deliveryTime = 0;
         this.constDeliveryTime = 0;
         this.minDeliveryTime = 0;
         this.orderDetail.gmapsDeliveryTime = 0;
       } else {
-        this.finalDateManual = this.orderDetail.requestedTime;
+        this.finalDateManual = this.orderDetail.requestedTime
+          .slice(0, -3)
+          .split(" ")[1];
         this.deliveryTime = this.orderDetail.local.aditionalDeliveryTime;
         this.constDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
         this.minDeliveryTime = this.orderDetail.local.aditionalDeliveryTime;
@@ -566,24 +568,20 @@ export default {
       } else {
         this.finalDateDetail = this.format(this.finalDateDetail, true);
       }
-      let pickup_ready_dt = new Date(
-        this.tab === "one" ? this.finalDateDetail : this.finalDateManual
-      );
-      let pickup_deadline_dt = new Date(
-        this.tab === "one" ? this.finalDateDetail : this.finalDateManual
-      );
-      pickup_deadline_dt = pickup_deadline_dt.setMinutes(
-        pickup_deadline_dt.getMinutes() + 10
-      );
-
-      pickup_deadline_dt = new Date(pickup_deadline_dt);
-      pickup_ready_dt = new Date(pickup_ready_dt);
+      let pickup_ready_dt =
+        this.tab === "one"
+          ? +this.preparationTime
+          : this.getDiff(this.getFormatForManual(this.finalDateManual));
+      let pickup_deadline_dt =
+        this.tab === "one"
+          ? +this.preparationTime + 10
+          : this.getDiff(this.getFormatForManual(this.finalDateManual)) + 10;
 
       if (this.orderDetail.es_uber === 1) {
         let date =
           this.tab === "one"
             ? new Date(this.finalDateDetail)
-            : new Date(this.finalDateManual);
+            : new Date(this.getFormatForManual(this.finalDateManual));
         let final = date.setMinutes(
           date.getMinutes() + this.preparationTimeIsUber
         );
@@ -599,7 +597,7 @@ export default {
         }
       } else {
         if (this.orderDetail.es_uber !== 1) {
-          confirmationFinal = this.finalDateManual;
+          confirmationFinal = this.getFormatForManual(this.finalDateManual);
         } else {
           confirmationFinal = this.confirmationTimestamp2;
         }
@@ -608,7 +606,9 @@ export default {
       var data = {
         orderID: this.orderDetail.id,
         confirmationTimestamp:
-          this.tab === "one" ? this.finalDateDetail : this.finalDateManual,
+          this.tab === "one"
+            ? this.finalDateDetail
+            : this.getFormatForManual(this.finalDateManual) + ":00",
         confirmationTimestamp2: confirmationFinal,
         deliveryTime:
           this.orderDetail.es_uber === 1
@@ -616,9 +616,10 @@ export default {
             : +this.deliveryTime,
         preparationTime: +this.preparationTime,
         doAlgorithm: this.doAlgorithm,
-        pickup_ready_dt: pickup_ready_dt.toISOString(),
-        pickup_deadline_dt: pickup_deadline_dt.toISOString()
+        pickup_ready_dt: pickup_ready_dt,
+        pickup_deadline_dt: pickup_deadline_dt
       };
+
       this.showLoading();
 
       if (!this.prod) {
@@ -776,6 +777,36 @@ export default {
       } else {
         return "Error desconocido al crear el delivery.";
       }
+    },
+    getDiff(d) {
+      let date1 = new Date(this.$store.getters["auth/getServerTime"]);
+      let date2 = new Date(d);
+
+      let diff = Math.ceil((date2.getTime() - date1.getTime()) / 60000);
+      if (diff > 10) {
+        this.preparationTime = diff;
+        return diff;
+      } else {
+        this.preparationTime = 10;
+        return 10;
+      }
+    },
+    getFormatForManual(time) {
+      let date = new Date(this.$store.getters["auth/getServerTime"]);
+      let formated = "";
+
+      formated =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        time;
+
+      return formated;
     }
   }
 };
