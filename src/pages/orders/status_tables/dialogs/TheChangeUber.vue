@@ -11,7 +11,7 @@
           style="font-size:16px; margin-bottom: 15px; font-weight: 500;"
           class="q-ml-sm"
         >
-          ¿A que hora quieres que llegue el Uber?
+          ¿En cuántos minutos quieres que llegue el moto al local?
         </span>
 
         <q-input
@@ -20,48 +20,19 @@
               deliveryStatus !== 'delivered' &&
               deliveryStatus !== 'canceled'
           "
-          filled
-          v-model="date"
-          readonly
-          style="width: 90%"
-          :hint="
-            `La fecha y hora actual de llegada al local es el ${timePickupReady}`
-          "
+          v-model="newTime"
+          color="primary"
+          label="Minutos"
+          style="width: 100px"
+          type="number"
+          :min="10"
         >
           <template v-slot:prepend>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-date v-model="date" mask="YYYY-MM-DD HH:mm">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Cerrar" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-
-          <template v-slot:append>
-            <q-icon name="access_time" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-time v-model="date" mask="YYYY-MM-DD HH:mm">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Cerrar" color="primary" flat />
-                  </div>
-                </q-time>
-              </q-popup-proxy>
-            </q-icon>
+            <q-icon name="query_builder" />
           </template>
         </q-input>
 
-        <div v-if="deliveryStatusObject !== {}">
+        <div v-if="Object.entries(deliveryStatusObject).length === 0">
           <p
             style="font-size:15px; margin-bottom: 15px; text-align: center"
             class="q-ml-sm"
@@ -83,7 +54,6 @@
           <q-spinner-facebook color="primary" size="2em"
         /></q-item-label>
       </q-card-section>
-
       <q-card-actions align="right">
         <q-btn
           @click="DoChange()"
@@ -91,10 +61,7 @@
           rounded
           label="Cambiar"
           color="green"
-          :disabled="
-            deliveryStatusObject !== {} &&
-              (deliveryStatus === 'delivered' || deliveryStatus === 'canceled')
-          "
+          :disabled="Object.entries(deliveryStatusObject).length === 0"
         />
         <q-btn
           size="sm"
@@ -148,15 +115,12 @@ export default {
       timePickupReady: null,
       date: null,
       deliveryStatus: "",
-      deliveryStatusObject: {}
+      deliveryStatusObject: {},
+      newTime: 10
     };
   },
   methods: {
     DoChange() {
-      if (!this.validations()) {
-        return;
-      }
-
       let data = {
         delivery_id: this.orderDetail.delivery_id
       };
@@ -164,9 +128,12 @@ export default {
         orderId: this.orderId,
         local_name: this.orderDetail.local.name,
         local_address: this.orderDetail.local.address,
-        pickup_ready_dt: this.getTime(0),
-        pickup_deadline_dt: this.getTime(10)
+        pickup_ready_dt: +this.newTime,
+        pickup_deadline_dt: +this.newTime + 10
       };
+
+      console.log(data2);
+      return;
       var url = this.$store.getters["routes/getRoute"]("uber.cancel");
 
       this.showLoading();
