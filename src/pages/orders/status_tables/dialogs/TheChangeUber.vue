@@ -32,7 +32,7 @@
           </template>
         </q-input>
 
-        <div v-if="Object.entries(deliveryStatusObject).length === 0">
+        <div v-if="Object.entries(deliveryStatusObject).length !== 0">
           <p
             style="font-size:15px; margin-bottom: 15px; text-align: center"
             class="q-ml-sm"
@@ -61,7 +61,11 @@
           rounded
           label="Cambiar"
           color="green"
-          :disabled="Object.entries(deliveryStatusObject).length === 0"
+          :disabled="
+            Object.entries(deliveryStatusObject).length === 0 ||
+              deliveryStatus === 'delivered' ||
+              deliveryStatus === 'canceled'
+          "
         />
         <q-btn
           size="sm"
