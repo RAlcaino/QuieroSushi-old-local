@@ -132,8 +132,6 @@ export default {
         pickup_deadline_dt: +this.newTime + 10
       };
 
-      console.log(data2);
-      return;
       var url = this.$store.getters["routes/getRoute"]("uber.cancel");
 
       this.showLoading();
