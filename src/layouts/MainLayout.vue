@@ -1198,7 +1198,7 @@ export default {
 
 .user-sidebar {
   width: 100%;
-  height: 200px;
+  height: 150px;
   background-image: url("../assets/background.jpg");
   background-position-x: -20px;
   background-size: cover;

@@ -107,6 +107,22 @@ const routes = [
         }
       },
       {
+        name: "own-orders",
+        path: "/pedidos-propios",
+        component: () => import("src/pages/orders/own_orders/TheOwnOrders.vue"),
+        beforeEnter: (to, from, next) => {
+          if (isAuthenticated()) {
+            if (accessTo("/pedidos-propios")) {
+              next();
+            } else {
+              next("/404");
+            }
+          } else {
+            next("/login");
+          }
+        }
+      },
+      {
         name: "admin-users",
         path: "/administrar-usuarios",
         component: () => import("src/pages/cruds/users/UsersPage.vue"),
