@@ -16,7 +16,7 @@
       <the-item
         v-if="
           item.name === 'total_pagar' &&
-            (items[5].value > 0 || items[6].value > 0)
+            (items[6].value > 0 || items[7].value > 0)
         "
         :title="item.title"
         :value="item.value"
@@ -45,6 +45,12 @@ export default {
           name: "comision_online",
           title: "Comisión Pago Online: ",
           value: Math.round(this.data.generalData.comision_online),
+          flag: false
+        },
+        {
+          name: "costo_despachos_por_cobrar",
+          title: "Despachos no Cobrados: ",
+          value: Math.round(this.data.generalData.costo_despachos_por_cobrar),
           flag: false
         },
         {
