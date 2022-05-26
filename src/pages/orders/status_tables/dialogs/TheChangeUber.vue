@@ -92,6 +92,7 @@ export default {
     this.prod = this.$store.getters["mode/getMode"];
     this.bus.$on("the-change-uber", row => {
       this.date = null;
+      this.newTime = 10;
       this.timePickupReady = null;
       this.pickup_ready = null;
       this.option = { value: 10, label: "10 minutos" };
