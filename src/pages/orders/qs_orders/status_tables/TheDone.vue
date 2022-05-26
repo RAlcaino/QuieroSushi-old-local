@@ -11,7 +11,7 @@
         class="fit column wrap justify-center items-center content-center"
         v-if="ordersDone.length === 0 && searching === false"
       >
-        <img src="../../../assets/icons8-sad.gif" alt="sad" width="130" />
+        <img src="../../../../assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size: 16px; font-weight: bold; text-align: center">
           No se encontraron pedidos listos
         </p>
@@ -238,7 +238,7 @@
 </template>
 
 <script>
-import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
+import BaseMoreComponent from "../../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
 

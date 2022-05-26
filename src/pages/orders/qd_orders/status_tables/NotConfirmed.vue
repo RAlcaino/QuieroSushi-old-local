@@ -15,7 +15,7 @@
         v-if="ordersNotConfirmed.length === 0 && searching === false"
         style="margin-top: 100px"
       >
-        <img src="../../../assets/icons8-sad.gif" alt="sad" width="130" />
+        <img src="../../../../assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size: 16px; font-weight: bold; text-align: center">
           No se encontraron pedidos sin confirmar
         </p>
@@ -255,12 +255,12 @@
 </template>
 
 <script>
-import BaseMoreComponent from "../../../components/bases/BaseMoreComponent.vue";
+import BaseMoreComponent from "../../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
 import TheConfirm from "./dialogs/TheConfirm.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
 import TheTimer from "../timer/TheTimer.vue";
-import ModalAreUSure from "../../../components/modals/ModalAreUSure.vue";
+import ModalAreUSure from "../../../../components/modals/ModalAreUSure.vue";
 
 export default {
   props: ["ordersNotConfirmed", "refresh", "sendWs"],

@@ -17,7 +17,7 @@
       >
         <img src="../../../../assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size: 16px; font-weight: bold; text-align: center">
-          No se encontraron pedidos propios
+          No se encontraron pedidos sin confirmar
         </p>
       </div>
       <div
@@ -129,7 +129,7 @@
                 <template
                   v-if="
                     item.payDetail.address2 !== '' &&
-                      item.payDetail.address2 !== null
+                    item.payDetail.address2 !== null
                   "
                 >
                   <span v-if="item.payDetail.address2.search('dpto') == -1"
@@ -210,6 +210,34 @@
               >
                 Anular
               </q-btn>
+              <q-btn
+                rounded
+                size="sm"
+                color="green"
+                style="font-size: 10.5px"
+                @click="
+                  item.paymentMethod.toLowerCase() === 'transferencia' &&
+                  item.es_uber === 1
+                    ? areUSure(item)
+                    : confirmDialog(item)
+                "
+              >
+                Confirmar
+              </q-btn>
+            </div>
+            <div
+              class="fit row wrap justify-center items-center content-center"
+              style="margin-top: 5px"
+            >
+              <q-btn
+                rounded
+                size="sm"
+                color="amber-9"
+                style="font-size: 10.5px; margin-right: 5px"
+                @click="openChat(item)"
+              >
+                Servicio al cliente
+              </q-btn>
             </div>
           </q-card-actions>
         </q-card>
@@ -228,10 +256,10 @@
 
 <script>
 import BaseMoreComponent from "../../../../components/bases/BaseMoreComponent.vue";
-import MoreDetails from "../../status_tables/dialogs/MoreDetails.vue";
-import TheConfirm from "../../status_tables/dialogs/TheConfirm.vue";
-import TheCancel from "../../status_tables/dialogs/TheCancel.vue";
-import TheTimer from "../../timer/TheTimer.vue";
+import MoreDetails from "./dialogs/MoreDetails.vue";
+import TheConfirm from "./dialogs/TheConfirm.vue";
+import TheCancel from "./dialogs/TheCancel.vue";
+import TheTimer from "../timer/TheTimer.vue";
 import ModalAreUSure from "../../../../components/modals/ModalAreUSure.vue";
 
 export default {
@@ -243,7 +271,7 @@ export default {
     TheConfirm,
     TheCancel,
     TheTimer,
-    ModalAreUSure
+    ModalAreUSure,
   },
   created() {
     this.flag = this.refresh;
@@ -268,7 +296,7 @@ export default {
       this.searching = false;
     });
 
-    this.bus.$on("continue-with-confirmation", data => {
+    this.bus.$on("continue-with-confirmation", (data) => {
       console.log("Hola");
       this.confirmDialog(data);
     });
@@ -282,7 +310,7 @@ export default {
     },
     getMaxPages() {
       return Math.ceil(this.ordersNotConfirmed.length / 15);
-    }
+    },
   },
   data() {
     return {
@@ -290,7 +318,7 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false
+      searching: false,
     };
   },
   beforeDestroy() {
@@ -350,12 +378,12 @@ export default {
     },
     openChat(row) {
       var data = {
-        id_venta: row.id
+        id_venta: row.id,
       };
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    }
-  }
+    },
+  },
 };
 </script>
 

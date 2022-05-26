@@ -1,13 +1,13 @@
 <template>
   <base-page
-    title="Pedidos Propios"
-    icon="inventory_2"
+    title="Pedidos"
+    icon="delivery_dining"
     :sync="sync"
     :toolbar="true"
   >
     <div
       class="row wrap justify-between items-center content-center mobile-styles-o"
-      style="margin: 20px auto 0 auto; width: 90%"
+      style="margin: 20px auto; width: 90%"
     >
       <div class="input-style-o">
         <q-input
@@ -17,36 +17,123 @@
           label="Buscar"
           v-model="search"
           @focus="resetPage()"
-          style="margin-bottom: 5px; margin-top: 10px"
+          style="margin-bottom: 5px;"
         />
       </div>
       <div>
-        <q-btn
-          class="gt-sm"
-          color="green"
+        <q-select
+          ref="select"
           rounded
-          size="sm"
-          style="position: relative; bottom: 5px"
+          outlined
+          dense
+          :options="localsFilter"
+          :options-dense="true"
+          hide-hint
+          label="Locales"
+          v-model="localSelected"
+          @input="change"
+          @popup-hide="allLocals()"
+          :virtual-scroll-sticky-size-start="80"
+          style="margin-bottom: 5px;"
         >
-          <q-icon style="margin-right:5px" size="20px" name="add" />
-          <div style="font-size:12px">Crear</div>
-        </q-btn>
+          <template v-slot:prepend>
+            <q-icon name="store" />
+          </template>
+          <template v-slot:before-options v-if="locals.length > 1">
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item dense clickable @click="allOrders()">
+              <q-item-section>Todos</q-item-section>
+            </q-item>
+          </template>
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-grey">
+                Sin Resultados
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
       </div>
     </div>
-    <div class="orders-tab" style="margin-top:5px">
+    <div class="orders-tab" style="margin-top:20px">
       <div style="width: 90%;height: 100%;">
-        <the-item
-          :ordersNotConfirmed="getOrdersNotConfirmed"
-          :refresh="refresh"
-          :sendWs="sendWs"
-        ></the-item>
+        <q-tabs
+          v-model="tab"
+          dense
+          class="bg-grey-3"
+          align="justify"
+          narrow-indicator
+          style="border-radius:10px"
+        >
+          <q-tab
+            class="text-primary"
+            name="not-confirmed"
+            icon="watch_later"
+            :label="responsiveLabels ? '' : 'Sin Confirmar'"
+          />
+          <q-tab
+            class="text-blue"
+            name="confirmed"
+            icon="room_service"
+            :label="responsiveLabels ? '' : 'Confirmados'"
+          />
+          <q-tab
+            class="text-green"
+            name="done"
+            icon="check_circle"
+            :label="responsiveLabels ? '' : 'Listos'"
+          />
+        </q-tabs>
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="not-confirmed" style="padding: 0; overflow:hidden">
+            <not-confirmed
+              :ordersNotConfirmed="getOrdersNotConfirmed"
+              :refresh="refresh"
+              :sendWs="sendWs"
+            ></not-confirmed>
+          </q-tab-panel>
+
+          <q-tab-panel name="confirmed" style="padding: 0; overflow:hidden">
+            <the-confirmed
+              :ordersConfirmed="getOrdersConfirmed"
+              :sendWs="sendWs"
+            ></the-confirmed>
+          </q-tab-panel>
+
+          <q-tab-panel name="done" style="padding: 0; overflow:hidden">
+            <the-done :ordersDone="getOrdersDone" :sendWs="sendWs"></the-done>
+          </q-tab-panel>
+        </q-tab-panels>
       </div>
     </div>
   </base-page>
 </template>
 
 <script>
-import TheItem from "../own_orders/status_tables/TheItem.vue";
+import NotConfirmed from "./status_tables/NotConfirmed.vue";
+import TheConfirmed from "./status_tables/TheConfirmed.vue";
+import TheDone from "./status_tables/TheDone.vue";
 import BasePage from "src/components/bases/BasePage.vue";
 
 export default {
@@ -59,7 +146,9 @@ export default {
     "getStoreLocals"
   ],
   components: {
-    TheItem,
+    NotConfirmed,
+    TheConfirmed,
+    TheDone,
     BasePage
   },
   created() {
@@ -67,6 +156,14 @@ export default {
     if (this.toAll) {
       this.allOrders();
     }
+    this.bus.$on("to-one-tab", () => {
+      this.bus.$emit("scroll-up");
+      this.tab = "not-confirmed";
+      this.refresh = true;
+      this.search = "";
+      this.allOrders();
+      this.sync(false);
+    });
   },
   mounted() {
     this.initLocals();
@@ -150,7 +247,11 @@ export default {
       prod: null,
       responsiveLabels: false,
       responsiveMobile: false,
+      ordersDone: [],
+      ordersConfirmed: [],
       ordersNotConfirmed: [],
+      ordersDoneOriginal: [],
+      ordersConfirmedOriginal: [],
       ordersNotConfirmedOriginal: [],
       search: "",
       data: [],
@@ -228,8 +329,9 @@ export default {
       });
     },
     filters() {
+      var vue = this;
       var newArray = [];
-      this.data.map(item => {
+      var roots = this.data.map(function(item) {
         item.name = item.payDetail.user;
         item.userPhone = item.payDetail.userPhone;
         item.userAddress = item.payDetail.address;
@@ -237,10 +339,50 @@ export default {
       });
 
       this.data = newArray;
+      if (vue.local.value !== -1) {
+        this.data = this.originalData.filter(
+          item => item.local.id_local === vue.local.value
+        );
+      }
+      this.ordersDone = this.data.filter(item => item.status === "done");
+      this.ordersConfirmed = this.data.filter(
+        item => item.status === "confirmed"
+      );
       this.ordersNotConfirmed = this.data.filter(
         item => item.status === "not-confirmed"
       );
+
+      this.ordersDoneOriginal = this.ordersDone;
+      this.ordersConfirmedOriginal = this.ordersConfirmed;
       this.ordersNotConfirmedOriginal = this.ordersNotConfirmed;
+    },
+    filterFn(val) {
+      if (val === "") {
+        this.localsFilter = this.locals;
+        return;
+      }
+
+      const needle = val.toLowerCase();
+      this.localsFilter = this.locals.filter(
+        v => v.label.toLowerCase().indexOf(needle) > -1
+      );
+    },
+    change(val) {
+      var vue = this;
+      if (val !== null) {
+        this.local = val;
+        this.data = this.originalData.filter(
+          item => item.local.id_local === vue.local.value
+        );
+        this.filters();
+        this.$store.commit("auth/setCurrentLocal", {
+          id: val.value,
+          name: val.name,
+          image: val.image,
+          commune: val.commune,
+          cartStatus: val.cartStatus
+        });
+      }
     },
     allLocals() {
       this.localsFilter = this.locals;

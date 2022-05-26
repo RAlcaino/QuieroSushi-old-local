@@ -230,7 +230,7 @@
                         :position="marker"
                         :clickable="true"
                         :icon="{
-                          url: require(`../../../../assets/${marker.icon}`),
+                          url: require(`../../../../../assets/${marker.icon}`),
                           size: {
                             width: 30,
                             height: 30,

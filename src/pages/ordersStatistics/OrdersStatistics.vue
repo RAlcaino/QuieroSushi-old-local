@@ -300,7 +300,7 @@
 </template>
 
 <script>
-import TheCancel from "../orders/status_tables/dialogs/TheCancel.vue";
+import TheCancel from "../orders/qs_orders/status_tables/dialogs/TheCancel.vue";
 import BasePage from "src/components/bases/BasePage.vue";
 import $ from "jquery";
 export default {
