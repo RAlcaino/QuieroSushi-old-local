@@ -5,6 +5,7 @@
     :sync="sync"
     :toolbar="true"
   >
+    <new-order></new-order>
     <div
       class="row wrap justify-between items-center content-center mobile-styles-o"
       style="margin: 20px auto; width: 90%"
@@ -28,6 +29,7 @@
             rounded
             size="sm"
             style="position: relative; bottom: 0px; margin-right: 10px "
+            @click="createOrder()"
           >
             <q-icon style="margin-right:5px" size="20px" name="add" />
             <div style="font-size:12px; margin-top: 3px">Crear</div>
@@ -147,6 +149,7 @@ import NotConfirmed from "./status_tables/NotConfirmed.vue";
 import TheConfirmed from "./status_tables/TheConfirmed.vue";
 import TheDone from "./status_tables/TheDone.vue";
 import BasePage from "src/components/bases/BasePage.vue";
+import NewOrder from "../qd_orders/status_tables/dialogs/NewOrder.vue";
 
 export default {
   props: ["toAll"],
@@ -161,7 +164,8 @@ export default {
     NotConfirmed,
     TheConfirmed,
     TheDone,
-    BasePage
+    BasePage,
+    NewOrder
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
@@ -463,6 +467,9 @@ export default {
     },
     resetPage() {
       this.bus.$emit("reset-page");
+    },
+    createOrder() {
+      this.bus.$emit("modal-new-order");
     },
     initLocals() {
       this.locals = [];
