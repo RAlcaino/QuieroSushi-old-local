@@ -24,7 +24,6 @@
       <div style="display:flex">
         <div>
           <q-btn
-            class="gt-sm"
             color="green"
             rounded
             size="sm"
@@ -188,7 +187,7 @@ export default {
     this.sync(false);
     this.responsiveMode();
 
-    this.bus.$on("sync-orders", () => {
+    this.bus.$on("sync-orders-qd", () => {
       this.sync(false);
     });
   },
@@ -285,6 +284,7 @@ export default {
   },
   methods: {
     sync(flag) {
+      //TODO:Hacer la peticion de las ordenes QD y adaptar
       if (flag) {
         this.showLoading();
       } else {

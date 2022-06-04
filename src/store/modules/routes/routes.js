@@ -201,6 +201,14 @@ const mutations = {
       {
         name: "uber.update",
         link: "/update-delivery/{orderId}"
+      },
+      {
+        name: "create.order.qd",
+        link: "/qd-pedido"
+      },
+      {
+        name: "confirm.order.qd",
+        link: "/qd-confirm"
       }
     ];
   }

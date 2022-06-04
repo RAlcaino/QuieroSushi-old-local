@@ -43,7 +43,7 @@ export default {
     return {
       open: false,
       message: "",
-      prod:""
+      prod: ""
     };
   },
   methods: {
@@ -115,7 +115,18 @@ export default {
           .then(response => {
             this.hideLoading();
             if (response.data.status === "success") {
-              var locals = response.data.result.sort(function(a, b) {
+              var locals = response.data.result.locals.sort(function(a, b) {
+                if (a.name > b.name) {
+                  return 1;
+                }
+                if (a.name < b.name) {
+                  return -1;
+                }
+                // a must be equal to b
+                return 0;
+              });
+
+              var qdLocals = response.data.result.qdLocals.sort(function(a, b) {
                 if (a.name > b.name) {
                   return 1;
                 }
@@ -126,13 +137,13 @@ export default {
                 return 0;
               });
               this.$store.commit("auth/setLocals", locals);
+              this.$store.commit("auth/setQDLocals", qdLocals);
               this.bus.$emit("sync-locals-settings");
               this.bus.$emit("refresh-cartstatus");
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
           })
-
           .catch(error => {
             this.hideLoading();
             this.errorHandling(error);

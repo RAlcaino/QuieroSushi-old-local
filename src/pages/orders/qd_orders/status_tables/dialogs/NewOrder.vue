@@ -21,57 +21,138 @@
       </q-card-section>
 
       <q-card-section>
-        <q-form
-          class="q-gutter-md form-recovery"
-          style="display:flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 20px"
-        >
-          <q-input
-            type="text"
-            outlined
-            rounded
-            dense
-            label="Nombre"
-            style="width: 80%;"
-          />
-          <q-input
-            type="text"
-            outlined
-            rounded
-            dense
-            label="Dirección"
-            style="width: 80%;"
-          />
-          <q-input
-            type="text"
-            outlined
-            rounded
-            dense
-            label="Telefono (+56)"
-            style="width: 80%;"
-          />
-          <q-input
-            type="text"
-            outlined
-            rounded
-            dense
-            label="Tiempo"
-            style="width: 80%;"
-          />
-          <q-input
-            type="text"
-            outlined
-            rounded
-            dense
-            label="Monto Productos ($)"
-            style="width: 80%;"
-          />
-        </q-form>
+        <q-list class="column">
+          <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-select
+                outlined
+                rounded
+                dense
+                v-model="qdLocal"
+                :options="qdLocals"
+                label="Local QD"
+              >
+              </q-select>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <q-input
+                type="text"
+                outlined
+                rounded
+                dense
+                label="Nombre del cliente"
+                v-model="nombre"
+              />
+            </q-item-section>
+          </q-item>
+          <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-select
+                outlined
+                rounded
+                dense
+                v-model="region"
+                :options="$store.getters['auth/getZones'].regions"
+                label="Región"
+              >
+              </q-select>
+            </q-item-section>
+          </q-item>
+          <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-select
+                outlined
+                rounded
+                dense
+                v-model="ciudad"
+                :options="citiesFiltered"
+                label="Ciudad"
+              >
+              </q-select>
+            </q-item-section>
+          </q-item>
+          <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-select
+                outlined
+                rounded
+                dense
+                v-model="comuna"
+                :options="comunesFilteredForm"
+                label="Comuna"
+              >
+              </q-select>
+            </q-item-section>
+          </q-item>
+          <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-input
+                type="text"
+                outlined
+                rounded
+                dense
+                label="Dirección del cliente"
+                v-model="direccion"
+              />
+            </q-item-section>
+          </q-item>
+          <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <q-item-section>
+              <q-select
+                outlined
+                rounded
+                dense
+                v-model="metodo_pago"
+                :options="metodos_pago"
+                label="Método de pago"
+              >
+              </q-select>
+            </q-item-section>
+          </q-item>
+
+          <q-list class="row">
+            <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <q-item-section>
+                <q-input
+                  type="text"
+                  :maxlength="9"
+                  outlined
+                  rounded
+                  dense
+                  label="Telefono (+56)"
+                  v-model="telefono"
+              /></q-item-section>
+            </q-item>
+            <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <q-item-section>
+                <q-input
+                  type="number"
+                  outlined
+                  rounded
+                  dense
+                  v-model="minutos"
+                  label="Tiempo (Minutos)"
+              /></q-item-section>
+            </q-item>
+            <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <q-item-section>
+                <q-input
+                  type="number"
+                  outlined
+                  rounded
+                  dense
+                  label="Monto Productos ($)"
+                  v-model="subtotal"
+              /></q-item-section> </q-item
+          ></q-list>
+        </q-list>
       </q-card-section>
 
       <q-card-actions style="height: 20%; width: 100%; display:block;">
         <div class="q-pa-md" style="display: flex; justify-content:center;">
           <q-btn
-            class="gt-sm"
             color="green"
             rounded
             size="sm"
@@ -88,20 +169,151 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreQDLocals"
+  ],
   data() {
     return {
-      open: false
+      open: false,
+      comuna: {
+        label: "Seleccionar...",
+        value: null
+      },
+      region: {
+        label: "Seleccionar...",
+        value: null
+      },
+      ciudad: {
+        label: "Seleccionar...",
+        value: null
+      },
+      qdLocal: {
+        label: "Seleccionar...",
+        value: null
+      },
+      qdLocals: [],
+      nombre: "",
+      minutos: "",
+      direccion: "",
+      telefono: "",
+      tiempo: "",
+      subtotal: "",
+      metodo_pago: "Seleccionar...",
+      metodos_pago: [
+        "Efectivo",
+        "Debito en Domicilio",
+        "Credito en Domicilio",
+        "Pago Online",
+        "Transferencia",
+        "Pago Rut"
+      ]
     };
   },
   mounted() {
     this.bus.$on("modal-new-order", () => {
       this.open = true;
     });
+    this.qdLocals = [...this.getStoreQDLocals("ACTIVE")];
+  },
+  computed: {
+    comunesFilteredForm() {
+      var comunesFiltered = this.$store.getters["auth/getZones"].comunes.filter(
+        item =>
+          item.id_ciudad === this.ciudad.value &&
+          item.id_region === this.region.value
+      );
+      if (
+        !comunesFiltered.some(item => item.value === this.comuna.value) &&
+        comunesFiltered.length !== 0
+      ) {
+        this.comuna = comunesFiltered[0];
+      }
+      return comunesFiltered;
+    },
+    citiesFiltered() {
+      var citiesFiltered = this.$store.getters["auth/getZones"].cities.filter(
+        item => item.id_region === this.region.value
+      );
+      if (
+        !citiesFiltered.some(item => item.value === this.ciudad.value) &&
+        citiesFiltered.length !== 0
+      ) {
+        this.ciudad = citiesFiltered[0];
+      }
+      return citiesFiltered;
+    }
   },
   methods: {
     createOrder() {
-      console.log("create order");
+      let body = {
+        id_local: this.qdLocal.value,
+        direccion_usuario: {
+          direccion: this.direccion,
+          direccion2: "",
+          comuna: this.comuna.label
+        },
+        nombre: this.nombre,
+        telefono: this.telefono,
+        subtotal: this.subtotal,
+        metodo_pago: this.metodo_pago,
+        uber: {
+          es_uber: true
+        }
+      };
+
+      this.showLoading();
+      var url = this.$store.getters["routes/getRoute"]("create.order.qd");
+      var urlConfirm = this.$store.getters["routes/getRoute"](
+        "confirm.order.qd"
+      );
+      this.$axios
+        .post(url, body, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          let body = {
+            orderID: response.data.result.message.id,
+            pickup_ready_dt: +this.minutos,
+            pickup_deadline_dt: +this.minutos + 10
+          };
+
+          this.$axios
+            .post(urlConfirm, body, {
+              headers: {
+                Authorization: this.$store.getters["auth/getToken"]
+              }
+            })
+            .then(response => {
+              //TODO: Refrescar las ordenes QD
+              this.hideLoading();
+              this.open = false;
+            })
+            .catch(error => {
+              this.hideLoading();
+              this.errorHandling(error);
+            });
+        })
+        .catch(error => {
+          console.log(error);
+          if (error.response !== undefined) {
+            if (error.response.data.code === 412) {
+              this.showNotification(
+                "El télefono no es válido",
+                "negative",
+                "error"
+              );
+            }
+          }
+
+          this.hideLoading();
+          this.errorHandling(error);
+        });
     },
     close() {
       this.open = false;

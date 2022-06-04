@@ -161,10 +161,19 @@
       </q-card-section>
 
       <q-card-actions align="right" style="height: 20%;">
-        <q-btn rounded color="green" label="Guardar" style="font-size: 11px
-        !important" @click="save(2)"
-        :disable="this.$store.getters['auth/getDataLocals'].every( item =>
-        item.localStatus === 'bloqueado' )" />
+        <q-btn
+          rounded
+          color="green"
+          label="Guardar"
+          style="font-size: 11px
+        !important"
+          @click="save(2)"
+          :disable="
+            this.$store.getters['auth/getDataLocals'].every(
+              item => item.localStatus === 'bloqueado'
+            )
+          "
+        />
         <q-btn
           rounded
           color="primary"
@@ -422,7 +431,18 @@ export default {
           .then(response => {
             this.hideLoading();
             if (response.data.status === "success") {
-              var locals = response.data.result.sort(function(a, b) {
+              var locals = response.data.result.locals.sort(function(a, b) {
+                if (a.name > b.name) {
+                  return 1;
+                }
+                if (a.name < b.name) {
+                  return -1;
+                }
+                // a must be equal to b
+                return 0;
+              });
+
+              var qdLocals = response.data.result.qdLocals.sort(function(a, b) {
                 if (a.name > b.name) {
                   return 1;
                 }
@@ -433,6 +453,7 @@ export default {
                 return 0;
               });
               this.$store.commit("auth/setLocals", locals);
+              this.$store.commit("auth/setQDLocals", qdLocals);
               this.bus.$emit("sync-locals-settings");
               this.bus.$emit("refresh-cartstatus");
             } else {

@@ -13,6 +13,7 @@ const state = {
     email: "",
     role: "",
     locals: [],
+    qdLocals: [],
     debt: false,
     notifications: []
   },
@@ -41,6 +42,7 @@ const mutations = {
     state.user.email = payload.email;
     state.user.role = payload.role.name;
     state.user.locals = payload.locals;
+    state.user.qdLocals = payload.qdLocals;
     let date = new Date();
     date.setMinutes(date.getMinutes() + 5);
     let currentHour = date.getHours();
@@ -124,6 +126,9 @@ const mutations = {
   },
   setLocals(state, payload) {
     state.user.locals = payload;
+  },
+  setQDLocals(state, payload) {
+    state.user.qdLocals = payload;
   },
   setToken(state, payload) {
     state.token = payload;
@@ -238,6 +243,9 @@ const getters = {
   },
   getDataLocals(state) {
     return state.user.locals;
+  },
+  getDataQDLocals(state) {
+    return state.user.qdLocals;
   },
   getInstallPromptEvent(state) {
     return state.installPromptEvent;

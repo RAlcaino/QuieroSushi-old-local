@@ -898,7 +898,17 @@ export default {
           .then(response => {
             this.hideLoading();
             if (response.data.status === "success") {
-              var locals = response.data.result.sort((a, b) => {
+              var locals = response.data.result.locals.sort((a, b) => {
+                if (a.name > b.name) {
+                  return 1;
+                }
+                if (a.name < b.name) {
+                  return -1;
+                }
+                return 0;
+              });
+
+              var qdLocals = response.data.result.qdLocals.sort((a, b) => {
                 if (a.name > b.name) {
                   return 1;
                 }
@@ -909,6 +919,7 @@ export default {
               });
 
               this.$store.commit("auth/setLocals", locals);
+              this.$store.commit("auth/setQDLocals", qdLocals);
               this.bus.$emit("sync-locals-settings");
               this.flag = this.$store.getters["auth/getCartsStatus"];
 

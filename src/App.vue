@@ -58,6 +58,7 @@ export default {
       installPromptEvent: this.installPromptEvent,
       scrollTop: this.scrollTop,
       getStoreLocals: this.getStoreLocals,
+      getStoreQDLocals: this.getStoreQDLocals,
       setCurrentLocal: this.setCurrentLocal
     };
   },
@@ -189,6 +190,29 @@ export default {
     getStoreLocals(option) {
       var locals = [];
       var each = this.$store.getters["auth/getDataLocals"].map(item => {
+        let row = {
+          value: item.id,
+          label: item.name + ", " + item.commune,
+          image: item.image,
+          commune: item.commune,
+          name: item.name,
+          cartStatus: item.cartStatus,
+          localStatus: item.localStatus,
+          preparationTime: item.preparationTime,
+          deliveryTime: item.deliveryTime
+        };
+        locals.push(row);
+      });
+
+      if (option === "ALL") {
+        return locals;
+      } else if (option === "ACTIVE") {
+        return locals.filter(item => item.localStatus === "normal");
+      }
+    },
+    getStoreQDLocals(option) {
+      var locals = [];
+      var each = this.$store.getters["auth/getDataQDLocals"].map(item => {
         let row = {
           value: item.id,
           label: item.name + ", " + item.commune,
