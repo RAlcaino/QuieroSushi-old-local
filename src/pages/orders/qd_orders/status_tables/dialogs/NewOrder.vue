@@ -156,10 +156,13 @@
             color="green"
             rounded
             size="sm"
+            :disabled="verifyForm"
             style="position: relative; bottom: 0px; margin-right: 10px "
             @click="createOrder()"
           >
-            <div style="font-size:12px; margin-top: 3px">Crear</div>
+            <div style="font-size:12px; margin-top: 3px">
+              Crear
+            </div>
           </q-btn>
         </div>
       </q-card-actions>
@@ -196,12 +199,12 @@ export default {
         value: null
       },
       qdLocals: [],
-      nombre: "",
-      minutos: "",
-      direccion: "",
-      telefono: "",
-      tiempo: "",
-      subtotal: "",
+      nombre: null,
+      minutos: null,
+      direccion: null,
+      telefono: null,
+      tiempo: null,
+      subtotal: null,
       metodo_pago: "Seleccionar...",
       metodos_pago: [
         "Efectivo",
@@ -216,6 +219,7 @@ export default {
   mounted() {
     this.bus.$on("modal-new-order", () => {
       this.open = true;
+      this.reset();
     });
     this.qdLocals = [...this.getStoreQDLocals("ACTIVE")];
   },
@@ -245,6 +249,13 @@ export default {
         this.ciudad = citiesFiltered[0];
       }
       return citiesFiltered;
+    },
+    verifyForm() {
+      if (this.subtotal === null || this.subtotal === "") {
+        return true;
+      } else {
+        return false;
+      }
     }
   },
   methods: {
@@ -291,6 +302,7 @@ export default {
             })
             .then(response => {
               //TODO: Refrescar las ordenes QD
+              this.bus.$emit("sync-orders-qd");
               this.hideLoading();
               this.open = false;
             })
@@ -304,7 +316,7 @@ export default {
           if (error.response !== undefined) {
             if (error.response.data.code === 412) {
               this.showNotification(
-                "El télefono no es válido",
+                "El télefono u otro dato no es válido",
                 "negative",
                 "error"
               );
@@ -317,6 +329,31 @@ export default {
     },
     close() {
       this.open = false;
+    },
+    reset() {
+      this.comuna = {
+        label: "Seleccionar...",
+        value: null
+      };
+      this.region = {
+        label: "Seleccionar...",
+        value: null
+      };
+      this.ciudad = {
+        label: "Seleccionar...",
+        value: null
+      };
+      this.qdLocal = {
+        label: "Seleccionar...",
+        value: null
+      };
+      this.nombre = null;
+      this.minutos = null;
+      this.direccion = null;
+      this.telefono = null;
+      this.tiempo = null;
+      this.subtotal = null;
+      this.metodo_pago = "Seleccionar...";
     }
   }
 };

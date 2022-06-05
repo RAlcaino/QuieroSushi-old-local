@@ -157,7 +157,7 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getStoreLocals"
+    "getStoreQDLocals"
   ],
   components: {
     NotConfirmed,
@@ -291,10 +291,11 @@ export default {
         this.bus.$emit("start-loader");
       }
 
-      var url = this.$store.getters["routes/getRoute"]("orders", {
+      var url = this.$store.getters["routes/getRoute"]("get.order.qd", {
         userId: this.$store.getters["auth/getDataUser"].id,
         filter: "Todos"
       });
+
       this.$axios
         .get(url, {
           headers: {
@@ -302,27 +303,19 @@ export default {
           }
         })
         .then(response => {
-          if (response.data.status === "success") {
-            if (flag) {
-              this.hideLoading();
-            } else {
-              this.bus.$emit("end-loader");
-              this.refresh = false;
-            }
-            this.data = response.data.result;
-            this.originalData = this.data;
-            this.filters();
-          } else {
-            this.showNotification(response.data.message, "negative", "error");
-          }
-        })
-        .catch(error => {
           if (flag) {
             this.hideLoading();
           } else {
             this.bus.$emit("end-loader");
             this.refresh = false;
           }
+          this.data = response.data.result;
+          this.originalData = this.data;
+          this.filters();
+        })
+        .catch(error => {
+          console.log(error);
+          this.hideLoading();
           this.errorHandling(error);
         });
     },
@@ -349,9 +342,9 @@ export default {
       var vue = this;
       var newArray = [];
       var roots = this.data.map(function(item) {
-        item.name = item.payDetail.user;
-        item.userPhone = item.payDetail.userPhone;
-        item.userAddress = item.payDetail.address;
+        item.name = item.userDetail.user;
+        item.userPhone = item.userDetail.userPhone;
+        item.userAddress = item.userDetail.address;
         newArray.push(item);
       });
 
@@ -363,10 +356,10 @@ export default {
       }
       this.ordersDone = this.data.filter(item => item.status === "done");
       this.ordersConfirmed = this.data.filter(
-        item => item.status === "confirmed"
+        item => item.status === "delivery"
       );
       this.ordersNotConfirmed = this.data.filter(
-        item => item.status === "not-confirmed"
+        item => item.status === "preparation"
       );
 
       this.ordersDoneOriginal = this.ordersDone;
@@ -473,7 +466,7 @@ export default {
     },
     initLocals() {
       this.locals = [];
-      this.locals = [...this.getStoreLocals("ACTIVE")];
+      this.locals = [...this.getStoreQDLocals("ACTIVE")];
 
       if (this.locals.length === 1) {
         this.localSelected = this.locals[0];

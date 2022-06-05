@@ -209,6 +209,10 @@ const mutations = {
       {
         name: "confirm.order.qd",
         link: "/qd-confirm"
+      },
+      {
+        name: "get.order.qd",
+        link: "/qd-pedidos/{userId}/{filter}"
       }
     ];
   }

@@ -117,31 +117,34 @@
           >
             <div class="user-info">
               <p style="margin: 0; font-weight: bold">
-                {{ item.payDetail.user }}
+                Cliente:
+              </p>
+              <p style="margin: 0;">
+                {{ item.userDetail.user }}
               </p>
               <p style="margin: 0; font-family: 'Roboto'">
-                {{ item.payDetail.userPhone }}
+                {{ item.userDetail.userPhone }}
               </p>
               <p
                 style="margin: 0; font-family: 'Roboto'"
                 v-if="item.es_uber !== 1"
               >
-                {{ item.payDetail.address.trim() }}.
+                {{ item.userDetail.address.trim() }}.
                 <template
                   v-if="
-                    item.payDetail.address2 != '' &&
-                    item.payDetail.address2 !== null
+                    item.userDetail.address2 != '' &&
+                      item.userDetail.address2 !== null
                   "
                 >
-                  <span v-if="item.payDetail.address2.search('dpto') == -1"
+                  <span v-if="item.userDetail.address2.search('dpto') == -1"
                     >Dpto/Ubicacion:</span
                   >
-                  {{ item.payDetail.address2.trim() }}.
+                  {{ item.userDetail.address2.trim() }}.
                 </template>
-                {{ item.payDetail.userCommune.trim() }}
+                {{ item.userDetail.userCommune.trim() }}
               </p>
             </div>
-            <div class="user-payDetail">
+            <div class="user-userDetail">
               <p
                 style="
                   margin: 0;
@@ -150,10 +153,10 @@
                   text-align: right;
                 "
               >
-                Tipo de pago
+                Total:
               </p>
               <p style="margin: 0; font-family: 'Roboto'; text-align: right">
-                {{ item.payDetail.pay }}
+                {{ item.userDetail.pay }}
               </p>
               <p style="margin: 0; font-family: 'Roboto'; text-align: right">
                 ${{
@@ -165,7 +168,7 @@
             </div>
           </q-card-section>
           <q-card-section
-            class="fit row wrap justify-center items-center content-center"
+            class="fit column wrap justify-center items-center content-center"
           >
             <div style="font-size: 14px; font-family: 'Roboto'">
               <q-icon
@@ -173,17 +176,13 @@
                 style="font-size: 22px; padding-bottom: 5px"
                 class="i-icon"
               /><strong
-                >Hora Prometida:
-                {{
-                  item.es_uber === 1
-                    ? getPromisedTime(item)
-                    : item.kitchenTime.split(" ")[1].slice(0, 5)
-                }}</strong
+                >Creado a las:
+                {{ item.requestedTime.split(" ")[1].slice(0, 5) }}</strong
               >
             </div>
           </q-card-section>
 
-          <q-card-actions>
+          <!-- <q-card-actions>
             <div
               class="fit row no-wrap justify-center items-center content-center"
             >
@@ -243,7 +242,7 @@
                 Servicio al cliente
               </q-btn>
             </div>
-          </q-card-actions>
+          </q-card-actions> -->
         </q-card>
       </div>
       <q-pagination
@@ -274,7 +273,7 @@ export default {
     MoreDetails,
     TheDone,
     TheCancel,
-    TheChangeUber,
+    TheChangeUber
   },
   created() {
     this.bus.$on("reset-page", () => {
@@ -306,7 +305,7 @@ export default {
     },
     getMaxPages() {
       return Math.ceil(this.ordersConfirmed.length / 15);
-    },
+    }
   },
   data() {
     return {
@@ -314,7 +313,7 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false,
+      searching: false
     };
   },
   beforeDestroy() {
@@ -373,13 +372,13 @@ export default {
     },
     openChat(row) {
       var data = {
-        id_venta: row.id,
+        id_venta: row.id
       };
 
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    },
-  },
+    }
+  }
 };
 </script>
 
