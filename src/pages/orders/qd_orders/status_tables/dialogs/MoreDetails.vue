@@ -8,155 +8,11 @@
     <q-card class="my-card" style="width: 100%; border-radius: 10px">
       <q-card-section class="q-pt-none" style="padding-bottom: 0">
         <q-tabs v-model="tab" class="text-blacklight">
-          <q-tab
-            name="one"
-            style="text-transform: capitalize"
-            :label="`${
-              $store.getters['auth/getDataUser'].role === 'God'
-                ? `N° Pedido: ${orderDetail.id} - ${orderDetail.internalCode}`
-                : `N° Pedido: ${orderDetail.internalCode}`
-            }`"
-          />
-          <q-tab
-            v-if="orderDetail.es_uber === 1 && orderDetail.delivery_id !== null"
-            label="Uber"
-            name="two"
-            @click="
-              () => {
-                getStatus();
-                getLocations();
-              }
-            "
-          />
+          <q-tab label="Uber" name="one" />
         </q-tabs>
 
         <q-tab-panels v-model="tab" animated>
-          <q-tab-panel name="one" class="tab-panel" v-if="orderDetail.product">
-            <q-list class="list-style" style="border-bottom: 1.2px dotted #000">
-              <q-item
-                v-if="orderDetail.extras"
-                v-ripple
-                style="padding: 8px 0 !important"
-              >
-                <q-item-section avatar>
-                  <img
-                    src="~assets/salsas.jpg"
-                    width="50"
-                    style="border-radius: 10%"
-                  />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label
-                    style="
-                      text-align: left;
-                      color: #333;
-                      margin: 0;
-                      font-weight: bold;
-                      font-size: 14px;
-                    "
-                  >
-                    Palitos: {{ orderDetail.extras.chopsticks }} | Jengibre:
-                    {{ orderDetail.extras.ginger }} | Wasabi:
-                    {{ orderDetail.extras.wasabi }}
-                  </q-item-label>
-                  <q-item-label caption> Incluido</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item
-                v-for="(item, index) in orderDetail.product"
-                :key="index"
-                v-ripple
-                style="padding: 8px 0 !important"
-              >
-                <q-item-section avatar>
-                  <img
-                    :src="item.detail.image"
-                    width="50"
-                    style="border-radius: 10%"
-                  />
-                </q-item-section>
-                <q-item-section
-                  class="fit row wrap justify-between items-start content-start"
-                  style="flex-direction: row !important"
-                >
-                  <q-item-label
-                    style="
-                      width: 60%;
-                      font-weight: bold;
-                      font-size: 14px;
-                      color: #333;
-                    "
-                  >
-                    {{ item.quantity }} x {{ item.detail.name }}
-                  </q-item-label>
-                  <q-item-label
-                    style="
-                      width: 40%;
-                      text-align: right;
-                      margin: 0;
-                      font-weight: bold;
-                      color: #ff2d2d;
-                      font-size: 14px;
-                    "
-                  >
-                    {{ " $" + formatNumber(item.quantity * item.detail.price) }}
-                  </q-item-label>
-                  <q-item-label caption>
-                    {{
-                      " $" + formatNumber(item.detail.price) + " C/U"
-                    }}</q-item-label
-                  >
-                </q-item-section>
-              </q-item>
-            </q-list>
-            <div class="tab-overview-footer">
-              <p v-if="orderDetail.discount !== 0" style="font-size: 14px">
-                <strong style="color: #333">Descuento: </strong> ${{
-                  formatNumber(orderDetail.discount)
-                }}
-              </p>
-              <p style="font-size: 14px">
-                <strong style="color: #333"
-                  >{{ `${orderDetail.es_uber !== 1 ? "Subtotal:" : "Total:"}` }}
-                </strong>
-                ${{ formatNumber(orderDetail.subtotal) }}
-              </p>
-              <p style="font-size: 14px" v-if="orderDetail.es_uber !== 1">
-                <strong style="color: #333">Costo Despacho: </strong> ${{
-                  formatNumber(orderDetail.deliveryCost)
-                }}
-              </p>
-              <p style="font-size: 14px" v-if="orderDetail.es_uber !== 1">
-                <strong style="color: #333">Total: </strong>
-                <span style="color: #ff2d2d; font-weight: bold"
-                  >${{ formatNumber(orderDetail.total) }}</span
-                >
-              </p>
-            </div>
-            <div class="tab-overview-footer">
-              <q-list>
-                <q-item
-                  v-if="
-                    orderDetail.aditionalMessage !== '' &&
-                    orderDetail.aditionalMessage !== null
-                  "
-                >
-                  <q-item-section avatar>
-                    <q-icon name="message" color="primary" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label style="font-weight: bold"
-                      >Mensaje del cliente</q-item-label
-                    >
-                    <q-item-label>{{
-                      orderDetail.aditionalMessage
-                    }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-          </q-tab-panel>
-          <q-tab-panel name="two" class="tab-panel">
+          <q-tab-panel name="one" class="tab-panel">
             <q-list>
               <q-item v-if="orderDetail.delivery_id !== null">
                 <q-item-section avatar>
@@ -201,11 +57,11 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                  courier !== null &&
-                  deliveryShortStatus !== 'pending' &&
-                  deliveryShortStatus !== 'delivered' &&
-                  deliveryShortStatus !== 'returned' &&
-                  deliveryShortStatus !== ''
+                    courier !== null &&
+                    deliveryShortStatus !== 'pending' &&
+                    deliveryShortStatus !== 'delivered' &&
+                    deliveryShortStatus !== 'returned' &&
+                    deliveryShortStatus !== ''
                 "
               >
                 <q-item-section avatar>
@@ -219,7 +75,7 @@
                     <GmapMap
                       :center="{
                         lat: courier.location.lat,
-                        lng: courier.location.lng,
+                        lng: courier.location.lng
                       }"
                       :zoom="18"
                       style="width: 100%; height: 226px; border-radius: 10px"
@@ -235,14 +91,14 @@
                             width: 30,
                             height: 30,
                             f: 'px',
-                            b: 'px',
+                            b: 'px'
                           },
                           scaledSize: {
                             width: 30,
                             height: 30,
                             f: 'px',
-                            b: 'px',
-                          },
+                            b: 'px'
+                          }
                         }"
                       /> </GmapMap
                   ></q-item-label>
@@ -255,12 +111,12 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                  deliveryShortStatus !== '' &&
-                  (deliveryShortStatus === 'pickup' ||
-                    deliveryShortStatus === 'pickup_complete' ||
-                    deliveryShortStatus === 'dropoff' ||
-                    deliveryShortStatus === 'returned') &&
-                  courier !== null
+                    deliveryShortStatus !== '' &&
+                    (deliveryShortStatus === 'pickup' ||
+                      deliveryShortStatus === 'pickup_complete' ||
+                      deliveryShortStatus === 'dropoff' ||
+                      deliveryShortStatus === 'returned') &&
+                    courier !== null
                 "
               >
                 <q-item-section avatar>
@@ -295,9 +151,9 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                  (deliveryShortStatus === 'pickup' ||
-                    deliveryShortStatus === 'pickup_complete') &&
-                  deliveryShortStatus !== ''
+                    (deliveryShortStatus === 'pickup' ||
+                      deliveryShortStatus === 'pickup_complete') &&
+                    deliveryShortStatus !== ''
                 "
               >
                 <q-item-section avatar>
@@ -323,9 +179,9 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                  (deliveryShortStatus === 'dropoff' ||
-                    deliveryShortStatus === 'returned') &&
-                  deliveryShortStatus !== ''
+                    (deliveryShortStatus === 'dropoff' ||
+                      deliveryShortStatus === 'returned') &&
+                    deliveryShortStatus !== ''
                 "
               >
                 <q-item-section avatar>
@@ -352,10 +208,10 @@
               <q-item
                 v-if="
                   orderDetail.delivery_id !== null &&
-                  deliveryShortStatus !== 'pending' &&
-                  deliveryShortStatus !== 'delivered' &&
-                  deliveryShortStatus !== 'canceled' &&
-                  deliveryShortStatus !== ''
+                    deliveryShortStatus !== 'pending' &&
+                    deliveryShortStatus !== 'delivered' &&
+                    deliveryShortStatus !== 'canceled' &&
+                    deliveryShortStatus !== ''
                 "
               >
                 <q-item-section avatar>
@@ -411,8 +267,8 @@
                     style="display: flex"
                     v-if="
                       orderDetail.uuid !== null &&
-                      orderDetail.uuid !== undefined &&
-                      $store.getters['auth/getDataUser'].role === 'God'
+                        orderDetail.uuid !== undefined &&
+                        $store.getters['auth/getDataUser'].role === 'God'
                     "
                   >
                     <p style="font-weight: bold; margin: 0">uuid:</p>
@@ -474,16 +330,16 @@ export default {
     "getServerTime",
     "showNotification",
     "showLoading",
-    "hideLoading",
+    "hideLoading"
   ],
   created() {
-    this.bus.$on("more-details", (data) => {
+    this.bus.$on("more-details", data => {
       this.markers = [];
       this.courier = null;
       this.tab = "one";
       this.tip = null;
       this.card = !this.card;
-      this.orderDetail = data;
+      this.orderDetail = { ...data };
       this.deliveryStatus = "";
       this.msg = "";
       this.pickup_eta = "";
@@ -492,12 +348,15 @@ export default {
       this.deliveryStatusObject = {};
       this.dataLocal = {
         lat: null,
-        lng: null,
+        lng: null
       };
       this.dataUser = {
         lat: null,
-        lng: null,
+        lng: null
       };
+
+      this.getStatus();
+      this.getLocations();
     });
   },
   data() {
@@ -520,12 +379,12 @@ export default {
       tip: null,
       dataLocal: {
         lat: null,
-        lng: null,
+        lng: null
       },
       dataUser: {
         lat: null,
-        lng: null,
-      },
+        lng: null
+      }
     };
   },
   methods: {
@@ -535,17 +394,17 @@ export default {
         var url = this.$store.getters["routes/getRoute"](
           "get.delivery.status",
           {
-            delivery_id: this.orderDetail.delivery_id,
+            delivery_id: this.orderDetail.delivery_id
             //delivery_id: "del_gALMXHSKQp2wlI1cVWl9Gw"
           }
         );
         this.$axios
           .get(url, {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"],
-            },
+              Authorization: this.$store.getters["auth/getToken"]
+            }
           })
-          .then((response) => {
+          .then(response => {
             this.deliveryShortStatus = response.data.status;
             this.pickup_eta = this.formatDate(response.data.pickup_eta);
             this.dropoff_eta = this.formatDate(response.data.dropoff_eta);
@@ -557,7 +416,7 @@ export default {
             this.getMarkers();
             this.setDeliveryStatus(response.data.status);
           })
-          .catch((error) => {
+          .catch(error => {
             this.errorHandling(error);
           });
       }
@@ -626,7 +485,7 @@ export default {
         let markerCourier = {
           lat: this.courier.location.lat,
           lng: this.courier.location.lng,
-          icon: "moto-copy.png",
+          icon: "moto-copy.png"
         };
 
         this.markers.push(markerCourier);
@@ -634,7 +493,7 @@ export default {
         let markerCustomer = {
           lat: this.dataUser.lat,
           lng: this.dataUser.lng,
-          icon: "home-copy.png",
+          icon: "home-copy.png"
         };
 
         this.markers.push(markerCustomer);
@@ -642,7 +501,7 @@ export default {
         let markerLocal = {
           lat: this.dataLocal.lat,
           lng: this.dataLocal.lng,
-          icon: "store-copy.png",
+          icon: "store-copy.png"
         };
 
         this.markers.push(markerLocal);
@@ -651,27 +510,27 @@ export default {
     createDelivery() {
       this.showLoading();
       var url2 = this.$store.getters["routes/getRoute"]("uber.create");
-      let serverTime = this.getServerTime();
       let data2 = {
         orderId: this.orderDetail.id,
         local_name: this.orderDetail.local.name,
         local_address: this.orderDetail.local.address,
-        pickup_ready_dt: this.getTime(5, serverTime),
-        pickup_deadline_dt: this.getTime(20, serverTime),
+        pickup_ready_dt: 10,
+        pickup_deadline_dt: 20,
+        order_type: "QD"
       };
       this.$axios
         .post(url2, data2, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"],
-          },
+            Authorization: this.$store.getters["auth/getToken"]
+          }
         })
-        .then((response) => {
+        .then(response => {
           console.log(response);
-          this.bus.$emit("sync-orders");
+          this.bus.$emit("sync-orders-qd");
           this.hideLoading();
           this.card = false;
         })
-        .catch((error) => {
+        .catch(error => {
           this.hideLoading();
           this.errorHandling(error);
         });
@@ -687,28 +546,28 @@ export default {
     updateDelivery(type) {
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("uber.update", {
-        orderId: this.orderDetail.id,
+        orderId: this.orderDetail.id
       });
 
       if (type === "msg") {
         var data = {
           delivery_id: this.orderDetail.delivery_id,
-          dropoff_notes: this.msg,
+          dropoff_notes: this.msg
         };
       } else {
         var data = {
           delivery_id: this.orderDetail.delivery_id,
-          tip_by_customer: this.tip,
+          tip_by_customer: this.tip
         };
       }
 
       this.$axios
         .post(url, data, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"],
-          },
+            Authorization: this.$store.getters["auth/getToken"]
+          }
         })
-        .then((response) => {
+        .then(response => {
           if (response.data.kind === "error") {
             if (response.data.code === "tip_already_recorded") {
               this.showNotification(
@@ -731,7 +590,7 @@ export default {
           this.hideLoading();
           this.card = false;
         })
-        .catch((error) => {
+        .catch(error => {
           this.hideLoading();
           this.errorHandling(error);
         });
@@ -739,7 +598,7 @@ export default {
 
     getLocations() {
       var addressLocal = `${this.orderDetail.local.address}, ${this.orderDetail.local.commune}`;
-      var addressCustomer = `${this.orderDetail.payDetail.address}, ${this.orderDetail.payDetail.userCommune}`;
+      var addressCustomer = `${this.orderDetail.userDetail.address}, ${this.orderDetail.userDetail.userCommune}`;
 
       var finalAddressLocal = addressLocal.trim().replace(/ /g, "+");
       var url = this.baseUrl.replace("{address}", finalAddressLocal);
@@ -751,29 +610,29 @@ export default {
 
       this.$axios
         .get(url)
-        .then((response) => {
+        .then(response => {
           let location = response.data.results[0].geometry.location;
           this.dataLocal.lat = location.lat;
           this.dataLocal.lng = location.lng;
           this.$axios
             .get(url2)
-            .then((response) => {
+            .then(response => {
               let location = response.data.results[0].geometry.location;
               this.dataUser.lat = location.lat;
               this.dataUser.lng = location.lng;
             })
-            .catch((error) => {
+            .catch(error => {
               this.errorHandling(error);
             });
         })
-        .catch((error) => {
+        .catch(error => {
           this.errorHandling(error);
         });
     },
 
     getMinutesDiff(time) {
       let santiagoTime = new Date().toLocaleString("en-US", {
-        timeZone: "America/Santiago",
+        timeZone: "America/Santiago"
       });
       let serverTime = new Date(santiagoTime);
       let endTime = new Date(time);
@@ -786,8 +645,8 @@ export default {
       } else {
         return `${diffMins} minutos`;
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

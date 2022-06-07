@@ -651,13 +651,13 @@ export default {
     createDelivery() {
       this.showLoading();
       var url2 = this.$store.getters["routes/getRoute"]("uber.create");
-      let serverTime = this.getServerTime();
       let data2 = {
         orderId: this.orderDetail.id,
         local_name: this.orderDetail.local.name,
         local_address: this.orderDetail.local.address,
-        pickup_ready_dt: this.getTime(5, serverTime),
-        pickup_deadline_dt: this.getTime(20, serverTime),
+        pickup_ready_dt: 10,
+        pickup_deadline_dt: 20,
+        order_type: 'QS'
       };
       this.$axios
         .post(url2, data2, {

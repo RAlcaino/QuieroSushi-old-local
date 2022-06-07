@@ -182,11 +182,21 @@
             </div>
           </q-card-section>
 
-          <!-- <q-card-actions>
+          <q-card-actions>
             <div
               class="fit row no-wrap justify-center items-center content-center"
             >
               <q-btn
+                @click="moreDetails(item)"
+                rounded
+                size="sm"
+                color="blue"
+                style="font-size: 10.5px; margin-right: 5px"
+              >
+                Detalle
+              </q-btn>
+            </div>
+            <!-- <q-btn
                 @click="doneDialog(item)"
                 rounded
                 size="sm"
@@ -209,15 +219,7 @@
               >
                 <template>Cambiar Hora Uber</template>
               </q-btn>
-              <q-btn
-                @click="moreDetails(item)"
-                rounded
-                size="sm"
-                color="blue"
-                style="font-size: 10.5px; margin-right: 5px"
-              >
-                Detalle
-              </q-btn>
+
               <q-btn
                 rounded
                 size="sm"
@@ -241,8 +243,8 @@
               >
                 Servicio al cliente
               </q-btn>
-            </div>
-          </q-card-actions> -->
+            </div> -->
+          </q-card-actions>
         </q-card>
       </div>
       <q-pagination

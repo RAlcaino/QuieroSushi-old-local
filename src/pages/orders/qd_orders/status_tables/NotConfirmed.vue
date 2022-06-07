@@ -185,7 +185,7 @@
             </div>
           </q-card-section>
 
-          <!-- <q-card-actions>
+          <q-card-actions>
             <div
               class="fit row no-wrap justify-center items-center content-center"
             >
@@ -198,7 +198,8 @@
               >
                 Detalle
               </q-btn>
-              <q-btn
+            </div>
+            <!-- <q-btn
                 rounded
                 size="sm"
                 color="primary"
@@ -235,8 +236,8 @@
               >
                 Servicio al cliente
               </q-btn>
-            </div>
-          </q-card-actions> -->
+            </div> -->
+          </q-card-actions>
         </q-card>
       </div>
       <q-pagination

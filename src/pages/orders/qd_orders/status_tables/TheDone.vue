@@ -180,7 +180,7 @@
             </div>
           </q-card-section>
 
-          <!-- <q-card-actions
+          <q-card-actions
             class="fit row no-wrap justify-center items-center content-center"
           >
             <q-btn
@@ -192,7 +192,7 @@
             >
               Detalle
             </q-btn>
-            <q-btn
+            <!-- <q-btn
               rounded
               size="sm"
               color="primary"
@@ -209,8 +209,8 @@
               @click="openChat(item)"
             >
               Servicio al cliente
-            </q-btn>
-          </q-card-actions> -->
+            </q-btn> -->
+          </q-card-actions>
         </q-card>
       </div>
       <q-pagination
