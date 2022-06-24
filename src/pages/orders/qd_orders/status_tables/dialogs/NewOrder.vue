@@ -204,21 +204,8 @@ export default {
         !comunesFiltered.some(item => item.value === this.comuna.value) &&
         comunesFiltered.length !== 0
       ) {
-        this.comuna = comunesFiltered[0];
       }
       return comunesFiltered;
-    },
-    citiesFiltered() {
-      var citiesFiltered = this.$store.getters["auth/getZones"].cities.filter(
-        item => item.id_region === this.region.value
-      );
-      if (
-        !citiesFiltered.some(item => item.value === this.ciudad.value) &&
-        citiesFiltered.length !== 0
-      ) {
-        this.ciudad = citiesFiltered[0];
-      }
-      return citiesFiltered;
     },
     verifyForm() {
       if (this.subtotal === null || this.subtotal === "") {
@@ -240,7 +227,7 @@ export default {
         nombre: this.nombre,
         telefono: this.telefono,
         subtotal: +this.subtotal,
-        domain: "",
+        domain: "https://sandbox.flow.cl/api",
         uber: {
           es_uber: true
         }
@@ -319,6 +306,7 @@ export default {
       this.nombre = null;
       this.minutos = null;
       this.direccion = null;
+      this.direccion2 = null;
       this.telefono = null;
       this.tiempo = null;
       this.subtotal = null;
