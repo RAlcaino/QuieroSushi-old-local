@@ -53,32 +53,6 @@
                 outlined
                 rounded
                 dense
-                v-model="region"
-                :options="$store.getters['auth/getZones'].regions"
-                label="Región"
-              >
-              </q-select>
-            </q-item-section>
-          </q-item>
-          <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-select
-                outlined
-                rounded
-                dense
-                v-model="ciudad"
-                :options="citiesFiltered"
-                label="Ciudad"
-              >
-              </q-select>
-            </q-item-section>
-          </q-item>
-          <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-            <q-item-section>
-              <q-select
-                outlined
-                rounded
-                dense
                 v-model="comuna"
                 :options="comunesFilteredForm"
                 label="Comuna"
@@ -100,15 +74,14 @@
           </q-item>
           <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <q-item-section>
-              <q-select
+              <q-input
+                type="text"
                 outlined
                 rounded
                 dense
-                v-model="metodo_pago"
-                :options="metodos_pago"
-                label="Método de pago"
-              >
-              </q-select>
+                label="Apartamento del cliente"
+                v-model="direccion2"
+              />
             </q-item-section>
           </q-item>
 
@@ -143,7 +116,7 @@
                   outlined
                   rounded
                   dense
-                  label="Monto Productos ($)"
+                  label="Total pedido ($)"
                   v-model="subtotal"
               /></q-item-section> </q-item
           ></q-list>
@@ -202,6 +175,7 @@ export default {
       nombre: null,
       minutos: null,
       direccion: null,
+      direccion2: null,
       telefono: null,
       tiempo: null,
       subtotal: null,
@@ -225,11 +199,7 @@ export default {
   },
   computed: {
     comunesFilteredForm() {
-      var comunesFiltered = this.$store.getters["auth/getZones"].comunes.filter(
-        item =>
-          item.id_ciudad === this.ciudad.value &&
-          item.id_region === this.region.value
-      );
+      var comunesFiltered = this.$store.getters["auth/getZones"].comunes;
       if (
         !comunesFiltered.some(item => item.value === this.comuna.value) &&
         comunesFiltered.length !== 0
@@ -264,18 +234,17 @@ export default {
         id_local: this.qdLocal.value,
         direccion_usuario: {
           direccion: this.direccion,
-          direccion2: "",
+          direccion2: this.direccion2,
           comuna: this.comuna.label
         },
         nombre: this.nombre,
         telefono: this.telefono,
-        subtotal: this.subtotal,
-        metodo_pago: this.metodo_pago,
+        subtotal: +this.subtotal,
+        domain: "",
         uber: {
           es_uber: true
         }
       };
-
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("create.order.qd");
       var urlConfirm = this.$store.getters["routes/getRoute"](

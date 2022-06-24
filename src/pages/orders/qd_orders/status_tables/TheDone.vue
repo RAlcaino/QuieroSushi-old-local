@@ -63,7 +63,7 @@
                   />{{
                     `${capitalize(item.orderType)} ${
                       item.es_uber === 1
-                        ? `- Uber ${
+                        ? ` ${
                             item.uuid !== undefined && item.uuid !== null
                               ? item.uuid.slice(-5)
                               : ""

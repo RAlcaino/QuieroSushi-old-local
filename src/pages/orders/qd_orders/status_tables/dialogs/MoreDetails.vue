@@ -8,7 +8,7 @@
     <q-card class="my-card" style="width: 100%; border-radius: 10px">
       <q-card-section class="q-pt-none" style="padding-bottom: 0">
         <q-tabs v-model="tab" class="text-blacklight">
-          <q-tab label="Uber" name="one" />
+          <q-tab label="Detalle" name="one" />
         </q-tabs>
 
         <q-tab-panels v-model="tab" animated>
@@ -132,7 +132,7 @@
                         style="border-radius: 100%"
                         width="80px"
                         :src="courier.img_href"
-                        alt="foto uber"
+                        alt="foto moto"
                       />
                       <div style="margin-left: 10px">
                         <p style="margin: 0; margin-bottom: 3px">
@@ -259,9 +259,9 @@
                 <q-item-section>
                   <q-item-label style="display: flex">
                     <p style="font-weight: bold; margin: 0">
-                      Télefono de soporte de Uber:
+                      Télefono de soporte:
                     </p>
-                    <p style="margin: 0; margin-left: 6px">+56-800231021</p>
+                    <p style="margin: 0; margin-left: 6px">800231021</p>
                   </q-item-label>
                   <q-item-label
                     style="display: flex"
