@@ -198,6 +198,15 @@
               >
                 Detalle
               </q-btn>
+              <q-btn
+                rounded
+                size="sm"
+                color="primary"
+                style="font-size: 10.5px; margin-right: 5px"
+                @click="cancelDialog(item)"
+              >
+                Anular
+              </q-btn>
             </div>
             <!-- <q-btn
                 rounded
