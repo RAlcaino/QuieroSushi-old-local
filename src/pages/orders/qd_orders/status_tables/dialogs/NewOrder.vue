@@ -50,13 +50,56 @@
           <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <q-item-section>
               <q-select
-                outlined
+                ref="select"
                 rounded
+                outlined
                 dense
                 v-model="comuna"
-                :options="comunesFilteredForm"
+                :options="communes"
+                :options-dense="true"
+                hide-hint
                 label="Comuna"
+                @popup-hide="allCommunes()"
+                :virtual-scroll-sticky-size-start="80"
+                style="margin-bottom: 5px;"
               >
+                <template v-slot:prepend>
+                  <q-icon name="store" />
+                </template>
+                <template v-slot:before-options>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      <input
+                        v-model="communeFilter"
+                        @input="filterFn(communeFilter)"
+                        type="text"
+                        placeholder="Buscar"
+                        style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                      />
+                      <p style="margin: 0; color: white">
+                        {{ communes.length }}
+                      </p>
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      <input
+                        v-model="communeFilter"
+                        @input="filterFn(communeFilter)"
+                        type="text"
+                        placeholder="Buscar"
+                        style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                      />
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      Sin Resultados
+                    </q-item-section>
+                  </q-item>
+                </template>
               </q-select>
             </q-item-section>
           </q-item>
@@ -187,7 +230,9 @@ export default {
         "Pago Online",
         "Transferencia",
         "Pago Rut"
-      ]
+      ],
+      communes: [],
+      communeFilter: ""
     };
   },
   mounted() {
@@ -196,17 +241,9 @@ export default {
       this.reset();
     });
     this.qdLocals = [...this.getStoreQDLocals("ACTIVE")];
+    this.communes = this.$store.getters["auth/getZones"].comunes;
   },
   computed: {
-    comunesFilteredForm() {
-      var comunesFiltered = this.$store.getters["auth/getZones"].comunes;
-      if (
-        !comunesFiltered.some(item => item.value === this.comuna.value) &&
-        comunesFiltered.length !== 0
-      ) {
-      }
-      return comunesFiltered;
-    },
     verifyForm() {
       if (this.subtotal === null || this.subtotal === "") {
         return true;
@@ -283,6 +320,19 @@ export default {
           this.errorHandling(error);
         });
     },
+    filterFn(val) {
+      let communesNew = [...this.$store.getters["auth/getZones"].comunes];
+      if (val.trim() === "") {
+        console.log(val);
+        this.communes = communesNew;
+        return;
+      }
+
+      const needle = val.toLowerCase();
+      this.communes = communesNew.filter(
+        v => v.label.toLowerCase().indexOf(needle) > -1
+      );
+    },
     close() {
       this.open = false;
     },
@@ -311,6 +361,10 @@ export default {
       this.tiempo = null;
       this.subtotal = null;
       this.metodo_pago = "Seleccionar...";
+    },
+    allCommunes() {
+      this.communeFilter = "";
+      this.communes = this.$store.getters["auth/getZones"].comunes;
     }
   }
 };

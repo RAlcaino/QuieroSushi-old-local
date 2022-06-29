@@ -115,7 +115,8 @@ export default {
       let data = {
         orderID: this.orderId,
         canceledTimestamp: this.getServerTime(),
-        cancellationReason: this.cancellationReason
+        cancellationReason: this.cancellationReason,
+        type: "QD"
       };
 
       if (!this.prod) {
