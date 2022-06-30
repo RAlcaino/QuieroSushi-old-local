@@ -116,10 +116,8 @@
             "
           >
             <div class="user-info">
-              <p style="margin: 0; font-weight: bold">
-                Cliente:
-              </p>
-              <p style="margin: 0;">
+              <p style="margin: 0; font-weight: bold">Cliente:</p>
+              <p style="margin: 0">
                 {{ item.userDetail.user }}
               </p>
               <p style="margin: 0; font-family: 'Roboto'">
@@ -133,7 +131,7 @@
                 <template
                   v-if="
                     item.userDetail.address2 != '' &&
-                      item.userDetail.address2 !== null
+                    item.userDetail.address2 !== null
                   "
                 >
                   <span v-if="item.userDetail.address2.search('dpto') == -1"
@@ -178,6 +176,25 @@
               /><strong
                 >Creado a las:
                 {{ item.requestedTime.split(" ")[1].slice(0, 5) }}</strong
+              >
+            </div>
+            <div
+              style="font-size: 14px; font-family: 'Roboto'"
+              v-if="
+                item.timestamp_llegada_local !== null &&
+                item.timestamp_llegada_local.split(' ')[1].slice(0, 5) !==
+                  '00:00'
+              "
+            >
+              <q-icon
+                name="schedule"
+                style="font-size: 22px; padding-bottom: 5px"
+                class="i-icon"
+              /><strong
+                >Llegará al local:
+                {{
+                  item.timestamp_llegada_local.split(" ")[1].slice(0, 5)
+                }}</strong
               >
             </div>
           </q-card-section>
@@ -284,7 +301,7 @@ export default {
     MoreDetails,
     TheDone,
     TheCancel,
-    TheChangeUber
+    TheChangeUber,
   },
   created() {
     this.bus.$on("reset-page", () => {
@@ -316,7 +333,7 @@ export default {
     },
     getMaxPages() {
       return Math.ceil(this.ordersConfirmed.length / 15);
-    }
+    },
   },
   data() {
     return {
@@ -324,7 +341,7 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false
+      searching: false,
     };
   },
   beforeDestroy() {
@@ -383,13 +400,13 @@ export default {
     },
     openChat(row) {
       var data = {
-        id_venta: row.id
+        id_venta: row.id,
       };
 
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    }
-  }
+    },
+  },
 };
 </script>
 
