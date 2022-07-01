@@ -7,7 +7,14 @@
   >
     <new-order></new-order>
     <div
-      class="row wrap justify-between items-center content-center mobile-styles-o"
+      class="
+        row
+        wrap
+        justify-between
+        items-center
+        content-center
+        mobile-styles-o
+      "
       style="margin: 20px auto; width: 90%"
     >
       <div class="input-style-o">
@@ -18,20 +25,20 @@
           label="Buscar"
           v-model="search"
           @focus="resetPage()"
-          style="margin-bottom: 5px;"
+          style="margin-bottom: 5px"
         />
       </div>
-      <div style="display:flex">
+      <div style="display: flex">
         <div>
           <q-btn
             color="green"
             rounded
             size="sm"
-            style="position: relative; bottom: 0px; margin-right: 10px "
+            style="position: relative; bottom: 0px; margin-right: 10px"
             @click="createOrder()"
           >
-            <q-icon style="margin-right:5px" size="20px" name="add" />
-            <div style="font-size:12px; margin-top: 3px">Crear</div>
+            <q-icon style="margin-right: 5px" size="20px" name="add" />
+            <div style="font-size: 12px">Crear</div>
           </q-btn>
         </div>
         <q-select
@@ -60,7 +67,13 @@
                   @input="filterFn(localFilter)"
                   type="text"
                   placeholder="Buscar"
-                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                  style="
+                    padding: 7px;
+                    margin-top: 10px;
+                    border-radius: 20px;
+                    border: 1px solid #333;
+                    outline: none;
+                  "
                 />
               </q-item-section>
             </q-item>
@@ -76,7 +89,13 @@
                   @input="filterFn(localFilter)"
                   type="text"
                   placeholder="Buscar"
-                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                  style="
+                    padding: 7px;
+                    margin-top: 10px;
+                    border-radius: 20px;
+                    border: 1px solid #333;
+                    outline: none;
+                  "
                 />
               </q-item-section>
             </q-item>
@@ -89,37 +108,49 @@
         </q-select>
       </div>
     </div>
-    <div class="orders-tab" style="margin-top:20px">
-      <div style="width: 90%;height: 100%;">
+    <div class="orders-tab" style="margin-top: 20px">
+      <div style="width: 90%; height: 100%">
         <q-tabs
           v-model="tab"
           dense
           class="bg-grey-3"
           align="justify"
           narrow-indicator
-          style="border-radius:10px"
+          style="border-radius: 10px"
         >
           <q-tab
             class="text-primary"
-            name="not-confirmed"
+            name="pending"
+            icon="payments"
+            :label="responsiveLabels ? '' : 'Pendiente de pago'"
+          />
+          <q-tab
+            class="text-blue-grey"
+            name="admitted"
+            icon="archive"
+            :label="responsiveLabels ? '' : 'Ingresados'"
+          />
+          <q-tab
+            class="text-orange-14"
+            name="preparation"
             icon="watch_later"
-            :label="responsiveLabels ? '' : 'Preparación'"
+            :label="responsiveLabels ? '' : 'En producción'"
           />
           <q-tab
             class="text-blue"
-            name="confirmed"
+            name="onTheWay"
             icon="room_service"
-            :label="responsiveLabels ? '' : 'Despacho'"
+            :label="responsiveLabels ? '' : 'En camino'"
           />
           <q-tab
             class="text-green"
             name="done"
             icon="check_circle"
-            :label="responsiveLabels ? '' : 'Entregado'"
+            :label="responsiveLabels ? '' : 'Finalizados'"
           />
         </q-tabs>
         <q-tab-panels v-model="tab" animated>
-          <q-tab-panel name="not-confirmed" style="padding: 0; overflow:hidden">
+          <q-tab-panel name="pending" style="padding: 0; overflow: hidden">
             <not-confirmed
               :ordersNotConfirmed="getOrdersNotConfirmed"
               :refresh="refresh"
@@ -127,14 +158,30 @@
             ></not-confirmed>
           </q-tab-panel>
 
-          <q-tab-panel name="confirmed" style="padding: 0; overflow:hidden">
+          <q-tab-panel name="admitted" style="padding: 0; overflow: hidden">
+            <not-confirmed
+              :ordersNotConfirmed="getOrdersNotConfirmed"
+              :refresh="refresh"
+              :sendWs="sendWs"
+            ></not-confirmed>
+          </q-tab-panel>
+
+          <q-tab-panel name="preparation" style="padding: 0; overflow: hidden">
+            <not-confirmed
+              :ordersNotConfirmed="getOrdersNotConfirmed"
+              :refresh="refresh"
+              :sendWs="sendWs"
+            ></not-confirmed>
+          </q-tab-panel>
+
+          <q-tab-panel name="onTheWay" style="padding: 0; overflow: hidden">
             <the-confirmed
               :ordersConfirmed="getOrdersConfirmed"
               :sendWs="sendWs"
             ></the-confirmed>
           </q-tab-panel>
 
-          <q-tab-panel name="done" style="padding: 0; overflow:hidden">
+          <q-tab-panel name="done" style="padding: 0; overflow: hidden">
             <the-done :ordersDone="getOrdersDone" :sendWs="sendWs"></the-done>
           </q-tab-panel>
         </q-tab-panels>
@@ -157,14 +204,14 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getStoreQDLocals"
+    "getStoreQDLocals",
   ],
   components: {
     NotConfirmed,
     TheConfirmed,
     TheDone,
     BasePage,
-    NewOrder
+    NewOrder,
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
@@ -173,7 +220,7 @@ export default {
     }
     this.bus.$on("to-one-tab", () => {
       this.bus.$emit("scroll-up");
-      this.tab = "not-confirmed";
+      this.tab = "pending";
       this.refresh = true;
       this.search = "";
       this.allOrders();
@@ -195,7 +242,7 @@ export default {
     getOrdersConfirmed() {
       var vue = this;
       if (this.search !== "") {
-        return this.ordersConfirmed.filter(function(item) {
+        return this.ordersConfirmed.filter(function (item) {
           if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
@@ -207,7 +254,7 @@ export default {
     getOrdersNotConfirmed() {
       var vue = this;
       if (this.search !== "") {
-        return this.ordersNotConfirmed.filter(function(item) {
+        return this.ordersNotConfirmed.filter(function (item) {
           if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
@@ -219,7 +266,7 @@ export default {
     getOrdersDone() {
       var vue = this;
       if (this.search !== "") {
-        return this.ordersDone.filter(function(item) {
+        return this.ordersDone.filter(function (item) {
           if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
@@ -236,7 +283,7 @@ export default {
       }
     },
     getLocals() {
-      let filteredLocals = this.locals.filter(item => {
+      let filteredLocals = this.locals.filter((item) => {
         return item.label
           .toLowerCase()
           .includes(this.localFilter.toLowerCase());
@@ -245,15 +292,15 @@ export default {
         return b.label - a.label;
       });
       return orderedLocals;
-    }
+    },
   },
   data() {
     return {
-      tab: "not-confirmed",
+      tab: "pending",
       splitterModel: 20,
       local: {
         value: null,
-        label: ""
+        label: "",
       },
       refresh: false,
       localFilter: "",
@@ -278,8 +325,8 @@ export default {
         image: null,
         commune: null,
         name: null,
-        cartStatus: null
-      }
+        cartStatus: null,
+      },
     };
   },
   methods: {
@@ -293,16 +340,16 @@ export default {
 
       var url = this.$store.getters["routes/getRoute"]("get.order.qd", {
         userId: this.$store.getters["auth/getDataUser"].id,
-        filter: "Todos"
+        filter: "Todos",
       });
 
       this.$axios
         .get(url, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"]
-          }
+            Authorization: this.$store.getters["auth/getToken"],
+          },
         })
-        .then(response => {
+        .then((response) => {
           if (flag) {
             this.hideLoading();
           } else {
@@ -313,7 +360,7 @@ export default {
           this.originalData = this.data;
           this.filters();
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.hideLoading();
           this.errorHandling(error);
@@ -328,7 +375,7 @@ export default {
         vue.responsiveMobile = true;
       }
 
-      responsive.addListener(function(event) {
+      responsive.addListener(function (event) {
         if (event.matches) {
           vue.responsiveLabels = true;
           vue.responsiveMobile = true;
@@ -341,7 +388,7 @@ export default {
     filters() {
       var vue = this;
       var newArray = [];
-      var roots = this.data.map(function(item) {
+      var roots = this.data.map(function (item) {
         item.name = item.userDetail.user;
         item.userPhone = item.userDetail.userPhone;
         item.userAddress = item.userDetail.address;
@@ -351,15 +398,15 @@ export default {
       this.data = newArray;
       if (vue.local.value !== -1) {
         this.data = this.originalData.filter(
-          item => item.local.id_local === vue.local.value
+          (item) => item.local.id_local === vue.local.value
         );
       }
-      this.ordersDone = this.data.filter(item => item.status === "done");
+      this.ordersDone = this.data.filter((item) => item.status === "done");
       this.ordersConfirmed = this.data.filter(
-        item => item.status === "delivery"
+        (item) => item.status === "delivery"
       );
       this.ordersNotConfirmed = this.data.filter(
-        item => item.status === "preparation"
+        (item) => item.status === "preparation"
       );
 
       this.ordersDoneOriginal = this.ordersDone;
@@ -374,7 +421,7 @@ export default {
 
       const needle = val.toLowerCase();
       this.localsFilter = this.locals.filter(
-        v => v.label.toLowerCase().indexOf(needle) > -1
+        (v) => v.label.toLowerCase().indexOf(needle) > -1
       );
     },
     change(val) {
@@ -382,7 +429,7 @@ export default {
       if (val !== null) {
         this.local = val;
         this.data = this.originalData.filter(
-          item => item.local.id_local === vue.local.value
+          (item) => item.local.id_local === vue.local.value
         );
         this.filters();
         this.$store.commit("auth/setCurrentLocal", {
@@ -390,7 +437,7 @@ export default {
           name: val.name,
           image: val.image,
           commune: val.commune,
-          cartStatus: val.cartStatus
+          cartStatus: val.cartStatus,
         });
       }
     },
@@ -412,7 +459,7 @@ export default {
             ? "icons/favicon-128.png"
             : this.getStoreLocals("ACTIVE")[0].image,
         commune: null,
-        cartStatus: null
+        cartStatus: null,
       };
       this.local = this.localSelected;
       this.filters();
@@ -421,39 +468,18 @@ export default {
         name: this.localSelected.name,
         image: this.localSelected.image,
         commune: this.localSelected.commune,
-        cartStatus: this.localSelected.cartStatus
+        cartStatus: this.localSelected.cartStatus,
       });
     },
     conditionsToFilter(item, value) {
       if (
-        item.id
-          .toString()
-          .toLowerCase()
-          .indexOf(value) > -1 ||
-        item.payDetail.user
-          .toString()
-          .toLowerCase()
-          .indexOf(value) > -1 ||
-        item.payDetail.userPhone
-          .toString()
-          .toLowerCase()
-          .indexOf(value) > -1 ||
-        item.payDetail.pay
-          .toString()
-          .toLowerCase()
-          .indexOf(value) > -1 ||
-        item.payDetail.address
-          .toString()
-          .toLowerCase()
-          .indexOf(value) > -1 ||
-        item.local.name
-          .toString()
-          .toLowerCase()
-          .indexOf(value) > -1 ||
-        item.local.commune
-          .toString()
-          .toLowerCase()
-          .indexOf(value) > -1
+        item.id.toString().toLowerCase().indexOf(value) > -1 ||
+        item.payDetail.user.toString().toLowerCase().indexOf(value) > -1 ||
+        item.payDetail.userPhone.toString().toLowerCase().indexOf(value) > -1 ||
+        item.payDetail.pay.toString().toLowerCase().indexOf(value) > -1 ||
+        item.payDetail.address.toString().toLowerCase().indexOf(value) > -1 ||
+        item.local.name.toString().toLowerCase().indexOf(value) > -1 ||
+        item.local.commune.toString().toLowerCase().indexOf(value) > -1
       ) {
         return true;
       }
@@ -479,7 +505,7 @@ export default {
           label:
             dataLocal.id !== -1
               ? `${dataLocal.name}, ${dataLocal.commune}`
-              : `${dataLocal.name}`
+              : `${dataLocal.name}`,
         };
       }
 
@@ -494,20 +520,20 @@ export default {
           { orderId: id },
           {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+              Authorization: this.$store.getters["auth/getToken"],
+            },
           }
         )
-        .then(response => {
+        .then((response) => {
           if (response.data.status !== "success") {
             this.showNotification(response.data.message, "negative", "error");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorHandling(error);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 
