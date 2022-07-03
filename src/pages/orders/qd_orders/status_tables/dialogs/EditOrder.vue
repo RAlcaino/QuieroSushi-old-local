@@ -17,9 +17,9 @@
           <q-icon
             style="margin-right: 3px; padding-bottom: 4px"
             size="20px"
-            name="inventory_2"
+            name="edit"
           />
-          Crear pedido propio
+          Editar pedido propio
         </div>
         <q-space />
         <q-btn icon="close" color="white" flat round dense @click="close()" />
@@ -218,7 +218,7 @@
               <q-btn
                 @click="stepHandler()"
                 color="green"
-                :label="step === 2 ? 'Crear' : 'Validar'"
+                :label="step === 2 ? 'Editar' : 'Validar'"
                 rounded
                 size="sm"
                 :disabled="step === 2 && verifyForm"
@@ -246,7 +246,7 @@
             size="sm"
             :disabled="verifyForm"
             style="position: relative; bottom: 0px; margin-right: 10px"
-            @click="createOrder()"
+            @click="editOrder()"
           >
             <div style="font-size: 12px; margin-top: 3px">Crear</div>
           </q-btn>
@@ -272,27 +272,16 @@ export default {
         label: "Seleccionar...",
         value: null
       },
-      region: {
-        label: "Seleccionar...",
-        value: null
-      },
-      ciudad: {
-        label: "Seleccionar...",
-        value: null
-      },
       qdLocal: {
         label: "Seleccionar...",
         value: null
       },
       qdLocals: [],
       nombre: null,
-      minutos: null,
       direccion: null,
       direccion2: null,
       telefono: null,
-      tiempo: null,
       subtotal: null,
-      metodo_pago: "Seleccionar...",
       metodos_pago: [
         "Efectivo",
         "Debito en Domicilio",
@@ -304,17 +293,17 @@ export default {
       communes: [],
       communeFilter: "",
       step: 1,
-      notes: ""
+      notes: "",
+      item: null
     };
   },
   mounted() {
-    this.bus.$on("modal-new-order", () => {
+    this.bus.$on("modal-edit-order", item => {
+      this.item = { ...item };
       this.step = 1;
       this.open = true;
-      this.reset();
+      this.init(item);
     });
-    this.qdLocals = [...this.getStoreQDLocals("ACTIVE")];
-    this.communes = this.$store.getters["auth/getZones"].comunes;
   },
   computed: {
     verifyForm() {
@@ -326,7 +315,7 @@ export default {
     }
   },
   methods: {
-    createOrder() {
+    editOrder() {
       let body = {
         id_local: this.qdLocal.value,
         direccion_usuario: {
@@ -344,7 +333,9 @@ export default {
         nota: this.notes
       };
       this.showLoading();
-      var url = this.$store.getters["routes/getRoute"]("create.order.qd");
+      var url = this.$store.getters["routes/getRoute"]("edit.order.qd", {
+        orderId: this.item.id
+      });
       this.$axios
         .post(url, body, {
           headers: {
@@ -376,7 +367,6 @@ export default {
     filterFn(val) {
       let communesNew = [...this.$store.getters["auth/getZones"].comunes];
       if (val.trim() === "") {
-        console.log(val);
         this.communes = communesNew;
         return;
       }
@@ -389,23 +379,20 @@ export default {
     close() {
       this.open = false;
     },
-    reset() {
-      this.comuna = {
-        label: "Seleccionar...",
-        value: null
-      };
-      this.qdLocal = {
-        label: "Seleccionar...",
-        value: null
-      };
-      this.nombre = null;
-      this.minutos = null;
-      this.direccion = null;
-      this.direccion2 = null;
+    init(item) {
+      this.qdLocals = [...this.getStoreQDLocals("ACTIVE")];
+      this.qdLocal = this.qdLocals.find(
+        local => local.value === item.local.id_local
+      );
+      this.communes = this.$store.getters["auth/getZones"].comunes;
+      this.comuna = this.communes.find(
+        commune => commune.label === item.userDetail.userCommune
+      );
+      this.nombre = item.userDetail.user;
+      this.direccion = item.userDetail.address;
+      this.direccion2 = item.userDetail.address2;
       this.telefono = null;
-      this.tiempo = null;
-      this.subtotal = null;
-      this.metodo_pago = "Seleccionar...";
+      this.subtotal = item.subtotal;
       this.notes = "";
     },
     allCommunes() {
@@ -416,7 +403,7 @@ export default {
       if (this.step === 1) {
         this.validateAddress();
       } else {
-        this.createOrder();
+        this.editOrder();
       }
     },
     validateAddress() {

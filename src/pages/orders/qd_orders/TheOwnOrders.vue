@@ -151,34 +151,34 @@
         </q-tabs>
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="pending" style="padding: 0; overflow: hidden">
-            <not-confirmed
+            <pending
               :ordersNotConfirmed="getOrdersNotConfirmed"
               :refresh="refresh"
               :sendWs="sendWs"
-            ></not-confirmed>
+            ></pending>
           </q-tab-panel>
 
           <q-tab-panel name="admitted" style="padding: 0; overflow: hidden">
-            <not-confirmed
+            <admitted
               :ordersNotConfirmed="getOrdersNotConfirmed"
               :refresh="refresh"
               :sendWs="sendWs"
-            ></not-confirmed>
+            ></admitted>
           </q-tab-panel>
 
           <q-tab-panel name="preparation" style="padding: 0; overflow: hidden">
-            <not-confirmed
+            <preparation
               :ordersNotConfirmed="getOrdersNotConfirmed"
               :refresh="refresh"
               :sendWs="sendWs"
-            ></not-confirmed>
+            ></preparation>
           </q-tab-panel>
 
           <q-tab-panel name="onTheWay" style="padding: 0; overflow: hidden">
-            <the-confirmed
+            <onTheWay
               :ordersConfirmed="getOrdersConfirmed"
               :sendWs="sendWs"
-            ></the-confirmed>
+            ></onTheWay>
           </q-tab-panel>
 
           <q-tab-panel name="done" style="padding: 0; overflow: hidden">
@@ -191,9 +191,11 @@
 </template>
 
 <script>
-import NotConfirmed from "./status_tables/NotConfirmed.vue";
-import TheConfirmed from "./status_tables/TheConfirmed.vue";
+import Preparation from "./status_tables/Preparation.vue";
+import OnTheWay from "./status_tables/OnTheWay.vue";
 import TheDone from "./status_tables/TheDone.vue";
+import Pending from "./status_tables/Pending.vue";
+import Admitted from "./status_tables/Admitted.vue";
 import BasePage from "src/components/bases/BasePage.vue";
 import NewOrder from "../qd_orders/status_tables/dialogs/NewOrder.vue";
 
@@ -204,14 +206,16 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getStoreQDLocals",
+    "getStoreQDLocals"
   ],
   components: {
-    NotConfirmed,
-    TheConfirmed,
+    Preparation,
+    OnTheWay,
     TheDone,
     BasePage,
     NewOrder,
+    Pending,
+    Admitted
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
@@ -242,7 +246,7 @@ export default {
     getOrdersConfirmed() {
       var vue = this;
       if (this.search !== "") {
-        return this.ordersConfirmed.filter(function (item) {
+        return this.ordersConfirmed.filter(function(item) {
           if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
@@ -254,7 +258,7 @@ export default {
     getOrdersNotConfirmed() {
       var vue = this;
       if (this.search !== "") {
-        return this.ordersNotConfirmed.filter(function (item) {
+        return this.ordersNotConfirmed.filter(function(item) {
           if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
@@ -266,7 +270,7 @@ export default {
     getOrdersDone() {
       var vue = this;
       if (this.search !== "") {
-        return this.ordersDone.filter(function (item) {
+        return this.ordersDone.filter(function(item) {
           if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
@@ -283,7 +287,7 @@ export default {
       }
     },
     getLocals() {
-      let filteredLocals = this.locals.filter((item) => {
+      let filteredLocals = this.locals.filter(item => {
         return item.label
           .toLowerCase()
           .includes(this.localFilter.toLowerCase());
@@ -292,7 +296,7 @@ export default {
         return b.label - a.label;
       });
       return orderedLocals;
-    },
+    }
   },
   data() {
     return {
@@ -300,7 +304,7 @@ export default {
       splitterModel: 20,
       local: {
         value: null,
-        label: "",
+        label: ""
       },
       refresh: false,
       localFilter: "",
@@ -325,13 +329,13 @@ export default {
         image: null,
         commune: null,
         name: null,
-        cartStatus: null,
-      },
+        cartStatus: null
+      }
     };
   },
   methods: {
     sync(flag) {
-      //TODO:Hacer la peticion de las ordenes QD y adaptar
+      console.log(flag);
       if (flag) {
         this.showLoading();
       } else {
@@ -340,16 +344,16 @@ export default {
 
       var url = this.$store.getters["routes/getRoute"]("get.order.qd", {
         userId: this.$store.getters["auth/getDataUser"].id,
-        filter: "Todos",
+        filter: "Todos"
       });
 
       this.$axios
         .get(url, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"],
-          },
+            Authorization: this.$store.getters["auth/getToken"]
+          }
         })
-        .then((response) => {
+        .then(response => {
           if (flag) {
             this.hideLoading();
           } else {
@@ -360,7 +364,7 @@ export default {
           this.originalData = this.data;
           this.filters();
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
           this.hideLoading();
           this.errorHandling(error);
@@ -375,7 +379,7 @@ export default {
         vue.responsiveMobile = true;
       }
 
-      responsive.addListener(function (event) {
+      responsive.addListener(function(event) {
         if (event.matches) {
           vue.responsiveLabels = true;
           vue.responsiveMobile = true;
@@ -388,7 +392,7 @@ export default {
     filters() {
       var vue = this;
       var newArray = [];
-      var roots = this.data.map(function (item) {
+      var roots = this.data.map(function(item) {
         item.name = item.userDetail.user;
         item.userPhone = item.userDetail.userPhone;
         item.userAddress = item.userDetail.address;
@@ -398,15 +402,15 @@ export default {
       this.data = newArray;
       if (vue.local.value !== -1) {
         this.data = this.originalData.filter(
-          (item) => item.local.id_local === vue.local.value
+          item => item.local.id_local === vue.local.value
         );
       }
-      this.ordersDone = this.data.filter((item) => item.status === "done");
+      this.ordersDone = this.data.filter(item => item.status === "done");
       this.ordersConfirmed = this.data.filter(
-        (item) => item.status === "delivery"
+        item => item.status === "delivery"
       );
       this.ordersNotConfirmed = this.data.filter(
-        (item) => item.status === "preparation"
+        item => item.status === "preparation"
       );
 
       this.ordersDoneOriginal = this.ordersDone;
@@ -421,7 +425,7 @@ export default {
 
       const needle = val.toLowerCase();
       this.localsFilter = this.locals.filter(
-        (v) => v.label.toLowerCase().indexOf(needle) > -1
+        v => v.label.toLowerCase().indexOf(needle) > -1
       );
     },
     change(val) {
@@ -429,7 +433,7 @@ export default {
       if (val !== null) {
         this.local = val;
         this.data = this.originalData.filter(
-          (item) => item.local.id_local === vue.local.value
+          item => item.local.id_local === vue.local.value
         );
         this.filters();
         this.$store.commit("auth/setCurrentLocal", {
@@ -437,7 +441,7 @@ export default {
           name: val.name,
           image: val.image,
           commune: val.commune,
-          cartStatus: val.cartStatus,
+          cartStatus: val.cartStatus
         });
       }
     },
@@ -459,7 +463,7 @@ export default {
             ? "icons/favicon-128.png"
             : this.getStoreLocals("ACTIVE")[0].image,
         commune: null,
-        cartStatus: null,
+        cartStatus: null
       };
       this.local = this.localSelected;
       this.filters();
@@ -468,18 +472,39 @@ export default {
         name: this.localSelected.name,
         image: this.localSelected.image,
         commune: this.localSelected.commune,
-        cartStatus: this.localSelected.cartStatus,
+        cartStatus: this.localSelected.cartStatus
       });
     },
     conditionsToFilter(item, value) {
       if (
-        item.id.toString().toLowerCase().indexOf(value) > -1 ||
-        item.payDetail.user.toString().toLowerCase().indexOf(value) > -1 ||
-        item.payDetail.userPhone.toString().toLowerCase().indexOf(value) > -1 ||
-        item.payDetail.pay.toString().toLowerCase().indexOf(value) > -1 ||
-        item.payDetail.address.toString().toLowerCase().indexOf(value) > -1 ||
-        item.local.name.toString().toLowerCase().indexOf(value) > -1 ||
-        item.local.commune.toString().toLowerCase().indexOf(value) > -1
+        item.id
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.payDetail.user
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.payDetail.userPhone
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.payDetail.pay
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.payDetail.address
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.local.name
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1 ||
+        item.local.commune
+          .toString()
+          .toLowerCase()
+          .indexOf(value) > -1
       ) {
         return true;
       }
@@ -505,7 +530,7 @@ export default {
           label:
             dataLocal.id !== -1
               ? `${dataLocal.name}, ${dataLocal.commune}`
-              : `${dataLocal.name}`,
+              : `${dataLocal.name}`
         };
       }
 
@@ -520,20 +545,20 @@ export default {
           { orderId: id },
           {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"],
-            },
+              Authorization: this.$store.getters["auth/getToken"]
+            }
           }
         )
-        .then((response) => {
+        .then(response => {
           if (response.data.status !== "success") {
             this.showNotification(response.data.message, "negative", "error");
           }
         })
-        .catch((error) => {
+        .catch(error => {
           this.errorHandling(error);
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

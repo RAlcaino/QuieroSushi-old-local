@@ -213,6 +213,14 @@ const mutations = {
       {
         name: "get.order.qd",
         link: "/qd-pedidos/{userId}/{filter}"
+      },
+      {
+        name: "uber.quote",
+        link: "/qd-pedido/quote"
+      },
+      {
+        name: "edit.order.qd",
+        link: "/qd-update/{orderId}"
       }
     ];
   }
