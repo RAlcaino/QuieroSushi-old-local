@@ -120,13 +120,13 @@
         >
           <q-tab
             class="text-primary"
-            name="pending"
+            name="waiting"
             icon="payments"
             :label="responsiveLabels ? '' : 'Pendiente de pago'"
           />
           <q-tab
             class="text-blue-grey"
-            name="admitted"
+            name="started"
             icon="archive"
             :label="responsiveLabels ? '' : 'Ingresados'"
           />
@@ -138,51 +138,51 @@
           />
           <q-tab
             class="text-blue"
-            name="onTheWay"
+            name="delivery"
             icon="room_service"
             :label="responsiveLabels ? '' : 'En camino'"
           />
           <q-tab
             class="text-green"
-            name="done"
+            name="ready"
             icon="check_circle"
             :label="responsiveLabels ? '' : 'Finalizados'"
           />
         </q-tabs>
         <q-tab-panels v-model="tab" animated>
-          <q-tab-panel name="pending" style="padding: 0; overflow: hidden">
-            <pending
-              :ordersNotConfirmed="getOrdersNotConfirmed"
+          <q-tab-panel name="waiting" style="padding: 0; overflow: hidden">
+            <waiting
+              :ordersWaiting="getOrdersWaiting"
               :refresh="refresh"
               :sendWs="sendWs"
-            ></pending>
+            ></waiting>
           </q-tab-panel>
 
-          <q-tab-panel name="admitted" style="padding: 0; overflow: hidden">
-            <admitted
-              :ordersNotConfirmed="getOrdersNotConfirmed"
+          <q-tab-panel name="started" style="padding: 0; overflow: hidden">
+            <started
+              :ordersStarted="getOrdersStarted"
               :refresh="refresh"
               :sendWs="sendWs"
-            ></admitted>
+            ></started>
           </q-tab-panel>
 
           <q-tab-panel name="preparation" style="padding: 0; overflow: hidden">
             <preparation
-              :ordersNotConfirmed="getOrdersNotConfirmed"
+              :ordersPreparation="getOrdersPreparation"
               :refresh="refresh"
               :sendWs="sendWs"
             ></preparation>
           </q-tab-panel>
 
-          <q-tab-panel name="onTheWay" style="padding: 0; overflow: hidden">
-            <onTheWay
-              :ordersConfirmed="getOrdersConfirmed"
+          <q-tab-panel name="delivery" style="padding: 0; overflow: hidden">
+            <delivery
+              :ordersDelivery="getOrdersDelivery"
               :sendWs="sendWs"
-            ></onTheWay>
+            ></delivery>
           </q-tab-panel>
 
-          <q-tab-panel name="done" style="padding: 0; overflow: hidden">
-            <the-done :ordersDone="getOrdersDone" :sendWs="sendWs"></the-done>
+          <q-tab-panel name="ready" style="padding: 0; overflow: hidden">
+            <ready :ordersReady="getOrdersReady" :sendWs="sendWs"></ready>
           </q-tab-panel>
         </q-tab-panels>
       </div>
@@ -192,10 +192,10 @@
 
 <script>
 import Preparation from "./status_tables/Preparation.vue";
-import OnTheWay from "./status_tables/OnTheWay.vue";
-import TheDone from "./status_tables/TheDone.vue";
-import Pending from "./status_tables/Pending.vue";
-import Admitted from "./status_tables/Admitted.vue";
+import Delivery from "./status_tables/Delivery.vue";
+import Ready from "./status_tables/Ready.vue";
+import Waiting from "./status_tables/Waiting.vue";
+import Started from "./status_tables/Started.vue";
 import BasePage from "src/components/bases/BasePage.vue";
 import NewOrder from "../qd_orders/status_tables/dialogs/NewOrder.vue";
 
@@ -210,12 +210,12 @@ export default {
   ],
   components: {
     Preparation,
-    OnTheWay,
-    TheDone,
+    Delivery,
+    Ready,
     BasePage,
     NewOrder,
-    Pending,
-    Admitted
+    Waiting,
+    Started
   },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
@@ -238,45 +238,70 @@ export default {
     this.sync(false);
     this.responsiveMode();
 
-    this.bus.$on("sync-orders-qd", () => {
+    this.bus.$on("sync-orders", () => {
       this.sync(false);
     });
   },
   computed: {
-    getOrdersConfirmed() {
+    getOrdersStarted() {
       var vue = this;
       if (this.search !== "") {
-        return this.ordersConfirmed.filter(function(item) {
+        return this.ordersStarted.filter(function(item) {
           if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
         });
       } else {
-        return this.ordersConfirmedOriginal;
+        //TODO: Change
+        return this.ordersWaitingOriginal;
       }
     },
-    getOrdersNotConfirmed() {
+    getOrdersWaiting() {
       var vue = this;
       if (this.search !== "") {
-        return this.ordersNotConfirmed.filter(function(item) {
+        return this.ordersWaiting.filter(function(item) {
           if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
         });
       } else {
-        return this.ordersNotConfirmed;
+        return this.ordersWaitingOriginal;
       }
     },
-    getOrdersDone() {
+    getOrdersReady() {
       var vue = this;
       if (this.search !== "") {
-        return this.ordersDone.filter(function(item) {
+        return this.ordersReady.filter(function(item) {
           if (vue.conditionsToFilter(item, vue.search)) {
             return true;
           }
         });
       } else {
-        return this.ordersDoneOriginal;
+        return this.ordersReadyOriginal;
+      }
+    },
+    getOrdersPreparation() {
+      var vue = this;
+      if (this.search !== "") {
+        return this.ordersPreparation.filter(function(item) {
+          if (vue.conditionsToFilter(item, vue.search)) {
+            return true;
+          }
+        });
+      } else {
+        return this.ordersPreparationOriginal;
+      }
+    },
+    getOrdersDelivery() {
+      var vue = this;
+      if (this.search !== "") {
+        return this.ordersDelivery.filter(function(item) {
+          if (vue.conditionsToFilter(item, vue.search)) {
+            return true;
+          }
+        });
+      } else {
+        return this.ordersDeliveryOriginal;
       }
     },
     FontSize() {
@@ -300,7 +325,7 @@ export default {
   },
   data() {
     return {
-      tab: "pending",
+      tab: "waiting",
       splitterModel: 20,
       local: {
         value: null,
@@ -313,12 +338,17 @@ export default {
       prod: null,
       responsiveLabels: false,
       responsiveMobile: false,
-      ordersDone: [],
-      ordersConfirmed: [],
-      ordersNotConfirmed: [],
-      ordersDoneOriginal: [],
-      ordersConfirmedOriginal: [],
-      ordersNotConfirmedOriginal: [],
+      ordersReady: [],
+      ordersWaiting: [],
+      ordersDelivery: [],
+      ordersPreparation: [],
+      ordersStarted: [],
+      ordersReadyOriginal: [],
+      ordersDeliveryOriginal: [],
+      ordersWaitingOriginal: [],
+      ordersStartedOriginal: [],
+      ordersPreparationOriginal: [],
+      orders: [],
       search: "",
       data: [],
       originalData: [],
@@ -405,17 +435,23 @@ export default {
           item => item.local.id_local === vue.local.value
         );
       }
-      this.ordersDone = this.data.filter(item => item.status === "done");
-      this.ordersConfirmed = this.data.filter(
+      this.ordersDelivery = this.data.filter(
         item => item.status === "delivery"
       );
-      this.ordersNotConfirmed = this.data.filter(
+      this.ordersPreparation = this.data.filter(
         item => item.status === "preparation"
       );
+      this.ordersReady = this.data.filter(item => item.status === "ready");
+      this.ordersWaiting = this.data.filter(
+        item => item.status === "waiting_payment"
+      );
+      this.ordersStarted = this.data.filter(item => item.status === "started");
 
-      this.ordersDoneOriginal = this.ordersDone;
-      this.ordersConfirmedOriginal = this.ordersConfirmed;
-      this.ordersNotConfirmedOriginal = this.ordersNotConfirmed;
+      this.ordersReadyOriginal = this.ordersReady;
+      this.ordersDeliveryOriginal = this.ordersDelivery;
+      this.ordersWaitingOriginal = this.ordersWaiting;
+      this.ordersStartedOriginal = this.ordersStarted;
+      this.ordersPreparationOriginal = this.ordersPreparation;
     },
     filterFn(val) {
       if (val === "") {
@@ -538,7 +574,7 @@ export default {
       this.local.label = this.localSelected.label;
     },
     sendWs(id) {
-      var url = this.$store.getters["routes/getRoute"]("send.ws");
+      var url = this.$store.getters["routes/getRoute"]("send.ws.email");
       this.$axios
         .post(
           url,

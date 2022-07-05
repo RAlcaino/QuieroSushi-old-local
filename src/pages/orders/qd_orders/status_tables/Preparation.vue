@@ -12,7 +12,7 @@
     >
       <div
         class="fit column wrap justify-center items-center content-center"
-        v-if="ordersNotConfirmed.length === 0 && searching === false"
+        v-if="ordersPreparation.length === 0 && searching === false"
         style="margin-top: 100px"
       >
         <img src="../../../../assets/icons8-sad.gif" alt="sad" width="130" />
@@ -136,7 +136,7 @@
                 <template
                   v-if="
                     item.userDetail.address2 !== '' &&
-                    item.userDetail.address2 !== null
+                      item.userDetail.address2 !== null
                   "
                 >
                   <span v-if="item.userDetail.address2.search('dpto') == -1"
@@ -187,8 +187,8 @@
               style="font-size: 14px; font-family: 'Roboto'"
               v-if="
                 item.timestamp_llegada_local !== null &&
-                item.timestamp_llegada_local.split(' ')[1].slice(0, 5) !==
-                  '00:00'
+                  item.timestamp_llegada_local.split(' ')[1].slice(0, 5) !==
+                    '00:00'
               "
             >
               <q-icon
@@ -269,7 +269,7 @@
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersNotConfirmed.length > 15 && searching === false"
+        v-if="ordersPreparation.length > 15 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top: 25px"
@@ -289,7 +289,7 @@ import TheTimer from "../timer/TheTimer.vue";
 import ModalAreUSure from "../../../../components/modals/ModalAreUSure.vue";
 
 export default {
-  props: ["ordersNotConfirmed", "refresh", "sendWs"],
+  props: ["ordersPreparation", "refresh", "sendWs"],
   inject: ["formatNumber", "capitalize", "requestServerTime"],
   components: {
     BaseMoreComponent,
@@ -297,7 +297,7 @@ export default {
     TheConfirm,
     TheCancel,
     TheTimer,
-    ModalAreUSure,
+    ModalAreUSure
   },
   created() {
     this.flag = this.refresh;
@@ -322,21 +322,21 @@ export default {
       this.searching = false;
     });
 
-    this.bus.$on("continue-with-confirmation", (data) => {
+    this.bus.$on("continue-with-confirmation", data => {
       console.log("Hola");
       this.confirmDialog(data);
     });
   },
   computed: {
     getData() {
-      return this.ordersNotConfirmed.slice(
+      return this.ordersPreparation.slice(
         (this.page - 1) * this.perPage,
         (this.page - 1) * this.perPage + this.perPage
       );
     },
     getMaxPages() {
-      return Math.ceil(this.ordersNotConfirmed.length / 15);
-    },
+      return Math.ceil(this.ordersPreparation.length / 15);
+    }
   },
   data() {
     return {
@@ -344,7 +344,7 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false,
+      searching: false
     };
   },
   beforeDestroy() {
@@ -404,12 +404,12 @@ export default {
     },
     openChat(row) {
       var data = {
-        id_venta: row.id,
+        id_venta: row.id
       };
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    },
-  },
+    }
+  }
 };
 </script>
 

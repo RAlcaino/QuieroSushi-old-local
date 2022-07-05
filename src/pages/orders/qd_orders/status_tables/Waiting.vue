@@ -1,6 +1,6 @@
 <template>
   <div style="padding-bottom: 100px">
-    <more-details currentTab="not-confirmed"></more-details>
+    <more-details-two></more-details-two>
     <edit-order></edit-order>
     <keep-alive>
       <the-confirm :requestServerTime="this.requestServerTime"></the-confirm>
@@ -13,7 +13,7 @@
     >
       <div
         class="fit column wrap justify-center items-center content-center"
-        v-if="ordersNotConfirmed.length === 0 && searching === false"
+        v-if="ordersWaiting.length === 0 && searching === false"
         style="margin-top: 100px"
       >
         <img src="../../../../assets/icons8-sad.gif" alt="sad" width="130" />
@@ -65,17 +65,7 @@
                     "
                     style="font-size: 20px; padding-bottom: 5px"
                     class="i-icon"
-                  />{{
-                    `${capitalize(item.orderType)} ${
-                      item.es_uber === 1
-                        ? ` ${
-                            item.uuid !== undefined && item.uuid !== null
-                              ? item.uuid.slice(-5)
-                              : ""
-                          }`
-                        : ""
-                    }`
-                  }}
+                  />{{ `${capitalize(item.orderType)} ` }}
                 </div>
                 <div>
                   <q-icon
@@ -184,25 +174,6 @@
                 {{ item.requestedTime.split(" ")[1].slice(0, 5) }}</strong
               >
             </div>
-            <div
-              style="font-size: 14px; font-family: 'Roboto'"
-              v-if="
-                item.timestamp_llegada_local !== null &&
-                  item.timestamp_llegada_local.split(' ')[1].slice(0, 5) !==
-                    '00:00'
-              "
-            >
-              <q-icon
-                name="schedule"
-                style="font-size: 22px; padding-bottom: 5px"
-                class="i-icon"
-              /><strong
-                >Llegará al local:
-                {{
-                  item.timestamp_llegada_local.split(" ")[1].slice(0, 5)
-                }}</strong
-              >
-            </div>
           </q-card-section>
 
           <q-card-actions>
@@ -212,7 +183,7 @@
               <q-btn
                 rounded
                 size="sm"
-                color="blue"
+                color="orange"
                 style="font-size: 10.5px; margin-right: 5px"
                 @click="editDialog(item)"
               >
@@ -221,11 +192,29 @@
               <q-btn
                 rounded
                 size="sm"
+                color="blue"
+                style="font-size: 10.5px; margin-right: 5px"
+                @click="moreDetailsDialog2(item)"
+              >
+                Detalle
+              </q-btn>
+              <q-btn
+                rounded
+                size="sm"
+                color="primary"
+                style="font-size: 10.5px; margin-right: 5px"
+                @click="cancelDialog(item)"
+              >
+                Anular
+              </q-btn>
+              <q-btn
+                rounded
+                size="sm"
                 color="green"
                 style="font-size: 10.5px; margin-right: 5px"
-                @click="sendWs(item)"
+                @click="sendWs(item.id)"
               >
-                Volver a enviar
+                Enviar mensaje
               </q-btn>
             </div>
             <!-- <q-btn
@@ -270,7 +259,7 @@
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersNotConfirmed.length > 15 && searching === false"
+        v-if="ordersWaiting.length > 15 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top: 25px"
@@ -283,7 +272,7 @@
 
 <script>
 import BaseMoreComponent from "../../../../components/bases/BaseMoreComponent.vue";
-import MoreDetails from "./dialogs/MoreDetails.vue";
+import MoreDetailsTwo from "./dialogs/MoreDetailsTwo.vue";
 import TheConfirm from "./dialogs/TheConfirm.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
 import TheTimer from "../timer/TheTimer.vue";
@@ -291,11 +280,11 @@ import ModalAreUSure from "../../../../components/modals/ModalAreUSure.vue";
 import EditOrder from "./dialogs/EditOrder.vue";
 
 export default {
-  props: ["ordersNotConfirmed", "refresh", "sendWs"],
+  props: ["ordersWaiting", "refresh", "sendWs"],
   inject: ["formatNumber", "capitalize", "requestServerTime"],
   components: {
     BaseMoreComponent,
-    MoreDetails,
+    MoreDetailsTwo,
     TheConfirm,
     TheCancel,
     TheTimer,
@@ -332,13 +321,13 @@ export default {
   },
   computed: {
     getData() {
-      return this.ordersNotConfirmed.slice(
+      return this.ordersWaiting.slice(
         (this.page - 1) * this.perPage,
         (this.page - 1) * this.perPage + this.perPage
       );
     },
     getMaxPages() {
-      return Math.ceil(this.ordersNotConfirmed.length / 15);
+      return Math.ceil(this.ordersWaiting.length / 15);
     }
   },
   data() {
@@ -407,6 +396,9 @@ export default {
     },
     editDialog(item) {
       this.bus.$emit("modal-edit-order", item);
+    },
+    moreDetailsDialog2(row) {
+      this.bus.$emit("more-details-2", { ...row });
     },
     openChat(row) {
       var data = {

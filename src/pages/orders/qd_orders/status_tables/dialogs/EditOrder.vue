@@ -343,7 +343,7 @@ export default {
           }
         })
         .then(res => {
-          this.bus.$emit("sync-orders-qd");
+          this.bus.$emit("sync-orders");
           this.hideLoading();
           this.open = false;
           this.$refs.stepper.next();

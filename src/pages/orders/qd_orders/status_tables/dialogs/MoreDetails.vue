@@ -526,7 +526,7 @@ export default {
         })
         .then(response => {
           console.log(response);
-          this.bus.$emit("sync-orders-qd");
+          this.bus.$emit("sync-orders");
           this.hideLoading();
           this.card = false;
         })

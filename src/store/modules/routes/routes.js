@@ -119,6 +119,10 @@ const mutations = {
         link: "/sendWhatsApp"
       },
       {
+        name: "send.ws.email",
+        link: "/sendWsEmail"
+      },
+      {
         name: "get.serverTime",
         link: "/serverTime"
       },
@@ -221,6 +225,10 @@ const mutations = {
       {
         name: "edit.order.qd",
         link: "/qd-update/{orderId}"
+      },
+      {
+        name: "cancel.order.qd",
+        link: "/qd-cancel/{orderId}"
       }
     ];
   }

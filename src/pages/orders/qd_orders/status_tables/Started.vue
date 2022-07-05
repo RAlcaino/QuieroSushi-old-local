@@ -1,21 +1,24 @@
 <template>
   <div style="padding-bottom: 100px">
-    <more-details currentTab="confirmed"></more-details>
-    <the-done></the-done>
+    <the-start></the-start>
+    <more-details-two></more-details-two>
+    <keep-alive>
+      <the-confirm :requestServerTime="this.requestServerTime"></the-confirm>
+    </keep-alive>
     <the-cancel :mode="'orders'"></the-cancel>
-    <the-change-uber />
+    <modal-are-u-sure :showConfirm="confirmDialog"></modal-are-u-sure>
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top: 3%"
     >
       <div
         class="fit column wrap justify-center items-center content-center"
-        v-if="ordersConfirmed.length === 0 && searching === false"
+        v-if="ordersStarted.length === 0 && searching === false"
         style="margin-top: 100px"
       >
         <img src="../../../../assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size: 16px; font-weight: bold; text-align: center">
-          No se encontraron pedidos confirmados
+          No se encontraron pedidos sin confirmar
         </p>
       </div>
       <div
@@ -38,12 +41,12 @@
           v-for="item of getData"
           :key="item.id"
           class="my-card class-card bg-grey-1"
-          style="border-color: rgba(0, 0, 255, 0.4)"
+          style="border-color: rgba(255, 45, 45, 0.4)"
           flat
           bordered
         >
           <q-card-section
-            class="fit row wrap justify-between content-center"
+            class="fit row wrap justify-around content-center"
             style="padding: 10px 16px 5px 16px"
           >
             <div
@@ -62,24 +65,14 @@
                     "
                     style="font-size: 20px; padding-bottom: 5px"
                     class="i-icon"
-                  />{{
-                    `${capitalize(item.orderType)} ${
-                      item.es_uber === 1
-                        ? ` ${
-                            item.uuid !== undefined && item.uuid !== null
-                              ? item.uuid.slice(-5)
-                              : ""
-                          }`
-                        : ""
-                    }`
-                  }}
+                  />{{ `${capitalize(item.orderType)} ` }}
                 </div>
                 <div>
                   <q-icon
                     name="event"
                     style="font-size: 20px; padding-bottom: 5px"
                     class="i-icon"
-                  />{{ item.confirmationTimestamp.split(" ")[0] }}
+                  />{{ item.requestedTime.split(" ")[0] }}
                 </div>
               </div>
               <div
@@ -120,7 +113,10 @@
               <p style="margin: 0">
                 {{ item.userDetail.user }}
               </p>
-              <p style="margin: 0; font-family: 'Roboto'">
+              <p
+                v-if="item.local.tiene_anulacion_automatica === 0"
+                style="margin: 0; font-family: 'Roboto'"
+              >
                 {{ item.userDetail.userPhone }}
               </p>
               <p
@@ -130,8 +126,8 @@
                 {{ item.userDetail.address.trim() }}.
                 <template
                   v-if="
-                    item.userDetail.address2 != '' &&
-                    item.userDetail.address2 !== null
+                    item.userDetail.address2 !== '' &&
+                      item.userDetail.address2 !== null
                   "
                 >
                   <span v-if="item.userDetail.address2.search('dpto') == -1"
@@ -178,25 +174,6 @@
                 {{ item.requestedTime.split(" ")[1].slice(0, 5) }}</strong
               >
             </div>
-            <div
-              style="font-size: 14px; font-family: 'Roboto'"
-              v-if="
-                item.timestamp_llegada_local !== null &&
-                item.timestamp_llegada_local.split(' ')[1].slice(0, 5) !==
-                  '00:00'
-              "
-            >
-              <q-icon
-                name="schedule"
-                style="font-size: 22px; padding-bottom: 5px"
-                class="i-icon"
-              /><strong
-                >Llegará al local:
-                {{
-                  item.timestamp_llegada_local.split(" ")[1].slice(0, 5)
-                }}</strong
-              >
-            </div>
           </q-card-section>
 
           <q-card-actions>
@@ -204,11 +181,11 @@
               class="fit row no-wrap justify-center items-center content-center"
             >
               <q-btn
-                @click="moreDetails(item)"
                 rounded
                 size="sm"
                 color="blue"
                 style="font-size: 10.5px; margin-right: 5px"
+                @click="moreDetailsDialog2(item)"
               >
                 Detalle
               </q-btn>
@@ -221,32 +198,17 @@
               >
                 Anular
               </q-btn>
+              <q-btn
+                rounded
+                size="sm"
+                color="green"
+                style="font-size: 10.5px; margin-right: 5px"
+                @click="startDialog(item)"
+              >
+                Empezar Producción
+              </q-btn>
             </div>
             <!-- <q-btn
-                @click="doneDialog(item)"
-                rounded
-                size="sm"
-                color="green"
-                style="font-size: 10.5px; margin-right: 5px"
-                v-if="item.es_uber !== 1"
-              >
-                <template v-if="item.orderType === 'retiro'">
-                  Listo para Retiro</template
-                >
-                <template v-else>En camino</template>
-              </q-btn>
-              <q-btn
-                @click="changeDelivery(item)"
-                rounded
-                size="sm"
-                color="green"
-                style="font-size: 10.5px; margin-right: 5px"
-                v-else
-              >
-                <template>Cambiar Hora Uber</template>
-              </q-btn>
-
-              <q-btn
                 rounded
                 size="sm"
                 color="primary"
@@ -254,6 +216,20 @@
                 @click="cancelDialog(item)"
               >
                 Anular
+              </q-btn>
+              <q-btn
+                rounded
+                size="sm"
+                color="green"
+                style="font-size: 10.5px"
+                @click="
+                  item.paymentMethod.toLowerCase() === 'transferencia' &&
+                  item.es_uber === 1
+                    ? areUSure(item)
+                    : confirmDialog(item)
+                "
+              >
+                Confirmar
               </q-btn>
             </div>
             <div
@@ -274,11 +250,10 @@
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersConfirmed.length > 15 && searching === false"
+        v-if="ordersStarted.length > 15 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top: 25px"
-        color="blue"
         input
         @input="callEvent"
       />
@@ -288,22 +263,28 @@
 
 <script>
 import BaseMoreComponent from "../../../../components/bases/BaseMoreComponent.vue";
-import MoreDetails from "./dialogs/MoreDetails.vue";
-import TheDone from "./dialogs/TheDone.vue";
+import MoreDetailsTwo from "./dialogs/MoreDetailsTwo";
+import TheConfirm from "./dialogs/TheConfirm.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
-import TheChangeUber from "./dialogs/TheChangeUber.vue";
+import TheTimer from "../timer/TheTimer.vue";
+import ModalAreUSure from "../../../../components/modals/ModalAreUSure.vue";
+import TheStart from "./dialogs/TheStart.vue";
 
 export default {
-  props: ["ordersConfirmed", "sendWs"],
-  inject: ["formatNumber", "capitalize"],
+  props: ["ordersStarted", "refresh", "sendWs"],
+  inject: ["formatNumber", "capitalize", "requestServerTime"],
   components: {
     BaseMoreComponent,
-    MoreDetails,
-    TheDone,
+    MoreDetailsTwo,
+    TheConfirm,
     TheCancel,
-    TheChangeUber,
+    TheTimer,
+    ModalAreUSure,
+    TheStart
   },
   created() {
+    this.flag = this.refresh;
+    this.searching = this.refresh;
     this.bus.$on("reset-page", () => {
       if (this.page !== 1) {
         this.flag = true;
@@ -323,17 +304,21 @@ export default {
       this.flag = false;
       this.searching = false;
     });
+
+    this.bus.$on("continue-with-confirmation", data => {
+      this.confirmDialog(data);
+    });
   },
   computed: {
     getData() {
-      return this.ordersConfirmed.slice(
+      return this.ordersStarted.slice(
         (this.page - 1) * this.perPage,
         (this.page - 1) * this.perPage + this.perPage
       );
     },
     getMaxPages() {
-      return Math.ceil(this.ordersConfirmed.length / 15);
-    },
+      return Math.ceil(this.ordersStarted.length / 15);
+    }
   },
   data() {
     return {
@@ -341,7 +326,7 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false,
+      searching: false
     };
   },
   beforeDestroy() {
@@ -349,6 +334,16 @@ export default {
     this.flag = false;
   },
   methods: {
+    getRequestedTime(item) {
+      let requestedTime = new Date(item.requestedTime);
+      return this.format(
+        requestedTime.setMinutes(
+          requestedTime.getMinutes() - item.gmapsDeliveryTime
+        )
+      )
+        .split(" ")[1]
+        .slice(0, 5);
+    },
     format(d) {
       let date = new Date(d);
       let time = "";
@@ -373,41 +368,75 @@ export default {
 
       return formated;
     },
-    getPromisedTime(item) {
-      let promisedTime = new Date(item.kitchenTime);
-      return this.format(
-        promisedTime.setMinutes(
-          promisedTime.getMinutes() - item.gmapsDeliveryTime
-        )
-      )
-        .split(" ")[1]
-        .slice(0, 5);
+    moreDetailsDialog2(row) {
+      this.bus.$emit("more-details-2", { ...row });
     },
-    moreDetails(row) {
-      this.bus.$emit("more-details", { ...row, getStatus: true });
+    areUSure(row) {
+      this.bus.$emit("modal-are-you-sure", row);
     },
-    doneDialog(row) {
-      this.bus.$emit("the-done", row);
+    confirmDialog(row) {
+      let uberTime = row.gmapsDeliveryTime;
+      this.bus.$emit("the-confirm", { ...row, uberTime });
+    },
+    cancelDialog(row) {
+      this.bus.$emit("the-cancel", { ...row });
+    },
+    startDialog(row) {
+      this.bus.$emit("the-start", { ...row });
     },
     callEvent(val) {
       this.bus.$emit("scroll-up");
     },
-    cancelDialog(row) {
-      this.bus.$emit("the-cancel", row);
-    },
-    changeDelivery(row) {
-      this.bus.$emit("the-change-uber", row);
-    },
     openChat(row) {
       var data = {
-        id_venta: row.id,
+        id_venta: row.id
       };
-
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style></style>
+<style>
+.i-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.i-icon {
+  padding-right: 5px;
+}
+.class-card {
+  width: 48%;
+  margin-top: 2%;
+  margin-right: 1%;
+  margin-left: 1%;
+  border-radius: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.user-info {
+  width: auto;
+}
+.user-userDetail {
+  width: 30%;
+}
+
+@media screen and (max-width: 600px) {
+  .class-card {
+    width: 100% !important;
+    margin-top: 5% !important;
+  }
+}
+
+@media screen and (max-width: 333px) {
+  .order-type {
+    width: 100% !important;
+  }
+  .order-date {
+    width: 100% !important;
+    text-align: left !important;
+  }
+}
+</style>

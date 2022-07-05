@@ -174,17 +174,6 @@
                       @input="changeHandler"
                   /></q-item-section>
                 </q-item>
-                <!-- <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                  <q-item-section>
-                    <q-input
-                      type="number"
-                      outlined
-                      rounded
-                      dense
-                      v-model="minutos"
-                      label="Tiempo (Minutos)"
-                  /></q-item-section>
-                </q-item> -->
                 <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <q-item-section>
                     <q-input
@@ -195,6 +184,27 @@
                       label="Total pedido ($)"
                       v-model="subtotal"
                   /></q-item-section>
+                </q-item>
+                <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                  <q-item-section>
+                    <q-select
+                      ref="select"
+                      rounded
+                      outlined
+                      dense
+                      v-model="metodo_pago"
+                      :options="metodos_pago"
+                      :options-dense="true"
+                      hide-hint
+                      label="Metodo de pago"
+                      :virtual-scroll-sticky-size-start="80"
+                      style="margin-bottom: 5px"
+                    >
+                      <template v-slot:prepend>
+                        <q-icon name="payments" />
+                      </template>
+                    </q-select>
+                  </q-item-section>
                 </q-item>
               </q-list>
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -293,14 +303,7 @@ export default {
       tiempo: null,
       subtotal: null,
       metodo_pago: "Seleccionar...",
-      metodos_pago: [
-        "Efectivo",
-        "Debito en Domicilio",
-        "Credito en Domicilio",
-        "Pago Online",
-        "Transferencia",
-        "Pago Rut"
-      ],
+      metodos_pago: ["Pago Online", "Transferencia"],
       communes: [],
       communeFilter: "",
       step: 1,
@@ -318,7 +321,7 @@ export default {
   },
   computed: {
     verifyForm() {
-      if (this.subtotal === null || this.subtotal === "") {
+      if (this.notes === null || this.notes === "") {
         return true;
       } else {
         return false;
@@ -341,7 +344,8 @@ export default {
         uber: {
           es_uber: true
         },
-        nota: this.notes
+        nota: this.notes,
+        metodo_pago: this.metodo_pago
       };
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("create.order.qd");
@@ -352,7 +356,7 @@ export default {
           }
         })
         .then(res => {
-          this.bus.$emit("sync-orders-qd");
+          this.bus.$emit("sync-orders");
           this.hideLoading();
           this.open = false;
           this.$refs.stepper.next();

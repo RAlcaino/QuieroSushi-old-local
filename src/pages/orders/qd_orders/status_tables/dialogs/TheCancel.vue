@@ -113,10 +113,7 @@ export default {
         }
       }
       let data = {
-        orderID: this.orderId,
-        canceledTimestamp: this.getServerTime(),
-        cancellationReason: this.cancellationReason,
-        type: "QD"
+        cancellationReason: this.cancellationReason
       };
 
       if (!this.prod) {
@@ -125,7 +122,9 @@ export default {
           this.bus.$emit("sync-orders");
         }, 3000);
       } else {
-        var url = this.$store.getters["routes/getRoute"]("order.cancel");
+        var url = this.$store.getters["routes/getRoute"]("cancel.order.qd", {
+          orderId: this.orderId
+        });
         this.$axios
           .put(url, data, {
             headers: {
@@ -135,19 +134,8 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               this.hideLoading();
-              if (this.mode === "orders") {
-                if (resp !== undefined) {
-                  if (resp.data.status !== "canceled") {
-                    this.cancelDelivery();
-                  }
-                } else {
-                  this.bus.$emit("sync-orders");
-                  this.hideLoading();
-                  this.card = false;
-                }
-              } else {
-                this.bus.$emit("sync-page-after-refund");
-              }
+              this.bus.$emit("sync-orders");
+              this.card = false;
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");

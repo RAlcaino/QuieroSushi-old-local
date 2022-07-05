@@ -1,19 +1,21 @@
 <template>
   <div style="padding-bottom: 100px">
-    <more-details currentTab="done"></more-details>
+    <more-details currentTab="confirmed"></more-details>
+    <the-done></the-done>
     <the-cancel :mode="'orders'"></the-cancel>
+    <the-change-uber />
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top: 3%"
     >
       <div
-        style="margin-top: 100px"
         class="fit column wrap justify-center items-center content-center"
-        v-if="ordersDone.length === 0 && searching === false"
+        v-if="ordersDelivery.length === 0 && searching === false"
+        style="margin-top: 100px"
       >
         <img src="../../../../assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size: 16px; font-weight: bold; text-align: center">
-          No se encontraron pedidos listos
+          No se encontraron pedidos confirmados
         </p>
       </div>
       <div
@@ -36,9 +38,9 @@
           v-for="item of getData"
           :key="item.id"
           class="my-card class-card bg-grey-1"
+          style="border-color: rgba(0, 0, 255, 0.4)"
           flat
           bordered
-          style="border-color: rgba(0, 128, 0, 0.4)"
         >
           <q-card-section
             class="fit row wrap justify-between content-center"
@@ -77,7 +79,7 @@
                     name="event"
                     style="font-size: 20px; padding-bottom: 5px"
                     class="i-icon"
-                  />{{ item.finalTimestamp.split(" ")[0] }}
+                  />{{ item.confirmationTimestamp.split(" ")[0] }}
                 </div>
               </div>
               <div
@@ -114,7 +116,7 @@
             "
           >
             <div class="user-info">
-              <p style="margin: 0; font-weight: bold">Cliente</p>
+              <p style="margin: 0; font-weight: bold">Cliente:</p>
               <p style="margin: 0">
                 {{ item.userDetail.user }}
               </p>
@@ -189,7 +191,7 @@
                 style="font-size: 22px; padding-bottom: 5px"
                 class="i-icon"
               /><strong
-                >Llego al local:
+                >Llegó al local:
                 {{
                   item.timestamp_llegada_local.split(" ")[1].slice(0, 5)
                 }}</strong
@@ -197,45 +199,86 @@
             </div>
           </q-card-section>
 
-          <q-card-actions
-            class="fit row no-wrap justify-center items-center content-center"
-          >
-            <q-btn
-              @click="moreDetails(item)"
-              rounded
-              size="sm"
-              color="blue"
-              style="font-size: 10.5px"
+          <q-card-actions>
+            <div
+              class="fit row no-wrap justify-center items-center content-center"
             >
-              Detalle
-            </q-btn>
+              <q-btn
+                @click="moreDetails(item)"
+                rounded
+                size="sm"
+                color="blue"
+                style="font-size: 10.5px; margin-right: 5px"
+              >
+                Detalle
+              </q-btn>
+              <q-btn
+                rounded
+                size="sm"
+                color="primary"
+                style="font-size: 10.5px; margin-right: 5px"
+                @click="cancelDialog(item)"
+              >
+                Anular
+              </q-btn>
+            </div>
             <!-- <q-btn
-              rounded
-              size="sm"
-              color="primary"
-              style="font-size: 10.5px; margin-right: 5px"
-              @click="cancelDialog(item)"
+                @click="doneDialog(item)"
+                rounded
+                size="sm"
+                color="green"
+                style="font-size: 10.5px; margin-right: 5px"
+                v-if="item.es_uber !== 1"
+              >
+                <template v-if="item.orderType === 'retiro'">
+                  Listo para Retiro</template
+                >
+                <template v-else>En camino</template>
+              </q-btn>
+              <q-btn
+                @click="changeDelivery(item)"
+                rounded
+                size="sm"
+                color="green"
+                style="font-size: 10.5px; margin-right: 5px"
+                v-else
+              >
+                <template>Cambiar Hora Uber</template>
+              </q-btn>
+
+              <q-btn
+                rounded
+                size="sm"
+                color="primary"
+                style="font-size: 10.5px; margin-right: 5px"
+                @click="cancelDialog(item)"
+              >
+                Anular
+              </q-btn>
+            </div>
+            <div
+              class="fit row wrap justify-center items-center content-center"
+              style="margin-top: 5px"
             >
-              Anular
-            </q-btn>
-            <q-btn
-              rounded
-              size="sm"
-              color="amber-9"
-              style="font-size: 10.5px; margin-right: 5px"
-              @click="openChat(item)"
-            >
-              Servicio al cliente
-            </q-btn> -->
+              <q-btn
+                rounded
+                size="sm"
+                color="amber-9"
+                style="font-size: 10.5px; margin-right: 5px"
+                @click="openChat(item)"
+              >
+                Servicio al cliente
+              </q-btn>
+            </div> -->
           </q-card-actions>
         </q-card>
       </div>
       <q-pagination
-        v-if="ordersDone.length > 15 && searching === false"
+        v-if="ordersDelivery.length > 15 && searching === false"
         v-model="page"
         :max="getMaxPages"
         style="padding-top: 25px"
-        color="green"
+        color="blue"
         input
         @input="callEvent"
       />
@@ -246,15 +289,19 @@
 <script>
 import BaseMoreComponent from "../../../../components/bases/BaseMoreComponent.vue";
 import MoreDetails from "./dialogs/MoreDetails.vue";
+import TheDone from "./dialogs/TheDone.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
+import TheChangeUber from "./dialogs/TheChangeUber.vue";
 
 export default {
-  props: ["ordersDone", "sendWs"],
+  props: ["ordersDelivery", "sendWs"],
   inject: ["formatNumber", "capitalize"],
   components: {
     BaseMoreComponent,
     MoreDetails,
+    TheDone,
     TheCancel,
+    TheChangeUber,
   },
   created() {
     this.bus.$on("reset-page", () => {
@@ -279,13 +326,13 @@ export default {
   },
   computed: {
     getData() {
-      return this.ordersDone.slice(
+      return this.ordersDelivery.slice(
         (this.page - 1) * this.perPage,
         (this.page - 1) * this.perPage + this.perPage
       );
     },
     getMaxPages() {
-      return Math.ceil(this.ordersDone.length / 15);
+      return Math.ceil(this.ordersDelivery.length / 15);
     },
   },
   data() {
@@ -298,6 +345,7 @@ export default {
     };
   },
   beforeDestroy() {
+    console.log("Before Unmount NC");
     this.flag = false;
   },
   methods: {
@@ -336,13 +384,19 @@ export default {
         .slice(0, 5);
     },
     moreDetails(row) {
-      this.bus.$emit("more-details", row);
+      this.bus.$emit("more-details", { ...row, getStatus: true });
+    },
+    doneDialog(row) {
+      this.bus.$emit("the-done", row);
     },
     callEvent(val) {
       this.bus.$emit("scroll-up");
     },
     cancelDialog(row) {
       this.bus.$emit("the-cancel", row);
+    },
+    changeDelivery(row) {
+      this.bus.$emit("the-change-uber", row);
     },
     openChat(row) {
       var data = {
