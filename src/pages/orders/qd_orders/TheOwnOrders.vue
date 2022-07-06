@@ -252,8 +252,7 @@ export default {
           }
         });
       } else {
-        //TODO: Change
-        return this.ordersWaitingOriginal;
+        return this.ordersStartedOriginal;
       }
     },
     getOrdersWaiting() {
