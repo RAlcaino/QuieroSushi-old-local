@@ -26,7 +26,14 @@
       </q-card-section>
 
       <q-card-section>
-        <q-stepper v-model="step" ref="stepper" animated color="primary">
+        <q-stepper
+          v-model="step"
+          ref="stepper"
+          animated
+          color="primary"
+          done-color="green"
+          active-color="blue"
+        >
           <q-step
             :name="1"
             title="Validar dirección del cliente"
@@ -134,7 +141,7 @@
                     outlined
                     rounded
                     dense
-                    label="Apartamento del cliente"
+                    label="Departamento del cliente"
                     v-model="direccion2"
                   />
                 </q-item-section>
@@ -162,7 +169,7 @@
                 </q-item-section>
               </q-item>
               <q-list class="row">
-                <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                   <q-item-section>
                     <q-input
                       type="number"
@@ -174,17 +181,49 @@
                       @input="changeHandler"
                   /></q-item-section>
                 </q-item>
-                <!-- <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <q-item class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                   <q-item-section>
                     <q-input
-                      type="number"
+                      type="text"
                       outlined
                       rounded
                       dense
-                      v-model="minutos"
-                      label="Tiempo (Minutos)"
+                      label="Email"
+                      v-model="email"
                   /></q-item-section>
-                </q-item> -->
+                </q-item>
+                <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                  <q-item-section>
+                    <q-input
+                      v-model="notes"
+                      outlined
+                      rounded
+                      dense
+                      type="textarea"
+                      label="Notas"
+                  /></q-item-section>
+                </q-item>
+                <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                  <q-item-section>
+                    <q-select
+                      ref="select"
+                      rounded
+                      outlined
+                      dense
+                      v-model="metodo_pago"
+                      :options="metodos_pago"
+                      :options-dense="true"
+                      hide-hint
+                      label="Metodo de pago"
+                      :virtual-scroll-sticky-size-start="80"
+                      style="margin-bottom: 5px"
+                    >
+                      <template v-slot:prepend>
+                        <q-icon name="payments" />
+                      </template>
+                    </q-select>
+                  </q-item-section>
+                </q-item>
                 <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <q-item-section>
                     <q-input
@@ -197,17 +236,6 @@
                   /></q-item-section>
                 </q-item>
               </q-list>
-              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <q-item-section>
-                  <q-input
-                    v-model="notes"
-                    outlined
-                    rounded
-                    dense
-                    type="textarea"
-                    label="Notas"
-                /></q-item-section>
-              </q-item>
             </q-list>
           </q-step>
 
@@ -216,9 +244,20 @@
               style="display: flex; justify-content: center"
             >
               <q-btn
-                @click="stepHandler()"
+                v-if="step === 2"
+                @click="editOrder()"
                 color="green"
-                :label="step === 2 ? 'Editar' : 'Validar'"
+                :label="'Editar'"
+                rounded
+                size="sm"
+                :disabled="step === 2 && verifyForm"
+                style="position: relative; bottom: 0px; margin-right: 10px"
+              />
+              <q-btn
+                v-if="step === 1"
+                @click="validateAddress()"
+                color="green"
+                :label="labelFirstStep"
                 rounded
                 size="sm"
                 :disabled="step === 2 && verifyForm"
@@ -276,25 +315,30 @@ export default {
         label: "Seleccionar...",
         value: null
       },
+      metodo_pago: "Seleccionar...",
       qdLocals: [],
       nombre: null,
       direccion: null,
       direccion2: null,
       telefono: null,
       subtotal: null,
-      metodos_pago: [
-        "Efectivo",
-        "Debito en Domicilio",
-        "Credito en Domicilio",
-        "Pago Online",
-        "Transferencia",
-        "Pago Rut"
-      ],
+      metodos_pago: ["Pago Online", "Transferencia"],
       communes: [],
       communeFilter: "",
       step: 1,
       notes: "",
-      item: null
+      item: null,
+      email: "",
+      comunaOriginal: {
+        label: "Seleccionar...",
+        value: null
+      },
+      qdLocalOriginal: {
+        label: "Seleccionar...",
+        value: null
+      },
+      direccionOriginal: null,
+      direccion2Original: null
     };
   },
   mounted() {
@@ -311,6 +355,18 @@ export default {
         return true;
       } else {
         return false;
+      }
+    },
+    labelFirstStep() {
+      if (
+        this.comunaOriginal.value === this.comuna.value &&
+        this.qdLocalOriginal.value === this.qdLocal.value &&
+        this.direccionOriginal.trim() === this.direccion.trim() &&
+        this.direccion2Original.trim() === this.direccion2.trim()
+      ) {
+        return "Avanzar";
+      } else {
+        return "Validar";
       }
     }
   },
@@ -330,8 +386,15 @@ export default {
         uber: {
           es_uber: true
         },
-        nota: this.notes
+        nota: this.notes,
+        metodo_pago: this.metodo_pago,
+        correo: this.email
       };
+
+      if (this.email === null || this.email === "") {
+        delete body.correo;
+      }
+
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("edit.order.qd", {
         orderId: this.item.id
@@ -350,18 +413,20 @@ export default {
         })
         .catch(error => {
           console.log(error);
+          this.hideLoading();
           if (error.response !== undefined) {
             if (error.response.data.code === 412) {
-              this.showNotification(
-                "El télefono u otro dato no es válido",
-                "negative",
-                "error"
-              );
+              for (const property in error.response.data.message) {
+                this.showNotification(
+                  `${error.response.data.message[property]}`,
+                  "negative",
+                  "error"
+                );
+              }
+            } else {
+              this.errorHandling(error);
             }
           }
-
-          this.hideLoading();
-          this.errorHandling(error);
         });
     },
     filterFn(val) {
@@ -384,29 +449,38 @@ export default {
       this.qdLocal = this.qdLocals.find(
         local => local.value === item.local.id_local
       );
+      this.qdLocalOriginal = { ...this.qdLocal };
       this.communes = this.$store.getters["auth/getZones"].comunes;
       this.comuna = this.communes.find(
         commune => commune.label === item.userDetail.userCommune
       );
+      this.comunaOriginal = { ...this.comuna };
       this.nombre = item.userDetail.user;
       this.direccion = item.userDetail.address;
+      this.direccionOriginal = item.userDetail.address;
       this.direccion2 = item.userDetail.address2;
-      this.telefono = null;
+      this.direccion2Original = item.userDetail.address2;
+      this.telefono = item.userDetail.telefono;
       this.subtotal = item.subtotal;
-      this.notes = "";
+      this.notes = item.notas;
+      this.email = item.userDetail.correo;
+      this.metodo_pago = item.paymentMethod;
     },
     allCommunes() {
       this.communeFilter = "";
       this.communes = this.$store.getters["auth/getZones"].comunes;
     },
-    stepHandler() {
-      if (this.step === 1) {
-        this.validateAddress();
-      } else {
-        this.editOrder();
-      }
-    },
     validateAddress() {
+      if (
+        this.comunaOriginal.value === this.comuna.value &&
+        this.qdLocalOriginal.value === this.qdLocal.value &&
+        this.direccionOriginal.trim() === this.direccion.trim() &&
+        this.direccion2Original.trim() === this.direccion2.trim()
+      ) {
+        this.$refs.stepper.next();
+        return;
+      }
+
       this.showLoading();
 
       let body = {
@@ -428,7 +502,17 @@ export default {
         })
         .catch(error => {
           this.hideLoading();
-          this.errorHandling(error);
+          if (error.response !== undefined) {
+            if (error.response.data.code === 412) {
+              this.showNotification(
+                "Todos los campos son requeridos",
+                "negative",
+                "error"
+              );
+            } else {
+              this.errorHandling(error);
+            }
+          }
         });
     },
     changeHandler(val) {

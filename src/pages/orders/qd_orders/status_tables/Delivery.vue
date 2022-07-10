@@ -79,7 +79,7 @@
                     name="event"
                     style="font-size: 20px; padding-bottom: 5px"
                     class="i-icon"
-                  />{{ item.confirmationTimestamp.split(" ")[0] }}
+                  />{{ item.waitingPaymentTimestamp.split(" ")[0] }}
                 </div>
               </div>
               <div
@@ -175,10 +175,10 @@
                 class="i-icon"
               /><strong
                 >Creado a las:
-                {{ item.requestedTime.split(" ")[1].slice(0, 5) }}</strong
+                {{ item.waitingPaymentTimestamp.split(" ")[1].slice(0, 5) }}</strong
               >
             </div>
-            <div
+            <!-- <div
               style="font-size: 14px; font-family: 'Roboto'"
               v-if="
                 item.timestamp_llegada_local !== null &&
@@ -196,7 +196,7 @@
                   item.timestamp_llegada_local.split(" ")[1].slice(0, 5)
                 }}</strong
               >
-            </div>
+            </div> -->
           </q-card-section>
 
           <q-card-actions>

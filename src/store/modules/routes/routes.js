@@ -216,7 +216,7 @@ const mutations = {
       },
       {
         name: "get.order.qd",
-        link: "/qd-pedidos/{userId}/{filter}"
+        link: "/qd-getPedidos/{idLocal}"
       },
       {
         name: "uber.quote",

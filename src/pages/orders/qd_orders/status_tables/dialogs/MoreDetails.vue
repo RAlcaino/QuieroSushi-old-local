@@ -390,11 +390,11 @@ export default {
   methods: {
     getStatus() {
       this.deliveryStatus = "";
-      if (this.orderDetail.delivery_id !== null) {
+      if (this.orderDetail.uber_information.delivery_id !== null) {
         var url = this.$store.getters["routes/getRoute"](
           "get.delivery.status",
           {
-            delivery_id: this.orderDetail.delivery_id
+            delivery_id: this.orderDetail.uber_information.delivery_id
             //delivery_id: "del_gALMXHSKQp2wlI1cVWl9Gw"
           }
         );

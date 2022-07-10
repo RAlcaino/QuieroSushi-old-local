@@ -26,7 +26,14 @@
       </q-card-section>
 
       <q-card-section>
-        <q-stepper v-model="step" ref="stepper" animated color="primary">
+        <q-stepper
+          v-model="step"
+          ref="stepper"
+          animated
+          color="primary"
+          done-color="green"
+          active-color="blue"
+        >
           <q-step
             :name="1"
             title="Validar dirección del cliente"
@@ -134,7 +141,7 @@
                     outlined
                     rounded
                     dense
-                    label="Apartamento del cliente"
+                    label="Departamento del cliente"
                     v-model="direccion2"
                   />
                 </q-item-section>
@@ -144,7 +151,7 @@
 
           <q-step
             :name="2"
-            title="Editar información"
+            title="Ingresar información"
             icon="person"
             :done="step > 2"
           >
@@ -162,7 +169,7 @@
                 </q-item-section>
               </q-item>
               <q-list class="row">
-                <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                   <q-item-section>
                     <q-input
                       type="number"
@@ -174,18 +181,29 @@
                       @input="changeHandler"
                   /></q-item-section>
                 </q-item>
-                <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <q-item class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                   <q-item-section>
                     <q-input
-                      type="number"
+                      type="text"
                       outlined
                       rounded
                       dense
-                      label="Total pedido ($)"
-                      v-model="subtotal"
+                      label="Email"
+                      v-model="email"
                   /></q-item-section>
                 </q-item>
                 <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                  <q-item-section>
+                    <q-input
+                      v-model="notes"
+                      outlined
+                      rounded
+                      dense
+                      type="textarea"
+                      label="Notas"
+                  /></q-item-section>
+                </q-item>
+                <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <q-item-section>
                     <q-select
                       ref="select"
@@ -206,18 +224,18 @@
                     </q-select>
                   </q-item-section>
                 </q-item>
+                <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                  <q-item-section>
+                    <q-input
+                      type="number"
+                      outlined
+                      rounded
+                      dense
+                      label="Total pedido ($)"
+                      v-model="subtotal"
+                  /></q-item-section>
+                </q-item>
               </q-list>
-              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <q-item-section>
-                  <q-input
-                    v-model="notes"
-                    outlined
-                    rounded
-                    dense
-                    type="textarea"
-                    label="Notas"
-                /></q-item-section>
-              </q-item>
             </q-list>
           </q-step>
 
@@ -307,7 +325,8 @@ export default {
       communes: [],
       communeFilter: "",
       step: 1,
-      notes: ""
+      notes: "",
+      email: ""
     };
   },
   mounted() {
@@ -321,7 +340,7 @@ export default {
   },
   computed: {
     verifyForm() {
-      if (this.notes === null || this.notes === "") {
+      if (this.subtotal === null || this.subtotal === "") {
         return true;
       } else {
         return false;
@@ -345,7 +364,8 @@ export default {
           es_uber: true
         },
         nota: this.notes,
-        metodo_pago: this.metodo_pago
+        metodo_pago: this.metodo_pago,
+        correo: this.email
       };
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("create.order.qd");
@@ -363,18 +383,20 @@ export default {
         })
         .catch(error => {
           console.log(error);
+          this.hideLoading();
           if (error.response !== undefined) {
             if (error.response.data.code === 412) {
-              this.showNotification(
-                "El télefono u otro dato no es válido",
-                "negative",
-                "error"
-              );
+              for (const property in error.response.data.message) {
+                this.showNotification(
+                  `${error.response.data.message[property]}`,
+                  "negative",
+                  "error"
+                );
+              }
+            } else {
+              this.errorHandling(error);
             }
           }
-
-          this.hideLoading();
-          this.errorHandling(error);
         });
     },
     filterFn(val) {
@@ -411,6 +433,7 @@ export default {
       this.subtotal = null;
       this.metodo_pago = "Seleccionar...";
       this.notes = "";
+      this.email = "";
     },
     allCommunes() {
       this.communeFilter = "";
@@ -445,7 +468,17 @@ export default {
         })
         .catch(error => {
           this.hideLoading();
-          this.errorHandling(error);
+          if (error.response !== undefined) {
+            if (error.response.data.code === 412) {
+              this.showNotification(
+                "Todos los campos son requeridos",
+                "negative",
+                "error"
+              );
+            } else {
+              this.errorHandling(error);
+            }
+          }
         });
     },
     changeHandler(val) {

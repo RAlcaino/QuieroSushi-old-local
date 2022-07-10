@@ -227,8 +227,8 @@ export default {
       this.tab = "pending";
       this.refresh = true;
       this.search = "";
-      this.allOrders();
       this.sync(false);
+      this.allOrders();
     });
   },
   mounted() {
@@ -236,6 +236,7 @@ export default {
     this.localsFilter = this.locals;
 
     this.sync(false);
+    this.allOrders();
     this.responsiveMode();
 
     this.bus.$on("sync-orders", () => {
@@ -372,8 +373,7 @@ export default {
       }
 
       var url = this.$store.getters["routes/getRoute"]("get.order.qd", {
-        userId: this.$store.getters["auth/getDataUser"].id,
-        filter: "Todos"
+        idLocal: -1
       });
 
       this.$axios
@@ -434,9 +434,7 @@ export default {
           item => item.local.id_local === vue.local.value
         );
       }
-      this.ordersDelivery = this.data.filter(
-        item => item.status === "delivery"
-      );
+      this.ordersDelivery = this.data.filter(item => item.status === "on_road");
       this.ordersPreparation = this.data.filter(
         item => item.status === "preparation"
       );
@@ -471,13 +469,6 @@ export default {
           item => item.local.id_local === vue.local.value
         );
         this.filters();
-        this.$store.commit("auth/setCurrentLocal", {
-          id: val.value,
-          name: val.name,
-          image: val.image,
-          commune: val.commune,
-          cartStatus: val.cartStatus
-        });
       }
     },
     allLocals() {
@@ -502,13 +493,6 @@ export default {
       };
       this.local = this.localSelected;
       this.filters();
-      this.$store.commit("auth/setCurrentLocal", {
-        id: this.localSelected.value,
-        name: this.localSelected.name,
-        image: this.localSelected.image,
-        commune: this.localSelected.commune,
-        cartStatus: this.localSelected.cartStatus
-      });
     },
     conditionsToFilter(item, value) {
       if (
@@ -557,20 +541,18 @@ export default {
       if (this.locals.length === 1) {
         this.localSelected = this.locals[0];
       } else {
-        let dataLocal = { ...this.$store.getters["auth/getDataLocal"] };
-
         this.localSelected = {
-          ...dataLocal,
-          value: dataLocal.id,
-          label:
-            dataLocal.id !== -1
-              ? `${dataLocal.name}, ${dataLocal.commune}`
-              : `${dataLocal.name}`
+          value: -1,
+          label: "Todos",
+          name: "Todos",
+          image:
+            this.$store.getters["auth/getDataUser"].id === -1
+              ? "icons/favicon-128.png"
+              : this.getStoreLocals("ACTIVE")[0].image,
+          commune: null,
+          cartStatus: null
         };
       }
-
-      this.local.value = this.localSelected.value;
-      this.local.label = this.localSelected.label;
     },
     sendWs(id) {
       var url = this.$store.getters["routes/getRoute"]("send.ws.email");

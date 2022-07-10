@@ -67,12 +67,12 @@
                     class="i-icon"
                   />{{ `${capitalize(item.orderType)} ` }}
                 </div>
-                <div>
+                <div v-if="item.waitingPaymentTimestamp !== null">
                   <q-icon
                     name="event"
                     style="font-size: 20px; padding-bottom: 5px"
                     class="i-icon"
-                  />{{ item.requestedTime.split(" ")[0] }}
+                  />{{ item.waitingPaymentTimestamp.split(" ")[0] }}
                 </div>
               </div>
               <div
@@ -164,14 +164,17 @@
           <q-card-section
             class="fit column wrap justify-center items-center content-center"
           >
-            <div style="font-size: 14px; font-family: 'Roboto'">
+            <div
+              style="font-size: 14px; font-family: 'Roboto'"
+              v-if="item.waitingPaymentTimestamp !== null"
+            >
               <q-icon
                 name="schedule"
                 style="font-size: 22px; padding-bottom: 5px"
                 class="i-icon"
               /><strong
                 >Creado a las:
-                {{ item.requestedTime.split(" ")[1].slice(0, 5) }}</strong
+                {{ item.waitingPaymentTimestamp.split(" ")[1].slice(0, 5) }}</strong
               >
             </div>
           </q-card-section>
@@ -214,7 +217,7 @@
                 style="font-size: 10.5px; margin-right: 5px"
                 @click="sendWs(item.id)"
               >
-                Enviar mensaje
+                Reenviar Información
               </q-btn>
             </div>
             <!-- <q-btn
