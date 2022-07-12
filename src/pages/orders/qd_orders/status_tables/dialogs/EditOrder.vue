@@ -149,11 +149,40 @@
             </q-list>
           </q-step>
 
+          <q-step :name="2" title="Costos" icon="attach_money" :done="step > 2">
+            <q-list class="column">
+              <q-item>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold"
+                    >Costo QD:</q-item-label
+                  >
+                  <q-item-label>{{ format(costs.qd_costo) }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold"
+                    >Cliente Paga:</q-item-label
+                  >
+                  <q-item-label>{{ format(costs.costo_cliente) }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold"
+                    >Local Paga:</q-item-label
+                  >
+                  <q-item-label>{{ format(costs.costo_local) }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-step>
+
           <q-step
-            :name="2"
+            :name="3"
             title="Editar información"
             icon="person"
-            :done="step > 2"
+            :done="step > 3"
           >
             <q-list class="column">
               <q-item>
@@ -244,13 +273,22 @@
               style="display: flex; justify-content: center"
             >
               <q-btn
-                v-if="step === 2"
+                v-if="step === 3"
                 @click="editOrder()"
                 color="green"
                 :label="'Editar'"
                 rounded
                 size="sm"
-                :disabled="step === 2 && verifyForm"
+                :disabled="step === 3 && verifyForm"
+                style="position: relative; bottom: 0px; margin-right: 10px"
+              />
+              <q-btn
+                v-if="step === 2"
+                @click="$refs.stepper.next()"
+                color="green"
+                :label="'Confirmar'"
+                rounded
+                size="sm"
                 style="position: relative; bottom: 0px; margin-right: 10px"
               />
               <q-btn
@@ -260,7 +298,6 @@
                 :label="labelFirstStep"
                 rounded
                 size="sm"
-                :disabled="step === 2 && verifyForm"
                 style="position: relative; bottom: 0px; margin-right: 10px"
               />
               <q-btn
@@ -268,7 +305,11 @@
                 rounded
                 color="primary"
                 size="sm"
-                @click="$refs.stepper.previous()"
+                @click="
+                  Object.keys(costs).length === 0
+                    ? (step = 1)
+                    : $refs.stepper.previous()
+                "
                 label="Atrás"
                 class="q-ml-sm"
               />
@@ -338,7 +379,8 @@ export default {
         value: null
       },
       direccionOriginal: null,
-      direccion2Original: null
+      direccion2Original: null,
+      costs: {}
     };
   },
   mounted() {
@@ -429,6 +471,13 @@ export default {
           }
         });
     },
+    format(data) {
+      data = parseFloat(data);
+      return `${data.toLocaleString("es-CL", {
+        style: "currency",
+        currency: "CLP"
+      })}`;
+    },
     filterFn(val) {
       let communesNew = [...this.$store.getters["auth/getZones"].comunes];
       if (val.trim() === "") {
@@ -477,7 +526,7 @@ export default {
         this.direccionOriginal.trim() === this.direccion.trim() &&
         this.direccion2Original.trim() === this.direccion2.trim()
       ) {
-        this.$refs.stepper.next();
+        this.step = 3;
         return;
       }
 
@@ -498,6 +547,7 @@ export default {
         .then(response => {
           console.log(response);
           this.hideLoading();
+          this.costs = response.data.result.details[0];
           this.$refs.stepper.next();
         })
         .catch(error => {

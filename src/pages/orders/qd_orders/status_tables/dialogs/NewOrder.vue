@@ -149,11 +149,40 @@
             </q-list>
           </q-step>
 
+          <q-step :name="2" title="Costos" icon="attach_money" :done="step > 2">
+            <q-list class="column">
+              <q-item>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold"
+                    >Costo QD:</q-item-label
+                  >
+                  <q-item-label>{{ format(costs.qd_costo) }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold"
+                    >Cliente Paga:</q-item-label
+                  >
+                  <q-item-label>{{ format(costs.costo_cliente) }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold"
+                    >Local Paga:</q-item-label
+                  >
+                  <q-item-label>{{ format(costs.costo_local) }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-step>
+
           <q-step
-            :name="2"
+            :name="3"
             title="Ingresar información"
             icon="person"
-            :done="step > 2"
+            :done="step > 3"
           >
             <q-list class="column">
               <q-item>
@@ -244,12 +273,32 @@
               style="display: flex; justify-content: center"
             >
               <q-btn
-                @click="stepHandler()"
+                v-if="step === 1"
+                @click="validateAddress()"
                 color="green"
-                :label="step === 2 ? 'Crear' : 'Validar'"
+                :label="'Validar'"
                 rounded
                 size="sm"
-                :disabled="step === 2 && verifyForm"
+                style="position: relative; bottom: 0px; margin-right: 10px"
+              />
+              <q-btn
+                v-if="step === 2"
+                @click="confirm()"
+                color="green"
+                :label="'Confirmar'"
+                rounded
+                size="sm"
+                style="position: relative; bottom: 0px; margin-right: 10px"
+              />
+
+              <q-btn
+                v-if="step === 3"
+                @click="createOrder()"
+                color="green"
+                :label="'Crear'"
+                rounded
+                size="sm"
+                :disabled="step === 3 && verifyForm"
                 style="position: relative; bottom: 0px; margin-right: 10px"
               />
               <q-btn
@@ -257,7 +306,11 @@
                 rounded
                 color="primary"
                 size="sm"
-                @click="$refs.stepper.previous()"
+                @click="
+                  Object.keys(costs).length === 0
+                    ? (step = 1)
+                    : $refs.stepper.previous()
+                "
                 label="Atrás"
                 class="q-ml-sm"
               />
@@ -326,7 +379,8 @@ export default {
       communeFilter: "",
       step: 1,
       notes: "",
-      email: ""
+      email: "",
+      costs: {}
     };
   },
   mounted() {
@@ -367,6 +421,10 @@ export default {
         metodo_pago: this.metodo_pago,
         correo: this.email
       };
+
+      if (this.email === null || this.email === "") {
+        delete body.correo;
+      }
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("create.order.qd");
       this.$axios
@@ -411,6 +469,13 @@ export default {
       this.communes = communesNew.filter(
         v => v.label.toLowerCase().indexOf(needle) > -1
       );
+    },
+    format(data) {
+      data = parseFloat(data);
+      return `${data.toLocaleString("es-CL", {
+        style: "currency",
+        currency: "CLP"
+      })}`;
     },
     close() {
       this.open = false;
@@ -464,6 +529,7 @@ export default {
         .then(response => {
           console.log(response);
           this.hideLoading();
+          this.costs = response.data.result.details[0];
           this.$refs.stepper.next();
         })
         .catch(error => {
@@ -485,6 +551,9 @@ export default {
       if (val.length > 9) {
         this.telefono = val.slice(0, -1);
       }
+    },
+    confirm() {
+      this.$refs.stepper.next();
     }
   }
 };
