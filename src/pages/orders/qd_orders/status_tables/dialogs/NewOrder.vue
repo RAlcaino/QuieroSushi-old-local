@@ -54,7 +54,7 @@
                   </q-select>
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <!-- <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
                     ref="select"
@@ -121,7 +121,7 @@
                     </template>
                   </q-select>
                 </q-item-section>
-              </q-item>
+              </q-item> -->
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
@@ -153,24 +153,18 @@
             <q-list class="column">
               <q-item>
                 <q-item-section>
-                  <q-item-label style="font-weight: bold"
-                    >Costo QD:</q-item-label
+                  <q-item-label style="font-weight: bold; font-size: 18px"
+                    >Cargo a cliente:</q-item-label
                   >
-                  <q-item-label>{{ format(costs.qd_costo) }}</q-item-label>
+                  <q-item-label style="font-size: 18px">{{
+                    format(costs.costo_cliente)
+                  }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item>
                 <q-item-section>
                   <q-item-label style="font-weight: bold"
-                    >Cliente Paga:</q-item-label
-                  >
-                  <q-item-label>{{ format(costs.costo_cliente) }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section>
-                  <q-item-label style="font-weight: bold"
-                    >Local Paga:</q-item-label
+                    >Cargo a local:</q-item-label
                   >
                   <q-item-label>{{ format(costs.costo_local) }}</q-item-label>
                 </q-item-section>
@@ -229,7 +223,7 @@
                       rounded
                       dense
                       type="textarea"
-                      label="Notas"
+                      placeholder="Acá puede colocar los productos que están siendo comprados. Esta nota será leída por el cliente"
                   /></q-item-section>
                 </q-item>
                 <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -406,9 +400,11 @@ export default {
       let body = {
         id_local: this.qdLocal.value,
         direccion_usuario: {
-          direccion: this.direccion,
-          direccion2: this.direccion2,
-          comuna: this.comuna.label
+          direccion:
+            this.direccion.charAt(0).toUpperCase() + this.direccion.slice(1),
+          direccion2:
+            this.direccion2.charAt(0).toUpperCase() + this.direccion2.slice(1)
+          // comuna: this.comuna.label
         },
         nombre: this.nombre,
         telefono: this.telefono,
@@ -417,7 +413,7 @@ export default {
         uber: {
           es_uber: true
         },
-        nota: this.notes,
+        nota: this.notes.replaceAll("\n", ".-"),
         metodo_pago: this.metodo_pago,
         correo: this.email
       };

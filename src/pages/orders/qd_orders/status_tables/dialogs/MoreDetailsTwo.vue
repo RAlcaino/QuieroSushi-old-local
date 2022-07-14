@@ -40,9 +40,10 @@
                   </q-item-section>
                   <q-item-section>
                     <q-item-label style="font-weight: bold">Notas</q-item-label>
-                    <q-item-label v-if="orderDetail.notas">{{
-                      orderDetail.notas
-                    }}</q-item-label>
+                    <q-item-label
+                      v-if="orderDetail.notas"
+                      v-html="orderDetail.notas.replaceAll('.-', '<br>')"
+                    />
                     <q-item-label v-else>Sin notas</q-item-label>
                   </q-item-section>
                 </q-item>

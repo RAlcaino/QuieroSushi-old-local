@@ -54,7 +54,7 @@
                   </q-select>
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <!-- <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
                     ref="select"
@@ -121,7 +121,7 @@
                     </template>
                   </q-select>
                 </q-item-section>
-              </q-item>
+              </q-item> -->
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
@@ -153,24 +153,18 @@
             <q-list class="column">
               <q-item>
                 <q-item-section>
-                  <q-item-label style="font-weight: bold"
-                    >Costo QD:</q-item-label
+                  <q-item-label style="font-weight: bold; font-size: 18px"
+                    >Cargo a cliente:</q-item-label
                   >
-                  <q-item-label>{{ format(costs.qd_costo) }}</q-item-label>
+                  <q-item-label style="font-size: 18px">{{
+                    format(costs.costo_cliente)
+                  }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item>
                 <q-item-section>
                   <q-item-label style="font-weight: bold"
-                    >Cliente Paga:</q-item-label
-                  >
-                  <q-item-label>{{ format(costs.costo_cliente) }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section>
-                  <q-item-label style="font-weight: bold"
-                    >Local Paga:</q-item-label
+                    >Cargo a local:</q-item-label
                   >
                   <q-item-label>{{ format(costs.costo_local) }}</q-item-label>
                 </q-item-section>
@@ -229,7 +223,7 @@
                       rounded
                       dense
                       type="textarea"
-                      label="Notas"
+                      placeholder="Acá puede colocar los productos que están siendo comprados. Esta nota será leída por el cliente"
                   /></q-item-section>
                 </q-item>
                 <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -401,7 +395,7 @@ export default {
     },
     labelFirstStep() {
       if (
-        this.comunaOriginal.value === this.comuna.value &&
+        // this.comunaOriginal.value === this.comuna.value &&
         this.qdLocalOriginal.value === this.qdLocal.value &&
         this.direccionOriginal.trim() === this.direccion.trim() &&
         this.direccion2Original.trim() === this.direccion2.trim()
@@ -418,8 +412,8 @@ export default {
         id_local: this.qdLocal.value,
         direccion_usuario: {
           direccion: this.direccion,
-          direccion2: this.direccion2,
-          comuna: this.comuna.label
+          direccion2: this.direccion2
+          // comuna: this.comuna.label
         },
         nombre: this.nombre,
         telefono: this.telefono,
@@ -505,13 +499,17 @@ export default {
       );
       this.comunaOriginal = { ...this.comuna };
       this.nombre = item.userDetail.user;
-      this.direccion = item.userDetail.address;
-      this.direccionOriginal = item.userDetail.address;
-      this.direccion2 = item.userDetail.address2;
-      this.direccion2Original = item.userDetail.address2;
+      this.direccion =
+        item.userDetail.address.charAt(0).toUpperCase() +
+        item.userDetail.address.slice(1);
+      this.direccionOriginal = this.direccion;
+      this.direccion2 =
+        item.userDetail.address2.charAt(0).toUpperCase() +
+        item.userDetail.address2.slice(1);
+      this.direccion2Original = this.direccion2;
       this.telefono = item.userDetail.telefono;
       this.subtotal = item.subtotal;
-      this.notes = item.notas;
+      this.notes = item.notas.replaceAll(".-", "");
       this.email = item.userDetail.correo;
       this.metodo_pago = item.paymentMethod;
     },
@@ -521,7 +519,7 @@ export default {
     },
     validateAddress() {
       if (
-        this.comunaOriginal.value === this.comuna.value &&
+        // this.comunaOriginal.value === this.comuna.value &&
         this.qdLocalOriginal.value === this.qdLocal.value &&
         this.direccionOriginal.trim() === this.direccion.trim() &&
         this.direccion2Original.trim() === this.direccion2.trim()

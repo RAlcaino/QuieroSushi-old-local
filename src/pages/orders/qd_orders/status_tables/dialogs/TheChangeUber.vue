@@ -11,7 +11,7 @@
           style="font-size:16px; margin-bottom: 15px; font-weight: 500;"
           class="q-ml-sm"
         >
-          ¿En cuántos minutos quieres que llegue el moto al local?
+          ¿En cuántos minutos quieres que llegue el repartidor al local?
         </span>
 
         <q-input
