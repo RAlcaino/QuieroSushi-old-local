@@ -54,7 +54,7 @@
                   </q-select>
                 </q-item-section>
               </q-item>
-              <!-- <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
                     ref="select"
@@ -121,7 +121,7 @@
                     </template>
                   </q-select>
                 </q-item-section>
-              </q-item> -->
+              </q-item>
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
@@ -403,8 +403,8 @@ export default {
           direccion:
             this.direccion.charAt(0).toUpperCase() + this.direccion.slice(1),
           direccion2:
-            this.direccion2.charAt(0).toUpperCase() + this.direccion2.slice(1)
-          // comuna: this.comuna.label
+            this.direccion2.charAt(0).toUpperCase() + this.direccion2.slice(1),
+          comuna: this.comuna.label
         },
         nombre: this.nombre,
         telefono: this.telefono,

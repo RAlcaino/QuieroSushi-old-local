@@ -54,7 +54,7 @@
                   </q-select>
                 </q-item-section>
               </q-item>
-              <!-- <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
                     ref="select"
@@ -121,7 +121,7 @@
                     </template>
                   </q-select>
                 </q-item-section>
-              </q-item> -->
+              </q-item>
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
@@ -395,7 +395,7 @@ export default {
     },
     labelFirstStep() {
       if (
-        // this.comunaOriginal.value === this.comuna.value &&
+        this.comunaOriginal.value === this.comuna.value &&
         this.qdLocalOriginal.value === this.qdLocal.value &&
         this.direccionOriginal.trim() === this.direccion.trim() &&
         this.direccion2Original.trim() === this.direccion2.trim()
@@ -412,8 +412,8 @@ export default {
         id_local: this.qdLocal.value,
         direccion_usuario: {
           direccion: this.direccion,
-          direccion2: this.direccion2
-          // comuna: this.comuna.label
+          direccion2: this.direccion2,
+          comuna: this.comuna.label
         },
         nombre: this.nombre,
         telefono: this.telefono,
@@ -519,7 +519,7 @@ export default {
     },
     validateAddress() {
       if (
-        // this.comunaOriginal.value === this.comuna.value &&
+        this.comunaOriginal.value === this.comuna.value &&
         this.qdLocalOriginal.value === this.qdLocal.value &&
         this.direccionOriginal.trim() === this.direccion.trim() &&
         this.direccion2Original.trim() === this.direccion2.trim()
