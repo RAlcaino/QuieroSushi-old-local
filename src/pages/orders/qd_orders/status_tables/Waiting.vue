@@ -56,6 +56,9 @@
                 class="order-type"
                 style="width: 50%; font-size: 13px; font-family: 'Roboto'"
               >
+                <div v-if="item.originOrder !== null">
+                  <strong>Tipo Reparto:</strong> {{ item.originOrder }}
+                </div>
                 <div>
                   <q-icon
                     :name="
@@ -174,7 +177,9 @@
                 class="i-icon"
               /><strong
                 >Creado a las:
-                {{ item.waitingPaymentTimestamp.split(" ")[1].slice(0, 5) }}</strong
+                {{
+                  item.waitingPaymentTimestamp.split(" ")[1].slice(0, 5)
+                }}</strong
               >
             </div>
           </q-card-section>

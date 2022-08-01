@@ -21,17 +21,13 @@
                   </q-item-section>
                   <q-item-section>
                     <q-item-label style="font-weight: bold"
-                      >Direcciones</q-item-label
+                      >Dirección</q-item-label
                     >
-                    <q-item-label>{{
-                      orderDetail.userDetail.address
-                    }}</q-item-label>
-                    <q-item-label>{{
-                      orderDetail.userDetail.address2
-                    }}</q-item-label>
-                    <q-item-label>{{
-                      orderDetail.userDetail.userCommune
-                    }}</q-item-label>
+                    <q-item-label
+                      >{{ orderDetail.userDetail.address }}, Dpto
+                      {{ orderDetail.userDetail.address2 }},
+                      {{ orderDetail.userDetail.userCommune }}</q-item-label
+                    >
                   </q-item-section>
                 </q-item>
                 <q-item>
