@@ -200,7 +200,7 @@ import BasePage from "src/components/bases/BasePage.vue";
 import NewOrder from "../qd_orders/status_tables/dialogs/NewOrder.vue";
 
 export default {
-  props: ["toAll"],
+  props: ["toAll", "started"],
   inject: [
     "showNotification",
     "showLoading",
@@ -222,9 +222,13 @@ export default {
     if (this.toAll) {
       this.allOrders();
     }
-    this.bus.$on("to-one-tab", () => {
+    if (this.started) {
+      this.tab = "started";
+    }
+
+    this.bus.$on("started-own-order", () => {
       this.bus.$emit("scroll-up");
-      this.tab = "pending";
+      this.tab = "started";
       this.refresh = true;
       this.search = "";
       this.sync(false);

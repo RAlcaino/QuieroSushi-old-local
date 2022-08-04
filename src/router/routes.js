@@ -110,6 +110,7 @@ const routes = [
         name: "own-orders",
         path: "/pedidos-propios",
         component: () => import("src/pages/orders/qd_orders/TheOwnOrders.vue"),
+        props: true,
         beforeEnter: (to, from, next) => {
           if (isAuthenticated()) {
             if (accessTo("/pedidos-propios")) {

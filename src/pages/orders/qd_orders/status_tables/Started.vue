@@ -57,7 +57,10 @@
                 style="width: 50%; font-size: 13px; font-family: 'Roboto'"
               >
                 <div v-if="item.originOrder !== null">
-                  <strong>Tipo Reparto:</strong> {{ item.originOrder }}
+                  <strong>Origen:</strong> {{ item.originOrder }}
+                </div>
+                <div v-if="item.supplierOrder !== null">
+                  <strong>Reparto: </strong> {{ item.supplierOrder }}
                 </div>
                 <div>
                   <q-icon

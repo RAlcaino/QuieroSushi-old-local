@@ -525,8 +525,16 @@ export default {
         .then(response => {
           console.log(response);
           this.hideLoading();
-          this.costs = response.data.result.details[0];
-          this.$refs.stepper.next();
+          if (response.data.result.details.length > 0) {
+            this.costs = response.data.result.details[0];
+            this.$refs.stepper.next();
+          } else {
+            this.showNotification(
+              "Error al calcular costos. Contacte al administrador",
+              "negative",
+              "error"
+            );
+          }
         })
         .catch(error => {
           this.hideLoading();

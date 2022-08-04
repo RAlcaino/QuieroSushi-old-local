@@ -2,6 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <!--Modals-->
     <modal-new-order></modal-new-order>
+    <modal-new-own-order></modal-new-own-order>
     <modal-setting></modal-setting>
     <modal-block></modal-block>
     <modal-sync-page></modal-sync-page>
@@ -555,6 +556,7 @@ import ModalStatusOrder from "../components/modals/ModalStatusOrder.vue";
 import SecureLS from "secure-ls";
 import ModalOrderCanceled from "src/components/modals/ModalOrderCanceled.vue";
 import ModalNotification from "src/components/modals/ModalNotification.vue";
+import ModalNewOwnOrder from "src/components/modals/ModalNewOwnOrder.vue";
 
 export default {
   inject: [
@@ -576,7 +578,8 @@ export default {
     ModalSyncPage,
     ModalStatusOrder,
     ModalOrderCanceled,
-    ModalNotification
+    ModalNotification,
+    ModalNewOwnOrder
   },
   created() {
     this.updateTime();
@@ -606,6 +609,7 @@ export default {
     });
     this.bus.$on("stop-bell", () => {
       this.modalOpen = false;
+      this.modalOpen2 = false;
       this.bell.loop(false);
     });
     this.prod = this.$store.getters["mode/getMode"];
@@ -672,6 +676,7 @@ export default {
       channelName: "",
       channelNameAlt: "",
       modalOpen: false,
+      modalOpen2: false,
       flag: 1,
       currentHour: null,
       currentMinute: null,
@@ -766,6 +771,15 @@ export default {
           this.$store.getters["auth/getRefreshOrders"]
         ) {
           this.bus.$emit("sync-orders");
+        } else if (data.tipo === "Nuevo-Pedido-QD") {
+          if (this.modalOpen2) {
+            this.bus.$emit("sync-new-order-qd", { message: data.mensaje });
+          } else {
+            this.modalOpen2 = true;
+            this.bell.loop(true);
+            this.bell.play();
+            this.bus.$emit("new-order-qd", { message: data.mensaje });
+          }
         }
       });
       this.privateChannelSync.listen(".Notificacion", data => {
