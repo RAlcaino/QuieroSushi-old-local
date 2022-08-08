@@ -258,6 +258,37 @@
                       v-model="subtotal"
                   /></q-item-section>
                 </q-item>
+                <q-item
+                  v-if="
+                    metodo_pago !== 'Pago Online' &&
+                      metodo_pago !== 'Seleccionar...'
+                  "
+                  class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+                >
+                  <q-item-section>
+                    <span
+                      style="font-size:16px; margin-bottom: 15px; font-weight: 500;"
+                      class="q-ml-sm"
+                    >
+                      ¿En cuántos minutos quieres que llegue el moto al local?
+                    </span>
+
+                    <div style="display:flex; justify-content:center;">
+                      <q-input
+                        v-model="newTime"
+                        color="primary"
+                        label="Minutos"
+                        style="width: 100px"
+                        type="number"
+                        :min="10"
+                      >
+                        <template v-slot:prepend>
+                          <q-icon name="query_builder" />
+                        </template>
+                      </q-input>
+                    </div>
+                  </q-item-section>
+                </q-item>
               </q-list>
             </q-list>
           </q-step>
@@ -368,13 +399,14 @@ export default {
       tiempo: null,
       subtotal: null,
       metodo_pago: "Seleccionar...",
-      metodos_pago: ["Pago Online", "Transferencia"],
+      metodos_pago: ["Pago Online", "Transferencia", "Efectivo", "Pagado"],
       communes: [],
       communeFilter: "",
       step: 1,
       notes: "",
       email: "",
-      costs: {}
+      costs: {},
+      newTime: 10
     };
   },
   mounted() {
@@ -415,7 +447,15 @@ export default {
         },
         nota: this.notes.replaceAll("\n", ".-"),
         metodo_pago: this.metodo_pago,
-        correo: this.email
+        correo: this.email,
+        tiempos:
+          this.metodo_pago !== "Pago Online" &&
+          this.metodo_pago !== "Seleccionar..."
+            ? {
+                pickup_ready_dt: +this.newTime,
+                pickup_deadline_dt: +this.newTime + 15
+              }
+            : null
       };
 
       if (this.email === null || this.email === "") {
@@ -495,6 +535,7 @@ export default {
       this.metodo_pago = "Seleccionar...";
       this.notes = "";
       this.email = "";
+      this.newTime = 10;
     },
     allCommunes() {
       this.communeFilter = "";
