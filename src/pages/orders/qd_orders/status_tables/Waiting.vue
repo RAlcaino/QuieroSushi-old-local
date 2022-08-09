@@ -7,6 +7,7 @@
     </keep-alive>
     <the-cancel :mode="'orders'"></the-cancel>
     <modal-are-u-sure :showConfirm="confirmDialog"></modal-are-u-sure>
+    <the-start></the-start>
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top: 3%"
@@ -190,6 +191,7 @@
           <q-card-actions>
             <div
               class="fit row no-wrap justify-center items-center content-center"
+              style="margin-bottom: 5px"
             >
               <q-btn
                 rounded
@@ -226,6 +228,20 @@
                 @click="sendWs(item.id)"
               >
                 Reenviar Información
+              </q-btn>
+            </div>
+            <div
+              class="fit row no-wrap justify-center items-center content-center"
+            >
+              <q-btn
+                v-if="item.paymentMethod === 'Transferencia'"
+                rounded
+                size="sm"
+                color="purple"
+                style="font-size: 10.5px; margin-right: 5px"
+                @click="startDialog(item)"
+              >
+                Confirmar Transferencia
               </q-btn>
             </div>
             <!-- <q-btn
@@ -289,6 +305,7 @@ import TheCancel from "./dialogs/TheCancel.vue";
 import TheTimer from "../timer/TheTimer.vue";
 import ModalAreUSure from "../../../../components/modals/ModalAreUSure.vue";
 import EditOrder from "./dialogs/EditOrder.vue";
+import TheStart from "./dialogs/TheStart.vue";
 
 export default {
   props: ["ordersWaiting", "refresh", "sendWs"],
@@ -300,7 +317,8 @@ export default {
     TheCancel,
     TheTimer,
     ModalAreUSure,
-    EditOrder
+    EditOrder,
+    TheStart
   },
   created() {
     this.flag = this.refresh;
@@ -417,6 +435,9 @@ export default {
       };
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
+    },
+    startDialog(row) {
+      this.bus.$emit("the-start", { ...row });
     }
   }
 };

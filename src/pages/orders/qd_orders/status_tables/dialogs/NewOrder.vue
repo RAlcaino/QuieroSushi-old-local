@@ -261,6 +261,7 @@
                 <q-item
                   v-if="
                     metodo_pago !== 'Pago Online' &&
+                      metodo_pago !== 'Transferencia' &&
                       metodo_pago !== 'Seleccionar...'
                   "
                   class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
@@ -450,16 +451,25 @@ export default {
         correo: this.email,
         tiempos:
           this.metodo_pago !== "Pago Online" &&
+          this.metodo_pago !== "Transferencia" &&
           this.metodo_pago !== "Seleccionar..."
             ? {
                 pickup_ready_dt: +this.newTime,
-                pickup_deadline_dt: +this.newTime + 15
+                pickup_deadline_dt: +this.newTime + 15,
+                delivery_type: "Uber"
               }
             : null
       };
 
       if (this.email === null || this.email === "") {
         delete body.correo;
+      }
+      if (
+        this.metodo_pago === "Pago Online" ||
+        this.metodo_pago === "Transferencia" ||
+        this.metodo_pago === "Seleccionar..."
+      ) {
+        delete body.tiempos;
       }
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("create.order.qd");
