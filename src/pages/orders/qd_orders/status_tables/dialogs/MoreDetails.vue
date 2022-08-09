@@ -14,6 +14,35 @@
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="one" class="tab-panel">
             <q-list>
+              <q-item v-if="orderDetail.userDetail !== undefined">
+                <q-item-section avatar>
+                  <q-icon name="location_on" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold"
+                    >Dirección</q-item-label
+                  >
+                  <q-item-label
+                    >{{ orderDetail.userDetail.address }}, Dpto
+                    {{ orderDetail.userDetail.address2 }},
+                    {{ orderDetail.userDetail.userCommune }}</q-item-label
+                  >
+                </q-item-section>
+              </q-item>
+              <q-item v-if="orderDetail.userDetail !== undefined">
+                <q-item-section avatar>
+                  <q-icon name="notes" color="primary" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label style="font-weight: bold">Notas</q-item-label>
+                  <q-item-label
+                    v-if="orderDetail.notas"
+                    v-html="orderDetail.notas.replaceAll('.-', '<br>')"
+                  />
+                  <q-item-label v-else>Sin notas</q-item-label>
+                </q-item-section>
+              </q-item>
+
               <q-item v-if="orderDetail.delivery_id !== null">
                 <q-item-section avatar>
                   <q-icon name="delivery_dining" color="primary" />

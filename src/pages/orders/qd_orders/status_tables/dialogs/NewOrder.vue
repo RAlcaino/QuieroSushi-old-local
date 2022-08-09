@@ -436,7 +436,10 @@ export default {
           direccion:
             this.direccion.charAt(0).toUpperCase() + this.direccion.slice(1),
           direccion2:
-            this.direccion2.charAt(0).toUpperCase() + this.direccion2.slice(1),
+            this.direccion2 !== null
+              ? this.direccion2.charAt(0).toUpperCase() +
+                this.direccion2.slice(1)
+              : "",
           comuna: this.comuna.label
         },
         nombre: this.nombre,
@@ -470,6 +473,10 @@ export default {
         this.metodo_pago === "Seleccionar..."
       ) {
         delete body.tiempos;
+      }
+
+      if (this.direccion2 === null || this.direccion2 === "") {
+        delete body.direccion_usuario.direccion2;
       }
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("create.order.qd");
