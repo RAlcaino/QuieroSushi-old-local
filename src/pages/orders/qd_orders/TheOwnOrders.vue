@@ -491,7 +491,7 @@ export default {
         image:
           this.$store.getters["auth/getDataUser"].id === -1
             ? "icons/favicon-128.png"
-            : this.getStoreLocals("ACTIVE")[0].image,
+            : this.getStoreQDLocals("ACTIVE")[0].image,
         commune: null,
         cartStatus: null
       };
@@ -552,7 +552,7 @@ export default {
           image:
             this.$store.getters["auth/getDataUser"].id === -1
               ? "icons/favicon-128.png"
-              : this.getStoreLocals("ACTIVE")[0].image,
+              : this.getStoreQDLocals("ACTIVE")[0].image,
           commune: null,
           cartStatus: null
         };
