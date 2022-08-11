@@ -261,20 +261,25 @@
                 <q-item
                   v-if="
                     metodo_pago !== 'Pago Online' &&
-                      metodo_pago !== 'Transferencia' &&
-                      metodo_pago !== 'Seleccionar...'
+                    metodo_pago !== 'Transferencia' &&
+                    metodo_pago !== 'Seleccionar...'
                   "
                   class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                 >
                   <q-item-section>
                     <span
-                      style="font-size:16px; margin-bottom: 15px; font-weight: 500;"
+                      style="
+                        font-size: 16px;
+                        margin-bottom: 15px;
+                        font-weight: 500;
+                      "
                       class="q-ml-sm"
                     >
-                      ¿En cuántos minutos quieres que llegue el moto al local?
+                      ¿En cuántos minutos quieres que llegue el repartidor al
+                      local?
                     </span>
 
-                    <div style="display:flex; justify-content:center;">
+                    <div style="display: flex; justify-content: center">
                       <q-input
                         v-model="newTime"
                         color="primary"
@@ -370,26 +375,26 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getStoreQDLocals"
+    "getStoreQDLocals",
   ],
   data() {
     return {
       open: false,
       comuna: {
         label: "Seleccionar...",
-        value: null
+        value: null,
       },
       region: {
         label: "Seleccionar...",
-        value: null
+        value: null,
       },
       ciudad: {
         label: "Seleccionar...",
-        value: null
+        value: null,
       },
       qdLocal: {
         label: "Seleccionar...",
-        value: null
+        value: null,
       },
       qdLocals: [],
       nombre: null,
@@ -407,7 +412,8 @@ export default {
       notes: "",
       email: "",
       costs: {},
-      newTime: 10
+      newTime: 10,
+      deliveryCost: 0,
     };
   },
   mounted() {
@@ -426,10 +432,17 @@ export default {
       } else {
         return false;
       }
-    }
+    },
   },
   methods: {
     createOrder() {
+      if (this.telefono.length < 9) {
+        this.errorHandling({
+          message: "El teléfono tiene que ser de 9 dígitos",
+        });
+        return;
+      }
+
       let body = {
         id_local: this.qdLocal.value,
         direccion_usuario: {
@@ -440,14 +453,14 @@ export default {
               ? this.direccion2.charAt(0).toUpperCase() +
                 this.direccion2.slice(1)
               : "",
-          comuna: this.comuna.label
+          comuna: this.comuna.label,
         },
         nombre: this.nombre,
         telefono: this.telefono,
         subtotal: +this.subtotal,
         domain: "https://panel.devqs.tk",
         uber: {
-          es_uber: true
+          es_uber: true,
         },
         nota: this.notes.replaceAll("\n", ".-"),
         metodo_pago: this.metodo_pago,
@@ -459,9 +472,10 @@ export default {
             ? {
                 pickup_ready_dt: +this.newTime,
                 pickup_deadline_dt: +this.newTime + 15,
-                delivery_type: "Uber"
+                delivery_type: "Uber",
               }
-            : null
+            : null,
+        costo_delivery: this.deliveryCost,
       };
 
       if (this.email === null || this.email === "") {
@@ -483,16 +497,16 @@ export default {
       this.$axios
         .post(url, body, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"]
-          }
+            Authorization: this.$store.getters["auth/getToken"],
+          },
         })
-        .then(res => {
+        .then((res) => {
           this.bus.$emit("sync-orders");
           this.hideLoading();
           this.open = false;
           this.$refs.stepper.next();
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.hideLoading();
           if (error.response !== undefined) {
@@ -520,14 +534,14 @@ export default {
 
       const needle = val.toLowerCase();
       this.communes = communesNew.filter(
-        v => v.label.toLowerCase().indexOf(needle) > -1
+        (v) => v.label.toLowerCase().indexOf(needle) > -1
       );
     },
     format(data) {
       data = parseFloat(data);
       return `${data.toLocaleString("es-CL", {
         style: "currency",
-        currency: "CLP"
+        currency: "CLP",
       })}`;
     },
     close() {
@@ -536,11 +550,11 @@ export default {
     reset() {
       this.comuna = {
         label: "Seleccionar...",
-        value: null
+        value: null,
       };
       this.qdLocal = {
         label: "Seleccionar...",
-        value: null
+        value: null,
       };
       this.nombre = null;
       this.minutos = null;
@@ -570,21 +584,22 @@ export default {
 
       let body = {
         dropoff_address: this.direccion,
-        id_local: this.qdLocal.value
+        id_local: this.qdLocal.value,
       };
 
       var url = this.$store.getters["routes/getRoute"]("uber.quote");
       this.$axios
         .post(url, body, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"]
-          }
+            Authorization: this.$store.getters["auth/getToken"],
+          },
         })
-        .then(response => {
+        .then((response) => {
           console.log(response);
           this.hideLoading();
           if (response.data.result.details.length > 0) {
             this.costs = response.data.result.details[0];
+            this.deliveryCost = response.data.result.quote.fee;
             this.$refs.stepper.next();
           } else {
             this.showNotification(
@@ -594,7 +609,7 @@ export default {
             );
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.hideLoading();
           if (error.response !== undefined) {
             if (error.response.data.code === 412) {
@@ -611,13 +626,13 @@ export default {
     },
     changeHandler(val) {
       if (val.length > 9) {
-        this.telefono = val.slice(0, -1);
+        this.telefono = val.slice(0, (val.length - 9) * -1);
       }
     },
     confirm() {
       this.$refs.stepper.next();
-    }
-  }
+    },
+  },
 };
 
 // var urlConfirm = this.$store.getters["routes/getRoute"]("confirm.order.qd");

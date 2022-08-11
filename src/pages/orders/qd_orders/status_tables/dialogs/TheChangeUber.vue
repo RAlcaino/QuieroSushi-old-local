@@ -5,10 +5,15 @@
     transition-show="slide-down"
     transition-hide="slide-up"
   >
-    <q-card style="width: 450px; border-radius:10px">
+    <q-card style="width: 450px; border-radius: 10px">
       <q-card-section class="column items-center">
         <span
-          style="font-size:16px; margin-bottom: 15px; font-weight: 500;"
+          style="
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            text-align: center;
+          "
           class="q-ml-sm"
         >
           ¿En cuántos minutos quieres que llegue el repartidor al local?
@@ -17,8 +22,8 @@
         <q-input
           v-if="
             date !== null &&
-              deliveryStatus !== 'delivered' &&
-              deliveryStatus !== 'canceled'
+            deliveryStatus !== 'delivered' &&
+            deliveryStatus !== 'canceled'
           "
           v-model="newTime"
           color="primary"
@@ -34,7 +39,7 @@
 
         <div v-if="Object.entries(deliveryStatusObject).length !== 0">
           <p
-            style="font-size:15px; margin-bottom: 15px; text-align: center"
+            style="font-size: 15px; margin-bottom: 15px; text-align: center"
             class="q-ml-sm"
             v-if="deliveryStatus === 'delivered'"
           >
@@ -42,7 +47,7 @@
           </p>
 
           <p
-            style="font-size:15px; margin-bottom: 15px; text-align: center"
+            style="font-size: 15px; margin-bottom: 15px; text-align: center"
             class="q-ml-sm"
             v-if="deliveryStatus === 'canceled'"
           >
@@ -63,8 +68,8 @@
           color="green"
           :disabled="
             Object.entries(deliveryStatusObject).length === 0 ||
-              deliveryStatus === 'delivered' ||
-              deliveryStatus === 'canceled'
+            deliveryStatus === 'delivered' ||
+            deliveryStatus === 'canceled'
           "
         />
         <q-btn
@@ -86,11 +91,11 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getServerTime"
+    "getServerTime",
   ],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
-    this.bus.$on("the-change-uber", row => {
+    this.bus.$on("the-change-uber", (row) => {
       this.date = null;
       this.newTime = 10;
       this.timePickupReady = null;
@@ -113,7 +118,7 @@ export default {
       options: [
         { value: 10, label: "10 minutos" },
         { value: 20, label: "20 minutos" },
-        { value: 30, label: "30 minutos" }
+        { value: 30, label: "30 minutos" },
       ],
       option: { value: 10, label: "10 minutos" },
       pickup_ready: null,
@@ -121,20 +126,20 @@ export default {
       date: null,
       deliveryStatus: "",
       deliveryStatusObject: {},
-      newTime: 10
+      newTime: 10,
     };
   },
   methods: {
     DoChange() {
       let data = {
-        delivery_id: this.orderDetail.delivery_id
+        delivery_id: this.orderDetail.delivery_id,
       };
       let data2 = {
         orderId: this.orderId,
         local_name: this.orderDetail.local.name,
         local_address: this.orderDetail.local.address,
         pickup_ready_dt: +this.newTime,
-        pickup_deadline_dt: +this.newTime + 10
+        pickup_deadline_dt: +this.newTime + 10,
       };
 
       var url = this.$store.getters["routes/getRoute"]("uber.cancel");
@@ -143,31 +148,31 @@ export default {
       this.$axios
         .post(url, data, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"]
-          }
+            Authorization: this.$store.getters["auth/getToken"],
+          },
         })
-        .then(response => {
+        .then((response) => {
           console.log(response);
           var url2 = this.$store.getters["routes/getRoute"]("uber.create");
           this.$axios
             .post(url2, data2, {
               headers: {
-                Authorization: this.$store.getters["auth/getToken"]
-              }
+                Authorization: this.$store.getters["auth/getToken"],
+              },
             })
-            .then(response => {
+            .then((response) => {
               console.log(response);
               this.bus.$emit("sync-orders");
               this.hideLoading();
               this.closeDialog();
             })
-            .catch(error => {
+            .catch((error) => {
               this.hideLoading();
               this.errorHandling(error);
             });
           this.closeDialog();
         })
-        .catch(error => {
+        .catch((error) => {
           this.hideLoading();
           this.errorHandling(error);
         });
@@ -191,23 +196,23 @@ export default {
         var url = this.$store.getters["routes/getRoute"](
           "get.delivery.status",
           {
-            delivery_id: this.orderDetail.delivery_id
+            delivery_id: this.orderDetail.delivery_id,
           }
         );
         this.$axios
           .get(url, {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+              Authorization: this.$store.getters["auth/getToken"],
+            },
           })
-          .then(response => {
+          .then((response) => {
             this.date = this.formatDate(response.data.pickup_ready);
             this.timePickupReady = this.formatDate(response.data.pickup_ready);
             this.pickup_ready = response.data.pickup_ready;
             this.deliveryStatus = response.data.status;
             this.deliveryStatusObject = { ...response.data };
           })
-          .catch(error => {
+          .catch((error) => {
             this.errorHandling(error);
           });
       }
@@ -238,7 +243,7 @@ export default {
     validations() {
       let selectedTime = this.date;
       let santiagoTime = new Date().toLocaleString("en-US", {
-        timeZone: "America/Santiago"
+        timeZone: "America/Santiago",
       });
       let unixDate = new Date(santiagoTime).valueOf();
       let unixSelectedDatetime = new Date(selectedTime).valueOf();
@@ -270,7 +275,7 @@ export default {
     },
     getFullDateTime(time) {
       let santiagoTime = new Date().toLocaleString("en-US", {
-        timeZone: "America/Santiago"
+        timeZone: "America/Santiago",
       });
       let date = new Date(santiagoTime);
 
@@ -286,8 +291,8 @@ export default {
         time;
 
       return currentTime;
-    }
-  }
+    },
+  },
 };
 </script>
 

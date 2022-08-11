@@ -17,6 +17,19 @@
               <q-list v-if="orderDetail.userDetail !== undefined">
                 <q-item>
                   <q-item-section avatar>
+                    <q-icon name="phone" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label style="font-weight: bold"
+                      >Teléfono del cliente</q-item-label
+                    >
+                    <q-item-label
+                      >+56{{ orderDetail.userDetail.telefono }}</q-item-label
+                    >
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section avatar>
                     <q-icon name="location_on" color="primary" />
                   </q-item-section>
                   <q-item-section>
@@ -67,10 +80,10 @@ export default {
     "getServerTime",
     "showNotification",
     "showLoading",
-    "hideLoading"
+    "hideLoading",
   ],
   created() {
-    this.bus.$on("more-details-2", data => {
+    this.bus.$on("more-details-2", (data) => {
       this.markers = [];
       this.courier = null;
       this.tab = "one";
@@ -85,11 +98,11 @@ export default {
       this.deliveryStatusObject = {};
       this.dataLocal = {
         lat: null,
-        lng: null
+        lng: null,
       };
       this.dataUser = {
         lat: null,
-        lng: null
+        lng: null,
       };
     });
   },
@@ -113,12 +126,12 @@ export default {
       tip: null,
       dataLocal: {
         lat: null,
-        lng: null
+        lng: null,
       },
       dataUser: {
         lat: null,
-        lng: null
-      }
+        lng: null,
+      },
     };
   },
   methods: {
@@ -128,17 +141,17 @@ export default {
         var url = this.$store.getters["routes/getRoute"](
           "get.delivery.status",
           {
-            delivery_id: this.orderDetail.delivery_id
+            delivery_id: this.orderDetail.delivery_id,
             //delivery_id: "del_gALMXHSKQp2wlI1cVWl9Gw"
           }
         );
         this.$axios
           .get(url, {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+              Authorization: this.$store.getters["auth/getToken"],
+            },
           })
-          .then(response => {
+          .then((response) => {
             this.deliveryShortStatus = response.data.status;
             this.pickup_eta = this.formatDate(response.data.pickup_eta);
             this.dropoff_eta = this.formatDate(response.data.dropoff_eta);
@@ -150,7 +163,7 @@ export default {
             this.getMarkers();
             this.setDeliveryStatus(response.data.status);
           })
-          .catch(error => {
+          .catch((error) => {
             this.errorHandling(error);
           });
       }
@@ -219,7 +232,7 @@ export default {
         let markerCourier = {
           lat: this.courier.location.lat,
           lng: this.courier.location.lng,
-          icon: "moto-copy.png"
+          icon: "moto-copy.png",
         };
 
         this.markers.push(markerCourier);
@@ -227,7 +240,7 @@ export default {
         let markerCustomer = {
           lat: this.dataUser.lat,
           lng: this.dataUser.lng,
-          icon: "home-copy.png"
+          icon: "home-copy.png",
         };
 
         this.markers.push(markerCustomer);
@@ -235,7 +248,7 @@ export default {
         let markerLocal = {
           lat: this.dataLocal.lat,
           lng: this.dataLocal.lng,
-          icon: "store-copy.png"
+          icon: "store-copy.png",
         };
 
         this.markers.push(markerLocal);
@@ -250,21 +263,21 @@ export default {
         local_address: this.orderDetail.local.address,
         pickup_ready_dt: 10,
         pickup_deadline_dt: 20,
-        order_type: "QD"
+        order_type: "QD",
       };
       this.$axios
         .post(url2, data2, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"]
-          }
+            Authorization: this.$store.getters["auth/getToken"],
+          },
         })
-        .then(response => {
+        .then((response) => {
           console.log(response);
           this.bus.$emit("sync-orders");
           this.hideLoading();
           this.card = false;
         })
-        .catch(error => {
+        .catch((error) => {
           this.hideLoading();
           this.errorHandling(error);
         });
@@ -280,28 +293,28 @@ export default {
     updateDelivery(type) {
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("uber.update", {
-        orderId: this.orderDetail.id
+        orderId: this.orderDetail.id,
       });
 
       if (type === "msg") {
         var data = {
           delivery_id: this.orderDetail.delivery_id,
-          dropoff_notes: this.msg
+          dropoff_notes: this.msg,
         };
       } else {
         var data = {
           delivery_id: this.orderDetail.delivery_id,
-          tip_by_customer: this.tip
+          tip_by_customer: this.tip,
         };
       }
 
       this.$axios
         .post(url, data, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"]
-          }
+            Authorization: this.$store.getters["auth/getToken"],
+          },
         })
-        .then(response => {
+        .then((response) => {
           if (response.data.kind === "error") {
             if (response.data.code === "tip_already_recorded") {
               this.showNotification(
@@ -324,7 +337,7 @@ export default {
           this.hideLoading();
           this.card = false;
         })
-        .catch(error => {
+        .catch((error) => {
           this.hideLoading();
           this.errorHandling(error);
         });
@@ -344,29 +357,29 @@ export default {
 
       this.$axios
         .get(url)
-        .then(response => {
+        .then((response) => {
           let location = response.data.results[0].geometry.location;
           this.dataLocal.lat = location.lat;
           this.dataLocal.lng = location.lng;
           this.$axios
             .get(url2)
-            .then(response => {
+            .then((response) => {
               let location = response.data.results[0].geometry.location;
               this.dataUser.lat = location.lat;
               this.dataUser.lng = location.lng;
             })
-            .catch(error => {
+            .catch((error) => {
               this.errorHandling(error);
             });
         })
-        .catch(error => {
+        .catch((error) => {
           this.errorHandling(error);
         });
     },
 
     getMinutesDiff(time) {
       let santiagoTime = new Date().toLocaleString("en-US", {
-        timeZone: "America/Santiago"
+        timeZone: "America/Santiago",
       });
       let serverTime = new Date(santiagoTime);
       let endTime = new Date(time);
@@ -379,8 +392,8 @@ export default {
       } else {
         return `${diffMins} minutos`;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
