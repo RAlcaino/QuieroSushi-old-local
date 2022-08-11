@@ -599,7 +599,7 @@ export default {
           this.hideLoading();
           if (response.data.result.details.length > 0) {
             this.costs = response.data.result.details[0];
-            this.deliveryCost = response.data.result.quote.fee;
+            this.deliveryCost = response.data.result.details[0].costo_cliente;
             this.$refs.stepper.next();
           } else {
             this.showNotification(
