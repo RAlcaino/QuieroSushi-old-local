@@ -142,7 +142,7 @@
                 <template
                   v-if="
                     item.userDetail.address2 !== '' &&
-                    item.userDetail.address2 !== null
+                      item.userDetail.address2 !== null
                   "
                 >
                   <span v-if="item.userDetail.address2.search('dpto') == -1"
@@ -184,6 +184,21 @@
                 >Creado a las:
                 {{
                   item.waitingPaymentTimestamp.split(" ")[1].slice(0, 5)
+                }}</strong
+              >
+            </div>
+            <div
+              v-if="item.preparationTimestamp !== null"
+              style="font-size: 14px; font-family: 'Roboto'"
+            >
+              <q-icon
+                name="schedule"
+                style="font-size: 22px; padding-bottom: 5px"
+                class="i-icon"
+              /><strong
+                >LLegara al local a las:
+                {{
+                  item.preparationTimestamp.split(" ")[1].slice(0, 5)
                 }}</strong
               >
             </div>
@@ -301,7 +316,7 @@ export default {
     TheConfirm,
     TheCancel,
     TheTimer,
-    ModalAreUSure,
+    ModalAreUSure
   },
   created() {
     this.flag = this.refresh;
@@ -326,7 +341,7 @@ export default {
       this.searching = false;
     });
 
-    this.bus.$on("continue-with-confirmation", (data) => {
+    this.bus.$on("continue-with-confirmation", data => {
       console.log("Hola");
       this.confirmDialog(data);
     });
@@ -340,7 +355,7 @@ export default {
     },
     getMaxPages() {
       return Math.ceil(this.ordersPreparation.length / 15);
-    },
+    }
   },
   data() {
     return {
@@ -348,7 +363,7 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false,
+      searching: false
     };
   },
   beforeDestroy() {
@@ -408,12 +423,12 @@ export default {
     },
     openChat(row) {
       var data = {
-        id_venta: row.id,
+        id_venta: row.id
       };
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    },
-  },
+    }
+  }
 };
 </script>
 
