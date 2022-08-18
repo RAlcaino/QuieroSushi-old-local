@@ -594,7 +594,11 @@ export default {
 
       var url = this.$store.getters["routes/getRoute"]("uber.quote");
       this.$axios
-        .post(url, body)
+        .post(url, body, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
         .then(response => {
           console.log(response);
           this.hideLoading();
