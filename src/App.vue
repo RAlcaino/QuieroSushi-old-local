@@ -222,7 +222,8 @@ export default {
           cartStatus: item.cartStatus,
           localStatus: item.localStatus,
           preparationTime: item.preparationTime,
-          deliveryTime: item.deliveryTime
+          deliveryTime: item.deliveryTime,
+          direccion: item.direccion
         };
         locals.push(row);
       });
