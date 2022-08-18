@@ -5,7 +5,7 @@ const state = {
   nextUpdateTime: {
     currentHour: null,
     currentMinute: null,
-    currentSecond: null
+    currentSecond: null,
   },
   refreshOrders: true,
   user: {
@@ -15,7 +15,7 @@ const state = {
     locals: [],
     qdLocals: [],
     debt: false,
-    notifications: []
+    notifications: [],
   },
   availableMenuOptions: [],
   currentLocal: {
@@ -23,7 +23,7 @@ const state = {
     name: null,
     image: null,
     commune: null,
-    cartStatus: null
+    cartStatus: null,
   },
   installPromptEvent: null,
   comunas: [],
@@ -31,7 +31,7 @@ const state = {
   ciudades: [],
   titles: [],
   roles: [],
-  serverTime: null
+  serverTime: null,
 };
 const mutations = {
   setAvailableMenuOptions(state, payload) {
@@ -55,7 +55,7 @@ const mutations = {
 
     let locals = [...payload.locals];
 
-    if (locals.some(item => item.localStatus === "bloqueado")) {
+    if (locals.some((item) => item.localStatus === "bloqueado")) {
       state.user.debt = true;
     }
 
@@ -97,7 +97,7 @@ const mutations = {
       name: null,
       image: null,
       commune: null,
-      cartStatus: null
+      cartStatus: null,
     };
 
     state.installPromptEvent = null;
@@ -110,7 +110,7 @@ const mutations = {
     state.nextUpdateTime = {
       currentHour: null,
       currentMinute: null,
-      currentSecond: null
+      currentSecond: null,
     };
 
     state.serverTime = null;
@@ -134,7 +134,7 @@ const mutations = {
     state.token = payload;
   },
   setLocalName(state, payload) {
-    let index = state.user.locals.findIndex(item => item.id === payload.id);
+    let index = state.user.locals.findIndex((item) => item.id === payload.id);
     state.user.locals[index].name = payload.nombre;
     state.user.locals[index].commune = payload.comuna.label;
   },
@@ -143,50 +143,50 @@ const mutations = {
     state.ciudades = [];
     state.regiones = [];
 
-    var eachComunes = payload.comunas.map(function(item) {
+    var eachComunes = payload.comunas.map(function (item) {
       let row = {
         value: item.id,
         label: item.nombre,
         id_ciudad: item.id_ciudad,
-        id_region: item.id_region
+        id_region: item.id_region,
       };
       state.comunas.push(row);
     });
 
-    var eachCities = payload.ciudades.map(function(item) {
+    var eachCities = payload.ciudades.map(function (item) {
       let row = {
         value: item.id,
         label: item.nombre,
-        id_region: item.id_region
+        id_region: item.id_region,
       };
       state.ciudades.push(row);
     });
 
-    var eachRegions = payload.region.map(function(item) {
+    var eachRegions = payload.region.map(function (item) {
       let row = {
         value: item.id,
-        label: item.nombre
+        label: item.nombre,
       };
       state.regiones.push(row);
     });
   },
   setTitles(state, payload) {
     state.titles = [];
-    var eachTitle = payload.map(function(item) {
+    var eachTitle = payload.map(function (item) {
       let row = {
         value: item.id,
         label: item.titulo_corto,
-        label2: item.titulo_largo
+        label2: item.titulo_largo,
       };
       state.titles.push(row);
     });
   },
   setRoles(state, payload) {
     state.roles = [];
-    var eachRoles = payload.map(function(item) {
+    var eachRoles = payload.map(function (item) {
       let row = {
         value: item.id,
-        label: item.name
+        label: item.name,
       };
       state.roles.push(row);
     });
@@ -204,7 +204,7 @@ const mutations = {
   },
   setNotifications(state, payload) {
     if (payload.type === 1) {
-      state.user.notifications = payload.items.sort(function(a, b) {
+      state.user.notifications = payload.items.sort(function (a, b) {
         return new Date(b.fecha) - new Date(a.fecha);
       });
     } else {
@@ -213,11 +213,11 @@ const mutations = {
   },
   setNotificationViewed(state, payload) {
     state.user.notifications[payload.index].visto = 1;
-  }
+  },
 };
 const actions = {};
 const getters = {
-  getAvailableMenuOptions: state => {
+  getAvailableMenuOptions: (state) => {
     return state.availableMenuOptions;
   },
   getDataUser(state) {
@@ -232,7 +232,7 @@ const getters = {
       name: state.currentLocal.name,
       image: state.currentLocal.image,
       commune: state.currentLocal.commune,
-      cartStatus: state.currentLocal.cartStatus
+      cartStatus: state.currentLocal.cartStatus,
     };
   },
   getToken(state) {
@@ -275,7 +275,7 @@ const getters = {
     return {
       cities: state.ciudades,
       comunes: state.comunas,
-      regions: state.regiones
+      regions: state.regiones,
     };
   },
   getTitles(state) {
@@ -295,10 +295,10 @@ const getters = {
   },
   getRefreshOrders(state) {
     return state.refreshOrders;
-  }
+  },
 };
 
-const sortAndFilter = locals => {
+const sortAndFilter = (locals) => {
   locals.sort((a, b) => {
     if (a.name > b.name) {
       return 1;
@@ -309,7 +309,7 @@ const sortAndFilter = locals => {
     return 0;
   });
 
-  let result = locals.filter(item => item.localStatus === "normal");
+  let result = locals.filter((item) => item.localStatus === "normal");
 
   if (result.length === 0) {
     return locals;
@@ -323,5 +323,5 @@ export default {
   state,
   mutations,
   actions,
-  getters
+  getters,
 };

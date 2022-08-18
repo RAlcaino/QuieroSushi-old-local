@@ -12,7 +12,7 @@ import $ from "jquery";
 export default {
   name: "App",
   created() {
-    import(`src/utils/lang/es`).then(language => {
+    import(`src/utils/lang/es`).then((language) => {
       this.$q.lang.set(language.default);
     });
     this.$store.commit("routes/setLinks");
@@ -21,7 +21,7 @@ export default {
     this.bus.$on("scroll-up", () => {
       $("html, body").animate({ scrollTop: 0 }, "slow");
     });
-    window.addEventListener("beforeinstallprompt", event => {
+    window.addEventListener("beforeinstallprompt", (event) => {
       // Prevent Chrome <= 67 from automatically showing the prompt
       event.preventDefault();
       // Stash the event so it can be triggered later.
@@ -44,7 +44,7 @@ export default {
   },
   data() {
     return {
-      installPromptEvent: null
+      installPromptEvent: null,
     };
   },
   provide() {
@@ -59,12 +59,12 @@ export default {
       scrollTop: this.scrollTop,
       getStoreLocals: this.getStoreLocals,
       getStoreQDLocals: this.getStoreQDLocals,
-      setCurrentLocal: this.setCurrentLocal
+      setCurrentLocal: this.setCurrentLocal,
     };
   },
   methods: {
     init() {
-      this.bus.$on("login", data => {
+      this.bus.$on("login", (data) => {
         this.login(data);
       });
       this.bus.$on("logout", () => {
@@ -77,7 +77,7 @@ export default {
       if (token !== "") {
         let user = jwt_decode(token);
         user.token = token;
-        data.locals.sort(function(a, b) {
+        data.locals.sort(function (a, b) {
           if (a.name > b.name) {
             return 1;
           }
@@ -113,22 +113,22 @@ export default {
       return (sign ? "" : "-") + num;
     },
     capitalize(str) {
-      return str.replace(/\w\S*/g, function(txt) {
+      return str.replace(/\w\S*/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
       });
     },
-    showNotification: function(message, color, icon) {
+    showNotification: function (message, color, icon) {
       this.$q.notify({
         progress: true,
         position: "top",
         message: message,
         color: color,
-        icon: icon
+        icon: icon,
       });
     },
     showLoading() {
       this.$q.loading.show({
-        message: "Espere un momento, por favor..."
+        message: "Espere un momento, por favor...",
       });
     },
     hideLoading() {
@@ -189,30 +189,7 @@ export default {
     },
     getStoreLocals(option) {
       var locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(item => {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          cartStatus: item.cartStatus,
-          localStatus: item.localStatus,
-          preparationTime: item.preparationTime,
-          deliveryTime: item.deliveryTime
-        };
-        locals.push(row);
-      });
-
-      if (option === "ALL") {
-        return locals;
-      } else if (option === "ACTIVE") {
-        return locals.filter(item => item.localStatus === "normal");
-      }
-    },
-    getStoreQDLocals(option) {
-      var locals = [];
-      var each = this.$store.getters["auth/getDataQDLocals"].map(item => {
+      var each = this.$store.getters["auth/getDataLocals"].map((item) => {
         let row = {
           value: item.id,
           label: item.name + ", " + item.commune,
@@ -223,7 +200,6 @@ export default {
           localStatus: item.localStatus,
           preparationTime: item.preparationTime,
           deliveryTime: item.deliveryTime,
-          direccion: item.direccion
         };
         locals.push(row);
       });
@@ -231,11 +207,35 @@ export default {
       if (option === "ALL") {
         return locals;
       } else if (option === "ACTIVE") {
-        return locals.filter(item => item.localStatus === "normal");
+        return locals.filter((item) => item.localStatus === "normal");
+      }
+    },
+    getStoreQDLocals(option) {
+      var locals = [];
+      var each = this.$store.getters["auth/getDataQDLocals"].map((item) => {
+        let row = {
+          value: item.id,
+          label: item.name + ", " + item.commune,
+          image: item.image,
+          commune: item.commune,
+          name: item.name,
+          cartStatus: item.cartStatus,
+          localStatus: item.localStatus,
+          preparationTime: item.preparationTime,
+          deliveryTime: item.deliveryTime,
+          direccion: item.direccion,
+        };
+        locals.push(row);
+      });
+
+      if (option === "ALL") {
+        return locals;
+      } else if (option === "ACTIVE") {
+        return locals.filter((item) => item.localStatus === "normal");
       }
     },
     scrollTop() {
-      $(document).ready(function() {
+      $(document).ready(function () {
         if ($("html").scrollTop() !== 0) {
           $("html").animate({ scrollTop: 0 }, 1000);
         }
@@ -247,10 +247,10 @@ export default {
         name: val.name,
         image: val.image,
         commune: val.commune,
-        cartStatus: val.cartStatus
+        cartStatus: val.cartStatus,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
