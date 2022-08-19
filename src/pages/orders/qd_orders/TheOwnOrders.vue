@@ -488,10 +488,7 @@ export default {
         value: -1,
         label: "Todos",
         name: "Todos",
-        image:
-          this.$store.getters["auth/getDataUser"].id === -1
-            ? "icons/favicon-128.png"
-            : this.getStoreQDLocals("ACTIVE")[0].image,
+        image: "icons/favicon-128.png",
         commune: null,
         cartStatus: null
       };
@@ -549,10 +546,7 @@ export default {
           value: -1,
           label: "Todos",
           name: "Todos",
-          image:
-            this.$store.getters["auth/getDataUser"].id === -1
-              ? "icons/favicon-128.png"
-              : this.getStoreQDLocals("ACTIVE")[0].image,
+          image: "icons/favicon-128.png",
           commune: null,
           cartStatus: null
         };

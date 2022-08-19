@@ -146,11 +146,16 @@ export default {
           ls.set("token", response.data.result.token);
           let data = {
             locals: response.data.result.locals,
+            qdLocals: response.data.result.qdLocals,
             availableMenuOptions: response.data.result.availableMenuOptions
           };
           this.bus.$emit("login", data);
           this.hideLoading();
 
+          if (response.data.result.locals.length === 0) {
+            this.$router.push({ path: "/pedidos-propios" });
+            return;
+          }
           if (data.availableMenuOptions.length == 2) {
             data.availableMenuOptions.some(
               item => item.link === "/historico-cobro-semanal"
