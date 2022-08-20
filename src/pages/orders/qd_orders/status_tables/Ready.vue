@@ -97,6 +97,13 @@
               >
                 <div>
                   <q-icon
+                    name="tag"
+                    style="font-size: 20px; padding-bottom: 5px"
+                    class="i-icon"
+                  />{{ item.internalCode }}
+                </div>
+                <div>
+                  <q-icon
                     name="store"
                     style="font-size: 20px; padding-bottom: 5px"
                     class="i-icon"

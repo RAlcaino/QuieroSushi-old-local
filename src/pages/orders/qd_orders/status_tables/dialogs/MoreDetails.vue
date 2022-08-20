@@ -57,7 +57,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="orderDetail.delivery_id !== null">
+              <q-item v-if="orderDetail.uber_information.delivery_id !== null">
                 <q-item-section avatar>
                   <q-icon name="delivery_dining" color="primary" />
                 </q-item-section>

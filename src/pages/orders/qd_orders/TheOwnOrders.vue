@@ -36,9 +36,10 @@
             size="sm"
             style="position: relative; bottom: 0px; margin-right: 10px"
             @click="createOrder()"
+            :disable="disable"
           >
             <q-icon style="margin-right: 5px" size="20px" name="add" />
-            <div style="font-size: 12px">Crear</div>
+            <div style="font-size: 12px; margin-top: 4px">Crear</div>
           </q-btn>
         </div>
         <q-select
@@ -246,6 +247,14 @@ export default {
     this.bus.$on("sync-orders", () => {
       this.sync(false);
     });
+
+    if (this.$store.getters["auth/getAvailableMenuOptions"].length > 1) {
+      this.disable = false;
+    }
+
+    this.bus.$on("available-btn", () => {
+      this.disable = false;
+    });
   },
   computed: {
     getOrdersStarted() {
@@ -364,7 +373,8 @@ export default {
         commune: null,
         name: null,
         cartStatus: null
-      }
+      },
+      disable: true
     };
   },
   methods: {
@@ -484,14 +494,18 @@ export default {
         this.$refs.select.hidePopup();
       }
       this.data = this.originalData;
-      this.localSelected = {
-        value: -1,
-        label: "Todos",
-        name: "Todos",
-        image: "icons/favicon-128.png",
-        commune: null,
-        cartStatus: null
-      };
+      if (this.locals.length === 1) {
+        this.localSelected = this.locals[0];
+      } else {
+        this.localSelected = {
+          value: -1,
+          label: "Todos",
+          name: "Todos",
+          image: "icons/favicon-128.png",
+          commune: null,
+          cartStatus: null
+        };
+      }
       this.local = this.localSelected;
       this.filters();
     },
@@ -539,18 +553,18 @@ export default {
       this.locals = [];
       this.locals = [...this.getStoreQDLocals("ACTIVE")];
 
-      if (this.locals.length === 1) {
-        this.localSelected = this.locals[0];
-      } else {
-        this.localSelected = {
-          value: -1,
-          label: "Todos",
-          name: "Todos",
-          image: "icons/favicon-128.png",
-          commune: null,
-          cartStatus: null
-        };
-      }
+      // if (this.locals.length === 1) {
+      //   this.localSelected = this.locals[0];
+      // } else {
+      //   this.localSelected = {
+      //     value: -1,
+      //     label: "Todos",
+      //     name: "Todos",
+      //     image: "icons/favicon-128.png",
+      //     commune: null,
+      //     cartStatus: null
+      //   };
+      // }
     },
     sendWs(id) {
       var url = this.$store.getters["routes/getRoute"]("send.ws.email");

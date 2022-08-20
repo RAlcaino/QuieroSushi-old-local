@@ -261,8 +261,8 @@
                 <q-item
                   v-if="
                     metodo_pago !== 'Pago Online' &&
-                    metodo_pago !== 'Transferencia' &&
-                    metodo_pago !== 'Seleccionar...'
+                      metodo_pago !== 'Transferencia' &&
+                      metodo_pago !== 'Seleccionar...'
                   "
                   class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                 >
@@ -296,6 +296,18 @@
                   </q-item-section>
                 </q-item>
               </q-list>
+              <q-item
+                style="flex-direction: column; justify-content: flex-end; align-items: flex-end"
+              >
+                <p style="font-size: 16px;">
+                  <strong>Costo reparto: </strong>
+                  {{ format(+costs.costo_cliente) }}
+                </p>
+                <p style="font-size: 16px;">
+                  <strong>Total: </strong>
+                  {{ format(+costs.costo_cliente + +subtotal) }}
+                </p>
+              </q-item>
             </q-list>
           </q-step>
 
@@ -313,26 +325,6 @@
                 style="position: relative; bottom: 0px; margin-right: 10px"
               />
               <q-btn
-                v-if="step === 2"
-                @click="confirm()"
-                color="green"
-                :label="'Confirmar'"
-                rounded
-                size="sm"
-                style="position: relative; bottom: 0px; margin-right: 10px"
-              />
-
-              <q-btn
-                v-if="step === 3"
-                @click="createOrder()"
-                color="green"
-                :label="'Crear'"
-                rounded
-                size="sm"
-                :disabled="step === 3 && verifyForm"
-                style="position: relative; bottom: 0px; margin-right: 10px"
-              />
-              <q-btn
                 v-if="step > 1"
                 rounded
                 color="primary"
@@ -343,7 +335,27 @@
                     : $refs.stepper.previous()
                 "
                 label="Atrás"
+                style="position: relative; bottom: 0px; margin-right: 10px"
                 class="q-ml-sm"
+              />
+              <q-btn
+                v-if="step === 3"
+                @click="createOrder()"
+                color="green"
+                :label="'Crear'"
+                rounded
+                size="sm"
+                :disabled="step === 3 && verifyForm"
+              />
+
+              <q-btn
+                v-if="step === 2"
+                @click="confirm()"
+                color="green"
+                :label="'Confirmar'"
+                rounded
+                size="sm"
+                style="position: relative; bottom: 0px; margin-right: 10px"
               />
             </q-stepper-navigation>
           </template>
@@ -375,26 +387,26 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getStoreQDLocals",
+    "getStoreQDLocals"
   ],
   data() {
     return {
       open: false,
       comuna: {
         label: "Seleccionar...",
-        value: null,
+        value: null
       },
       region: {
         label: "Seleccionar...",
-        value: null,
+        value: null
       },
       ciudad: {
         label: "Seleccionar...",
-        value: null,
+        value: null
       },
       qdLocal: {
         label: "Seleccionar...",
-        value: null,
+        value: null
       },
       qdLocals: [],
       nombre: null,
@@ -403,7 +415,7 @@ export default {
       direccion2: null,
       telefono: null,
       tiempo: null,
-      subtotal: null,
+      subtotal: 0,
       metodo_pago: "Transferencia",
       metodos_pago: ["Transferencia", "Pago Online", "Pagado"],
       communes: [],
@@ -413,7 +425,7 @@ export default {
       email: "",
       costs: {},
       newTime: 10,
-      deliveryCost: 0,
+      deliveryCost: 0
     };
   },
   mounted() {
@@ -421,9 +433,13 @@ export default {
       this.step = 1;
       this.open = true;
       this.reset();
+      this.qdLocals = [...this.getStoreQDLocals("ACTIVE")];
+
+      if (this.qdLocals.length === 1) {
+        this.qdLocal = this.qdLocals[0];
+      }
+      this.communes = this.$store.getters["auth/getZones"].comunes;
     });
-    this.qdLocals = [...this.getStoreQDLocals("ACTIVE")];
-    this.communes = this.$store.getters["auth/getZones"].comunes;
   },
   computed: {
     verifyForm() {
@@ -432,13 +448,13 @@ export default {
       } else {
         return false;
       }
-    },
+    }
   },
   methods: {
     createOrder() {
       if (this.telefono.length < 9) {
         this.errorHandling({
-          message: "El teléfono tiene que ser de 9 dígitos",
+          message: "El teléfono tiene que ser de 9 dígitos"
         });
         return;
       }
@@ -453,14 +469,14 @@ export default {
               ? this.direccion2.charAt(0).toUpperCase() +
                 this.direccion2.slice(1)
               : "",
-          comuna: this.comuna.label,
+          comuna: this.comuna.label
         },
         nombre: this.nombre,
         telefono: this.telefono,
         subtotal: +this.subtotal,
         domain: "https://panel.devqs.tk",
         uber: {
-          es_uber: true,
+          es_uber: true
         },
         nota: this.notes.replaceAll("\n", ".-"),
         metodo_pago: this.metodo_pago,
@@ -472,10 +488,10 @@ export default {
             ? {
                 pickup_ready_dt: +this.newTime,
                 pickup_deadline_dt: +this.newTime + 15,
-                delivery_type: "Uber",
+                delivery_type: "Uber"
               }
             : null,
-        costo_delivery: this.deliveryCost,
+        costo_delivery: this.deliveryCost
       };
 
       if (this.email === null || this.email === "") {
@@ -497,16 +513,16 @@ export default {
       this.$axios
         .post(url, body, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"],
-          },
+            Authorization: this.$store.getters["auth/getToken"]
+          }
         })
-        .then((res) => {
+        .then(res => {
           this.bus.$emit("sync-orders");
           this.hideLoading();
           this.open = false;
           this.$refs.stepper.next();
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
           this.hideLoading();
           if (error.response !== undefined) {
@@ -534,14 +550,14 @@ export default {
 
       const needle = val.toLowerCase();
       this.communes = communesNew.filter(
-        (v) => v.label.toLowerCase().indexOf(needle) > -1
+        v => v.label.toLowerCase().indexOf(needle) > -1
       );
     },
     format(data) {
       data = parseFloat(data);
       return `${data.toLocaleString("es-CL", {
         style: "currency",
-        currency: "CLP",
+        currency: "CLP"
       })}`;
     },
     close() {
@@ -550,16 +566,16 @@ export default {
     reset() {
       this.comuna = {
         label: "Seleccionar...",
-        value: null,
+        value: null
       };
       this.qdLocal = {
         label: "Seleccionar...",
-        value: null,
+        value: null
       };
       this.nombre = null;
       this.minutos = null;
-      this.direccion = null;
-      this.direccion2 = null;
+      this.direccion = "";
+      this.direccion2 = "";
       this.telefono = null;
       this.tiempo = null;
       this.subtotal = null;
@@ -580,6 +596,23 @@ export default {
       }
     },
     validateAddress() {
+      if (this.qdLocal.value === null) {
+        this.showNotification("Debe indicar una local", "negative", "error");
+        return;
+      }
+      if (this.comuna.value === null) {
+        this.showNotification("Debe indicar una comuna", "negative", "error");
+        return;
+      }
+      if (this.direccion.trim() === "") {
+        this.showNotification(
+          "Debe indicar una direccion valida",
+          "negative",
+          "error"
+        );
+        return;
+      }
+
       this.showLoading();
       let body = {
         dropoff_address: `${this.direccion}, ${this.comuna.label}`,
@@ -587,32 +620,33 @@ export default {
         tipo_venta: "despacho",
         local_id: this.qdLocal.value,
         plataforma: "QD",
-        forma_pago: this.metodo_pago,
+        forma_pago: this.metodo_pago
       };
 
       var url = this.$store.getters["routes/getRoute"]("uber.quote");
       this.$axios
         .post(url, body, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"],
-          },
+            Authorization: this.$store.getters["auth/getToken"]
+          }
         })
-        .then((response) => {
+        .then(response => {
           console.log(response);
           this.hideLoading();
-          if (response.data.result.details.length > 0) {
+
+          if (response.data.result.quote.kind !== "error") {
             this.costs = response.data.result.details[0];
             this.deliveryCost = response.data.result.details[0].costo_cliente;
             this.$refs.stepper.next();
           } else {
             this.showNotification(
-              "Error al calcular costos. Contacte al administrador",
+              response.data.result.quote.error,
               "negative",
               "error"
             );
           }
         })
-        .catch((error) => {
+        .catch(error => {
           this.hideLoading();
           if (error.response !== undefined) {
             if (error.response.data.code === 412) {
@@ -634,8 +668,8 @@ export default {
     },
     confirm() {
       this.$refs.stepper.next();
-    },
-  },
+    }
+  }
 };
 
 // var urlConfirm = this.$store.getters["routes/getRoute"]("confirm.order.qd");

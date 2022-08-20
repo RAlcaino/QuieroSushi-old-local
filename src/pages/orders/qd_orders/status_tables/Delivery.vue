@@ -15,7 +15,7 @@
       >
         <img src="../../../../assets/icons8-sad.gif" alt="sad" width="130" />
         <p style="font-size: 16px; font-weight: bold; text-align: center">
-          No se encontraron pedidos confirmados
+          No se encontraron pedidos en camino
         </p>
       </div>
       <div
@@ -97,6 +97,13 @@
                   text-align: right;
                 "
               >
+                <div>
+                  <q-icon
+                    name="tag"
+                    style="font-size: 20px; padding-bottom: 5px"
+                    class="i-icon"
+                  />{{ item.internalCode }}
+                </div>
                 <div>
                   <q-icon
                     name="store"

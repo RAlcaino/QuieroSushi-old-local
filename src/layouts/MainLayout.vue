@@ -1033,6 +1033,7 @@ export default {
         .then(response => {
           if (response.data.status === "success") {
             this.$store.commit("auth/setZones", response.data.result);
+            this.bus.$emit("available-btn");
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
