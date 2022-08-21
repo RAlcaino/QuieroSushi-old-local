@@ -8,7 +8,11 @@ const routes = [
     path: "/",
     beforeEnter: (to, from, next) => {
       if (isAuthenticated()) {
-        next("/pedidos");
+        if (Store.getters["auth/getAvailableMenuOptions"].length === 1) {
+          next("/pedidos-propios");
+        } else {
+          next("/pedidos");
+        }
       } else {
         next("/login");
       }
