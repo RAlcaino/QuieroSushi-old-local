@@ -248,13 +248,9 @@ export default {
       this.sync(false);
     });
 
-    if (this.$store.getters["auth/getAvailableMenuOptions"].length > 1) {
+    setTimeout(() => {
       this.disable = false;
-    }
-
-    this.bus.$on("available-btn", () => {
-      this.disable = false;
-    });
+    }, 2000);
   },
   computed: {
     getOrdersStarted() {
