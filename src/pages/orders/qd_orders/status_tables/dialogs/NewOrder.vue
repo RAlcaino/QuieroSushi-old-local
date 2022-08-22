@@ -222,7 +222,6 @@
                       dense
                       label="Telefono (+56)"
                       v-model="telefono"
-                      @input="changeHandler"
                   /></q-item-section>
                 </q-item>
                 <q-item class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
@@ -452,7 +451,7 @@ export default {
   },
   methods: {
     createOrder() {
-      if (this.telefono.length < 9) {
+      if (this.telefono.length < 9 || this.telefono.length > 9) {
         this.errorHandling({
           message: "El teléfono tiene que ser de 9 dígitos"
         });
@@ -634,6 +633,15 @@ export default {
           console.log(response);
           this.hideLoading();
 
+          if (response.data.result.quote === undefined) {
+            this.showNotification(
+              response.data.result.proveedor_seleccionado_motivo,
+              "negative",
+              "error"
+            );
+
+            return;
+          }
           if (response.data.result.quote.kind !== "error") {
             this.costs = response.data.result.details[0];
             this.deliveryCost = response.data.result.details[0].costo_cliente;
