@@ -170,7 +170,7 @@
                 {{ item.paymentMethod }}
               </p>
               <p style="margin: 0; font-family: 'Roboto'; text-align: right">
-                ${{ formatNumber(item.total) }}
+                {{ formatNumber(item.total) }}
               </p>
             </div>
           </q-card-section>
@@ -238,7 +238,7 @@
               >
                 Detalle
               </q-btn>
-              <q-btn
+              <!-- <q-btn
                 rounded
                 size="sm"
                 color="primary"
@@ -246,7 +246,7 @@
                 @click="cancelDialog(item)"
               >
                 Anular
-              </q-btn>
+              </q-btn> -->
             </div>
             <!-- <q-btn
                 @click="doneDialog(item)"

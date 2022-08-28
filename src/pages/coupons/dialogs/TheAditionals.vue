@@ -74,7 +74,7 @@
               >
                 {{ item.qty }} Descatado
               </q-chip>
-              <p class="price-a">${{ formatNumber(item.price) }}</p>
+              <p class="price-a">{{ formatNumber(item.price) }}</p>
               <p class="cu-a">IVA incluido</p>
               <input
                 v-model="qtyStandOut[index]"
@@ -127,7 +127,7 @@
               >
                 {{ item.qty }} Subir
               </q-chip>
-              <p class="price-a">${{ formatNumber(item.price) }}</p>
+              <p class="price-a">{{ formatNumber(item.price) }}</p>
               <p class="cu-a">${{ item.price/item.qty }} c/u</p>
               <input
                 v-model="qtyGoUp[index]"
@@ -150,7 +150,7 @@
           style="width: 80% !important; height:auto !important"
         >
           <p style="font-size:20px; margin-bottom:0">
-            <strong>Total: ${{ formatNumber(getTotal) }}</strong>
+            <strong>Total: {{ formatNumber(getTotal) }}</strong>
           </p>
         </div>
         <q-card-actions align="center">

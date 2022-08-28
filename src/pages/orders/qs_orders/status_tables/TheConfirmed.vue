@@ -156,7 +156,7 @@
                 {{ item.payDetail.pay }}
               </p>
               <p style="margin: 0; font-family: 'Roboto'; text-align: right">
-                ${{
+                {{
                   item.es_uber === 1
                     ? formatNumber(item.subtotal)
                     : formatNumber(item.total)

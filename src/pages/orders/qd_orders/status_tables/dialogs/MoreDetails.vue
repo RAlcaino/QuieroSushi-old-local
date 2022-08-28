@@ -57,45 +57,51 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="orderDetail.uber_information.delivery_id !== null">
-                <q-item-section avatar>
-                  <q-icon name="delivery_dining" color="primary" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label style="font-weight: bold"
-                    >Estado del repartidor:
-                    <q-icon
-                      name="refresh"
-                      size="1.3em"
-                      style="cursor: pointer"
-                      @click="getStatus()"
-                    ></q-icon>
-                  </q-item-label>
-                  <q-item-label
-                    v-if="deliveryStatus !== '' && deliveryStatusObject !== {}"
-                    >{{ deliveryStatus }}
+              <div v-if="orderDetail.uber_information !== undefined">
+                <q-item
+                  v-if="orderDetail.uber_information.delivery_id !== null"
+                >
+                  <q-item-section avatar>
+                    <q-icon name="delivery_dining" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label style="font-weight: bold"
+                      >Estado del repartidor:
+                      <q-icon
+                        name="refresh"
+                        size="1.3em"
+                        style="cursor: pointer"
+                        @click="getStatus()"
+                      ></q-icon>
+                    </q-item-label>
                     <q-item-label
-                      style="
+                      v-if="
+                        deliveryStatus !== '' && deliveryStatusObject !== {}
+                      "
+                      >{{ deliveryStatus }}
+                      <q-item-label
+                        style="
                         display: flex;
                         justify-content: center;
                         margin-top: 10px;
                       "
-                      v-if="deliveryShortStatus === 'canceled'"
-                    >
-                      <q-btn
-                        size="sm"
-                        @click="createDelivery()"
-                        rounded
-                        color="green"
-                        label="Pedir otro delivery"
-                      />
+                        v-if="deliveryShortStatus === 'canceled'"
+                      >
+                        <q-btn
+                          size="sm"
+                          @click="createDelivery()"
+                          rounded
+                          color="green"
+                          label="Pedir otro delivery"
+                        />
+                      </q-item-label>
                     </q-item-label>
-                  </q-item-label>
-                  <q-item-label v-else>
-                    <q-spinner-facebook color="primary" size="2em" />
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
+                    <q-item-label v-else>
+                      <q-spinner-facebook color="primary" size="2em" />
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </div>
 
               <q-item
                 v-if="

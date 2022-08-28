@@ -167,7 +167,7 @@
                 {{ item.paymentMethod }}
               </p>
               <p style="margin: 0; font-family: 'Roboto'; text-align: right">
-                ${{ formatNumber(item.total) }}
+                {{ formatNumber(item.total) }}
               </p>
             </div>
           </q-card-section>

@@ -1,7 +1,7 @@
 <template>
   <p :class="{'total__class':flag, 'item__class':!flag}">
     <strong>{{ title }}</strong>
-    ${{
+    {{
       formatNumber(parseInt(value.toString().split(".")[0]))
         .toString()
         .replaceAll("-", "")

@@ -327,14 +327,14 @@ export default {
     formatBalance(balance, props) {
       if (balance < 0) {
         balance *= -1;
-        return `A favor $${this.formatNumberCustom(balance)}`;
+        return `A favor ${this.formatNumberCustom(balance)}`;
       } else if (
         balance > 0 &&
         props.row.fecha_pago === "0000-00-00 00:00:00"
       ) {
-        return `A pagar $${this.formatNumberCustom(balance)}`;
+        return `A pagar ${this.formatNumberCustom(balance)}`;
       } else {
-        return `Pagado $${this.formatNumberCustom(balance)}`;
+        return `Pagado ${this.formatNumberCustom(balance)}`;
       }
     },
     formatNumberCustom(num) {

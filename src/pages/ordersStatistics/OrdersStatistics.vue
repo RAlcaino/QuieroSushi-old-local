@@ -181,7 +181,7 @@
           <div>
             <form autocomplete="off">
               <p class="sales__p">
-                <strong>Total Ventas:</strong> ${{ formatNumber(total) }}
+                <strong>Total Ventas:</strong> {{ formatNumber(total) }}
               </p>
             </form>
           </div>
@@ -676,13 +676,13 @@ export default {
           localName: `${item.local.name}, ${item.local.commune} `,
           customerName: item.payDetail.user,
           saleType: item.orderType,
-          subtotal: `$${this.formatNumber(item.subtotal)}`,
+          subtotal: `${this.formatNumber(item.subtotal)}`,
           delivery: `${
             item.es_uber === 1
               ? "UBER"
-              : `$${this.formatNumber(item.deliveryCost)}`
+              : `${this.formatNumber(item.deliveryCost)}`
           }`,
-          total: `$${this.formatNumber(item.total)}`,
+          total: `${this.formatNumber(item.total)}`,
           date: this.getProperlyDate(item)
         };
         this.data.push(row);

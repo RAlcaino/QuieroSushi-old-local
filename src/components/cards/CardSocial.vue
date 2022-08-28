@@ -155,7 +155,7 @@ export default {
       let min = "";
       switch (item.id) {
         case 1:
-          return `$${this.formatNumber(item.value)}`;
+          return `${this.formatNumber(item.value)}`;
         case 4:
           return `${item.value}%`;
         case 5:
@@ -181,20 +181,13 @@ export default {
           return item.value;
       }
     },
-    formatNumber(num) {
-      if (!num || num == "NaN") return "0";
-      if (num == "Infinity") return "&#x221e;";
-      num = num.toString().replace(/\$|\,/g, "");
-      if (isNaN(num)) num = "0";
-      let sign = num == (num = Math.abs(num));
-      num = Math.floor(num * 100 + 0.50000000001);
-      num = Math.floor(num / 100).toString();
-      for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
-        num =
-          num.substring(0, num.length - (4 * i + 3)) +
-          "." +
-          num.substring(num.length - (4 * i + 3));
-      return (sign ? "" : "-") + num;
+    formatNumber(data) {
+      data = parseFloat(data);
+      return `${data.toLocaleString("es-CL", {
+        style: "currency",
+        currency: "CLP",
+        maximumFractionDigits: 2
+      })}`;
     }
   }
 };

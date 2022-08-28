@@ -12,7 +12,7 @@
         />
         <span class="q-ml-sm" style="font-size: 14px; text-align: center"
           >¡Tienes un nuevo pedido de <strong>{{ order.customer }}</strong> por
-          <strong>${{ formatNumber(order.amount) }}</strong
+          <strong>{{ formatNumber(order.amount) }}</strong
           >. Direccion: {{ order.address }}!</span
         >
         <span class="warning-modal-new-o" v-if="showWarning">{{
@@ -46,11 +46,11 @@
 export default {
   inject: ["formatNumber", "errorHandling", "showNotification"],
   created() {
-    this.bus.$on("sync-new-order", (data) => {
+    this.bus.$on("sync-new-order", data => {
       this.pushOrder(data);
       this.showWarning = true;
     });
-    this.bus.$on("new-order", (data) => {
+    this.bus.$on("new-order", data => {
       this.open = true;
       this.pushOrder(data);
     });
@@ -63,14 +63,14 @@ export default {
         idSale: null,
         customer: null,
         amount: null,
-        address: null,
+        address: null
       },
       customer: "",
       address: "",
       amount: 0,
       warning: "Tienes un pedido más aparte de este. Revise sus pedidos",
       orderID: null,
-      showWarning: false,
+      showWarning: false
     };
   },
   methods: {
@@ -91,7 +91,7 @@ export default {
           name: "pedidos",
           params: {
             toAll: true
-          },
+          }
         });
       }
 
@@ -112,7 +112,7 @@ export default {
 
       let data = {
         action: action,
-        orders: this.orders,
+        orders: this.orders
       };
       var url = this.$store.getters["routes/getRoute"](
         "history.newOrder.pusher"
@@ -120,20 +120,20 @@ export default {
       this.$axios
         .post(url, data, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"],
-          },
+            Authorization: this.$store.getters["auth/getToken"]
+          }
         })
-        .then((response) => {
+        .then(response => {
           if (response.data.status !== "success") {
             this.showNotification(response.data.message, "negative", "error");
           }
         })
-        .catch((error) => {
+        .catch(error => {
           this.errorHandling(error);
         });
       this.orders = [];
-    },
-  },
+    }
+  }
 };
 </script>
 

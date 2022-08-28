@@ -131,6 +131,9 @@
                     dense
                     label="Dirección del cliente"
                     v-model="direccion"
+                    ref="placesInput"
+                    id="placesInput"
+                    @keypress="autocompleteLocation"
                   />
                 </q-item-section>
               </q-item>
@@ -175,11 +178,31 @@
               <q-item>
                 <q-item-section>
                   <q-item-label style="font-weight: bold; font-size: 18px"
-                    >Cargo a cliente:</q-item-label
+                    >Cargo a cliente:
+                    <q-icon
+                      :name="editCosts ? 'clear' : 'edit'"
+                      style="cursor: pointer;"
+                      :color="editCosts ? 'red' : 'blue'"
+                      @click="editCosts = !editCosts"
+                  /></q-item-label>
+                  <q-item-label
+                    style="font-size: 18px"
+                    v-if="editCosts === false"
+                    >{{ format(costs.costo_cliente) }}</q-item-label
                   >
-                  <q-item-label style="font-size: 18px">{{
-                    format(costs.costo_cliente)
-                  }}</q-item-label>
+                  <q-input
+                    v-if="editCosts === true"
+                    outlined
+                    rounded
+                    dense
+                    v-model="deliveryCostEdited"
+                    label="Nuevo costo ($)"
+                    mask="#,##"
+                    fill-mask="0"
+                    reverse-fill-mask
+                    input-class="text-right"
+                    style="width: 40%; margin-top: 10px"
+                  ></q-input>
                 </q-item-section>
               </q-item>
               <q-item>
@@ -249,13 +272,17 @@
                 <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <q-item-section>
                     <q-input
-                      type="number"
                       outlined
                       rounded
                       dense
-                      label="Total pedido ($)"
                       v-model="subtotal"
-                  /></q-item-section>
+                      label="Total pedido ($)"
+                      mask="#,##"
+                      fill-mask="0"
+                      reverse-fill-mask
+                      input-class="text-right"
+                    ></q-input
+                  ></q-item-section>
                 </q-item>
                 <q-item
                   v-if="
@@ -300,11 +327,25 @@
               >
                 <p style="font-size: 16px;">
                   <strong>Costo reparto: </strong>
-                  {{ format(+costs.costo_cliente) }}
+                  {{
+                    editCosts
+                      ? format(+deliveryCostEdited.replaceAll(",", "."))
+                      : format(+costs.costo_cliente)
+                  }}
                 </p>
-                <p style="font-size: 16px;">
+                <p style="font-size: 16px;" v-if="subtotal !== null">
                   <strong>Total: </strong>
-                  {{ format(+costs.costo_cliente + +subtotal) }}
+                  {{
+                    (
+                      (editCosts
+                        ? +deliveryCostEdited.replaceAll(",", ".")
+                        : costs.costo_cliente) + +subtotal.replaceAll(",", ".")
+                    ).toLocaleString("es-CL", {
+                      style: "currency",
+                      currency: "CLP",
+                      maximumFractionDigits: 2
+                    })
+                  }}
                 </p>
               </q-item>
             </q-list>
@@ -414,7 +455,7 @@ export default {
       direccion2: null,
       telefono: null,
       tiempo: null,
-      subtotal: 0,
+      subtotal: "0,0",
       metodo_pago: "Transferencia",
       metodos_pago: ["Transferencia", "Pago Online", "Pagado"],
       communes: [],
@@ -424,7 +465,10 @@ export default {
       email: "",
       costs: {},
       newTime: 10,
-      deliveryCost: 0
+      deliveryCost: 0,
+      deliveryCostEdited: "0,0",
+      autocomplete: null,
+      editCosts: false
     };
   },
   mounted() {
@@ -451,6 +495,19 @@ export default {
   },
   methods: {
     createOrder() {
+      if (this.subtotal === "0,00" || this.subtotal === "0,0") {
+        this.errorHandling({
+          message: "Debe indicar el total del pedido"
+        });
+        return;
+      }
+
+      if (this.telefono === null || this.telefono === "") {
+        this.errorHandling({
+          message: "Debe indicar un télefono"
+        });
+        return;
+      }
       if (this.telefono.length < 9 || this.telefono.length > 9) {
         this.errorHandling({
           message: "El teléfono tiene que ser de 9 dígitos"
@@ -472,7 +529,7 @@ export default {
         },
         nombre: this.nombre,
         telefono: this.telefono,
-        subtotal: +this.subtotal,
+        subtotal: +this.subtotal.replaceAll(",", "."),
         domain: "https://panel.devqs.tk",
         uber: {
           es_uber: true
@@ -490,7 +547,9 @@ export default {
                 delivery_type: "Uber"
               }
             : null,
-        costo_delivery: this.deliveryCost
+        costo_delivery: this.editCosts
+          ? +this.deliveryCostEdited.replaceAll(",", ".")
+          : this.deliveryCost
       };
 
       if (this.email === null || this.email === "") {
@@ -556,7 +615,8 @@ export default {
       data = parseFloat(data);
       return `${data.toLocaleString("es-CL", {
         style: "currency",
-        currency: "CLP"
+        currency: "CLP",
+        maximumFractionDigits: 2
       })}`;
     },
     close() {
@@ -577,11 +637,14 @@ export default {
       this.direccion2 = "";
       this.telefono = null;
       this.tiempo = null;
-      this.subtotal = null;
+      this.subtotal = "0,0";
       this.metodo_pago = "Transferencia";
       this.notes = "";
       this.email = "";
       this.newTime = 10;
+      this.autocomplete = null;
+      this.deliveryCostEdited = "0,0";
+      this.editCosts = false;
     },
     allCommunes() {
       this.communeFilter = "";
@@ -675,7 +738,29 @@ export default {
       }
     },
     confirm() {
+      if (this.editCosts) {
+        if (
+          this.deliveryCostEdited === "0,0" ||
+          this.deliveryCostEdited === "0,00"
+        ) {
+          this.errorHandling({
+            message: "Debe indicar el nuevo costo del reparto"
+          });
+          return;
+        }
+      }
       this.$refs.stepper.next();
+    },
+    autocompleteLocation() {
+      const input = document.getElementById(
+        this.$refs.placesInput.$refs.input.id
+      );
+      this.autocomplete = new google.maps.places.Autocomplete(input);
+      this.autocomplete.addListener("place_changed", () => {
+        let place = this.autocomplete.getPlace();
+        this.direccion = "";
+        this.direccion = place.formatted_address;
+      });
     }
   }
 };

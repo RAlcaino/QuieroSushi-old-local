@@ -28,7 +28,7 @@
                   >
                 </q-item-section>
                 <q-item-section side>
-                  $ {{ formatNumber(service.price) }}
+                  {{ formatNumber(service.price) }}
                 </q-item-section>
                 <q-separator></q-separator>
               </q-item>
@@ -38,7 +38,7 @@
                   <q-item-label lines="1">Total</q-item-label>
                 </q-item-section>
                 <q-item-section side>
-                  $ {{ formatNumber(total) }}
+                  {{ formatNumber(total) }}
                 </q-item-section>
               </q-item>
             </div>

@@ -29,7 +29,7 @@
             {{
               col.value === "UBER"
                 ? "UBER"
-                : `$${formatNumber(Math.round(col.value))}`
+                : `${formatNumber(Math.round(col.value))}`
             }}
           </template>
           <template v-else>
@@ -49,7 +49,7 @@
           <strong v-if="col.name === 'fecha' || col.name === 'comprador'">{{
             col.value
           }}</strong>
-          <strong v-else>${{ formatNumber(Math.round(col.value)) }}</strong>
+          <strong v-else>{{ formatNumber(Math.round(col.value)) }}</strong>
         </q-td>
       </q-tr>
     </template>

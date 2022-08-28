@@ -39,7 +39,7 @@
               <span v-if="scope.opt.label !== null"
                 >{{ scope.opt.label }}
                 <strong
-                  >${{ formatNumberCustom(scope.opt.price) }}</strong
+                  >{{ formatNumberCustom(scope.opt.price) }}</strong
                 ></span
               >
               <span v-else>Seleccionar...</span>
@@ -50,7 +50,7 @@
                 <q-item-section>
                   <q-item-label
                     v-html="
-                      `${scope.opt.label} <strong>$${formatNumberCustom(
+                      `${scope.opt.label} <strong>${formatNumberCustom(
                         scope.opt.price
                       )}</strong>`
                     "
@@ -105,7 +105,7 @@
           >
             <strong style="font-size: 16px;">Resumen </strong>
             <strong v-if="total > 0" style="font-size: 16px;"
-              >Total: ${{ formatNumberCustom(total) }}
+              >Total: {{ formatNumberCustom(total) }}
             </strong>
           </div>
 
@@ -127,7 +127,7 @@
                 <div class="services__store__container">
                   <p v-for="item2 of item.services" :key="item2.id">
                     <i class="fas fa-check"></i> {{ item2.label }}
-                    <strong>${{ formatNumberCustom(item2.price) }}</strong>
+                    <strong>{{ formatNumberCustom(item2.price) }}</strong>
                     <q-icon
                       name="delete"
                       color="primary"
