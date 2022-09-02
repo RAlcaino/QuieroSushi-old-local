@@ -229,6 +229,14 @@ const mutations = {
       {
         name: "cancel.order.qd",
         link: "/qd-cancel/{orderId}"
+      },
+      {
+        name: "request.delivery.qd",
+        link: "/QD/solicitarReparto"
+      },
+      {
+        name: "get.delivery.qd",
+        link: "/QD/getReparto/{orderId}/{platform}"
       }
     ];
   }

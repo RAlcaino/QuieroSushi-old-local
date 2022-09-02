@@ -59,11 +59,11 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getServerTime",
+    "getServerTime"
   ],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
-    this.bus.$on("the-start", (row) => {
+    this.bus.$on("the-start", row => {
       this.date = null;
       this.newTime = 10;
       this.timePickupReady = null;
@@ -85,7 +85,7 @@ export default {
       options: [
         { value: 10, label: "10 minutos" },
         { value: 20, label: "20 minutos" },
-        { value: 30, label: "30 minutos" },
+        { value: 30, label: "30 minutos" }
       ],
       option: { value: 10, label: "10 minutos" },
       pickup_ready: null,
@@ -93,32 +93,41 @@ export default {
       date: null,
       deliveryStatus: "",
       deliveryStatusObject: {},
-      newTime: 10,
+      newTime: 10
     };
   },
   methods: {
     confirm() {
       this.showLoading();
-      var urlConfirm =
-        this.$store.getters["routes/getRoute"]("confirm.order.qd");
+      var urlConfirm = this.$store.getters["routes/getRoute"](
+        "confirm.order.qd"
+      );
       let body = {
         orderID: this.orderId,
         pickup_ready_dt: +this.newTime,
         pickup_deadline_dt: +this.newTime + 15,
         delivery_type: "uber",
+        plataforma: "Dev"
       };
+      // if (
+      //   this.orderDetail.paymentMethod !== "Pagado" &&
+      //   this.orderDetail.paymentMethod !== "Efectivo"
+      // ) {
+      //   delete body.plataforma;
+      // }
+
       this.$axios
         .post(urlConfirm, body, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"],
-          },
+            Authorization: this.$store.getters["auth/getToken"]
+          }
         })
-        .then((response) => {
+        .then(response => {
           this.hideLoading();
           this.bus.$emit("sync-orders");
           this.card = false;
         })
-        .catch((error) => {
+        .catch(error => {
           this.hideLoading();
           this.errorHandling(error);
         });
@@ -142,23 +151,23 @@ export default {
         var url = this.$store.getters["routes/getRoute"](
           "get.delivery.status",
           {
-            delivery_id: this.orderDetail.delivery_id,
+            delivery_id: this.orderDetail.delivery_id
           }
         );
         this.$axios
           .get(url, {
             headers: {
-              Authorization: this.$store.getters["auth/getToken"],
-            },
+              Authorization: this.$store.getters["auth/getToken"]
+            }
           })
-          .then((response) => {
+          .then(response => {
             this.date = this.formatDate(response.data.pickup_ready);
             this.timePickupReady = this.formatDate(response.data.pickup_ready);
             this.pickup_ready = response.data.pickup_ready;
             this.deliveryStatus = response.data.status;
             this.deliveryStatusObject = { ...response.data };
           })
-          .catch((error) => {
+          .catch(error => {
             this.errorHandling(error);
           });
       }
@@ -189,7 +198,7 @@ export default {
     validations() {
       let selectedTime = this.date;
       let santiagoTime = new Date().toLocaleString("en-US", {
-        timeZone: "America/Santiago",
+        timeZone: "America/Santiago"
       });
       let unixDate = new Date(santiagoTime).valueOf();
       let unixSelectedDatetime = new Date(selectedTime).valueOf();
@@ -221,7 +230,7 @@ export default {
     },
     getFullDateTime(time) {
       let santiagoTime = new Date().toLocaleString("en-US", {
-        timeZone: "America/Santiago",
+        timeZone: "America/Santiago"
       });
       let date = new Date(santiagoTime);
 
@@ -237,8 +246,8 @@ export default {
         time;
 
       return currentTime;
-    },
-  },
+    }
+  }
 };
 </script>
 

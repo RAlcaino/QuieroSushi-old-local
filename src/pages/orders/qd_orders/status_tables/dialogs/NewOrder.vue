@@ -549,7 +549,8 @@ export default {
             : null,
         costo_delivery: this.editCosts
           ? +this.deliveryCostEdited.replaceAll(",", ".")
-          : this.deliveryCost
+          : this.deliveryCost,
+        plataforma: "Dev"
       };
 
       if (this.email === null || this.email === "") {
@@ -566,6 +567,10 @@ export default {
       if (this.direccion2 === null || this.direccion2 === "") {
         delete body.direccion_usuario.direccion2;
       }
+
+      // if (this.metodo_pago !== "Pagado" && this.metodo_pago !== "Efectivo") {
+      //   delete body.plataforma;
+      // }
       this.showLoading();
       var url = this.$store.getters["routes/getRoute"]("create.order.qd");
       this.$axios

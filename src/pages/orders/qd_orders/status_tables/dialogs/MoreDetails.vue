@@ -58,9 +58,8 @@
               </q-item>
 
               <div v-if="orderDetail.uber_information !== undefined">
-                <q-item
-                  v-if="orderDetail.uber_information.delivery_id !== null"
-                >
+                <q-item>
+                  <!-- v-if="orderDetail.uber_information.delivery_id !== null" -->
                   <q-item-section avatar>
                     <q-icon name="delivery_dining" color="primary" />
                   </q-item-section>
@@ -71,7 +70,7 @@
                         name="refresh"
                         size="1.3em"
                         style="cursor: pointer"
-                        @click="getStatus()"
+                        @click="getStatus2()"
                       ></q-icon>
                     </q-item-label>
                     <q-item-label
@@ -105,14 +104,14 @@
 
               <q-item
                 v-if="
-                  orderDetail.delivery_id !== null &&
-                    courier !== null &&
+                  courier !== null &&
                     deliveryShortStatus !== 'pending' &&
                     deliveryShortStatus !== 'delivered' &&
                     deliveryShortStatus !== 'returned' &&
                     deliveryShortStatus !== ''
                 "
               >
+                <!-- orderDetail.delivery_id !== null && -->
                 <q-item-section avatar>
                   <q-icon name="location_on" color="primary" />
                 </q-item-section>
@@ -159,8 +158,7 @@
 
               <q-item
                 v-if="
-                  orderDetail.delivery_id !== null &&
-                    deliveryShortStatus !== '' &&
+                  deliveryShortStatus !== '' &&
                     (deliveryShortStatus === 'pickup' ||
                       deliveryShortStatus === 'pickup_complete' ||
                       deliveryShortStatus === 'dropoff' ||
@@ -168,6 +166,7 @@
                     courier !== null
                 "
               >
+                <!-- orderDetail.delivery_id !== null && -->
                 <q-item-section avatar>
                   <q-icon name="face" color="primary" />
                 </q-item-section>
@@ -180,17 +179,17 @@
                       <img
                         style="border-radius: 100%"
                         width="80px"
-                        :src="courier.img_href"
+                        :src="deliveryStatusObject.repartidor_imagen"
                         alt="foto moto"
                       />
                       <div style="margin-left: 10px">
                         <p style="margin: 0; margin-bottom: 3px">
                           <label style="font-weight: bold">Nombre: </label
-                          >{{ courier.name }}
+                          >{{ deliveryStatusObject.repartidor_nombre }}
                         </p>
                         <p style="margin: 0; margin-bottom: 3px">
                           <label style="font-weight: bold">Télefono: </label
-                          >{{ courier.phone_number }}
+                          >{{ deliveryStatusObject.repartidor_telefono }}
                         </p>
                       </div>
                     </div>
@@ -199,12 +198,12 @@
               </q-item>
               <q-item
                 v-if="
-                  orderDetail.delivery_id !== null &&
-                    (deliveryShortStatus === 'pickup' ||
-                      deliveryShortStatus === 'pickup_complete') &&
+                  (deliveryShortStatus === 'pickup' ||
+                    deliveryShortStatus === 'pickup_complete') &&
                     deliveryShortStatus !== ''
                 "
               >
+                <!-- orderDetail.delivery_id !== null && -->
                 <q-item-section avatar>
                   <q-icon name="schedule" color="primary" />
                 </q-item-section>
@@ -404,7 +403,8 @@ export default {
         lng: null
       };
 
-      this.getStatus();
+      // this.getStatus();
+      this.getStatus2();
       this.getLocations();
     });
   },
@@ -469,6 +469,40 @@ export default {
             this.errorHandling(error);
           });
       }
+    },
+    getStatus2() {
+      this.deliveryStatus = "";
+      var url = this.$store.getters["routes/getRoute"]("get.delivery.qd", {
+        orderId: this.orderDetail.uber_information.delivery_id,
+        platform: "Dev"
+      });
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          this.deliveryShortStatus = response.data.result.status;
+          this.pickup_eta = this.formatDate(
+            response.data.result.timestamp_llegada_local
+          );
+          this.dropoff_eta = this.formatDate(
+            response.data.result.timestamp_llegada_casa
+          );
+          this.deliveryStatusObject = { ...response.data.result };
+          this.courier = {
+            location: {
+              lat: +response.data.result.lat,
+              lng: +response.data.result.lng
+            }
+          };
+          this.getMarkers();
+          this.setDeliveryStatus(response.data.result.status);
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     },
     setDeliveryStatus(status) {
       if (status === "pending") {
