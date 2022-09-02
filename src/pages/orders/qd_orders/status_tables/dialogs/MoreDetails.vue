@@ -474,7 +474,7 @@ export default {
       this.deliveryStatus = "";
       var url = this.$store.getters["routes/getRoute"]("get.delivery.qd", {
         orderId: this.orderDetail.uber_information.delivery_id,
-        platform: "Dev"
+        platform: "QD"
       });
       this.$axios
         .get(url, {

@@ -550,7 +550,7 @@ export default {
         costo_delivery: this.editCosts
           ? +this.deliveryCostEdited.replaceAll(",", ".")
           : this.deliveryCost,
-        plataforma: "Dev"
+        plataforma: "QD"
       };
 
       if (this.email === null || this.email === "") {
