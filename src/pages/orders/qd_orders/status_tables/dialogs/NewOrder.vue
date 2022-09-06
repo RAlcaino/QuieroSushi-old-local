@@ -183,7 +183,7 @@
                       :name="editCosts ? 'clear' : 'edit'"
                       style="cursor: pointer;"
                       :color="editCosts ? 'red' : 'blue'"
-                      @click="editCosts = !editCosts"
+                      @click="handleClickEditCosts()"
                   /></q-item-label>
                   <q-item-label
                     style="font-size: 18px"
@@ -192,14 +192,12 @@
                   >
                   <q-input
                     v-if="editCosts === true"
+                    type="number"
                     outlined
                     rounded
                     dense
                     v-model="deliveryCostEdited"
                     label="Nuevo costo ($)"
-                    mask="#,##"
-                    fill-mask="0"
-                    reverse-fill-mask
                     input-class="text-right"
                     style="width: 40%; margin-top: 10px"
                   ></q-input>
@@ -210,7 +208,12 @@
                   <q-item-label style="font-weight: bold"
                     >Cargo a local:</q-item-label
                   >
-                  <q-item-label>{{ format(costs.costo_local) }}</q-item-label>
+                  <q-item-label v-if="editCosts">{{
+                    format(newLocalCost)
+                  }}</q-item-label>
+                  <q-item-label v-else>{{
+                    format(costs.costo_local)
+                  }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -272,14 +275,12 @@
                 <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <q-item-section>
                     <q-input
+                      type="number"
                       outlined
                       rounded
                       dense
                       v-model="subtotal"
                       label="Total pedido ($)"
-                      mask="#,##"
-                      fill-mask="0"
-                      reverse-fill-mask
                       input-class="text-right"
                     ></q-input
                   ></q-item-section>
@@ -329,21 +330,19 @@
                   <strong>Costo reparto: </strong>
                   {{
                     editCosts
-                      ? format(+deliveryCostEdited.replaceAll(",", "."))
+                      ? format(+deliveryCostEdited)
                       : format(+costs.costo_cliente)
                   }}
                 </p>
-                <p style="font-size: 16px;" v-if="subtotal !== null">
+                <p style="font-size: 16px;">
                   <strong>Total: </strong>
                   {{
                     (
-                      (editCosts
-                        ? +deliveryCostEdited.replaceAll(",", ".")
-                        : costs.costo_cliente) + +subtotal.replaceAll(",", ".")
+                      (editCosts ? +deliveryCostEdited : costs.costo_cliente) +
+                      +subtotal
                     ).toLocaleString("es-CL", {
                       style: "currency",
-                      currency: "CLP",
-                      maximumFractionDigits: 2
+                      currency: "CLP"
                     })
                   }}
                 </p>
@@ -455,7 +454,7 @@ export default {
       direccion2: null,
       telefono: null,
       tiempo: null,
-      subtotal: "0,0",
+      subtotal: null,
       metodo_pago: "Transferencia",
       metodos_pago: ["Transferencia", "Pago Online", "Pagado"],
       communes: [],
@@ -466,9 +465,12 @@ export default {
       costs: {},
       newTime: 10,
       deliveryCost: 0,
-      deliveryCostEdited: "0,0",
+      deliveryCostEdited: 0,
+      localCostEdited: 0,
       autocomplete: null,
-      editCosts: false
+      editCosts: false,
+      distance: 0,
+      deliveryTime: 0
     };
   },
   mounted() {
@@ -486,20 +488,40 @@ export default {
   },
   computed: {
     verifyForm() {
-      if (this.subtotal === null || this.subtotal === "") {
+      if (this.subtotal === null) {
         return true;
       } else {
         return false;
       }
+    },
+    newLocalCost() {
+      if (this.costs.qd_costo - this.deliveryCostEdited <= 0) {
+        return 0;
+      } else {
+        this.localCostEdited = this.costs.qd_costo - this.deliveryCostEdited;
+        return this.localCostEdited;
+      }
     }
   },
   methods: {
+    handleClickEditCosts() {
+      this.editCosts = !this.editCosts;
+      this.localCostEdited = 0;
+      this.deliveryCostEdited = 0;
+    },
     createOrder() {
-      if (this.subtotal === "0,00" || this.subtotal === "0,0") {
+      if (this.subtotal === null || this.subtotal === 0) {
         this.errorHandling({
           message: "Debe indicar el total del pedido"
         });
         return;
+      } else {
+        if (this.subtotal.indexOf(".") !== -1) {
+          this.errorHandling({
+            message: "El total del pedido no debe tener decimales"
+          });
+          return;
+        }
       }
 
       if (this.telefono === null || this.telefono === "") {
@@ -529,7 +551,7 @@ export default {
         },
         nombre: this.nombre,
         telefono: this.telefono,
-        subtotal: +this.subtotal.replaceAll(",", "."),
+        subtotal: +this.subtotal,
         domain: "https://panel.devqs.tk",
         uber: {
           es_uber: true
@@ -548,9 +570,11 @@ export default {
               }
             : null,
         costo_delivery: this.editCosts
-          ? +this.deliveryCostEdited.replaceAll(",", ".")
+          ? +this.deliveryCostEdited
           : this.deliveryCost,
-        plataforma: "QD"
+        plataforma: "Dev",
+        distancia_estimada: this.distance,
+        tiempo_entrega_estimado: this.deliveryTime
       };
 
       if (this.email === null || this.email === "") {
@@ -620,8 +644,7 @@ export default {
       data = parseFloat(data);
       return `${data.toLocaleString("es-CL", {
         style: "currency",
-        currency: "CLP",
-        maximumFractionDigits: 2
+        currency: "CLP"
       })}`;
     },
     close() {
@@ -642,13 +665,14 @@ export default {
       this.direccion2 = "";
       this.telefono = null;
       this.tiempo = null;
-      this.subtotal = "0,0";
+      this.subtotal = null;
       this.metodo_pago = "Transferencia";
       this.notes = "";
       this.email = "";
       this.newTime = 10;
       this.autocomplete = null;
-      this.deliveryCostEdited = "0,0";
+      this.deliveryCostEdited = 0;
+      this.localCostEdited = 0;
       this.editCosts = false;
     },
     allCommunes() {
@@ -686,7 +710,7 @@ export default {
         pickup_address: `${this.qdLocal.direccion}, ${this.qdLocal.commune}`,
         tipo_venta: "despacho",
         local_id: this.qdLocal.value,
-        plataforma: "QD",
+        plataforma: "Dev",
         forma_pago: this.metodo_pago
       };
 
@@ -713,6 +737,8 @@ export default {
           if (response.data.result.quote.kind !== "error") {
             this.costs = response.data.result.details[0];
             this.deliveryCost = response.data.result.details[0].costo_cliente;
+            this.distance = response.data.result.distancia;
+            this.deliveryTime = response.data.result.tiempo_entrega;
             this.$refs.stepper.next();
           } else {
             this.showNotification(
@@ -744,14 +770,18 @@ export default {
     },
     confirm() {
       if (this.editCosts) {
-        if (
-          this.deliveryCostEdited === "0,0" ||
-          this.deliveryCostEdited === "0,00"
-        ) {
+        if (this.deliveryCostEdited === null || this.deliveryCostEdited === 0) {
           this.errorHandling({
             message: "Debe indicar el nuevo costo del reparto"
           });
           return;
+        } else {
+          if (this.deliveryCostEdited.indexOf(".") !== -1) {
+            this.errorHandling({
+              message: "El costo del reparto no debe tener decimales"
+            });
+            return;
+          }
         }
       }
       this.$refs.stepper.next();

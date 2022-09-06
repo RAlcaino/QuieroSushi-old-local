@@ -107,7 +107,7 @@ export default {
         pickup_ready_dt: +this.newTime,
         pickup_deadline_dt: +this.newTime + 15,
         delivery_type: "uber",
-        plataforma: "QD"
+        plataforma: "Dev"
       };
       // if (
       //   this.orderDetail.paymentMethod !== "Pagado" &&

@@ -102,10 +102,10 @@ export default {
       data = parseFloat(data);
       return `${data.toLocaleString("es-CL", {
         style: "currency",
-        currency: "CLP",
-        maximumFractionDigits: 2
+        currency: "CLP"
       })}`;
     },
+    
     capitalize(str) {
       return str.replace(/\w\S*/g, function(txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();

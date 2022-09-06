@@ -473,8 +473,8 @@ export default {
     getStatus2() {
       this.deliveryStatus = "";
       var url = this.$store.getters["routes/getRoute"]("get.delivery.qd", {
-        orderId: this.orderDetail.uber_information.delivery_id,
-        platform: "QD"
+        orderId: this.orderDetail.id,
+        platform: "Dev"
       });
       this.$axios
         .get(url, {
