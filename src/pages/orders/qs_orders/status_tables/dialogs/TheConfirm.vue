@@ -617,7 +617,8 @@ export default {
         preparationTime: +this.preparationTime,
         doAlgorithm: this.doAlgorithm,
         pickup_ready_dt: pickup_ready_dt,
-        pickup_deadline_dt: pickup_deadline_dt
+        pickup_deadline_dt: pickup_deadline_dt,
+        plataforma: 'Dev'
       };
 
       this.showLoading();

@@ -25,7 +25,7 @@
             name="two"
             @click="
               () => {
-                getStatus();
+                getStatus2();
                 getLocations();
               }
             "
@@ -111,9 +111,8 @@
             </q-list>
             <div class="tab-overview-footer">
               <p v-if="orderDetail.discount !== 0" style="font-size: 14px">
-                <strong style="color: #333">Descuento: </strong> {{
-                  formatNumber(orderDetail.discount)
-                }}
+                <strong style="color: #333">Descuento: </strong>
+                {{ formatNumber(orderDetail.discount) }}
               </p>
               <p style="font-size: 14px">
                 <strong style="color: #333"
@@ -122,15 +121,14 @@
                 {{ formatNumber(orderDetail.subtotal) }}
               </p>
               <p style="font-size: 14px" v-if="orderDetail.es_uber !== 1">
-                <strong style="color: #333">Costo Despacho: </strong> {{
-                  formatNumber(orderDetail.deliveryCost)
-                }}
+                <strong style="color: #333">Costo Despacho: </strong>
+                {{ formatNumber(orderDetail.deliveryCost) }}
               </p>
               <p style="font-size: 14px" v-if="orderDetail.es_uber !== 1">
                 <strong style="color: #333">Total: </strong>
-                <span style="color: #ff2d2d; font-weight: bold"
-                  >{{ formatNumber(orderDetail.total) }}</span
-                >
+                <span style="color: #ff2d2d; font-weight: bold">{{
+                  formatNumber(orderDetail.total)
+                }}</span>
               </p>
             </div>
             <div class="tab-overview-footer">
@@ -169,7 +167,7 @@
                       name="refresh"
                       size="1.3em"
                       style="cursor: pointer"
-                      @click="getStatus()"
+                      @click="getStatus2()"
                     ></q-icon>
                   </q-item-label>
                   <q-item-label
@@ -561,6 +559,41 @@ export default {
             this.errorHandling(error);
           });
       }
+    },
+
+    getStatus2() {
+      this.deliveryStatus = "";
+      var url = this.$store.getters["routes/getRoute"]("get.delivery.qd", {
+        orderId: this.orderDetail.id,
+        platform: "Dev"
+      });
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          this.deliveryShortStatus = response.data.result.status;
+          this.pickup_eta = this.formatDate(
+            response.data.result.timestamp_llegada_local
+          );
+          this.dropoff_eta = this.formatDate(
+            response.data.result.timestamp_llegada_casa
+          );
+          this.deliveryStatusObject = { ...response.data.result };
+          this.courier = {
+            location: {
+              lat: +response.data.result.lat,
+              lng: +response.data.result.lng
+            }
+          };
+          this.getMarkers();
+          this.setDeliveryStatus(response.data.result.status);
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     },
     setDeliveryStatus(status) {
       if (status === "pending") {

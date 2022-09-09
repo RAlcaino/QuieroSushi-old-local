@@ -647,6 +647,7 @@ export default {
     this.getTitles();
     this.getRoles();
     this.getNotifications(false);
+    this.getWs();
     let res = await this.requestServerTime();
     let date = new Date(res.data.result);
     this.$store.commit("auth/setServerTime", date.toString());
@@ -681,7 +682,8 @@ export default {
       currentHour: null,
       currentMinute: null,
       currentSecond: null,
-      fiveAm: false
+      fiveAm: false,
+      whatsappNumber: ""
     };
   },
   provide() {
@@ -1083,6 +1085,25 @@ export default {
           this.errorHandling(error);
         });
     },
+    getWs() {
+      var url = this.$store.getters["routes/getRoute"]("get.ws");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.whatsappNumber = response.data.result.valor;
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
     verifyCartStatus(oldLocals, currentLocals) {
       if (oldLocals.length !== currentLocals.length) {
         return true;
@@ -1117,7 +1138,7 @@ export default {
     },
     whatsapp() {
       window.open(
-        "https://web.whatsapp.com/send/?phone=%2B56934909418&text&app_absent=0"
+        `https://web.whatsapp.com/send/?phone=${this.whatsappNumber}&text&app_absent=0`
       );
     },
     getNotifications(notif) {

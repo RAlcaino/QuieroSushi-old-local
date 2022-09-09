@@ -237,6 +237,10 @@ const mutations = {
       {
         name: "get.delivery.qd",
         link: "/QD/getReparto/{orderId}/{platform}"
+      },
+      {
+        name: "get.ws",
+        link: "/local/getSac"
       }
     ];
   }
