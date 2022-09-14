@@ -241,6 +241,14 @@ const mutations = {
       {
         name: "get.ws",
         link: "/local/getSac"
+      },
+      {
+        name: "cancel.order.ext",
+        link: "/ext/anularRepartoVenta"
+      },
+      {
+        name: "change.order.ext",
+        link: "/ext/cambiarHoraReparto"
       }
     ];
   }

@@ -85,68 +85,102 @@ export default {
         return resp;
       }
     },
-    async DoCancel() {
-      this.showLoading();
-      let resp = await this.getStatus();
+    // async DoCancel() {
+    //   this.showLoading();
+    //   let resp = await this.getStatus();
 
+    //   if (this.cancellationReason.trim() === "") {
+    //     this.showNotification(
+    //       "El motivo de anulación es obligatorio",
+    //       "negative",
+    //       "error"
+    //     );
+
+    //     this.hideLoading();
+    //     return;
+    //   }
+
+    //   if (resp !== undefined) {
+    //     if (resp.data.status === "delivered") {
+    //       this.showNotification(
+    //         "El pedido ya fue entregado por Uber",
+    //         "negative",
+    //         "error"
+    //       );
+
+    //       this.hideLoading();
+    //       return;
+    //     }
+    //   }
+    //   let data = {
+    //     cancellationReason: this.cancellationReason
+    //   };
+
+    //   if (!this.prod) {
+    //     setTimeout(() => {
+    //       this.hideLoading();
+    //       this.bus.$emit("sync-orders");
+    //     }, 3000);
+    //   } else {
+    //     var url = this.$store.getters["routes/getRoute"]("cancel.order.qd", {
+    //       orderId: this.orderId
+    //     });
+    //     this.$axios
+    //       .put(url, data, {
+    //         headers: {
+    //           Authorization: this.$store.getters["auth/getToken"]
+    //         }
+    //       })
+    //       .then(response => {
+    //         if (response.data.status === "success") {
+    //           this.hideLoading();
+    //           this.bus.$emit("sync-orders");
+    //           this.card = false;
+    //         } else {
+    //           this.hideLoading();
+    //           this.showNotification(response.data.message, "negative", "error");
+    //         }
+    //         this.closeDialog();
+    //       })
+    //       .catch(error => {
+    //         this.hideLoading();
+    //         this.errorHandling(error);
+    //       });
+    //   }
+    // },
+
+    DoCancel() {
       if (this.cancellationReason.trim() === "") {
         this.showNotification(
           "El motivo de anulación es obligatorio",
           "negative",
           "error"
         );
-
-        this.hideLoading();
         return;
       }
-
-      if (resp !== undefined) {
-        if (resp.data.status === "delivered") {
-          this.showNotification(
-            "El pedido ya fue entregado por Uber",
-            "negative",
-            "error"
-          );
-
-          this.hideLoading();
-          return;
-        }
-      }
+      this.showLoading();
+      var url = this.$store.getters["routes/getRoute"]("cancel.order.ext");
       let data = {
-        cancellationReason: this.cancellationReason
+        venta_id: this.orderId,
+        plataforma: "Dev",
+        motivo: this.cancellationReason
       };
-
-      if (!this.prod) {
-        setTimeout(() => {
-          this.hideLoading();
+      this.$axios
+        .post(url, data, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          console.log(response);
           this.bus.$emit("sync-orders");
-        }, 3000);
-      } else {
-        var url = this.$store.getters["routes/getRoute"]("cancel.order.qd", {
-          orderId: this.orderId
+          this.hideLoading();
+          this.card = false;
+        })
+        .catch(error => {
+          this.hideLoading();
+          this.errorHandling(error);
         });
-        this.$axios
-          .put(url, data, {
-            headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
-          })
-          .then(response => {
-            if (response.data.status === "success") {
-              this.hideLoading();
-              this.bus.$emit("sync-orders");
-              this.card = false;
-            } else {
-              this.hideLoading();
-              this.showNotification(response.data.message, "negative", "error");
-            }
-            this.closeDialog();
-          })
-          .catch(error => {
-            this.hideLoading();
-            this.errorHandling(error);
-          });
-      }
     },
     closeDialog() {
       this.card = false;

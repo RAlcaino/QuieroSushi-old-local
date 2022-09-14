@@ -85,90 +85,100 @@ export default {
         return resp;
       }
     },
-    async DoCancel() {
-      this.showLoading();
-      let resp = await this.getStatus();
+    // async DoCancel() {
+    //   this.showLoading();
+    //   let resp = await this.getStatus();
 
+    //   if (this.cancellationReason.trim() === "") {
+    //     this.showNotification(
+    //       "El motivo de anulación es obligatorio",
+    //       "negative",
+    //       "error"
+    //     );
+
+    //     this.hideLoading();
+    //     return;
+    //   }
+
+    //   if (resp !== undefined) {
+    //     if (resp.data.status === "delivered") {
+    //       this.showNotification(
+    //         "El pedido ya fue entregado por Uber",
+    //         "negative",
+    //         "error"
+    //       );
+
+    //       this.hideLoading();
+    //       return;
+    //     }
+    //   }
+    //   let data = {
+    //     orderID: this.orderId,
+    //     canceledTimestamp: this.getServerTime(),
+    //     cancellationReason: this.cancellationReason,
+    //     type: "QS"
+    //   };
+
+    //   if (!this.prod) {
+    //     setTimeout(() => {
+    //       this.hideLoading();
+    //       this.bus.$emit("sync-orders");
+    //     }, 3000);
+    //   } else {
+    //     var url = this.$store.getters["routes/getRoute"]("order.cancel");
+    //     this.$axios
+    //       .put(url, data, {
+    //         headers: {
+    //           Authorization: this.$store.getters["auth/getToken"]
+    //         }
+    //       })
+    //       .then(response => {
+    //         if (response.data.status === "success") {
+    //           this.hideLoading();
+    //           if (this.mode === "orders") {
+    //             if (resp !== undefined) {
+    //               if (resp.data.status !== "canceled") {
+    //                 this.cancelDelivery();
+    //               }
+    //             } else {
+    //               this.bus.$emit("sync-orders");
+    //               this.hideLoading();
+    //               this.card = false;
+    //             }
+    //           } else {
+    //             this.bus.$emit("sync-page-after-refund");
+    //           }
+    //         } else {
+    //           this.hideLoading();
+    //           this.showNotification(response.data.message, "negative", "error");
+    //         }
+    //         this.closeDialog();
+    //       })
+    //       .catch(error => {
+    //         this.hideLoading();
+    //         this.errorHandling(error);
+    //       });
+    //   }
+    // },
+    closeDialog() {
+      this.card = false;
+      this.cancellationReason = "";
+    },
+    DoCancel() {
       if (this.cancellationReason.trim() === "") {
         this.showNotification(
           "El motivo de anulación es obligatorio",
           "negative",
           "error"
         );
-
-        this.hideLoading();
         return;
       }
-
-      if (resp !== undefined) {
-        if (resp.data.status === "delivered") {
-          this.showNotification(
-            "El pedido ya fue entregado por Uber",
-            "negative",
-            "error"
-          );
-
-          this.hideLoading();
-          return;
-        }
-      }
-      let data = {
-        orderID: this.orderId,
-        canceledTimestamp: this.getServerTime(),
-        cancellationReason: this.cancellationReason,
-        type: "QS"
-      };
-
-      if (!this.prod) {
-        setTimeout(() => {
-          this.hideLoading();
-          this.bus.$emit("sync-orders");
-        }, 3000);
-      } else {
-        var url = this.$store.getters["routes/getRoute"]("order.cancel");
-        this.$axios
-          .put(url, data, {
-            headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
-          })
-          .then(response => {
-            if (response.data.status === "success") {
-              this.hideLoading();
-              if (this.mode === "orders") {
-                if (resp !== undefined) {
-                  if (resp.data.status !== "canceled") {
-                    this.cancelDelivery();
-                  }
-                } else {
-                  this.bus.$emit("sync-orders");
-                  this.hideLoading();
-                  this.card = false;
-                }
-              } else {
-                this.bus.$emit("sync-page-after-refund");
-              }
-            } else {
-              this.hideLoading();
-              this.showNotification(response.data.message, "negative", "error");
-            }
-            this.closeDialog();
-          })
-          .catch(error => {
-            this.hideLoading();
-            this.errorHandling(error);
-          });
-      }
-    },
-    closeDialog() {
-      this.card = false;
-      this.cancellationReason = "";
-    },
-    cancelDelivery() {
       this.showLoading();
-      var url = this.$store.getters["routes/getRoute"]("uber.cancel");
+      var url = this.$store.getters["routes/getRoute"]("cancel.order.ext");
       let data = {
-        delivery_id: this.orderDetail.delivery_id
+        venta_id: this.orderId,
+        plataforma: "Dev",
+        motivo: this.cancellationReason
       };
       this.$axios
         .post(url, data, {

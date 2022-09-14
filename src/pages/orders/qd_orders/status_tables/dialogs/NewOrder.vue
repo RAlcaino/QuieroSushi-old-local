@@ -598,7 +598,7 @@ export default {
         costo_delivery: this.editCosts
           ? +this.deliveryCostEdited
           : this.deliveryCost,
-        plataforma: "Dev",
+        plataforma: "QD",
         distancia_estimada: this.distance,
         tiempo_entrega_estimado: this.deliveryTime,
       };
