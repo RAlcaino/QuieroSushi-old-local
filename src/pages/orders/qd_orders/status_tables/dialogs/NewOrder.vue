@@ -736,7 +736,7 @@ export default {
         pickup_address: `${this.qdLocal.direccion}, ${this.qdLocal.commune}`,
         tipo_venta: "despacho",
         local_id: this.qdLocal.value,
-        plataforma: "Dev",
+        plataforma: "QD",
         forma_pago: this.metodo_pago,
       };
 

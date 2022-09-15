@@ -565,7 +565,7 @@ export default {
       this.deliveryStatus = "";
       var url = this.$store.getters["routes/getRoute"]("get.delivery.qd", {
         orderId: this.orderDetail.id,
-        platform: "Dev"
+        platform: "QS"
       });
       this.$axios
         .get(url, {

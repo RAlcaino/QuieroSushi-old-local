@@ -136,7 +136,7 @@ export default {
         // local_address: this.orderDetail.local.address,
         // pickup_deadline_dt: +this.newTime + 10,
         venta_id: this.orderId,
-        plataforma: "Dev",
+        plataforma: "QS",
         minutos_restante_para_llegar: +this.newTime
       };
 

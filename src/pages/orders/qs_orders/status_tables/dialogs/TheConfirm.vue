@@ -618,7 +618,7 @@ export default {
         doAlgorithm: this.doAlgorithm,
         pickup_ready_dt: pickup_ready_dt,
         pickup_deadline_dt: pickup_deadline_dt,
-        plataforma: 'Dev'
+        plataforma: 'QS'
       };
 
       this.showLoading();

@@ -162,7 +162,7 @@ export default {
       var url = this.$store.getters["routes/getRoute"]("cancel.order.ext");
       let data = {
         venta_id: this.orderId,
-        plataforma: "Dev",
+        plataforma: "QD",
         motivo: this.cancellationReason
       };
       this.$axios
