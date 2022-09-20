@@ -6,6 +6,7 @@
     </keep-alive>
     <the-cancel :mode="'orders'"></the-cancel>
     <modal-are-u-sure :showConfirm="confirmDialog"></modal-are-u-sure>
+    <the-change-uber />
     <div
       class="fit row wrap justify-center items-center content-center"
       style="padding-top: 3%"
@@ -149,7 +150,7 @@
                 <template
                   v-if="
                     item.userDetail.address2 !== '' &&
-                      item.userDetail.address2 !== null
+                    item.userDetail.address2 !== null
                   "
                 >
                   <span v-if="item.userDetail.address2.search('dpto') == -1"
@@ -252,6 +253,15 @@
               >
                 Anular
               </q-btn>
+              <q-btn
+                @click="changeDelivery(item)"
+                rounded
+                size="sm"
+                color="green"
+                style="font-size: 10.5px; margin-right: 5px"
+              >
+                <template>Cambiar Hora</template>
+              </q-btn>
             </div>
             <!-- <q-btn
                 rounded
@@ -313,6 +323,7 @@ import TheConfirm from "./dialogs/TheConfirm.vue";
 import TheCancel from "./dialogs/TheCancel.vue";
 import TheTimer from "../timer/TheTimer.vue";
 import ModalAreUSure from "../../../../components/modals/ModalAreUSure.vue";
+import TheChangeUber from "./dialogs/TheChangeUber.vue";
 
 export default {
   props: ["ordersPreparation", "refresh", "sendWs"],
@@ -323,7 +334,8 @@ export default {
     TheConfirm,
     TheCancel,
     TheTimer,
-    ModalAreUSure
+    ModalAreUSure,
+    TheChangeUber,
   },
   created() {
     this.flag = this.refresh;
@@ -348,7 +360,7 @@ export default {
       this.searching = false;
     });
 
-    this.bus.$on("continue-with-confirmation", data => {
+    this.bus.$on("continue-with-confirmation", (data) => {
       console.log("Hola");
       this.confirmDialog(data);
     });
@@ -362,7 +374,7 @@ export default {
     },
     getMaxPages() {
       return Math.ceil(this.ordersPreparation.length / 15);
-    }
+    },
   },
   data() {
     return {
@@ -370,7 +382,7 @@ export default {
       perPage: 15,
       filter: "",
       flag: false,
-      searching: false
+      searching: false,
     };
   },
   beforeDestroy() {
@@ -430,12 +442,15 @@ export default {
     },
     openChat(row) {
       var data = {
-        id_venta: row.id
+        id_venta: row.id,
       };
       //this.sendWs(row.id);
       this.bus.$emit("modal-status-order", data);
-    }
-  }
+    },
+    changeDelivery(row) {
+      this.bus.$emit("the-change-uber", row);
+    },
+  },
 };
 </script>
 
