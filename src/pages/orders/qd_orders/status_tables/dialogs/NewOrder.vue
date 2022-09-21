@@ -20,6 +20,7 @@
             name="inventory_2"
           />
           Crear pedido propio
+          {{ qdLocal.value !== null ? `- ${qdLocal.label}` : "" }}
         </div>
         <q-space />
         <q-btn icon="close" color="white" flat round dense @click="close()" />
@@ -290,8 +291,8 @@
                 <q-item
                   v-if="
                     metodo_pago !== 'Pago Online' &&
-                    metodo_pago !== 'Transferencia' &&
-                    metodo_pago !== 'Seleccionar...'
+                      metodo_pago !== 'Transferencia' &&
+                      metodo_pago !== 'Seleccionar...'
                   "
                   class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                 >
@@ -348,7 +349,7 @@
                       +subtotal
                     ).toLocaleString("es-CL", {
                       style: "currency",
-                      currency: "CLP",
+                      currency: "CLP"
                     })
                   }}
                 </p>
@@ -432,26 +433,26 @@ export default {
     "showLoading",
     "hideLoading",
     "errorHandling",
-    "getStoreQDLocals",
+    "getStoreQDLocals"
   ],
   data() {
     return {
       open: false,
       comuna: {
         label: "Seleccionar...",
-        value: null,
+        value: null
       },
       region: {
         label: "Seleccionar...",
-        value: null,
+        value: null
       },
       ciudad: {
         label: "Seleccionar...",
-        value: null,
+        value: null
       },
       qdLocal: {
         label: "Seleccionar...",
-        value: null,
+        value: null
       },
       qdLocals: [],
       nombre: null,
@@ -476,7 +477,7 @@ export default {
       autocomplete: null,
       editCosts: false,
       distance: 0,
-      deliveryTime: 0,
+      deliveryTime: 0
     };
   },
   mounted() {
@@ -517,14 +518,14 @@ export default {
     getStyle() {
       if (this.editCosts === true) {
         return {
-          display: "flex",
+          display: "flex"
         };
       } else {
         return {
-          display: "none",
+          display: "none"
         };
       }
-    },
+    }
   },
   methods: {
     handleClickEditCosts(refs) {
@@ -538,13 +539,13 @@ export default {
     createOrder() {
       if (this.subtotal === null || this.subtotal === 0) {
         this.errorHandling({
-          message: "Debe indicar el total del pedido",
+          message: "Debe indicar el total del pedido"
         });
         return;
       } else {
         if (this.subtotal.indexOf(".") !== -1) {
           this.errorHandling({
-            message: "El total del pedido no debe tener decimales",
+            message: "El total del pedido no debe tener decimales"
           });
           return;
         }
@@ -552,13 +553,13 @@ export default {
 
       if (this.telefono === null || this.telefono === "") {
         this.errorHandling({
-          message: "Debe indicar un télefono",
+          message: "Debe indicar un télefono"
         });
         return;
       }
       if (this.telefono.length < 9 || this.telefono.length > 9) {
         this.errorHandling({
-          message: "El teléfono tiene que ser de 9 dígitos",
+          message: "El teléfono tiene que ser de 9 dígitos"
         });
         return;
       }
@@ -573,14 +574,14 @@ export default {
               ? this.direccion2.charAt(0).toUpperCase() +
                 this.direccion2.slice(1)
               : "",
-          comuna: this.comuna.label,
+          comuna: this.comuna.label
         },
         nombre: this.nombre,
         telefono: this.telefono,
         subtotal: +this.subtotal,
         domain: "https://panel.devqs.tk",
         uber: {
-          es_uber: true,
+          es_uber: true
         },
         nota: this.notes.replaceAll("\n", ".-"),
         metodo_pago: this.metodo_pago,
@@ -592,7 +593,7 @@ export default {
             ? {
                 pickup_ready_dt: +this.newTime,
                 pickup_deadline_dt: +this.newTime + 15,
-                delivery_type: "Uber",
+                delivery_type: "Uber"
               }
             : null,
         costo_delivery: this.editCosts
@@ -600,7 +601,7 @@ export default {
           : this.deliveryCost,
         plataforma: "QD",
         distancia_estimada: this.distance,
-        tiempo_entrega_estimado: this.deliveryTime,
+        tiempo_entrega_estimado: this.deliveryTime
       };
 
       if (this.email === null || this.email === "") {
@@ -626,16 +627,16 @@ export default {
       this.$axios
         .post(url, body, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"],
-          },
+            Authorization: this.$store.getters["auth/getToken"]
+          }
         })
-        .then((res) => {
+        .then(res => {
           this.bus.$emit("sync-orders");
           this.hideLoading();
           this.open = false;
           this.$refs.stepper.next();
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
           this.hideLoading();
           if (error.response !== undefined) {
@@ -663,14 +664,14 @@ export default {
 
       const needle = val.toLowerCase();
       this.communes = communesNew.filter(
-        (v) => v.label.toLowerCase().indexOf(needle) > -1
+        v => v.label.toLowerCase().indexOf(needle) > -1
       );
     },
     format(data) {
       data = parseFloat(data);
       return `${data.toLocaleString("es-CL", {
         style: "currency",
-        currency: "CLP",
+        currency: "CLP"
       })}`;
     },
     close() {
@@ -679,11 +680,11 @@ export default {
     reset() {
       this.comuna = {
         label: "Seleccionar...",
-        value: null,
+        value: null
       };
       this.qdLocal = {
         label: "Seleccionar...",
-        value: null,
+        value: null
       };
       this.nombre = null;
       this.minutos = null;
@@ -737,17 +738,17 @@ export default {
         tipo_venta: "despacho",
         local_id: this.qdLocal.value,
         plataforma: "QD",
-        forma_pago: this.metodo_pago,
+        forma_pago: this.metodo_pago
       };
 
       var url = this.$store.getters["routes/getRoute"]("uber.quote");
       this.$axios
         .post(url, body, {
           headers: {
-            Authorization: this.$store.getters["auth/getToken"],
-          },
+            Authorization: this.$store.getters["auth/getToken"]
+          }
         })
-        .then((response) => {
+        .then(response => {
           console.log(response);
           this.hideLoading();
 
@@ -774,7 +775,7 @@ export default {
             );
           }
         })
-        .catch((error) => {
+        .catch(error => {
           this.hideLoading();
           if (error.response !== undefined) {
             if (error.response.data.code === 412) {
@@ -802,13 +803,13 @@ export default {
           this.deliveryCostEdited === ""
         ) {
           this.errorHandling({
-            message: "Debe indicar el nuevo costo del reparto",
+            message: "Debe indicar el nuevo costo del reparto"
           });
           return;
         } else {
           if (this.deliveryCostEdited.indexOf(".") !== -1) {
             this.errorHandling({
-              message: "El costo del reparto no debe tener decimales",
+              message: "El costo del reparto no debe tener decimales"
             });
             return;
           }
@@ -826,8 +827,8 @@ export default {
         this.direccion = "";
         this.direccion = place.formatted_address;
       });
-    },
-  },
+    }
+  }
 };
 
 // var urlConfirm = this.$store.getters["routes/getRoute"]("confirm.order.qd");
