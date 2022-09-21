@@ -175,7 +175,7 @@ export default {
           console.log(response);
           this.bus.$emit("sync-orders");
           this.hideLoading();
-          this.card = false;
+          this.closeDialog();
         })
         .catch(error => {
           this.hideLoading();
