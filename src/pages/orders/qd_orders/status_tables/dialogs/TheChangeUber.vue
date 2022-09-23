@@ -20,11 +20,6 @@
         </span>
 
         <q-input
-          v-if="
-            date !== null &&
-              deliveryStatus !== 'delivered' &&
-              deliveryStatus !== 'canceled'
-          "
           v-model="newTime"
           color="primary"
           label="Minutos"
@@ -37,27 +32,6 @@
           </template>
         </q-input>
 
-        <div v-if="Object.entries(deliveryStatusObject).length !== 0">
-          <p
-            style="font-size: 15px; margin-bottom: 15px; text-align: center"
-            class="q-ml-sm"
-            v-if="deliveryStatus === 'delivered'"
-          >
-            El pedido ya fue entregado
-          </p>
-
-          <p
-            style="font-size: 15px; margin-bottom: 15px; text-align: center"
-            class="q-ml-sm"
-            v-if="deliveryStatus === 'canceled'"
-          >
-            El pedido ya fue cancelado
-          </p>
-        </div>
-
-        <q-item-label v-if="date === null">
-          <q-spinner-facebook color="primary" size="2em"
-        /></q-item-label>
       </q-card-section>
       <q-card-actions align="right">
         <q-btn
@@ -66,11 +40,6 @@
           rounded
           label="Cambiar"
           color="green"
-          :disabled="
-            Object.entries(deliveryStatusObject).length === 0 ||
-              deliveryStatus === 'delivered' ||
-              deliveryStatus === 'canceled'
-          "
         />
         <q-btn
           size="sm"
@@ -106,7 +75,6 @@ export default {
       this.orderId = row.id;
       this.deliveryStatus = "";
       this.deliveryStatusObject = {};
-      this.getStatus();
     });
   },
   data() {
@@ -136,7 +104,7 @@ export default {
         // local_address: this.orderDetail.local.address,
         // pickup_deadline_dt: +this.newTime + 10,
         venta_id: this.orderId,
-        plataforma: "QD",
+        plataforma: process.env.QD,
         minutos_restante_para_llegar: +this.newTime
       };
 

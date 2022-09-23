@@ -57,74 +57,6 @@
               </q-item>
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-select
-                    ref="select"
-                    rounded
-                    outlined
-                    dense
-                    v-model="comuna"
-                    :options="communes"
-                    :options-dense="true"
-                    hide-hint
-                    label="Comuna del cliente"
-                    @popup-hide="allCommunes()"
-                    :virtual-scroll-sticky-size-start="80"
-                    style="margin-bottom: 5px"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="store" />
-                    </template>
-                    <template v-slot:before-options>
-                      <q-item>
-                        <q-item-section class="text-grey">
-                          <input
-                            v-model="communeFilter"
-                            @input="filterFn(communeFilter)"
-                            type="text"
-                            placeholder="Buscar"
-                            style="
-                              padding: 7px;
-                              margin-top: 10px;
-                              border-radius: 20px;
-                              border: 1px solid #333;
-                              outline: none;
-                            "
-                          />
-                          <p style="margin: 0; color: white">
-                            {{ communes.length }}
-                          </p>
-                        </q-item-section>
-                      </q-item>
-                    </template>
-                    <template v-slot:no-option>
-                      <q-item>
-                        <q-item-section class="text-grey">
-                          <input
-                            v-model="communeFilter"
-                            @input="filterFn(communeFilter)"
-                            type="text"
-                            placeholder="Buscar"
-                            style="
-                              padding: 7px;
-                              margin-top: 10px;
-                              border-radius: 20px;
-                              border: 1px solid #333;
-                              outline: none;
-                            "
-                          />
-                        </q-item-section>
-                      </q-item>
-                      <q-item>
-                        <q-item-section class="text-grey">
-                          Sin Resultados
-                        </q-item-section>
-                      </q-item>
-                    </template>
-                  </q-select>
-                </q-item-section>
-              </q-item>
-              <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <q-item-section>
                   <q-input
                     type="text"
                     outlined
@@ -438,10 +370,7 @@ export default {
   data() {
     return {
       open: false,
-      comuna: {
-        label: "Seleccionar...",
-        value: null
-      },
+      comuna: "",
       region: {
         label: "Seleccionar...",
         value: null
@@ -574,7 +503,7 @@ export default {
               ? this.direccion2.charAt(0).toUpperCase() +
                 this.direccion2.slice(1)
               : "",
-          comuna: this.comuna.label
+          comuna: this.comuna
         },
         nombre: this.nombre,
         telefono: this.telefono,
@@ -599,7 +528,7 @@ export default {
         costo_delivery: this.editCosts
           ? +this.deliveryCostEdited
           : this.deliveryCost,
-        plataforma: "QD",
+        plataforma: process.env.QD,
         distancia_estimada: this.distance,
         tiempo_entrega_estimado: this.deliveryTime
       };
@@ -678,10 +607,7 @@ export default {
       this.open = false;
     },
     reset() {
-      this.comuna = {
-        label: "Seleccionar...",
-        value: null
-      };
+      this.comuna = "";
       this.qdLocal = {
         label: "Seleccionar...",
         value: null
@@ -718,10 +644,6 @@ export default {
         this.showNotification("Debe indicar una local", "negative", "error");
         return;
       }
-      if (this.comuna.value === null) {
-        this.showNotification("Debe indicar una comuna", "negative", "error");
-        return;
-      }
       if (this.direccion.trim() === "") {
         this.showNotification(
           "Debe indicar una direccion valida",
@@ -733,11 +655,11 @@ export default {
 
       this.showLoading();
       let body = {
-        dropoff_address: `${this.direccion}, ${this.comuna.label}`,
+        dropoff_address: `${this.direccion}`,
         pickup_address: `${this.qdLocal.direccion}, ${this.qdLocal.commune}`,
         tipo_venta: "despacho",
         local_id: this.qdLocal.value,
-        plataforma: "QD",
+        plataforma: process.env.QD,
         forma_pago: this.metodo_pago
       };
 
@@ -824,8 +746,10 @@ export default {
       this.autocomplete = new google.maps.places.Autocomplete(input);
       this.autocomplete.addListener("place_changed", () => {
         let place = this.autocomplete.getPlace();
+        console.log(place);
         this.direccion = "";
-        this.direccion = place.formatted_address;
+        this.direccion = place.name + ", " + place.vicinity;
+        this.comuna = place.vicinity;
       });
     }
   }

@@ -474,7 +474,7 @@ export default {
       this.deliveryStatus = "";
       var url = this.$store.getters["routes/getRoute"]("get.delivery.qd", {
         orderId: this.orderDetail.id,
-        platform: "QD"
+        platform: process.env.QD
       });
       this.$axios
         .get(url, {
@@ -599,7 +599,7 @@ export default {
         local_address: this.orderDetail.local.address,
         pickup_ready_dt: 10,
         pickup_deadline_dt: 20,
-        order_type: "QD"
+        order_type: process.env.QD
       };
       this.$axios
         .post(url2, data2, {
