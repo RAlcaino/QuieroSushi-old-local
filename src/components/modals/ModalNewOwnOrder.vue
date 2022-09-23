@@ -21,14 +21,6 @@
       <q-card-actions align="right" style="height: 20%">
         <q-btn
           rounded
-          color="green"
-          label="Ir a pedidos"
-          style="font-size: 11px !important"
-          v-close-popup
-          @click="toOrders()"
-        />
-        <q-btn
-          rounded
           color="primary"
           label="Cerrar"
           style="font-size: 11px !important"
@@ -47,12 +39,12 @@ export default {
     console.log("created");
     this.bus.$on("sync-new-order-qd", data => {
       // this.pushOrder(data);
-      this.message = data.message;
+      this.message = data.mensaje;
       this.showWarning = true;
     });
     this.bus.$on("new-order-qd", data => {
       this.open = true;
-      this.message = data.message;
+      this.message = data.mensaje;
       // this.pushOrder(data);
     });
   },
