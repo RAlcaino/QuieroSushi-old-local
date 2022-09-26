@@ -204,7 +204,7 @@
                 style="font-size: 22px; padding-bottom: 5px"
                 class="i-icon"
               /><strong
-                >LLegara al local a las:
+                >Llegara al local a las:
                 {{
                   item.preparationTimestamp.split(" ")[1].slice(0, 5)
                 }}</strong
