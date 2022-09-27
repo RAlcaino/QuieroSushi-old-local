@@ -413,6 +413,7 @@ export default {
     this.bus.$on("modal-new-order", () => {
       this.step = 1;
       this.open = true;
+      this.isGoogleAddress = false;
       this.reset();
       this.qdLocals = [...this.getStoreQDLocals("ACTIVE")];
 
@@ -563,6 +564,7 @@ export default {
           this.bus.$emit("sync-orders");
           this.hideLoading();
           this.open = false;
+          this.reset();
           this.$refs.stepper.next();
         })
         .catch(error => {
@@ -627,6 +629,7 @@ export default {
       this.deliveryCostEdited = null;
       this.localCostEdited = 0;
       this.editCosts = false;
+      this.isGoogleAddress = false;
     },
     allCommunes() {
       this.communeFilter = "";
@@ -647,6 +650,14 @@ export default {
       if (this.direccion.trim() === "") {
         this.showNotification(
           "Debe indicar una direccion valida",
+          "negative",
+          "error"
+        );
+        return;
+      }
+      if (!this.isGoogleAddress) {
+        this.showNotification(
+          "Debe indicar una direccion valida de Google Maps",
           "negative",
           "error"
         );
@@ -743,10 +754,13 @@ export default {
       const input = document.getElementById(
         this.$refs.placesInput.$refs.input.id
       );
-      this.autocomplete = new google.maps.places.Autocomplete(input);
+      var options = {
+        componentRestrictions: { country: "cl" }
+      };
+      this.autocomplete = new google.maps.places.Autocomplete(input, options);
       this.autocomplete.addListener("place_changed", () => {
         let place = this.autocomplete.getPlace();
-        console.log(place);
+        this.isGoogleAddress = true;
         this.direccion = "";
         this.direccion = place.name + ", " + place.vicinity;
         this.comuna = place.vicinity;
