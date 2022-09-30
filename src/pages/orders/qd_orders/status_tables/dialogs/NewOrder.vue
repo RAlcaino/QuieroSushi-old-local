@@ -6,7 +6,6 @@
         border-radius: 10px;
         width: 650px;
         max-width: 650px;
-        overflow: hidden;
       "
     >
       <q-card-section
