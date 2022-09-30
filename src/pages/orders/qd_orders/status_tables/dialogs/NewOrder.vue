@@ -55,6 +55,74 @@
                   </q-select>
                 </q-item-section>
               </q-item>
+
+              <q-item v-if="mobile">
+                <q-select
+                  ref="select"
+                  rounded
+                  outlined
+                  dense
+                  :options="communes"
+                  :options-dense="true"
+                  hide-hint
+                  label="Comunas"
+                  v-model="comuna"
+                  @popup-hide="allCommunes()"
+                  :virtual-scroll-sticky-size-start="80"
+                  style="position: relative; bottom: 5px; width: 100%"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="store" />
+                  </template>
+                  <template v-slot:before-options v-if="communes.length > 1">
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        <input
+                          v-model="communeFilter"
+                          @input="filterFn(communeFilter)"
+                          type="text"
+                          placeholder="Buscar"
+                          style="
+                    padding: 7px;
+                    margin-top: 10px;
+                    border-radius: 20px;
+                    border: 1px solid #333;
+                    outline: none;
+                  "
+                        />
+                      </q-item-section>
+                    </q-item>
+                    <q-item dense clickable @click="allOrders()">
+                      <q-item-section>Todos</q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        <input
+                          v-model="communeFilter"
+                          @input="filterFn(communeFilter)"
+                          type="text"
+                          placeholder="Buscar"
+                          style="
+                    padding: 7px;
+                    margin-top: 10px;
+                    border-radius: 20px;
+                    border: 1px solid #333;
+                    outline: none;
+                  "
+                        />
+                      </q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        Sin Resultados
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </q-item>
+
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
@@ -359,6 +427,7 @@
 </template>
 
 <script>
+import { Platform } from "quasar";
 export default {
   inject: [
     "showNotification",
@@ -369,6 +438,7 @@ export default {
   ],
   data() {
     return {
+      mobile: Platform.is.mobile,
       open: false,
       comuna: "",
       region: {
@@ -609,7 +679,7 @@ export default {
       this.open = false;
     },
     reset() {
-      this.comuna = "";
+      this.comuna = "Seleccionar";
       this.qdLocal = {
         label: "Seleccionar...",
         value: null
@@ -655,7 +725,7 @@ export default {
         );
         return;
       }
-      if (!this.isGoogleAddress) {
+      if (!this.isGoogleAddress && !Platform.is.mobile) {
         this.showNotification(
           "Debe indicar una direccion valida de Google Maps",
           "negative",
@@ -666,7 +736,11 @@ export default {
 
       this.showLoading();
       let body = {
-        dropoff_address: `${this.direccion}`,
+        dropoff_address: `${
+          Platform.is.mobile
+            ? `${this.direccion}, ${this.comuna}`
+            : this.direccion
+        }`,
         pickup_address: `${this.qdLocal.direccion}, ${this.qdLocal.commune}`,
         tipo_venta: "despacho",
         local_id: this.qdLocal.value,
