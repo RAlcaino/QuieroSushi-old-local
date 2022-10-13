@@ -737,7 +737,7 @@ export default {
       let body = {
         dropoff_address: `${
           Platform.is.mobile
-            ? `${this.direccion}, ${this.comuna}`
+            ? `${this.direccion}, ${this.comuna.label}`
             : this.direccion
         }`,
         pickup_address: `${this.qdLocal.direccion}, ${this.qdLocal.commune}`,
