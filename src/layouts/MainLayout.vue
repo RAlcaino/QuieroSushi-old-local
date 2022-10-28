@@ -1,10 +1,16 @@
 <template>
   <q-layout view="lHh Lpr lFf">
+    <!--Modals-->
     <modal-new-order></modal-new-order>
+    <modal-new-own-order></modal-new-own-order>
     <modal-setting></modal-setting>
     <modal-block></modal-block>
     <modal-sync-page></modal-sync-page>
     <modal-debt :open="$store.getters['auth/getDataUser'].debt"></modal-debt>
+    <modal-status-order></modal-status-order>
+    <modal-order-canceled :refresh="refreshToken"></modal-order-canceled>
+    <modal-notification></modal-notification>
+    <!---->
     <q-header class="bg-header">
       <q-toolbar>
         <q-btn
@@ -17,18 +23,25 @@
         />
         <q-toolbar-title>
           <img
-            src="../assets/brand/logo-qs-400x72-white.png"
+            v-if="!this.responsiveMobile"
+            src="~/assets/brand/logo-qs-400x72-white.png"
             alt="QuieroSushi.cl Panel"
-            :style="responsiveMode"
+            :style="{ width: '50%', paddingTop: '5px' }"
+          />
+          <img
+            v-else
+            src="~/assets/brand/Q.png"
+            alt="QuieroSushi.cl Panel"
+            :style="{ width: '50%', paddingTop: '10px' }"
           />
         </q-toolbar-title>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
-          <div>
+          <!--<div>
             <p style="margin:0">
               {{ currentHour }}:{{ currentMinute }}:{{ currentSecond }}
             </p>
-          </div>
+          </div>-->
           <q-btn
             v-if="$store.getters['auth/getInstallPromptEvent'] !== null"
             round
@@ -58,25 +71,37 @@
             v-if="$q.screen.gt.sm"
           >
           </q-btn>
-          <!--<q-btn round dense flat color="white" icon="notifications">
-            <q-badge color="red" text-color="white" floating>
-              5
+          <q-btn round dense flat color="white" icon="notifications">
+            <q-badge
+              color="red"
+              text-color="white"
+              floating
+              v-if="getCount() !== 0"
+            >
+              {{ getCount() }}
             </q-badge>
             <q-menu>
-              <q-list style="min-width: 100px">
+              <q-list style="width: auto !important;">
                 <messages></messages>
-                <q-card class="text-center no-shadow no-border">
+                <q-card
+                  class="text-center no-shadow no-border"
+                  v-if="
+                    this.$store.getters['auth/getUserNotifications'].length ===
+                      0
+                  "
+                >
                   <q-btn
-                    label="View All"
-                    style="max-width: 120px !important;"
+                    label="Sin Notificaciones"
+                    style="max-width: 200px !important;"
                     flat
                     dense
-                    class="text-indigo-8"
+                    class="text-primary"
+                    no-caps
                   ></q-btn>
                 </q-card>
               </q-list>
             </q-menu>
-          </q-btn>-->
+          </q-btn>
 
           <q-btn round dense flat color="white" icon="logout" @click="logout()">
           </q-btn>
@@ -121,6 +146,17 @@
             </q-chip>
           </div>
         </div>
+        <div>
+          <q-item to="/bienvenido" active-class="q-item-no-link-highlighting">
+            <q-item-section avatar>
+              <q-icon name="home" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Inicio</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-separator color="grey-11" inset />
+        </div>
         <div v-for="option in optionsAvailable" :key="option.label">
           <q-item :to="option.link" active-class="q-item-no-link-highlighting">
             <q-item-section avatar>
@@ -132,10 +168,6 @@
           </q-item>
           <q-separator color="grey-11" inset />
         </div>
-        <div style="position: absolute; bottom:0px;left:15px;">
-          <p>v{{ this.$store.getters["mode/getVersion"] }}</p>
-        </div>
-
         <!--
         <q-item to="/" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
@@ -379,10 +411,11 @@
     <q-page-container class="bg-white">
       <template
         v-if="
-          $store.getters['auth/getDataLocals'].length > 1 &&
+          getStoreLocals('ACTIVE').length > 1 &&
             $store.getters['auth/getDataUser'].role !== 'God'
         "
       >
+        <!--
         <q-banner
           v-if="flag === null"
           dense
@@ -479,26 +512,34 @@
               "
             />
           </template>
-        </q-banner>
+        </q-banner>-->
       </template>
       <router-view />
     </q-page-container>
 
-    <div style="position: fixed; right: 0; bottom:0;">
+    <div style="position: fixed; right: 10px; bottom:0;">
       <q-toolbar>
         <div class="fit row no-wrap justify-end items-start content-start">
           <q-btn
             round
             dense
             flat
-            color="white"
-            icon="chat"
-            style="font-size:15px; padding: 5px; margin-bottom:10px; background:#333;"
-            @click="rightDrawerOpen = !rightDrawerOpen"
+            style="font-size:15px; padding: 5px; margin-bottom:10px; background:#25D366;"
+            @click="whatsapp()"
           >
+            <i
+              class="fab fa-whatsapp"
+              style="color: white; font-size: 25px;"
+            ></i>
           </q-btn>
         </div>
       </q-toolbar>
+    </div>
+    <div
+      style="position: fixed; bottom:0;"
+      :style="leftDrawerOpen ? 'left: 250px' : 'left: 10px'"
+    >
+      <p>v{{ this.$store.getters["mode/getVersion"] }}</p>
     </div>
   </q-layout>
 </template>
@@ -511,10 +552,20 @@ import ModalSetting from "../components/modals/ModalSetting.vue";
 import ModalDebt from "../components/modals/ModalDebt.vue";
 import ModalBlock from "../components/modals/ModalBlock.vue";
 import ModalSyncPage from "../components/modals/ModalSyncPage.vue";
+import ModalStatusOrder from "../components/modals/ModalStatusOrder.vue";
 import SecureLS from "secure-ls";
+import ModalOrderCanceled from "src/components/modals/ModalOrderCanceled.vue";
+import ModalNotification from "src/components/modals/ModalNotification.vue";
+import ModalNewOwnOrder from "src/components/modals/ModalNewOwnOrder.vue";
 
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
   name: "MainLayout",
 
   components: {
@@ -524,7 +575,11 @@ export default {
     ModalSetting,
     ModalDebt,
     ModalBlock,
-    ModalSyncPage
+    ModalSyncPage,
+    ModalStatusOrder,
+    ModalOrderCanceled,
+    ModalNotification,
+    ModalNewOwnOrder
   },
   created() {
     this.updateTime();
@@ -533,41 +588,72 @@ export default {
     }, 1000);
     this.flag = this.$store.getters["auth/getCartsStatus"];
     this.bus.$on("refresh-cartstatus", () => {
-      if (this.$store.getters["auth/getDataLocals"].length > 1) {
+      var locals = [...this.getStoreLocals("ACTIVE")];
+      if (this.getStoreLocals("ACTIVE").length > 1) {
         this.flag = this.$store.getters["auth/getCartsStatus"];
-      } else if (this.$store.getters["auth/getDataLocals"].length === 1) {
-        this.$store.commit(
-          "auth/setCurrentLocal",
-          this.$store.getters["auth/getDataLocals"][0]
+        let currentLocalIndex = locals.findIndex(
+          item => item.value === this.$store.getters["auth/getDataLocal"].id
         );
+        if (currentLocalIndex !== -1) {
+          this.$store.commit("auth/setCurrentLocal", {
+            id: locals[currentLocalIndex].value,
+            ...locals[currentLocalIndex]
+          });
+        }
+      } else if (this.getStoreLocals("ACTIVE").length === 1) {
+        this.$store.commit("auth/setCurrentLocal", {
+          id: locals[0].value,
+          ...locals[0]
+        });
       }
     });
     this.bus.$on("stop-bell", () => {
       this.modalOpen = false;
+      this.modalOpen2 = false;
       this.bell.loop(false);
     });
     this.prod = this.$store.getters["mode/getMode"];
     this.channelName = "Private-qs-venta-";
-    this.channelNameBlock = "Private-notificacion-";
+    this.channelNameAlt = "Private-notificacion-";
 
     if (this.$store.getters["auth/getGodMode"]) {
       this.channelName += "-1";
-      this.channelNameBlock += "-1";
+      this.channelNameAlt += "-1";
     } else {
       this.channelName += this.$store.getters["auth/getDataUser"].id;
-      this.channelNameBlock += this.$store.getters["auth/getDataUser"].id;
+      this.channelNameAlt += this.$store.getters["auth/getDataUser"].id;
     }
     this.privateChannel = this.Echo.channel(this.channelName);
-    this.privateChannelBlock = this.Echo2.channel(this.channelNameBlock);
+    this.privateChannelAlt = this.Echo2.channel(this.channelNameAlt);
+    this.privateChannelSync = this.Echo2.channel("Private-Notificacion");
+
     this.listenEvent();
+
+    if (this.$store.getters["auth/getAuthenticated"]) {
+      this.refreshToken(true, false);
+    }
+
+    this.bus.$on("sync-locals", () => {
+      this.getLocals(false, false);
+    });
   },
-  mounted() {
+  async mounted() {
     console.log("main layout mounted");
-    //console.log(this.$store.getters["auth/getAvailableMenuOptions"]);
+
+    this.$store.commit("auth/setRefreshOrders", true);
     this.optionsAvailable = this.$store.getters["auth/getAvailableMenuOptions"];
     this.modeResponsive();
     this.getZones();
     this.getTitles();
+    this.getRoles();
+    this.getNotifications(false);
+    this.getWs();
+    let res = await this.requestServerTime();
+    let date = new Date(res.data.result);
+    this.$store.commit("auth/setServerTime", date.toString());
+    setInterval(() => {
+      this.serverTime();
+    }, 1000);
   },
   computed: {
     responsiveMode() {
@@ -586,21 +672,26 @@ export default {
       responsiveMobile: false,
       prod: null,
       privateChannel: null,
-      privateChannelBlock: null,
+      privateChannelAlt: null,
+      privateChannelSync: null,
       channelName: "",
-      channelNameBlock: "",
+      channelNameAlt: "",
       modalOpen: false,
+      modalOpen2: false,
       flag: 1,
       currentHour: null,
       currentMinute: null,
       currentSecond: null,
-      fiveAm: false
+      fiveAm: false,
+      whatsappNumber: ""
     };
   },
   provide() {
     return {
       logout: this.logout,
-      refreshToken: this.refreshToken
+      refreshToken: this.refreshToken,
+      getServerTime: this.serverTime,
+      requestServerTime: this.requestServerTime
     };
   },
   methods: {
@@ -610,56 +701,91 @@ export default {
       this.currentMinute = date.getMinutes();
       this.currentSecond = date.getSeconds();
       if (
-        this.currentHour === 5 &&
-        this.currentMinute === 0 &&
-        this.currentSecond === 0
+        this.currentHour ===
+          this.$store.getters["auth/getNextUpdateTime"].currentHour &&
+        this.currentMinute ===
+          this.$store.getters["auth/getNextUpdateTime"].currentMinute &&
+        this.currentSecond ===
+          this.$store.getters["auth/getNextUpdateTime"].currentSecond
       ) {
-        console.log("Son las 5:00am");
-        this.refreshToken();
+        console.log("Han pasado 30min. Verificando cambios.");
+        let dt = new Date();
+        dt.setMinutes(dt.getMinutes() + 5);
+
+        let payload = {
+          currentHour: dt.getHours(),
+          currentMinute: dt.getMinutes(),
+          currentSecond: dt.getHours()
+        };
+        this.$store.commit("auth/setNextTimeUpdate", payload);
+        this.refreshToken(true, false);
       }
     },
     logout() {
+      this.leftDrawerOpen = false;
       this.optionsAvailable = [];
       this.privateChannel = this.Echo.leaveChannel(this.channelName);
-      this.privateChannelBlock = this.Echo2.leaveChannel(this.channelNameBlock);
+      this.privateChannelAlt = this.Echo2.leaveChannel(this.channelNameAlt);
+      this.privateChannelSync = this.Echo2.leaveChannel("Private-Notificacion");
       this.channelName = "";
-      this.channelNameBlock = "";
-      this.bus.$emit("logout");
+      this.channelNameAlt = "";
+      setTimeout(() => {
+        this.bus.$emit("logout");
+      }, 500);
     },
     modeResponsive() {
       var responsive = window.matchMedia("(max-width: 500px)");
-      var vue = this;
 
       if (screen.width < 500) {
-        vue.responsiveMobile = true;
+        this.responsiveMobile = true;
       }
 
-      responsive.addListener(function(event) {
+      responsive.addListener(event => {
         if (event.matches) {
-          vue.responsiveMobile = true;
+          this.responsiveMobile = true;
         } else {
-          vue.responsiveMobile = false;
+          this.responsiveMobile = false;
         }
       });
     },
     listenEvent() {
-      var vue = this;
-      this.privateChannel.listen(".PedidoNuevo", function(data) {
-        if (vue.modalOpen) {
-          vue.bus.$emit("sync-new-order", data);
+      this.privateChannel.listen(".PedidoNuevo", data => {
+        if (this.modalOpen) {
+          this.bus.$emit("sync-new-order", data);
         } else {
-          vue.modalOpen = true;
-          vue.bell.loop(true);
-          vue.bell.play();
-          vue.bus.$emit("new-order", data);
+          this.modalOpen = true;
+          this.bell.loop(true);
+          this.bell.play();
+          this.bus.$emit("new-order", data);
         }
       });
-      this.privateChannelBlock.listen(".Notificacion", function(data) {
+      this.privateChannelAlt.listen(".Notificacion", data => {
         if (data.tipo === "Bloqueo") {
-          vue.bus.$emit("modal-block", data);
-        } else if (data.tipo === "Actualizacion") {
-          vue.bus.$emit("modal-sync-page", data);
+          this.bus.$emit("modal-block", data);
+        } else if (data.tipo === "conversacion-local") {
+          this.bus.$emit("modal-status-order", data);
+        } else if (data.tipo === "Anulacion-Pedido") {
+          this.bus.$emit("modal-order-canceled", data);
+        } else if (data.tipo === "Notificacion-Usuario") {
+          this.getNotifications(true);
+        } else if (
+          data.tipo === "Actualizar-Pedidos" &&
+          this.$store.getters["auth/getRefreshOrders"]
+        ) {
+          this.bus.$emit("sync-orders");
+        } else if (data.tipo === "Nuevo-Pedido-QD") {
+          if (this.modalOpen2) {
+            this.bus.$emit("sync-new-order-qd", { message: data.mensaje });
+          } else {
+            this.modalOpen2 = true;
+            this.bell.loop(true);
+            this.bell.play();
+            this.bus.$emit("new-order-qd", { message: data.mensaje });
+          }
         }
+      });
+      this.privateChannelSync.listen(".Notificacion", data => {
+        this.bus.$emit("modal-sync-page", data);
       });
     },
     async install() {
@@ -687,7 +813,7 @@ export default {
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
-          this.getLocals(false);
+          this.getLocals(false, false);
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("locals.update", {
@@ -710,7 +836,7 @@ export default {
               if (this.$router.currentRoute.name === "cupones") {
                 this.bus.$emit("sync-coupons");
               }
-              this.getLocals(false);
+              this.getLocals(false, false);
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
@@ -721,7 +847,8 @@ export default {
           });
       }
     },
-    getLocals(flag) {
+    getLocals(flag, syncComponent) {
+      var oldLocals = [...this.getStoreLocals("ACTIVE")];
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -785,46 +912,57 @@ export default {
             }
           })
           .then(response => {
-            var vue = this;
             this.hideLoading();
             if (response.data.status === "success") {
-              var locals = response.data.result.sort(function(a, b) {
+              var locals = response.data.result.locals.sort((a, b) => {
                 if (a.name > b.name) {
                   return 1;
                 }
                 if (a.name < b.name) {
                   return -1;
                 }
-                // a must be equal to b
                 return 0;
               });
+
+              var qdLocals = response.data.result.qdLocals.sort((a, b) => {
+                if (a.name > b.name) {
+                  return 1;
+                }
+                if (a.name < b.name) {
+                  return -1;
+                }
+                return 0;
+              });
+
               this.$store.commit("auth/setLocals", locals);
+              this.$store.commit("auth/setQDLocals", qdLocals);
               this.bus.$emit("sync-locals-settings");
               this.flag = this.$store.getters["auth/getCartsStatus"];
 
-              if (this.$store.getters["auth/getDataLocals"].length === 1) {
-                /*let test={
-                  cartStatus: 0,
-                  commune: "San Miguel",
-                  deliveryTime: 5,
-                  id: 1913,
-                  image: "http://quierosushi.cl/locales/umeshu-sushi478.jpg",
-                  name: "Umeshu Sushi",
-                  preparationTime: 20
-                }*/
-                this.$store.commit("auth/setCurrentLocal", locals[0]);
+              if (this.getStoreLocals("ACTIVE").length === 1) {
+                this.$store.commit(
+                  "auth/setCurrentLocal",
+                  this.sortAndFilter(locals)[0]
+                );
               } else {
-                if (vue.$store.getters["auth/getDataLocal"].id !== -1) {
+                if (this.$store.getters["auth/getDataLocal"].id !== -1) {
                   let currentLocal = locals.find(
                     item =>
-                      item.id === vue.$store.getters["auth/getDataLocal"].id
+                      item.id === this.$store.getters["auth/getDataLocal"].id
                   );
                   this.$store.commit("auth/setCurrentLocal", currentLocal);
                 }
               }
 
-              if (flag) {
+              if (syncComponent) {
                 window.location.reload();
+                return;
+              }
+
+              if (flag) {
+                if (this.verifyCartStatus(oldLocals, locals)) {
+                  return;
+                }
               } else {
                 this.hideLoading();
               }
@@ -838,12 +976,18 @@ export default {
           });
       }
     },
-    refreshToken() {
+    refreshToken(flag, syncComponent) {
       var ls = new SecureLS({ isCompression: false });
-      this.showLoading();
+      if (syncComponent) {
+        this.showLoading();
+      }
       if (!this.prod) {
         setTimeout(() => {
-          this.getLocals(true);
+          if (flag) {
+            this.getLocals(true, syncComponent);
+          } else {
+            this.getLocals(false, false);
+          }
         }, 3000);
       } else {
         var url = this.$store.getters["routes/getRoute"]("refresh.token");
@@ -861,7 +1005,15 @@ export default {
                 "auth/setAvailableMenuOptions",
                 response.data.result.availableMenuOptions
               );
-              this.getLocals(true);
+
+              this.optionsAvailable = this.$store.getters[
+                "auth/getAvailableMenuOptions"
+              ];
+              if (flag) {
+                this.getLocals(true, syncComponent);
+              } else {
+                this.getLocals(false, false);
+              }
             } else {
               this.showNotification(response.data.message, "negative", "error");
             }
@@ -883,6 +1035,7 @@ export default {
         .then(response => {
           if (response.data.status === "success") {
             this.$store.commit("auth/setZones", response.data.result);
+            this.bus.$emit("available-btn");
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -910,22 +1063,20 @@ export default {
           this.errorHandling(error);
         });
     },
-    getHistory() {
-      var url = this.$store.getters["routes/getRoute"]("orders.history");
+    getRoles() {
+      var url = this.$store.getters["routes/getRoute"]("get.roles");
       this.$axios
-        .post(
-          url,
-          {startDate:"2021/04/10",
-          finalDate:"2021/04/15"},
-          {
-            headers: {
-              Authorization: this.$store.getters["auth/getToken"]
-            }
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
           }
-        )
+        })
         .then(response => {
           if (response.data.status === "success") {
-            console.log(response.data);
+            var locals = response.data.result.data.filter(
+              item => item.name !== "God"
+            );
+            this.$store.commit("auth/setRoles", locals);
           } else {
             this.showNotification(response.data.message, "negative", "error");
           }
@@ -933,9 +1084,151 @@ export default {
         .catch(error => {
           this.errorHandling(error);
         });
+    },
+    getWs() {
+      var url = this.$store.getters["routes/getRoute"]("get.ws");
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.whatsappNumber = response.data.result.valor;
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    verifyCartStatus(oldLocals, currentLocals) {
+      if (oldLocals.length !== currentLocals.length) {
+        return true;
+      }
+      var flag = false;
+
+      for (let index = 0; index < oldLocals.length; index++) {
+        if (oldLocals[index].id !== currentLocals[index].id) {
+          flag = true;
+          break;
+        }
+        if (oldLocals[index].cartStatus !== currentLocals[index].cartStatus) {
+          flag = true;
+          break;
+        }
+      }
+      return flag;
+    },
+    sortAndFilter(locals) {
+      let newLocals = [...locals];
+      newLocals.sort((a, b) => {
+        if (a.name > b.name) {
+          return 1;
+        }
+        if (a.name < b.name) {
+          return -1;
+        }
+        return 0;
+      });
+
+      return newLocals.filter(item => item.localStatus === "normal");
+    },
+    whatsapp() {
+      window.open(
+        `https://web.whatsapp.com/send/?phone=${this.whatsappNumber}&text&app_absent=0`
+      );
+    },
+    getNotifications(notif) {
+      var context = new AudioContext();
+      var url = this.$store.getters["routes/getRoute"](
+        "resources.notifications",
+        {
+          id: this.$store.getters["auth/getDataUser"].id
+        }
+      );
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.$store.commit("auth/setNotifications", {
+              type: 1,
+              items: response.data.result
+            });
+
+            if (notif) {
+              this.notif.play();
+              context.resume();
+            }
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    getCount() {
+      let count = 0;
+      this.$store.getters["auth/getUserNotifications"].map(item => {
+        if (item.visto === 0) {
+          count++;
+        }
+      });
+      return count;
+    },
+    serverTime() {
+      let time = "";
+      let serverTime = "";
+      let currentDate = new Date(this.$store.getters["auth/getServerTime"]);
+      let date = new Date(currentDate.setSeconds(currentDate.getSeconds() + 1));
+
+      this.$store.commit("auth/setServerTime", date.toString());
+
+      time += date.getHours() < 10 ? "0" + date.getHours() : date.getHours(); // get hour
+      time +=
+        date.getMinutes() < 10
+          ? ":0" + date.getMinutes()
+          : ":" + date.getMinutes(); // get minutes
+      time +=
+        date.getSeconds() < 10
+          ? ":0" + date.getSeconds()
+          : ":" + date.getSeconds(); // get seconds
+
+      serverTime =
+        date.getFullYear() +
+        "-" +
+        (date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1) +
+        "-" +
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +
+        " " +
+        time;
+
+      return serverTime;
+    },
+    async requestServerTime() {
+      var url = this.$store.getters["routes/getRoute"]("get.serverTime");
+      let res = await this.$axios.get(url, {
+        headers: {
+          Authorization: this.$store.getters["auth/getToken"]
+        }
+      });
+      return res;
     }
   }
 };
+// let santiagoTime = new Date().toLocaleString("en-US", {
+//   timeZone: "America/Santiago"
+// });
+// let date = new Date(santiagoTime);
 </script>
 
 <style lang="scss">
@@ -952,7 +1245,7 @@ export default {
 
 .user-sidebar {
   width: 100%;
-  height: 200px;
+  height: 150px;
   background-image: url("../assets/background.jpg");
   background-position-x: -20px;
   background-size: cover;

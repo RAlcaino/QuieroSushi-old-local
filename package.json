@@ -1,8 +1,8 @@
 {
-  "name": "quasar-admin",
+  "name": "quiero-sushi",
   "version": "0.0.1",
-  "description": "A Quasar Framework app",
-  "productName": "Quasar Admin",
+  "description": "QuieroSushi",
+  "productName": "QuieroSushi",
   "author": "pratikpatelpp802@gmail.com",
   "private": true,
   "scripts": {
@@ -21,24 +21,25 @@
     "pusher-js": "^7.0.3",
     "quasar": "^1.15.9",
     "secure-ls": "^1.2.6",
+    "sweetalert2": "^11.1.10",
     "to-unix-timestamp": "^1.0.1",
     "vue-apexcharts": "^1.5.2",
     "vue-echarts-v3": "^2.0.1",
     "vue-i18n": "^8.24.2",
     "vue2-google-maps": "^0.10.7",
     "vuedraggable": "^2.23.2",
-    "vuex-persistedstate": "^4.0.0-beta.3"
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
-    "@quasar/app": "^2.2.3",
+    "@quasar/app": "2.2.10",
     "@quasar/quasar-app-extension-dotenv": "^1.1.0",
     "@quasar/quasar-app-extension-qcalendar": "^3.3.1",
     "quasar-app-extension-qhierarchy": "^0.0.5",
     "workbox-webpack-plugin": "^5.1.4"
   },
   "engines": {
-    "node": ">= 10.18.1",
-    "npm": ">= 6.13.4",
+    "node": "14.17.3",
+    "npm": "6.14.13",
     "yarn": ">= 1.21.1"
   },
   "browserslist": [

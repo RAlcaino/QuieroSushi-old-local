@@ -1,0 +1,412 @@
+<template>
+  <base-page
+    title="Mis Tickets"
+    icon="confirmation_number"
+    :sync="sync"
+    :toolbar="true"
+  >
+    <the-chat :sync="syncComments"></the-chat>
+    <new-ticket :locals="locals" :sync="sync"></new-ticket>
+    <close-ticket></close-ticket>
+    <div class="text-h6 tickets__container__select">
+      <div>
+        <q-btn
+          rounded
+          color="green"
+          icon="add_circle"
+          size="sm"
+          label="crear"
+          @click="newTicket()"
+        />
+      </div>
+      <div style="display: flex;">
+        <q-select
+          outlined
+          rounded
+          dense
+          v-model="statusSelected"
+          :options="['Abierto', 'Cerrado']"
+          label="Estado"
+          style="margin-right: 10px;"
+          @input="changeStatus"
+        />
+        <q-select
+          outlined
+          rounded
+          dense
+          v-model="localSelected"
+          :options="locals"
+          label="Locales"
+          @input="change"
+        >
+          <template v-slot:prepend>
+            <q-icon name="store" />
+          </template>
+          <template v-slot:before-options v-if="locals.length > 1">
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item dense clickable @click="allOrders()">
+              <q-item-section>Todos</q-item-section>
+            </q-item>
+          </template>
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="padding: 7px; margin-top:10px; border-radius: 20px;border: 1px solid #333; outline:none;"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-grey">
+                Sin Resultados
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+      </div>
+    </div>
+    <div
+      style="padding-top:10px; margin:0 auto;"
+      class="fit column justify-center items-center content-center"
+    >
+      <div
+        style="margin-top:100px"
+        class="fit column wrap justify-center items-center content-center"
+        v-if="getData.length === 0 && searching === false"
+      >
+        <img src="~/assets/icons8-sad.gif" alt="sad" width="130" />
+        <p style="font-size:16px; font-weight:bold;text-align:center">
+          No se encontraron tickets
+        </p>
+      </div>
+      <div
+        style="margin-top:100px;border-radius:100%; overflow:hidden"
+        class="fit column wrap justify-center items-center content-center"
+        v-if="flag === true"
+      >
+        <img
+          src="~/assets/maki-roll2.gif"
+          alt="sad"
+          width="130"
+          style="border-radius:100%"
+        />
+      </div>
+      <q-list
+        bordered
+        v-if="getData.length !== 0 && searching === false"
+        class="rounded-borders"
+        style="width: 90%; justify-content: center; border-radius: 10px;"
+      >
+        <q-expansion-item
+          switch-toggle-side
+          expand-icon-toggle
+          expand-separator
+          v-for="ticket in getData"
+          :key="ticket.id_ticket"
+        >
+          <template v-slot:header>
+            <div class="header__item">
+              <div class="header__item__left">
+                <p class="title">{{ ticket.title }}</p>
+                <p class="subtitle">
+                  Creado el
+                  {{ ticket.created_at.split(" ")[0].replaceAll("-", "/") }} -
+                  Local: {{ ticket.local }} - Estado:
+                  <span
+                    :style="
+                      `color: ${statusColor(ticket.status)}; font-weight:bold;`
+                    "
+                    >{{ ticket.status }}</span
+                  >
+                </p>
+              </div>
+              <div
+                class="header__item__right"
+                v-if="ticket.status === 'abierto'"
+              >
+                <q-btn
+                  rounded
+                  color="green"
+                  size="sm"
+                  label="responder"
+                  style="margin-right: 5px;"
+                  @click="showChat(ticket, true)"
+                />
+                <q-btn
+                  rounded
+                  color="primary"
+                  size="sm"
+                  label="cerrar"
+                  @click="showCloseTicket(ticket)"
+                />
+              </div>
+              <div class="header__item__right" v-else>
+                <q-btn
+                  rounded
+                  color="green"
+                  size="sm"
+                  label="chat"
+                  @click="showChat(ticket, false)"
+                />
+              </div>
+            </div>
+          </template>
+
+          <q-card style="margin-left: 55px">
+            <q-card-section>
+              <span class="text-weight-bold">
+                <q-btn flat round dense icon="support_agent"
+              /></span>
+              {{ ticket.description }}
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+      </q-list>
+
+      <template v-if="getData.length === perPage">
+        <q-pagination
+          v-if="searching === false"
+          v-model="page"
+          :max="maxPage"
+          style="padding-top:25px"
+          color="primary"
+          input
+          @click="sync(false)"
+        />
+      </template>
+      <template v-else>
+        <q-pagination
+          v-if="page === maxPage && page !== 1 && searching === false"
+          v-model="page"
+          :max="maxPage"
+          style="padding-top:25px"
+          color="primary"
+          input
+          @click="sync(false)"
+        />
+      </template>
+    </div>
+  </base-page>
+</template>
+
+<script>
+import BasePage from "src/components/bases/BasePage.vue";
+import TheChat from "./dialogs/TheChat.vue";
+import NewTicket from "./dialogs/NewTicket.vue";
+import CloseTicket from "./dialogs/CloseTicket.vue";
+export default {
+  components: { BasePage, TheChat, NewTicket, CloseTicket },
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals",
+    "scrollTop",
+    "setCurrentLocal"
+  ],
+  created() {
+    this.init();
+    this.sync(false);
+    this.bus.$on("sync-tickets", local => {
+      if (local !== undefined) {
+        this.localSelected = local;
+      }
+      this.page = 1;
+      this.statusSelected = "Abierto";
+      this.sync(false);
+    });
+  },
+
+  computed: {
+    getData() {
+      let dataFiltered = [...this.data];
+      return dataFiltered;
+    }
+  },
+  data() {
+    return {
+      data: [],
+      localSelected: {},
+      local: [],
+      statusSelected: "Abierto",
+      flag: false,
+      searching: false,
+      page: 1,
+      perPage: 15,
+      maxPage: 0
+    };
+  },
+  methods: {
+    statusColor(status) {
+      if (status.toLowerCase() === "abierto") {
+        return "green";
+      } else {
+        return "red";
+      }
+    },
+    init() {
+      this.formatLocals();
+    },
+    formatLocals() {
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
+
+      this.localSelected = this.locals.find(
+        item => item.value === this.$store.getters["auth/getDataLocal"].id
+      );
+      if (this.localSelected === undefined) {
+        this.localSelected = this.locals[0];
+        this.setCurrentLocal(this.localSelected);
+      }
+    },
+    change(val) {
+      if (val !== null) {
+        this.localSelected = val;
+        this.setCurrentLocal(this.localSelected);
+        this.page = 1;
+        this.statusSelected = "Abierto";
+        this.sync(false);
+      }
+    },
+    changeStatus(val) {
+      if (val !== null) {
+        this.statusSelected = val;
+        this.page = 1;
+        this.sync(false);
+      }
+    },
+    showChat(item, flag) {
+      this.bus.$emit("modal-chat-support", { ...item, flag: flag });
+    },
+    newTicket() {
+      this.bus.$emit("modal-new-ticket");
+    },
+    showCloseTicket(ticket) {
+      this.bus.$emit("close-ticket", ticket);
+    },
+    sync(flag, data) {
+      if (!flag) {
+        this.flag = true;
+        this.searching = true;
+      }
+      var url =
+        this.$store.getters["routes/getRoute"]("tickets.resources", {
+          id: this.localSelected.value
+        }) + `?estado=${this.statusSelected.toLowerCase()}&page=${this.page}`;
+
+      this.$axios
+        .get(url, {
+          headers: {
+            Authorization: this.$store.getters["auth/getToken"]
+          }
+        })
+        .then(response => {
+          if (response.data.status === "success") {
+            this.data = [...this.mapper(response.data.result.data)];
+            this.maxPage = response.data.result.meta.total_pages;
+            if (flag) {
+              let newData = this.data.find(
+                item => item.id_ticket === data.id_ticket
+              );
+              this.bus.$emit("modal-chat-update", {
+                ...newData,
+                flag: data.flag
+              });
+            }
+            this.scrollTop();
+          }
+
+          this.flag = false;
+          this.searching = false;
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
+    },
+    mapper(items) {
+      let mapper = [];
+      items.map(item => {
+        mapper.push({
+          id_ticket: item.ticket_id,
+          title: item.titulo,
+          status: item.estado,
+          id_local: item.id_local,
+          local: this.$store.getters["auth/getDataLocals"].find(
+            i => i.id === item.id_local
+          ).name,
+          created_at: "2021-10-08 11:22:00",
+          description: item.descripcion,
+          comments: item.comentarios
+        });
+      });
+      return mapper;
+    },
+    syncComments(data) {
+      this.sync(true, data);
+    },
+    filterFn(val) {
+      if (val === "") {
+        this.localsFilter = this.locals;
+        return;
+      }
+
+      const needle = val.toLowerCase();
+      this.localsFilter = this.locals.filter(
+        v => v.label.toLowerCase().indexOf(needle) > -1
+      );
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.header__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: space-between;
+  width: 100%;
+}
+
+.header__item__left {
+  p {
+    margin: 0;
+  }
+  .title {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+  }
+}
+
+.header__item__right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  p {
+    margin: 0;
+  }
+}
+
+.tickets__container__select {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 20px auto;
+}
+</style>

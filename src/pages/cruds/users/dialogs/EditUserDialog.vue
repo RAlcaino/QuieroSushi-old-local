@@ -41,17 +41,19 @@
             <q-list class="row">
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-input
-                    v-model="form.email"
-                    color
-                    outlined
-                    rounded
-                    dense
-                    label="Correo electronico"
-                  />
+                  <form autocomplete="off">
+                    <q-input
+                      v-model="form.email"
+                      color
+                      outlined
+                      rounded
+                      dense
+                      label="Correo electronico"
+                    />
+                  </form>
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <!--<q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input
                     v-model="form.password"
@@ -74,7 +76,7 @@
                     type="password"
                   />
                 </q-item-section>
-              </q-item>
+              </q-item>-->
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
@@ -90,7 +92,7 @@
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
-                    v-if="$store.getters['auth/getDataLocals'].length > 1"
+                    v-if="getStoreLocals('ALL').length > 1"
                     ref="select"
                     rounded
                     outlined
@@ -101,12 +103,43 @@
                     v-model="localSelected"
                     @input="change"
                     @popup-hide="allLocals()"
+                    label-color="black"
                     class="q-select-coupon q-select-s"
                     style="margin-bottom: 15px;"
                     :virtual-scroll-sticky-size-start="80"
                   >
                     <template v-slot:prepend>
                       <q-icon name="store" />
+                    </template>
+                    <template v-slot:option="scope">
+                      <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section>
+                          <q-item-label
+                            v-html="
+                              '<strong>' +
+                                scope.opt.value +
+                                '</strong> - ' +
+                                scope.opt.label +
+                                '<strong> (' +
+                                scope.opt.localStatus +
+                                ')</strong> '
+                            "
+                          />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                    <template v-slot:selected-item="scope">
+                      <div>
+                        <strong v-if="scope.opt.value !== -1"
+                          >{{ scope.opt.value }} -</strong
+                        >
+                        {{
+                          scope.opt.label.length > 14
+                            ? scope.opt.label.substring(0, 14) + "..."
+                            : scope.opt.label
+                        }}
+                        <!--{{ scope.opt.localStatus ? '('+scope.opt.localStatus+')':''}}-->
+                      </div>
                     </template>
                     <template v-slot:before-options>
                       <q-item>
@@ -154,8 +187,12 @@
                   <q-icon size="20px" name="add" />
                 </q-btn>
               </q-item>
+              <q-item v-if="!getStatusLocalHint" style="margin: 0">
+                <p style="margin: 0" v-html="getStatusLocal"/>
+              </q-item>
+
               <q-item
-                v-if="form.storesSelected.length!==0"
+                v-if="form.storesSelected.length !== 0"
                 class="col-lg-10 col-md-10 col-sm-12 col-xs-12"
                 style="margin-top:10px"
               >
@@ -173,7 +210,7 @@
                     icon="store"
                     @remove="deleteStore(store.value)"
                   >
-                    {{store.label}}
+                    {{ store.label }}
                   </q-chip>
                 </q-item-section>
               </q-item>
@@ -198,24 +235,81 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
+  computed: {
+    getStatusLocal() {
+      if (this.localSelected.localStatus) {
+        return "<strong>Estado del local: </strong>" + this.localSelected.localStatus;
+      }
+    },
+    getStatusLocalHint() {
+      if (this.localSelected.localStatus === null) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.initLocals();
     this.localsFilter = this.locals;
 
-    this.bus.$on("open-edit-user", (data) => {
+    this.bus.$on("open-edit-user", data => {
       this.card = true;
-      this.user=data;
+      this.user = data;
+      this.form.email = this.user.email;
+      this.form.roleSelected = {
+        value: data.roleObject.id,
+        label: data.roleObject.name
+      };
+      this.form.storesSelected = [];
+      var vue = this;
+      if (this.user.locals.length !== 0) {
+        this.user.locals.map(item => {
+          let result = this.getStoreLocals("ALL").find(
+            item2 => item2.value === item.id_local
+          );
+          let row = {
+            value: result.value,
+            label: result.name + ", " + result.commune,
+            image: result.image,
+            commune: result.commune,
+            name: result.name,
+            deliveryTime: result.deliveryTime,
+            preparationTime: result.preparationTime,
+            cart: result.cartStatus,
+            localStatus: result.localStatus
+          };
+          vue.form.storesSelected.push(row);
+        });
+      } else {
+        vue.form.storesSelected.push({
+          label: "Todos",
+          value: -1,
+          image: null,
+          commune: null,
+          name: null,
+          preparationTime: 0,
+          deliveryTime: 0,
+          cart: null
+        });
+      }
     });
   },
-  mounted() { },
+  mounted() {},
   data() {
     return {
       card: false,
       prod: null,
-      user:null,
-      roles: ["God","Super Admin","Administrador", "Gerente", "Cajero"],
+      user: null,
+      roles: this.$store.getters["auth/getRoles"],
       localSelected: {
         label: "Todos",
         value: -1,
@@ -224,61 +318,92 @@ export default {
         name: null,
         preparationTime: 0,
         deliveryTime: 0,
-        cart: null
+        cart: null,
+        localStatus: null
       },
       locals: [],
       localsFilter: [],
       localFilter: "",
-      form:{
-        email:'',
-        password:'',
-        confirmPassword:'',
-        roleSelected:"God",
-        storesSelected:[],
+      form: {
+        email: "",
+        password: "",
+        confirmPassword: "",
+        roleSelected: {
+          value: null,
+          label: ""
+        },
+        storesSelected: []
       }
     };
   },
   methods: {
     closeDialog() {
       this.card = false;
-      this.form.email='';
-      this.form.password='';
-      this.form.confirmPassword='';
-      this.form.roleSelected='God';
-      this.form.storesSelected=[];
-      //reset form too
+      this.form.email = "";
+      this.form.password = "";
+      this.form.confirmPassword = "";
+      this.form.roleSelected = {
+        value: null,
+        label: ""
+      };
+      this.form.storesSelected = [];
+      this.reset();
     },
-    edit() {},
-    initLocals(){
-          var vue = this;
-          vue.locals=[];
-          var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-          let row = {
-            value: item.id,
-            label: item.name + ", " + item.commune,
-            image: item.image,
-            commune: item.commune,
-            name: item.name,
-            deliveryTime: item.deliveryTime,
-            preparationTime: item.preparationTime,
-            cart: item.cartStatus
-          };
-          vue.locals.push(row);
-          vue.locals.sort(function(a, b) {
-              if (a.name > b.name) {
-                return 1;
-              }
-              if (a.name < b.name) {
-                return -1;
-              }
-              // a must be equal to b
-              return 0;
-            });
+    edit() {
+      this.showLoading();
+      let selectedLocals = [];
+      let selectedLocalsString = "";
+      this.form.storesSelected.map(function(item) {
+        selectedLocals.push(item.value);
+        selectedLocalsString += item.value + ",";
+      });
+      var data = {
+        id_rol: this.form.roleSelected.value,
+        email: this.form.email,
+        locales: {
+          string: selectedLocalsString.substring(
+            0,
+            selectedLocalsString.length - 1
+          ),
+          array: selectedLocals
+        }
+      };
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("resource.users", {
+          localId: this.user.id
+        });
+        this.$axios
+          .put(url, data, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              this.hideLoading();
+              this.card = false;
+              this.filter = "";
+              this.bus.$emit("sync-users");
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+          })
+          .catch(error => {
+            this.errorHandling(error);
           });
+      }
+    },
+    initLocals() {
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ALL")];
     },
     filterFn(val) {
       if (val === "") {
-        this.localsFilter = this.locals;
+        this.localsFilter = [...this.locals];
         return;
       }
 
@@ -289,40 +414,42 @@ export default {
     },
     change(val) {
       if (val !== null) {
-        this.localSelected=val;
+        this.localSelected = { ...val };
       }
     },
-    addLocal(){
-      if(this.form.storesSelected.some(item=>item.value===this.localSelected.value)){
-            if(this.localSelected.value===-1){
-              this.showNotification(
-                "Ya ha seleccionado todos los locales a su lista",
-                "negative",
-                "error"
-              );
-            }else{
-            this.showNotification(
-                "El local ya encuentra en su lista",
-                "negative",
-                "error"
-              );
-            }
-      }
-      else if(this.form.storesSelected.some(item=>item.value===-1)){
-           this.showNotification(
-              "Ya ha seleccionado todos los locales a su lista",
-              "negative",
-              "error"
-            );
-      }
-      else{
-        if(this.localSelected.value===-1){
-          this.form.storesSelected=[];
+    addLocal() {
+      if (
+        this.form.storesSelected.some(
+          item => item.value === this.localSelected.value
+        )
+      ) {
+        if (this.localSelected.value === -1) {
+          this.showNotification(
+            "Ya ha seleccionado todos los locales a su lista",
+            "negative",
+            "error"
+          );
+        } else {
+          this.showNotification(
+            "El local ya encuentra en su lista",
+            "negative",
+            "error"
+          );
+        }
+      } else if (this.form.storesSelected.some(item => item.value === -1)) {
+        this.showNotification(
+          "Ya ha seleccionado todos los locales a su lista",
+          "negative",
+          "error"
+        );
+      } else {
+        if (this.localSelected.value === -1) {
+          this.form.storesSelected = [];
         }
         this.form.storesSelected.push({
-          value:this.localSelected.value,
-          label:this.localSelected.label,
-          flag:true
+          value: this.localSelected.value,
+          label: this.localSelected.label,
+          flag: true
         });
       }
     },
@@ -331,8 +458,8 @@ export default {
       this.localFilter = "";
     },
     reset() {
-      if(this.$store.getters["auth/getDataLocals"].length!==1){
-        this.storesSelected=[];
+      if (this.getStoreLocals("ALL").length !== 1) {
+        this.storesSelected = [];
         this.localSelected = {
           label: "Todos",
           value: -1,
@@ -341,22 +468,29 @@ export default {
           name: null,
           preparationTime: 0,
           deliveryTime: 0,
-          cart: null
+          cart: null,
+          localStatus: null
         };
       }
     },
-    deleteStore(storeId){
-      this.form.storesSelected=this.form.storesSelected.filter(item => item.value !==storeId);
-      console.log(this.form.storesSelected);
+    deleteStore(storeId) {
+      this.form.storesSelected = this.form.storesSelected.filter(
+        item => item.value !== storeId
+      );
     },
     allOrders() {
       if (this.$refs.select !== undefined) {
         this.$refs.select.hidePopup();
       }
       this.reset();
-    },
+    }
   }
 };
 </script>
 
-<style lang="scss"></style>
+<style scoped>
+.q-field--dense .q-field__bottom {
+  color: black !important;
+  font-size: 13px !important;
+}
+</style>

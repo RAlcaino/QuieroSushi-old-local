@@ -1,72 +1,102 @@
 <template>
   <div>
-    <q-item style="max-width: 420px" v-for="msg in messages" :key="msg.id" clickable v-ripple>
-      <q-item-section avatar>
-        <q-avatar>
-          <img :src="msg.avatar">
-        </q-avatar>
-      </q-item-section>
+    <div v-for="(msg, index) in messages" :key="msg.date">
+      <q-item
+        style="max-width: 420px; padding: 5 16px;"
+        clickable
+        v-ripple
+        @click="viewed(msg)"
+      >
+        <q-item-section avatar top class="avatar__notif__styles">
+          <div>
+            <div class="live-c" v-if="msg.visto === 0"></div>
+            <q-avatar icon="email" text-color="primary" />
+          </div>
+          <p style="margin: 0; font-size: 12.5px;">
+            {{ msg.fecha.substring(0, 16) }}
+          </p>
+        </q-item-section>
 
-      <q-item-section>
-        <q-item-label>{{ msg.name }}</q-item-label>
-        <q-item-label caption lines="1">{{ msg.msg }}</q-item-label>
-      </q-item-section>
-
-      <q-item-section side>
-        {{msg.time}}
-      </q-item-section>
-    </q-item>
+        <q-item-section>
+          <q-item-label>{{ msg.titulo }}</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-separator v-if="index + 1 !== messages.length" spaced inset />
+    </div>
   </div>
 </template>
 
 <script>
-    export default {
-        name: "Messages",
-        data() {
-            return {
-                messages: [
-                    {
-                        id: 5,
-                        name: 'Pratik Patel',
-                        msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-                            '            weekend. Do you want to grab brunch?',
-                        avatar: 'https://avatars2.githubusercontent.com/u/34883558?s=400&v=4',
-                        time: '10:42 PM'
-                    }, {
-                        id: 6,
-                        name: 'Winfield Stapforth',
-                        msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-                            '            weekend. Do you want to grab brunch?',
-                        avatar: 'https://cdn.quasar.dev/img/avatar6.jpg',
-                        time: '11:17 AM'
-                    }, {
-                        id: 1,
-                        name: 'Boy',
-                        msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-                            '            weekend. Do you want to grab brunch?',
-                        avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
-                        time: '5:17 AM'
-                    }, {
-                        id: 2,
-                        name: 'Jeff Galbraith',
-                        msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-                            '            weekend. Do you want to grab brunch?',
-                        avatar: 'https://cdn.quasar.dev/team/jeff_galbraith.jpg',
-                        time: '5:17 AM'
-                    }, {
-                        id: 3,
-                        name: 'Razvan Stoenescu',
-                        msg: ' -- I\'ll be in your neighborhood doing errands this\n' +
-                            '            weekend. Do you want to grab brunch?',
-                        avatar: 'https://cdn.quasar.dev/team/razvan_stoenescu.jpeg',
-                        time: '5:17 AM'
-                    }
-                ],
-            }
+export default {
+  name: "Messages",
+  mounted() {
+    this.messages = [...this.$store.getters["auth/getUserNotifications"]];
+  },
+  data() {
+    return {
+      messages: []
+    };
+  },
+  methods: {
+    viewed(item) {
+      this.bus.$emit("modal-notification", item);
+      var url = this.$store.getters["routes/getRoute"](
+        "resources.notifications",
+        {
+          id: item.id
         }
+      );
+      this.$axios
+        .put(
+          url,
+          { visto: 1 },
+          {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          }
+        )
+        .then(response => {
+          if (response.data.status === "success") {
+            let index = this.messages.findIndex(it => it.id === item.id);
+
+            if (index !== -1) {
+              this.$store.commit("auth/setNotificationViewed", {
+                index: index
+              });
+            }
+          } else {
+            this.showNotification(response.data.message, "negative", "error");
+          }
+        })
+        .catch(error => {
+          this.errorHandling(error);
+        });
     }
+  }
+};
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.avatar__notif__styles {
+  display: flex;
+  align-items: center !important;
+}
 
+.live-c {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background-color: red;
+  border-radius: 100%;
+  margin-bottom: 2px;
+  animation: live-animation 1s linear infinite;
+}
+
+@keyframes live-animation {
+  50% {
+    opacity: 0.2;
+    color: red;
+  }
+}
 </style>

@@ -41,38 +41,48 @@
             <q-list class="row">
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-input
-                    v-model="form.email"
-                    color
-                    outlined
-                    rounded
-                    dense
-                    label="Correo electronico"
-                  />
+                  <form autocomplete="off">
+                    <q-input
+                      v-model="form.email"
+                      color
+                      outlined
+                      rounded
+                      dense
+                      label="Correo electronico"
+                    />
+                  </form>
                 </q-item-section>
               </q-item>
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-input
-                    v-model="form.password"
-                    outlined
-                    rounded
-                    dense
-                    label="Contraseña"
-                    type="password"
-                  />
+                  <form autocomplete="off">
+                    <q-input
+                      :error-message="errorMessages"
+                      :error="alertDifferentPassword || alertMinPassword"
+                      v-model="form.password"
+                      outlined
+                      rounded
+                      dense
+                      label="Contraseña"
+                      type="password"
+                    />
+                  </form>
                 </q-item-section>
               </q-item>
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-input
-                    v-model="form.confirmPassword"
-                    outlined
-                    rounded
-                    dense
-                    label="Confirmar contraseña"
-                    type="password"
-                  />
+                  <form autocomplete="off">
+                    <q-input
+                      :error-message="errorMessages"
+                      :error="alertDifferentPassword || alertMinPassword"
+                      v-model="form.confirmPassword"
+                      outlined
+                      rounded
+                      dense
+                      label="Confirmar contraseña"
+                      type="password"
+                    />
+                  </form>
                 </q-item-section>
               </q-item>
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -90,7 +100,7 @@
               <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
-                    v-if="$store.getters['auth/getDataLocals'].length > 1"
+                    v-if="getStoreLocals('ACTIVE').length > 1"
                     ref="select"
                     rounded
                     outlined
@@ -107,6 +117,32 @@
                   >
                     <template v-slot:prepend>
                       <q-icon name="store" />
+                    </template>
+                    <template v-slot:option="scope">
+                      <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section>
+                          <q-item-label
+                            v-html="
+                              '<strong>' +
+                                scope.opt.value +
+                                '</strong> - ' +
+                                scope.opt.label
+                            "
+                          />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                    <template v-slot:selected-item="scope">
+                      <div>
+                        <strong v-if="scope.opt.value !== -1"
+                          >{{ scope.opt.value }} -</strong
+                        >
+                        {{
+                          scope.opt.label.length > 18
+                            ? scope.opt.label.substring(0, 18) + "..."
+                            : scope.opt.label
+                        }}
+                      </div>
                     </template>
                     <template v-slot:before-options>
                       <q-item>
@@ -155,7 +191,7 @@
                 </q-btn>
               </q-item>
               <q-item
-                v-if="form.storesSelected.length!==0"
+                v-if="form.storesSelected.length !== 0"
                 class="col-lg-10 col-md-10 col-sm-12 col-xs-12"
                 style="margin-top:10px"
               >
@@ -173,7 +209,7 @@
                     icon="store"
                     @remove="deleteStore(store.value)"
                   >
-                    {{store.label}}
+                    {{ store.label }}
                   </q-chip>
                 </q-item-section>
               </q-item>
@@ -185,6 +221,7 @@
       <q-card-actions align="right">
         <q-btn
           @click="save()"
+          :disable="validationForm"
           size="sm"
           style="font-size:12px;padding: 0px 15px !important;"
           rounded
@@ -198,7 +235,7 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling", "getStoreLocals"],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.initLocals();
@@ -208,12 +245,12 @@ export default {
       this.card = true;
     });
   },
-  mounted() { },
+  mounted() {},
   data() {
     return {
       card: false,
       prod: null,
-      roles: ["God","Super Admin","Administrador", "Gerente", "Cajero"],
+      roles: this.$store.getters["auth/getRoles"],
       localSelected: {
         label: "Todos",
         value: -1,
@@ -227,52 +264,157 @@ export default {
       locals: [],
       localsFilter: [],
       localFilter: "",
-      form:{
-        email:'',
-        password:'',
-        confirmPassword:'',
-        roleSelected:"God",
-        storesSelected:[],
+      form: {
+        email: "",
+        password: "",
+        confirmPassword: "",
+        roleSelected: {
+          value: null,
+          label: "Seleccionar..."
+        },
+        storesSelected: []
       }
     };
+  },
+  computed: {
+    errorMessages() {
+      if (this.alertDifferentPassword === true) {
+        return "Las contraseñas no son iguales.";
+      }
+
+      if (this.form.password.length < 6) {
+        return "Las contraseña debe tener al menos 6 caracteres.";
+      }
+    },
+    validationForm() {
+      let condition2 = false;
+
+      let condition1 =
+        this.form.confirmPassword === undefined ||
+        this.form.confirmPassword === "" ||
+        this.form.password === undefined ||
+        this.form.password === "";
+
+      if (
+        this.form.confirmPassword !== undefined &&
+        this.form.confirmPassword !== "" &&
+        this.form.password !== undefined &&
+        this.form.password !== ""
+      ) {
+        if (
+          this.form.confirmPassword === this.form.password &&
+          this.form.password.length >= 6
+        ) {
+          condition2 = false;
+        } else {
+          condition2 = true;
+        }
+      } else {
+        condition2 = false;
+      }
+
+      if (condition1 || condition2) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    alertMinPassword() {
+      if (
+        this.form.confirmPassword !== undefined &&
+        this.form.confirmPassword !== "" &&
+        this.form.password !== undefined &&
+        this.form.password !== ""
+      ) {
+        if (this.form.password.length < 6) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    },
+    alertDifferentPassword() {
+      if (
+        this.form.confirmPassword !== undefined &&
+        this.form.confirmPassword !== "" &&
+        this.form.password !== undefined &&
+        this.form.password !== ""
+      ) {
+        if (this.form.confirmPassword !== this.form.password) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
   },
   methods: {
     closeDialog() {
       this.card = false;
-      this.form.email='';
-      this.form.password='';
-      this.form.confirmPassword='';
-      this.form.roleSelected='God';
-      this.form.storesSelected=[];
-      //reset form too
+      this.form.email = "";
+      this.form.password = "";
+      this.form.confirmPassword = "";
+      this.form.roleSelected = {
+        value: null,
+        label: "Seleccionar..."
+      };
+      this.form.storesSelected = [];
+      this.reset();
     },
-    save() {},
-    initLocals(){
-          var vue = this;
-          vue.locals=[];
-          var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-          let row = {
-            value: item.id,
-            label: item.name + ", " + item.commune,
-            image: item.image,
-            commune: item.commune,
-            name: item.name,
-            deliveryTime: item.deliveryTime,
-            preparationTime: item.preparationTime,
-            cart: item.cartStatus
-          };
-          vue.locals.push(row);
-          vue.locals.sort(function(a, b) {
-              if (a.name > b.name) {
-                return 1;
-              }
-              if (a.name < b.name) {
-                return -1;
-              }
-              // a must be equal to b
-              return 0;
-            });
+    save() {
+      this.showLoading();
+      let selectedLocals = [];
+      let selectedLocalsString = "";
+      this.form.storesSelected.map(function(item) {
+        selectedLocals.push(item.value);
+        selectedLocalsString += item.value + ",";
+      });
+      var data = {
+        id_rol: this.form.roleSelected.value,
+        password: this.form.password,
+        email: this.form.email,
+        locales: {
+          string: selectedLocalsString.substring(
+            0,
+            selectedLocalsString.length - 1
+          ),
+          array: selectedLocals
+        }
+      };
+      if (!this.prod) {
+        setTimeout(() => {
+          this.hideLoading();
+        }, 3000);
+      } else {
+        var url = this.$store.getters["routes/getRoute"]("gp.users");
+        this.$axios
+          .post(url, data, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
+            }
+          })
+          .then(response => {
+            if (response.data.status === "success") {
+              this.card = false;
+              this.bus.$emit("sync-users");
+            } else {
+              this.showNotification(response.data.message, "negative", "error");
+            }
+            this.hideLoading();
+          })
+          .catch(error => {
+            this.hideLoading();
+            this.errorHandling(error);
           });
+      }
+    },
+    initLocals() {
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
     },
     filterFn(val) {
       if (val === "") {
@@ -287,40 +429,42 @@ export default {
     },
     change(val) {
       if (val !== null) {
-        this.localSelected=val;
+        this.localSelected = val;
       }
     },
-    addLocal(){
-      if(this.form.storesSelected.some(item=>item.value===this.localSelected.value)){
-            if(this.localSelected.value===-1){
-              this.showNotification(
-                "Ya ha seleccionado todos los locales a su lista",
-                "negative",
-                "error"
-              );
-            }else{
-            this.showNotification(
-                "El local ya encuentra en su lista",
-                "negative",
-                "error"
-              );
-            }
-      }
-      else if(this.form.storesSelected.some(item=>item.value===-1)){
-           this.showNotification(
-              "Ya ha seleccionado todos los locales a su lista",
-              "negative",
-              "error"
-            );
-      }
-      else{
-        if(this.localSelected.value===-1){
-          this.form.storesSelected=[];
+    addLocal() {
+      if (
+        this.form.storesSelected.some(
+          item => item.value === this.localSelected.value
+        )
+      ) {
+        if (this.localSelected.value === -1) {
+          this.showNotification(
+            "Ya ha seleccionado todos los locales a su lista",
+            "negative",
+            "error"
+          );
+        } else {
+          this.showNotification(
+            "El local ya encuentra en su lista",
+            "negative",
+            "error"
+          );
+        }
+      } else if (this.form.storesSelected.some(item => item.value === -1)) {
+        this.showNotification(
+          "Ya ha seleccionado todos los locales a su lista",
+          "negative",
+          "error"
+        );
+      } else {
+        if (this.localSelected.value === -1) {
+          this.form.storesSelected = [];
         }
         this.form.storesSelected.push({
-          value:this.localSelected.value,
-          label:this.localSelected.label,
-          flag:true
+          value: this.localSelected.value,
+          label: this.localSelected.label,
+          flag: true
         });
       }
     },
@@ -329,8 +473,8 @@ export default {
       this.localFilter = "";
     },
     reset() {
-      if(this.$store.getters["auth/getDataLocals"].length!==1){
-        this.storesSelected=[];
+      if (this.getStoreLocals("ACTIVE").length !== 1) {
+        this.storesSelected = [];
         this.localSelected = {
           label: "Todos",
           value: -1,
@@ -343,16 +487,17 @@ export default {
         };
       }
     },
-    deleteStore(storeId){
-      this.form.storesSelected=this.form.storesSelected.filter(item => item.value !==storeId);
-      console.log(this.form.storesSelected);
+    deleteStore(storeId) {
+      this.form.storesSelected = this.form.storesSelected.filter(
+        item => item.value !== storeId
+      );
     },
     allOrders() {
       if (this.$refs.select !== undefined) {
         this.$refs.select.hidePopup();
       }
       this.reset();
-    },
+    }
   }
 };
 </script>

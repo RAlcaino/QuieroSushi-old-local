@@ -1,5 +1,6 @@
 <template>
   <q-page class="q-pa-sm bg-white" style="´padding: 30px">
+    <modal-uber :parentPayProcess="pay"></modal-uber>
     <div
       v-if="data !== undefined"
       class="row q-col-gutter-sm"
@@ -27,7 +28,7 @@
                   >
                 </q-item-section>
                 <q-item-section side>
-                  $ {{ formatNumber(service.price) }}
+                  {{ formatNumber(service.price) }}
                 </q-item-section>
                 <q-separator></q-separator>
               </q-item>
@@ -37,7 +38,7 @@
                   <q-item-label lines="1">Total</q-item-label>
                 </q-item-section>
                 <q-item-section side>
-                  $ {{ formatNumber(total) }}
+                  {{ formatNumber(total) }}
                 </q-item-section>
               </q-item>
             </div>
@@ -80,35 +81,54 @@
 </template>
 
 <script>
+import ModalUber from "src/components/modals/ModalUber.vue";
 export default {
   name: "Checkout",
+  components: { ModalUber },
   props: ["data", "total"],
-  inject: ["showNotification","formatNumber", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "formatNumber",
+    "showLoading",
+    "hideLoading",
+    "errorHandling"
+  ],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     var vue = this;
     if (this.data === undefined) {
       vue.$router.push({ path: "/cupones" });
     }
-    console.log(this.data);
-    console.log(this.total);
   },
   data() {
     return {
       step: 1,
       address_detail: {},
       card_detail: {},
-      prod:null
+      prod: null
     };
   },
-  computed:{
-    getData(){
-      return this.data.filter(item => item.qty!=0);
+  computed: {
+    getData() {
+      return this.data.filter(item => item.qty != 0);
     }
   },
   methods: {
-    pay() {
+    pay(props) {
       this.showLoading();
+      let data = {};
+      if (props === undefined) {
+        data = {
+          idLocal: this.$store.getters["auth/getDataLocal"].id,
+          amount: this.total,
+          commerceOrder: Math.round(Math.random() * (99999999999999 - 1) + 1),
+          detail: this.data,
+          domain: window.location.origin
+        };
+      } else {
+        data = { ...props };
+      }
+
       if (!this.prod) {
         setTimeout(() => {
           this.hideLoading();
@@ -117,31 +137,41 @@ export default {
       } else {
         var url = this.$store.getters["routes/getRoute"]("get.url.pay");
         this.$axios
-          .post(
-            url,
-            {
-              idLocal: this.$store.getters['auth/getDataLocal'].id,
-              amount: this.total,
-              commerceOrder: Math.round(Math.random() * (99999999999999 - 1) + 1),
-              detail: this.data
-            },
-            {
-              headers: {
-                Authorization: this.$store.getters["auth/getToken"]
-              }
+          .post(url, data, {
+            headers: {
+              Authorization: this.$store.getters["auth/getToken"]
             }
-          )
+          })
           .then(response => {
+            this.hideLoading();
             if (response.data.status === "success") {
-              this.hideLoading();
-              window.location.href=response.data.result;
+              window.location.href = response.data.result;
             } else {
-              this.showNotification(response.data.message, "negative", "error");
+              this.showNotification(
+                "Error al procesar el pago. Contacte al administrador del sistema.",
+                "negative",
+                "error"
+              );
             }
           })
           .catch(error => {
             this.hideLoading();
-            this.errorHandling(error);
+            if (error.response) {
+              if (error.response.data.error_code) {
+                this.showNotification(
+                  error.response.data.message,
+                  "negative",
+                  "error"
+                );
+                this.bus.$emit("modal-email-confirmation", data);
+              } else {
+                this.showNotification(
+                  "Error al procesar el pago. Contacte al administrador del sistema.",
+                  "negative",
+                  "error"
+                );
+              }
+            }
           });
       }
     }

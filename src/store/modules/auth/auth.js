@@ -2,12 +2,20 @@ const state = {
   authenticated: false,
   godMode: false,
   token: "",
+  nextUpdateTime: {
+    currentHour: null,
+    currentMinute: null,
+    currentSecond: null
+  },
+  refreshOrders: true,
   user: {
     id: 0,
     email: "",
     role: "",
     locals: [],
-    debt: false
+    qdLocals: [],
+    debt: false,
+    notifications: []
   },
   availableMenuOptions: [],
   currentLocal: {
@@ -21,7 +29,9 @@ const state = {
   comunas: [],
   regiones: [],
   ciudades: [],
-  titles:[]
+  titles: [],
+  roles: [],
+  serverTime: null
 };
 const mutations = {
   setAvailableMenuOptions(state, payload) {
@@ -32,22 +42,34 @@ const mutations = {
     state.user.email = payload.email;
     state.user.role = payload.role.name;
     state.user.locals = payload.locals;
+    state.user.qdLocals = payload.qdLocals;
+    let date = new Date();
+    date.setMinutes(date.getMinutes() + 5);
+    let currentHour = date.getHours();
+    let currentMinute = date.getMinutes();
+    let currentSecond = date.getSeconds();
 
-    if (payload.locals.length === 0) {
+    state.nextUpdateTime.currentHour = currentHour;
+    state.nextUpdateTime.currentMinute = currentMinute;
+    state.nextUpdateTime.currentSecond = currentSecond;
+
+    let locals = [...payload.locals];
+
+    if (locals.some(item => item.localStatus === "bloqueado")) {
       state.user.debt = true;
-    } else {
-      if (payload.locals.length > 1) {
-        state.currentLocal.id = -1;
-        state.currentLocal.name = "Todos";
-        if (state.user.id === -1) {
-          state.currentLocal.image = "icons/favicon-128.png";
-        } else {
-          state.currentLocal.image = payload.locals[0].image;
-        }
-        state.currentLocal.commune = null;
+    }
+
+    if (payload.locals.length > 1) {
+      state.currentLocal.id = -1;
+      state.currentLocal.name = "Todos";
+      if (state.user.id === -1) {
+        state.currentLocal.image = "icons/favicon-128.png";
       } else {
-        state.currentLocal = payload.locals[0];
+        state.currentLocal.image = sortAndFilter(locals)[0].image;
       }
+      state.currentLocal.commune = null;
+    } else {
+      state.currentLocal = sortAndFilter(locals)[0];
     }
 
     if (payload.role.name.trim() === "God") {
@@ -59,33 +81,45 @@ const mutations = {
     state.authenticated = true;
   },
   resetDataUserSesion(state) {
-    if (state.user.role === "God") {
-      state.godMode = false;
-    }
-
-    state.user.id = null;
+    state.godMode = false;
+    state.user.id = 0;
     state.user.email = "";
     state.user.role = "";
     state.user.locals = [];
     state.user.debt = false;
+    state.user.notifications = [];
 
     state.token = "";
     state.availableMenuOptions = [];
     state.authenticated = false;
-    this.currentLocal = {
+    state.currentLocal = {
       id: null,
       name: null,
       image: null,
       commune: null,
       cartStatus: null
     };
-    state.titles=[];
-    state.comunas= [];
-    state.regiones= [];
-    state.ciudades= [];
+
+    state.installPromptEvent = null;
+    state.titles = [];
+    state.comunas = [];
+    state.regiones = [];
+    state.ciudades = [];
+    state.roles = [];
+
+    state.nextUpdateTime = {
+      currentHour: null,
+      currentMinute: null,
+      currentSecond: null
+    };
+
+    state.serverTime = null;
   },
   setCurrentLocal(state, payload) {
     state.currentLocal = payload;
+  },
+  setRefreshOrders(state, payload) {
+    state.refreshOrders = payload;
   },
   setInstallPromptEvent(state, payload) {
     state.installPromptEvent = payload;
@@ -93,13 +127,16 @@ const mutations = {
   setLocals(state, payload) {
     state.user.locals = payload;
   },
+  setQDLocals(state, payload) {
+    state.user.qdLocals = payload;
+  },
   setToken(state, payload) {
     state.token = payload;
   },
   setLocalName(state, payload) {
-    let index= state.user.locals.findIndex(item=> item.id===payload.id);
-    state.user.locals[index].name=payload.nombre;
-    state.user.locals[index].commune=payload.comuna.label;
+    let index = state.user.locals.findIndex(item => item.id === payload.id);
+    state.user.locals[index].name = payload.nombre;
+    state.user.locals[index].commune = payload.comuna.label;
   },
   setZones(state, payload) {
     state.comunas = [];
@@ -115,7 +152,6 @@ const mutations = {
       };
       state.comunas.push(row);
     });
-
 
     var eachCities = payload.ciudades.map(function(item) {
       let row = {
@@ -134,8 +170,8 @@ const mutations = {
       state.regiones.push(row);
     });
   },
-  setTitles(state,payload){
-    state.titles=[];
+  setTitles(state, payload) {
+    state.titles = [];
     var eachTitle = payload.map(function(item) {
       let row = {
         value: item.id,
@@ -144,6 +180,39 @@ const mutations = {
       };
       state.titles.push(row);
     });
+  },
+  setRoles(state, payload) {
+    state.roles = [];
+    var eachRoles = payload.map(function(item) {
+      let row = {
+        value: item.id,
+        label: item.name
+      };
+      state.roles.push(row);
+    });
+  },
+  setNextTimeUpdate(state, payload) {
+    state.nextUpdateTime.currentHour = payload.currentHour;
+    state.nextUpdateTime.currentMinute = payload.currentMinute;
+    state.nextUpdateTime.currentSecond = payload.currentSecond;
+  },
+  setServerTime(state, payload) {
+    state.serverTime = payload;
+  },
+  setDebt(state, payload) {
+    state.user.debt = payload;
+  },
+  setNotifications(state, payload) {
+    if (payload.type === 1) {
+      state.user.notifications = payload.items.sort(function(a, b) {
+        return new Date(b.fecha) - new Date(a.fecha);
+      });
+    } else {
+      state.user.notifications.unshift(payload.item);
+    }
+  },
+  setNotificationViewed(state, payload) {
+    state.user.notifications[payload.index].visto = 1;
   }
 };
 const actions = {};
@@ -158,13 +227,16 @@ const getters = {
     return state.authenticated;
   },
   getDataLocal(state) {
-    return {
-      id: state.currentLocal.id,
-      name: state.currentLocal.name,
-      image: state.currentLocal.image,
-      commune: state.currentLocal.commune,
-      cartStatus: state.currentLocal.cartStatus
-    };
+    if (state.currentLocal !== undefined) {
+      return {
+        id: state.currentLocal.id,
+        name: state.currentLocal.name,
+        image: state.currentLocal.image,
+        commune: state.currentLocal.commune,
+        cartStatus: state.currentLocal.cartStatus
+      };
+    }
+    return {};
   },
   getToken(state) {
     return state.token;
@@ -174,6 +246,9 @@ const getters = {
   },
   getDataLocals(state) {
     return state.user.locals;
+  },
+  getDataQDLocals(state) {
+    return state.user.qdLocals;
   },
   getInstallPromptEvent(state) {
     return state.installPromptEvent;
@@ -206,8 +281,43 @@ const getters = {
       regions: state.regiones
     };
   },
-  getTitles(state){
+  getTitles(state) {
     return state.titles;
+  },
+  getRoles(state) {
+    return state.roles;
+  },
+  getNextUpdateTime(state) {
+    return state.nextUpdateTime;
+  },
+  getServerTime(state) {
+    return state.serverTime;
+  },
+  getUserNotifications(state) {
+    return state.user.notifications;
+  },
+  getRefreshOrders(state) {
+    return state.refreshOrders;
+  }
+};
+
+const sortAndFilter = locals => {
+  locals.sort((a, b) => {
+    if (a.name > b.name) {
+      return 1;
+    }
+    if (a.name < b.name) {
+      return -1;
+    }
+    return 0;
+  });
+
+  let result = locals.filter(item => item.localStatus === "normal");
+
+  if (result.length === 0) {
+    return locals;
+  } else {
+    return result;
   }
 };
 

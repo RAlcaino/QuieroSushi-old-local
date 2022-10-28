@@ -4,7 +4,7 @@ const state = {
 };
 const mutations = {
   setLinks(state) {
-    state.urlGlobal = process.env.API_URL; 
+    state.urlGlobal = process.env.API_URL;
     state.routes = [
       {
         name: "login",
@@ -12,7 +12,7 @@ const mutations = {
       },
       {
         name: "orders",
-        link: "/pedidos/{userId}"
+        link: "/pedidos/{userId}/{filter}"
       },
       {
         name: "order.confirm",
@@ -71,10 +71,6 @@ const mutations = {
         link: "/goUpCoupon"
       },
       {
-        name: "change.password",
-        link: "/usuarios/{userId}"
-      },
-      {
         name: "get.titles",
         link: "/title"
       },
@@ -84,8 +80,176 @@ const mutations = {
       },
       {
         name: "orders.history",
-        link: "/history"
+        link: "/history/{filter}?page={page}"
       },
+      {
+        name: "gp.users",
+        link: "/usuarios"
+      },
+      {
+        name: "resource.users",
+        link: "/usuarios/{localId}"
+      },
+      {
+        name: "get.roles",
+        link: "/roles/get"
+      },
+      {
+        name: "upload.photo",
+        link: "/files/{type}"
+      },
+      {
+        name: "orders.history.download",
+        link: "/history/download/{filter}"
+      },
+      {
+        name: "history.newOrder.pusher",
+        link: "/pedidos/actionPusher"
+      },
+      {
+        name: "notification.status.order",
+        link: "/notification"
+      },
+      {
+        name: "get.chat",
+        link: "/getChat/{orderId}"
+      },
+      {
+        name: "send.ws",
+        link: "/sendWhatsApp"
+      },
+      {
+        name: "send.ws.email",
+        link: "/sendWsEmail"
+      },
+      {
+        name: "get.serverTime",
+        link: "/serverTime"
+      },
+      {
+        name: "get.comments",
+        link: "/comentarios/{localId}"
+      },
+      {
+        name: "do.reply",
+        link: "/replies"
+      },
+      {
+        name: "tickets.all",
+        link: "/tickets"
+      },
+      {
+        name: "tickets.resources",
+        link: "/tickets/{id}" //id = idLocal or idTicket
+      },
+      {
+        name: "comments",
+        link: "/comments"
+      },
+      {
+        name: "status.postpago",
+        link: "/status_post_pago"
+      },
+      {
+        name: "weekly.pay",
+        link: "/pay_weekly_local"
+      },
+      {
+        name: "transferences",
+        link: "/transferences"
+      },
+      {
+        name: "weekly.payment",
+        link: "/weekly-payment"
+      },
+      {
+        name: "report",
+        link: "/report/{idPostpago}"
+      },
+      {
+        name: "sales.amount",
+        link: "/sales_amount/{idLocal}"
+      },
+      {
+        name: "charts.bar",
+        link: "/charts/{idLocal}"
+      },
+      {
+        name: "charts.pie",
+        link: "/sales_pie/{idLocal}"
+      },
+      {
+        name: "resources.notifications",
+        link: "/notifications/{id}"
+      },
+      {
+        name: "password.recovery",
+        link: "/password-recovery"
+      },
+      {
+        name: "change.password",
+        link: "/change-password/{idUser}"
+      },
+      {
+        name: "get.delivery.status",
+        link: "/get-delivery/{delivery_id}"
+      },
+      {
+        name: "uber.cancel",
+        link: "/cancel-delivery"
+      },
+      {
+        name: "uber.create",
+        link: "/create-delivery"
+      },
+      {
+        name: "uber.update",
+        link: "/update-delivery/{orderId}"
+      },
+      {
+        name: "create.order.qd",
+        link: "/qd-pedido"
+      },
+      {
+        name: "confirm.order.qd",
+        link: "/qd-confirm"
+      },
+      {
+        name: "get.order.qd",
+        link: "/qd-getPedidos/{idLocal}"
+      },
+      {
+        name: "uber.quote",
+        link: "/qd-pedido/quote"
+      },
+      {
+        name: "edit.order.qd",
+        link: "/qd-update/{orderId}"
+      },
+      {
+        name: "cancel.order.qd",
+        link: "/qd-cancel/{orderId}"
+      },
+      {
+        name: "request.delivery.qd",
+        link: "/QD/solicitarReparto"
+      },
+      {
+        name: "get.delivery.qd",
+        link: "/QD/getReparto/{orderId}/{platform}"
+      },
+      {
+        name: "get.ws",
+        link: "/local/getSac"
+      },
+      {
+        name: "cancel.order.ext",
+        link: "/ext/anularRepartoVenta"
+      },
+      {
+        name: "change.order.ext",
+        link: "/ext/cambiarHoraReparto"
+      }
     ];
   }
 };

@@ -19,7 +19,6 @@
       </q-card-section>
       <q-card-section class="card-section-modal-new-o">
         <q-select
-          v-if="localsFilter.length > 1"
           ref="select"
           rounded
           outlined
@@ -30,14 +29,13 @@
           v-model="localSelected"
           @input="change"
           @popup-hide="allLocals()"
-          class="q-select-s"
-          style="margin-bottom: 15px;"
+          style="margin-bottom:15px;"
           :virtual-scroll-sticky-size-start="80"
         >
           <template v-slot:prepend>
             <q-icon name="store" />
           </template>
-          <template v-slot:before-options>
+          <template v-slot:before-options v-if="localsFilter.length > 1">
             <q-item>
               <q-item-section class="text-grey">
                 <input
@@ -72,7 +70,7 @@
             </q-item>
           </template>
         </q-select>
-        <div v-if="localsFilter.length === 1" style="margin-bottom:15px">
+        <!--<div v-if="localsFilter.length === 1" style="margin-bottom:15px">
           <q-icon
             style="margin-right:5px;padding-bottom:5px;"
             size="20px"
@@ -80,7 +78,7 @@
             color="blacklight"
           />
           <strong>{{ localSelected.label }}</strong>
-        </div>
+        </div>-->
         <div v-if="localSelected.value !== -1" style="margin-left: 15px">
           <strong>Carrito:</strong>
           <q-toggle
@@ -131,8 +129,9 @@
             :min="0"
             v-model="preparationTime"
             color="primary"
-            style="width: 80px; margin-left: 10px"
+            style="width: 100px; margin-left: 10px"
             type="number"
+            label="Minutos"
           >
             <template v-slot:prepend>
               <q-icon name="query_builder" />
@@ -149,8 +148,9 @@
           <q-input
             v-model="deliveryTime"
             color="primary"
-            style="width: 80px;margin-left: 10px"
+            style="width: 100px;margin-left: 10px"
             type="number"
+            label="Minutos"
             :min="0"
           >
             <template v-slot:prepend>
@@ -165,8 +165,14 @@
           rounded
           color="green"
           label="Guardar"
-          style="font-size: 11px !important"
+          style="font-size: 11px
+        !important"
           @click="save(2)"
+          :disable="
+            this.$store.getters['auth/getDataLocals'].every(
+              item => item.localStatus === 'bloqueado'
+            )
+          "
         />
         <q-btn
           rounded
@@ -183,7 +189,13 @@
 
 <script>
 export default {
-  inject: ["showNotification", "showLoading", "hideLoading", "errorHandling"],
+  inject: [
+    "showNotification",
+    "showLoading",
+    "hideLoading",
+    "errorHandling",
+    "getStoreLocals"
+  ],
   created() {
     this.prod = this.$store.getters["mode/getMode"];
     this.initLocals();
@@ -203,16 +215,7 @@ export default {
       open: false,
       locals: [],
       localsFilter: [],
-      localSelected: {
-        label: "Todos",
-        value: -1,
-        image: null,
-        commune: null,
-        name: null,
-        preparationTime: 0,
-        deliveryTime: 0,
-        cart: null
-      },
+      localSelected: {},
       localFilter: "",
       prod: null,
       deliveryTime: 0,
@@ -235,7 +238,7 @@ export default {
     change(val) {
       if (val !== null) {
         this.deliveryTime = +val.deliveryTime;
-        this.cartStatus = val.cart;
+        this.cartStatus = val.cartStatus;
         this.preparationTime = +val.preparationTime;
       }
     },
@@ -244,7 +247,7 @@ export default {
       this.localFilter = "";
     },
     reset() {
-      if (this.$store.getters["auth/getDataLocals"].length !== 1) {
+      if (this.getStoreLocals("ACTIVE").length !== 1) {
         this.preparationTime = 0;
         this.cartStatus = null;
         this.deliveryTime = 0;
@@ -303,8 +306,10 @@ export default {
           })
           .then(response => {
             if (response.data.status === "success") {
-              if(this.$router.currentRoute.name==="cupones"){
+              if (this.$router.currentRoute.name === "cupones") {
                 this.bus.$emit("sync-coupons");
+              } else {
+                this.bus.$emit("sync-orders");
               }
               this.getLocals();
             } else {
@@ -319,8 +324,6 @@ export default {
       }
     },
     changeStatus() {
-      /*console.log(this.localSelected.value);
-      console.log(this.cartStatus);*/
       this.showLoading();
       if (!this.prod) {
         setTimeout(() => {
@@ -331,12 +334,12 @@ export default {
         var url = this.$store.getters["routes/getRoute"]("locals.update", {
           localId: this.localSelected.value
         });
-        console.log(url);
         this.$axios
           .put(
             url,
             {
-              status: this.cartStatus
+              status: this.cartStatus,
+              version_panel: this.$store.getters["mode/getVersion"]
             },
             {
               headers: {
@@ -346,7 +349,7 @@ export default {
           )
           .then(response => {
             if (response.data.status === "success") {
-              if(this.$router.currentRoute.name==="cupones"){
+              if (this.$router.currentRoute.name === "cupones") {
                 this.bus.$emit("sync-coupons");
               }
               this.getLocals();
@@ -428,7 +431,7 @@ export default {
           .then(response => {
             this.hideLoading();
             if (response.data.status === "success") {
-              var locals = response.data.result.sort(function(a, b) {
+              var locals = response.data.result.locals.sort(function(a, b) {
                 if (a.name > b.name) {
                   return 1;
                 }
@@ -438,8 +441,19 @@ export default {
                 // a must be equal to b
                 return 0;
               });
-              //console.log(locals);
+
+              var qdLocals = response.data.result.qdLocals.sort(function(a, b) {
+                if (a.name > b.name) {
+                  return 1;
+                }
+                if (a.name < b.name) {
+                  return -1;
+                }
+                // a must be equal to b
+                return 0;
+              });
               this.$store.commit("auth/setLocals", locals);
+              this.$store.commit("auth/setQDLocals", qdLocals);
               this.bus.$emit("sync-locals-settings");
               this.bus.$emit("refresh-cartstatus");
             } else {
@@ -455,60 +469,26 @@ export default {
       }
     },
     initLocals() {
-      var vue = this;
-      vue.locals = [];
-      var each = this.$store.getters["auth/getDataLocals"].map(function(item) {
-        let row = {
-          value: item.id,
-          label: item.name + ", " + item.commune,
-          image: item.image,
-          commune: item.commune,
-          name: item.name,
-          deliveryTime: item.deliveryTime,
-          preparationTime: item.preparationTime,
-          cart: item.cartStatus
+      this.locals = [];
+      this.locals = [...this.getStoreLocals("ACTIVE")];
+
+      if (this.getStoreLocals("ACTIVE").length === 1) {
+        this.localSelected = this.locals[0];
+
+        this.cartStatus = this.getStoreLocals("ACTIVE")[0].cartStatus;
+        this.deliveryTime = this.getStoreLocals("ACTIVE")[0].deliveryTime;
+        this.preparationTime = this.getStoreLocals("ACTIVE")[0].preparationTime;
+      } else {
+        this.localSelected = {
+          label: "Todos",
+          value: -1,
+          image: null,
+          commune: null,
+          name: null,
+          preparationTime: 0,
+          deliveryTime: 0,
+          cart: null
         };
-        vue.locals.push(row);
-        vue.locals.sort(function(a, b) {
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
-      });
-      if (this.$store.getters["auth/getDataLocals"].length === 1) {
-        this.localSelected.value = this.$store.getters["auth/getDataLocal"].id;
-        this.localSelected.image = this.$store.getters[
-          "auth/getDataLocal"
-        ].image;
-        this.localSelected.commune = this.$store.getters[
-          "auth/getDataLocal"
-        ].commune;
-        this.localSelected.name = this.$store.getters["auth/getDataLocal"].name;
-        this.localSelected.cartStatus = this.$store.getters[
-          "auth/getDataLocal"
-        ].cartStatus;
-
-        if (this.localSelected.value !== -1) {
-          this.localSelected.label =
-            this.localSelected.name + ", " + this.localSelected.commune;
-        } else {
-          this.localSelected.label = this.localSelected.name;
-        }
-
-        this.cartStatus = this.$store.getters[
-          "auth/getDataLocals"
-        ][0].cartStatus;
-        this.deliveryTime = this.$store.getters[
-          "auth/getDataLocals"
-        ][0].deliveryTime;
-        this.preparationTime = this.$store.getters[
-          "auth/getDataLocals"
-        ][0].preparationTime;
       }
     }
   }

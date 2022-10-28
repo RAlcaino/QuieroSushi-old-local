@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="card" persistent>
-    <q-card
+    <!--<q-card
       class="my-card"
       style="width: 350px; height:270px; border-radius:10px"
     >
@@ -24,8 +24,9 @@
           v-close-popup
         />
       </q-card-actions>
-    </q-card>
-    <!--<q-card
+    </q-card>-->
+
+    <q-card
       style="border-radius:10px;width: 700px; max-width: 80vw;overflow:hidden; "
     >
       <q-card-section
@@ -110,7 +111,7 @@
                     @input="changeTitles"
                     v-model="titleSelected"
                     class="q-select-s"
-                    label="Titulos predeterminados"
+                    label="Titulos predeterminados de ayuda"
                     :virtual-scroll-sticky-size-start="80"
                   >
                     <template v-slot:prepend>
@@ -150,6 +151,7 @@
                     outlined
                     rounded
                     label="Condiciones"
+                    autogrow
                     type="textarea"
                   />
                 </q-item-section>
@@ -161,11 +163,12 @@
                     rounded
                     v-model="item.details"
                     label="Detalles"
+                    autogrow
                     type="textarea"
                   />
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+              <!--<q-item class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-select
                     ref="select"
@@ -253,7 +256,7 @@
                     {{ comune.label }}
                   </q-chip>
                 </q-item-section>
-              </q-item>
+              </q-item>-->
             </q-list>
           </div>
         </div>
@@ -268,7 +271,7 @@
           >
         </q-card-actions>
       </q-card-section>
-    </q-card>-->
+    </q-card>
   </q-dialog>
 </template>
 
@@ -290,28 +293,56 @@ export default {
       this.card = true;
       this.item.id = row.id;
       this.item.title = row.title;
-      this.item.price = row.price;
       this.item.discounted = row.discounted;
       this.item.pieces = row.pieces;
-      this.item.details = "Hola \nhola";
-      this.item.conditions = "Chao\nchao";
-      this.comunesSelected = this.findComunes("Maria elena,Vallenar,Ovalle");
-
-      //setear title details 
-      //setear title template
-      //setear current title
+      this.item.details = row.details;
+      this.item.conditions = row.conditions;
+      this.comunesSelected = this.findComunes(row.delivery);
+      var qty = this.item.pieces.toString();
+      var localName=this.$store.getters["auth/getDataLocal"].name;
+      this.currentTitleTemplate.label = row.shortTitle.replaceAll(
+        qty,
+        "$p"
+      );
+      this.currentTitleTemplate.label = this.currentTitleTemplate.label.replaceAll(
+        localName,
+        "$n"
+      );
+      this.currentTitleTemplate.label2 = row.longTitle.replaceAll(
+        qty,
+        "$p"
+      );
+      this.currentTitleTemplate.label2 = this.currentTitleTemplate.label2.replaceAll(
+        localName,
+        "$n"
+      );
+      this.item.price = row.price;
     });
   },
   mounted() {
     this.responsiveMode();
   },
-  watch:{
-    'item.pieces': {
-      handler(val){
-        this.titleDetails.shortTitle=this.currentTitleTemplate.label.replaceAll('$p',val);
-        this.titleDetails.longTitle=this.currentTitleTemplate.label2.replaceAll('$p',val);
-        this.titleDetails.longTitle=this.titleDetails.longTitle.replaceAll('$n',this.$store.getters['auth/getDataLocal'].name);
-   },
+  watch: {
+    "item.pieces": {
+      handler(val) {
+        var localName=this.$store.getters["auth/getDataLocal"].name;
+        this.titleDetails.shortTitle = this.currentTitleTemplate.label.replaceAll(
+          "$p",
+          val
+        );
+        this.titleDetails.shortTitle = this.titleDetails.shortTitle.replaceAll(
+          "$n",
+          localName
+        );
+        this.titleDetails.longTitle = this.currentTitleTemplate.label2.replaceAll(
+          "$p",
+          val
+        );
+        this.titleDetails.longTitle = this.titleDetails.longTitle.replaceAll(
+          "$n",
+          localName
+        );
+      },
       deep: true
     }
   },
@@ -325,7 +356,10 @@ export default {
       comuneSearch: "",
       comunesSelected: [],
       comuneSelected: {},
-      titleSelected: this.$store.getters["auth/getTitles"][0],
+      titleSelected: {
+        value: null,
+        label: "Seleccionar..."
+      },
       item: {
         id: null,
         title: "",
@@ -333,17 +367,17 @@ export default {
         discounted: null,
         pieces: null,
         details: "",
-        conditions: "",
+        conditions: ""
       },
-      titleDetails:{
-          idTitle:null,
-          shortTitle:"",
-          longTitle:""
+      titleDetails: {
+        idTitle: null,
+        shortTitle: "",
+        longTitle: ""
       },
-      currentTitleTemplate:{
-          value:"",
-          label:"",
-          label2:""
+      currentTitleTemplate: {
+        value: "",
+        label: "",
+        label2: ""
       }
     };
   },
@@ -357,6 +391,15 @@ export default {
   methods: {
     reset() {
       this.card = false;
+      this.titleSelected = {
+        value: null,
+        label: "Seleccionar..."
+      };
+      this.currentTitleTemplate = {
+        value: "",
+        label: "",
+        label2: ""
+      };
     },
     responsiveMode() {
       var responsive = window.matchMedia("(max-width: 900px)");
@@ -382,8 +425,8 @@ export default {
         antes: this.item.price,
         despues: this.item.discounted,
         detalles: this.item.details.replaceAll("\n", ".-"),
-        condiciones: this.item.conditions.replaceAll("\n", ".-"),
-        delivery: this.formatComunes()
+        condiciones: this.item.conditions.replaceAll("\n", ".-")
+        //delivery: this.formatComunes()
       };
       this.showLoading();
       if (!this.prod) {
@@ -403,7 +446,8 @@ export default {
           .then(response => {
             if (response.data.status === "success") {
               this.hideLoading();
-              this.bus.$emit("sync-coupons");
+              this.bus.$emit("sync-coupon-edit");
+              this.reset();
             } else {
               this.hideLoading();
               this.showNotification(response.data.message, "negative", "error");
@@ -495,11 +539,25 @@ export default {
       });
       return result.slice(0, -1);
     },
-    changeTitles(val){
-      this.currentTitleTemplate=val;
-      this.titleDetails.shortTitle=this.currentTitleTemplate.label.replaceAll('$p',this.item.pieces);
-      this.titleDetails.longTitle=this.currentTitleTemplate.label2.replaceAll('$p',this.item.pieces);
-      this.titleDetails.longTitle=this.titleDetails.longTitle.replaceAll('$n',this.$store.getters['auth/getDataLocal'].name);
+    changeTitles(val) {
+      this.currentTitleTemplate = val;
+      var localName=this.$store.getters["auth/getDataLocal"].name;
+      this.titleDetails.shortTitle = this.currentTitleTemplate.label.replaceAll(
+        "$p",
+        this.item.pieces
+      );
+      this.titleDetails.shortTitle = this.titleDetails.shortTitle.replaceAll(
+        "$n",
+        localName
+      );
+      this.titleDetails.longTitle = this.currentTitleTemplate.label2.replaceAll(
+        "$p",
+        this.item.pieces
+      );
+      this.titleDetails.longTitle = this.titleDetails.longTitle.replaceAll(
+        "$n",
+        localName
+      );
     }
   }
 };

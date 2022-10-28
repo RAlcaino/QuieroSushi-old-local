@@ -12,8 +12,11 @@ import $ from "jquery";
 export default {
   name: "App",
   created() {
+    import(`src/utils/lang/es`).then(language => {
+      this.$q.lang.set(language.default);
+    });
     this.$store.commit("routes/setLinks");
-	  this.$store.commit("mode/setVersion");
+    this.$store.commit("mode/setVersion");
     var vue = this;
     this.bus.$on("scroll-up", () => {
       $("html, body").animate({ scrollTop: 0 }, "slow");
@@ -35,7 +38,7 @@ export default {
       console.log("PWA was installed");
     });
   },
-  mounted() {
+  async mounted() {
     console.log("app mounted");
     this.init();
   },
@@ -52,7 +55,11 @@ export default {
       showLoading: this.showLoading,
       hideLoading: this.hideLoading,
       errorHandling: this.errorHandling,
-      installPromptEvent: this.installPromptEvent
+      installPromptEvent: this.installPromptEvent,
+      scrollTop: this.scrollTop,
+      getStoreLocals: this.getStoreLocals,
+      getStoreQDLocals: this.getStoreQDLocals,
+      setCurrentLocal: this.setCurrentLocal
     };
   },
   methods: {
@@ -81,6 +88,7 @@ export default {
           return 0;
         });
         user.locals = data.locals;
+        user.qdLocals = data.qdLocals;
         user.availableMenuOptions = data.availableMenuOptions;
         this.$store.commit("auth/setDataUserSesion", user);
       }
@@ -88,23 +96,16 @@ export default {
     logout() {
       this.$store.commit("auth/resetDataUserSesion");
       localStorage.clear();
-      this.$router.push({ path: "/login" });
+      window.location.reload();
     },
-    formatNumber(num) {
-      if (!num || num == "NaN") return "0";
-      if (num == "Infinity") return "&#x221e;";
-      num = num.toString().replace(/\$|\,/g, "");
-      if (isNaN(num)) num = "0";
-      let sign = num == (num = Math.abs(num));
-      num = Math.floor(num * 100 + 0.50000000001);
-      num = Math.floor(num / 100).toString();
-      for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
-        num =
-          num.substring(0, num.length - (4 * i + 3)) +
-          "." +
-          num.substring(num.length - (4 * i + 3));
-      return (sign ? "" : "-") + num;
+    formatNumber(data) {
+      data = parseFloat(data);
+      return `${data.toLocaleString("es-CL", {
+        style: "currency",
+        currency: "CLP"
+      })}`;
     },
+    
     capitalize(str) {
       return str.replace(/\w\S*/g, function(txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
@@ -166,9 +167,97 @@ export default {
           this.bus.$emit("logout");
         }
       } else {
-        this.showNotification(error.message, "negative", "error");
+        let msg = "";
+        if (error.message === "Network Error") {
+          msg = "Revise su conexión a Internet";
+        } else {
+          msg = error.message;
+        }
+        this.showNotification(
+          msg, //"Ha ocurrido un error con el servidor",
+          "negative",
+          "error"
+        );
+        this.hideLoading();
       }
+    },
+    getStoreLocals(option) {
+      var locals = [];
+      if (this.$store.getters["auth/getDataLocals"] !== undefined) {
+        var each = this.$store.getters["auth/getDataLocals"].map(item => {
+          let row = {
+            value: item.id,
+            label: item.name + ", " + item.commune,
+            image: item.image,
+            commune: item.commune,
+            name: item.name,
+            cartStatus: item.cartStatus,
+            localStatus: item.localStatus,
+            preparationTime: item.preparationTime,
+            deliveryTime: item.deliveryTime
+          };
+          locals.push(row);
+        });
+      }
+
+      if (option === "ALL") {
+        return locals;
+      } else if (option === "ACTIVE") {
+        return locals.filter(item => item.localStatus === "normal");
+      }
+    },
+    getStoreQDLocals(option) {
+      var locals = [];
+      if (this.$store.getters["auth/getDataQDLocals"] !== undefined) {
+        var each = this.$store.getters["auth/getDataQDLocals"].map(item => {
+          let row = {
+            value: item.id,
+            label: item.name + ", " + item.commune,
+            image: item.image,
+            commune: item.commune,
+            name: item.name,
+            cartStatus: item.cartStatus,
+            localStatus: item.localStatus,
+            preparationTime: item.preparationTime,
+            deliveryTime: item.deliveryTime,
+            direccion: item.direccion
+          };
+          locals.push(row);
+        });
+      }
+
+      if (option === "ALL") {
+        return locals;
+      } else if (option === "ACTIVE") {
+        return locals.filter(item => item.localStatus === "normal");
+      }
+    },
+    scrollTop() {
+      $(document).ready(function() {
+        if ($("html").scrollTop() !== 0) {
+          $("html").animate({ scrollTop: 0 }, 1000);
+        }
+      });
+    },
+    setCurrentLocal(val) {
+      this.$store.commit("auth/setCurrentLocal", {
+        id: val.value,
+        name: val.name,
+        image: val.image,
+        commune: val.commune,
+        cartStatus: val.cartStatus
+      });
     }
   }
 };
 </script>
+
+<style>
+.q-field--outlined .q-field__control:before {
+  border: 1px solid rgba(0, 0, 0, 0.45);
+}
+
+.q-field__counter {
+  color: #000;
+}
+</style>
