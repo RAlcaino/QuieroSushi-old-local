@@ -62,6 +62,9 @@
                 <div v-if="item.supplierOrder !== null">
                   <strong>Reparto: </strong> {{ item.supplierOrder }}
                 </div>
+                <div v-if="item.uri_follow_up !== null">
+                  <strong>Seguimiento: </strong> <a class="url" :href="'//' +item.uri_follow_up">{{ item.uri_follow_up }}</a>
+                </div>
                 <div>
                   <q-icon
                     :name="
@@ -374,7 +377,7 @@ export default {
     },
     getMaxPages() {
       return Math.ceil(this.ordersPreparation.length / 15);
-    },
+    }
   },
   data() {
     return {
@@ -477,6 +480,9 @@ export default {
 }
 .user-userDetail {
   width: 30%;
+}
+.url {
+  font-size: 14px
 }
 
 @media screen and (max-width: 600px) {
