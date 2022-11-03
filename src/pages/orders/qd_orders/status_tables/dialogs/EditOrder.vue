@@ -6,7 +6,6 @@
         border-radius: 10px;
         width: 650px;
         max-width: 650px;
-        overflow: hidden;
       "
     >
       <q-card-section
@@ -131,6 +130,10 @@
                     dense
                     label="Dirección del cliente"
                     v-model="direccion"
+                    ref="placesInput"
+                    id="placesInput"
+                    @keypress="autocompleteLocation"
+                    @keydown="autocompleteLocation"
                   />
                 </q-item-section>
               </q-item>
@@ -144,6 +147,27 @@
                     label="Departamento del cliente"
                     v-model="direccion2"
                   />
+                </q-item-section>
+              </q-item>
+              <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <q-item-section>
+                  <q-select
+                    ref="select"
+                    rounded
+                    outlined
+                    dense
+                    v-model="metodo_pago"
+                    :options="metodos_pago"
+                    :options-dense="true"
+                    hide-hint
+                    label="Metodo de pago"
+                    :virtual-scroll-sticky-size-start="80"
+                    style="margin-bottom: 5px"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="payments" />
+                    </template>
+                  </q-select>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -225,27 +249,6 @@
                       type="textarea"
                       placeholder="Acá puede colocar los productos que están siendo comprados. Esta nota será leída por el cliente"
                   /></q-item-section>
-                </q-item>
-                <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                  <q-item-section>
-                    <q-select
-                      ref="select"
-                      rounded
-                      outlined
-                      dense
-                      v-model="metodo_pago"
-                      :options="metodos_pago"
-                      :options-dense="true"
-                      hide-hint
-                      label="Metodo de pago"
-                      :virtual-scroll-sticky-size-start="80"
-                      style="margin-bottom: 5px"
-                    >
-                      <template v-slot:prepend>
-                        <q-icon name="payments" />
-                      </template>
-                    </q-select>
-                  </q-item-section>
                 </q-item>
                 <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <q-item-section>
@@ -357,7 +360,7 @@ export default {
       direccion2: null,
       telefono: null,
       subtotal: null,
-      metodos_pago: ["Pago Online", "Transferencia"],
+      metodos_pago: ["Transferencia", "Pago Online", "Pagado", "Efectivo"],
       communes: [],
       communeFilter: "",
       step: 1,
@@ -408,6 +411,26 @@ export default {
   },
   methods: {
     editOrder() {
+
+      if (this.subtotal === null || this.subtotal === 0) {
+        this.errorHandling({
+          message: "Debe indicar el total del pedido"
+        });
+        return;
+      }
+      if (this.telefono === null || this.telefono === "") {
+        this.errorHandling({
+          message: "Debe indicar un télefono"
+        });
+        return;
+      }
+      if (this.telefono.length < 9 || this.telefono.length > 9) {
+        this.errorHandling({
+          message: "El teléfono tiene que ser de 9 dígitos"
+        });
+        return;
+      }
+
       let body = {
         id_local: this.qdLocal.value,
         direccion_usuario: {
@@ -424,7 +447,8 @@ export default {
         },
         nota: this.notes,
         metodo_pago: this.metodo_pago,
-        correo: this.email
+        correo: this.email,
+        plataforma: process.env.QD
       };
 
       if (this.email === null || this.email === "") {
@@ -488,6 +512,7 @@ export default {
       this.open = false;
     },
     init(item) {
+      console.log(item);
       this.qdLocals = [...this.getStoreQDLocals("ACTIVE")];
       this.qdLocal = this.qdLocals.find(
         local => local.value === item.local.id_local
@@ -503,13 +528,13 @@ export default {
         item.userDetail.address.charAt(0).toUpperCase() +
         item.userDetail.address.slice(1);
       this.direccionOriginal = this.direccion;
-      this.direccion2 =
+      this.direccion2 = !item.userDetail.address2 ? '' :
         item.userDetail.address2.charAt(0).toUpperCase() +
         item.userDetail.address2.slice(1);
       this.direccion2Original = this.direccion2;
       this.telefono = item.userDetail.telefono;
       this.subtotal = item.subtotal;
-      this.notes = item.notas.replaceAll(".-", "");
+      this.notes = !item.notas ? '' : item.notas.replaceAll("\n", ".-");
       this.email = item.userDetail.correo;
       this.metodo_pago = item.paymentMethod;
     },
@@ -532,7 +557,11 @@ export default {
 
       let body = {
         dropoff_address: this.direccion,
-        id_local: this.qdLocal.value
+        pickup_address: `${this.qdLocal.direccion}, ${this.qdLocal.commune}`,
+        tipo_venta: "despacho",
+        local_id: this.qdLocal.value,
+        plataforma: process.env.QD,
+        forma_pago: this.metodo_pago
       };
 
       var url = this.$store.getters["routes/getRoute"]("uber.quote");
@@ -567,6 +596,22 @@ export default {
       if (val.length > 9) {
         this.telefono = val.slice(0, -1);
       }
+    },
+    autocompleteLocation() {
+      const input = document.getElementById(
+        this.$refs.placesInput.$refs.input.id
+      );
+      var options = {
+        componentRestrictions: { country: "cl" }
+      };
+      this.autocomplete = new google.maps.places.Autocomplete(input, options);
+      this.autocomplete.addListener("place_changed", () => {
+        let place = this.autocomplete.getPlace();
+        this.isGoogleAddress = true;
+        this.direccion = "";
+        this.direccion = place.name + ", " + place.vicinity;
+        this.comuna = place.vicinity;
+      });
     }
   }
 };

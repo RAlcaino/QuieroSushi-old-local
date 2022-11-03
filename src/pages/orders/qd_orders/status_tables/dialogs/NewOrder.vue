@@ -583,7 +583,7 @@ export default {
         uber: {
           es_uber: true
         },
-        nota: this.notes.replaceAll("\n", ".-"),
+        nota: !this.notes ? '' :this.notes.replaceAll("\n", ".-"),
         metodo_pago: this.metodo_pago,
         correo: this.email,
         tiempos:
