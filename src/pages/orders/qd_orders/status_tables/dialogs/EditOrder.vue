@@ -254,6 +254,8 @@
                   <q-item-section>
                     <q-input
                       type="number"
+                      min="0"
+                      oninput="this.value = Math.abs(this.value)"
                       outlined
                       rounded
                       dense

@@ -169,6 +169,7 @@
                       <q-icon name="payments" />
                     </template>
                   </q-select>
+                  <p v-if="this.metodo_pago == 'Efectivo'"><b>Nota:</b> El monto total no puede exceder los 30000 si el metodo de pago es <b>Efectivo</b></p>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -279,6 +280,8 @@
                   <q-item-section>
                     <q-input
                       type="number"
+                      min="0"
+                      oninput="this.value = Math.abs(this.value)"
                       outlined
                       rounded
                       dense
@@ -353,6 +356,8 @@
                     })
                   }}
                 </p>
+                <p v-if="this.metodo_pago == 'Efectivo'"><b>Nota:</b> El monto total no puede exceder los 30000 si el metodo de pago es <b>Efectivo</b></p>
+                
               </q-item>
             </q-list>
           </q-step>
@@ -385,7 +390,8 @@
                 class="q-ml-sm"
               />
               <q-btn
-                v-if="step === 3"
+                v-if="step === 3 && (((editCosts ? +deliveryCostEdited : costs.costo_cliente) +
+                      +subtotal) < 30000)"
                 @click="createOrder()"
                 color="green"
                 :label="'Crear'"
