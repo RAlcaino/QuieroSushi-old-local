@@ -57,6 +57,9 @@
                 <div v-if="item.supplierOrder !== null">
                   <strong>Reparto: </strong> {{ item.supplierOrder }}
                 </div>
+                <div v-if="item.uri_follow_up !== null">
+                  <strong>URL Seguimiento </strong> {{ item.uri_follow_up }}
+                </div>
                 <div>
                   <q-icon
                     :name="

@@ -55,7 +55,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="mobile">
+              <q-item v-if="false">
                 <q-select
                   ref="select"
                   rounded
@@ -82,12 +82,12 @@
                           type="text"
                           placeholder="Buscar"
                           style="
-                    padding: 7px;
-                    margin-top: 10px;
-                    border-radius: 20px;
-                    border: 1px solid #333;
-                    outline: none;
-                  "
+                            padding: 7px;
+                            margin-top: 10px;
+                            border-radius: 20px;
+                            border: 1px solid #333;
+                            outline: none;
+                          "
                         />
                       </q-item-section>
                     </q-item>
@@ -104,12 +104,12 @@
                           type="text"
                           placeholder="Buscar"
                           style="
-                    padding: 7px;
-                    margin-top: 10px;
-                    border-radius: 20px;
-                    border: 1px solid #333;
-                    outline: none;
-                  "
+                            padding: 7px;
+                            margin-top: 10px;
+                            border-radius: 20px;
+                            border: 1px solid #333;
+                            outline: none;
+                          "
                         />
                       </q-item-section>
                     </q-item>
@@ -134,6 +134,7 @@
                     ref="placesInput"
                     id="placesInput"
                     @keypress="autocompleteLocation"
+                    @keydown="autocompleteLocation"
                   />
                 </q-item-section>
               </q-item>
@@ -168,6 +169,7 @@
                       <q-icon name="payments" />
                     </template>
                   </q-select>
+                  <p v-if="this.metodo_pago == 'Efectivo'"><b>Nota:</b> El monto total no puede exceder los 30000 si el metodo de pago es <b>Efectivo</b></p>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -278,6 +280,8 @@
                   <q-item-section>
                     <q-input
                       type="number"
+                      min="0"
+                      oninput="this.value = Math.abs(this.value)"
                       outlined
                       rounded
                       dense
@@ -352,6 +356,8 @@
                     })
                   }}
                 </p>
+                <p v-if="this.metodo_pago == 'Efectivo'"><b>Nota:</b> El monto total no puede exceder los 30000 si el metodo de pago es <b>Efectivo</b></p>
+                
               </q-item>
             </q-list>
           </q-step>
@@ -384,7 +390,8 @@
                 class="q-ml-sm"
               />
               <q-btn
-                v-if="step === 3"
+                v-if="step === 3 && (((editCosts ? +deliveryCostEdited : costs.costo_cliente) +
+                      +subtotal) < 30000)"
                 @click="createOrder()"
                 color="green"
                 :label="'Crear'"
@@ -582,7 +589,7 @@ export default {
         uber: {
           es_uber: true
         },
-        nota: this.notes.replaceAll("\n", ".-"),
+        nota: !this.notes ? '' :this.notes.replaceAll("\n", ".-"),
         metodo_pago: this.metodo_pago,
         correo: this.email,
         tiempos:
@@ -724,7 +731,7 @@ export default {
         );
         return;
       }
-      if (!this.isGoogleAddress && !Platform.is.mobile) {
+      if (!this.isGoogleAddress) {
         this.showNotification(
           "Debe indicar una direccion valida de Google Maps",
           "negative",
@@ -735,11 +742,7 @@ export default {
 
       this.showLoading();
       let body = {
-        dropoff_address: `${
-          Platform.is.mobile
-            ? `${this.direccion}, ${this.comuna.label}`
-            : this.direccion
-        }`,
+        dropoff_address: this.direccion,
         pickup_address: `${this.qdLocal.direccion}, ${this.qdLocal.commune}`,
         tipo_venta: "despacho",
         local_id: this.qdLocal.value,
@@ -869,5 +872,9 @@ export default {
   justify-content: center;
   flex-direction: column;
   align-items: center;
+}
+.pac-container {
+  box-sizing: content-box;
+  padding-right: 4px;
 }
 </style>
