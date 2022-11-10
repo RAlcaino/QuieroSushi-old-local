@@ -42,6 +42,7 @@
             <div style="font-size: 12px; margin-top: 4px">Crear</div>
           </q-btn>
         </div>
+        <!-- Filter for Locals -->
         <q-select
           ref="select"
           rounded
@@ -78,6 +79,55 @@
                 />
               </q-item-section>
             </q-item>
+            <q-item dense clickable @click="allOrders()">
+              <q-item-section>Todos</q-item-section>
+            </q-item>
+          </template>
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                <input
+                  v-model="localFilter"
+                  @input="filterFn(localFilter)"
+                  type="text"
+                  placeholder="Buscar"
+                  style="
+                    padding: 7px;
+                    margin-top: 10px;
+                    border-radius: 20px;
+                    border: 1px solid #333;
+                    outline: none;
+                  "
+                />
+              </q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section class="text-grey">
+                Sin Resultados
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+        <!-- Filter for Reparto -->
+        <q-select
+          ref="select"
+          rounded
+          outlined
+          dense
+          :options="localsFilter"
+          :options-dense="true"
+          hide-hint
+          label="Reparto"
+          v-model="localSelected"
+          @input="change"
+          @popup-hide="allLocals()"
+          :virtual-scroll-sticky-size-start="80"
+          style="position: relative; bottom: 5px; margin-left: 10px"
+        >
+          <template v-slot:prepend>
+            <q-icon name="moped" />
+          </template>
+          <template v-slot:before-options v-if="locals.length > 1">
             <q-item dense clickable @click="allOrders()">
               <q-item-section>Todos</q-item-section>
             </q-item>
@@ -363,6 +413,15 @@ export default {
       originalData: [],
       localsFilter: [],
       localSelected: {
+        label: null,
+        value: null,
+        image: null,
+        commune: null,
+        name: null,
+        cartStatus: null
+      },
+      repartoFilter: [],
+      repartoSelected: {
         label: null,
         value: null,
         image: null,
