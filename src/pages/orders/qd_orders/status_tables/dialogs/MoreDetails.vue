@@ -56,8 +56,7 @@
                   <q-item-label v-else>Sin notas</q-item-label>
                 </q-item-section>
               </q-item>
-
-              <div v-if="orderDetail.uber_information !== undefined">
+              <div v-if="orderDetail.supplierOrder != 'Propio'">
                 <q-item>
                   <!-- v-if="orderDetail.uber_information.delivery_id !== null" -->
                   <q-item-section avatar>
@@ -100,8 +99,6 @@
                     </q-item-label>
                   </q-item-section>
                 </q-item>
-              </div>
-
               <q-item
                 v-if="
                   courier !== null &&
@@ -295,6 +292,7 @@
                   </q-item-label>
                 </q-item-section>
               </q-item>
+            </div>
               <!--
               <q-item
                 v-if="
