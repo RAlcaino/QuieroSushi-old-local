@@ -81,7 +81,7 @@ module.exports = function (ctx) {
       analyze: false,
       // Options below are automatically set depending on the env, set them if you want to override
       // extractCSS: false,
-      
+
       webpackManifest: true,
       minify:true,
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
@@ -90,7 +90,9 @@ module.exports = function (ctx) {
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
+    //se deja socket para que funcione con docker
     devServer: {
+      socket: 'socket',
       https: false,
       port: 5050,
       open: true // opens browser window automatically

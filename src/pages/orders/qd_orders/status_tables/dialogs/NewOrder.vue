@@ -1,23 +1,13 @@
 <template>
   <q-dialog v-model="open" persistent>
-    <q-card
-      class="my-card"
-      style="
+    <q-card class="my-card" style="
         border-radius: 10px;
         width: 650px;
         max-width: 650px;
-      "
-    >
-      <q-card-section
-        class="row items-center q-pb-none"
-        style="background: #333; padding: 10px 20px !important"
-      >
+      ">
+      <q-card-section class="row items-center q-pb-none" style="background: #333; padding: 10px 20px !important">
         <div class="text-h6" style="color: white; font-size: 18px">
-          <q-icon
-            style="margin-right: 3px; padding-bottom: 4px"
-            size="20px"
-            name="inventory_2"
-          />
+          <q-icon style="margin-right: 3px; padding-bottom: 4px" size="20px" name="inventory_2" />
           Crear pedido propio
           {{ qdLocal.value !== null ? `- ${qdLocal.label}` : "" }}
         </div>
@@ -26,69 +16,34 @@
       </q-card-section>
 
       <q-card-section>
-        <q-stepper
-          v-model="step"
-          ref="stepper"
-          animated
-          color="primary"
-          done-color="green"
-          active-color="blue"
-        >
-          <q-step
-            :name="1"
-            title="Validar dirección del cliente"
-            icon="add_location_alt"
-            :done="step > 1"
-          >
+        <q-stepper v-model="step" ref="stepper" animated color="primary" done-color="green" active-color="blue">
+          <q-step :name="1" title="Validar dirección del cliente" icon="add_location_alt" :done="step > 1">
             <q-list class="column">
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-select
-                    outlined
-                    rounded
-                    dense
-                    v-model="qdLocal"
-                    :options="qdLocals"
-                    label="Local QD"
-                  >
+                  <q-select outlined rounded dense v-model="qdLocal" :options="qdLocals" label="Local QD">
                   </q-select>
                 </q-item-section>
               </q-item>
 
               <q-item v-if="false">
-                <q-select
-                  ref="select"
-                  rounded
-                  outlined
-                  dense
-                  :options="communes"
-                  :options-dense="true"
-                  hide-hint
-                  label="Comunas"
-                  v-model="comuna"
-                  @popup-hide="allCommunes()"
-                  :virtual-scroll-sticky-size-start="80"
-                  style="position: relative; bottom: 5px; width: 100%"
-                >
+                <q-select ref="select" rounded outlined dense :options="communes" :options-dense="true" hide-hint
+                  label="Comunas" v-model="comuna" @popup-hide="allCommunes()" :virtual-scroll-sticky-size-start="80"
+                  style="position: relative; bottom: 5px; width: 100%">
                   <template v-slot:prepend>
                     <q-icon name="store" />
                   </template>
                   <template v-slot:before-options v-if="communes.length > 1">
                     <q-item>
                       <q-item-section class="text-grey">
-                        <input
-                          v-model="communeFilter"
-                          @input="filterFn(communeFilter)"
-                          type="text"
-                          placeholder="Buscar"
+                        <input v-model="communeFilter" @input="filterFn(communeFilter)" type="text" placeholder="Buscar"
                           style="
                             padding: 7px;
                             margin-top: 10px;
                             border-radius: 20px;
                             border: 1px solid #333;
                             outline: none;
-                          "
-                        />
+                          " />
                       </q-item-section>
                     </q-item>
                     <q-item dense clickable @click="allOrders()">
@@ -98,19 +53,14 @@
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
-                        <input
-                          v-model="communeFilter"
-                          @input="filterFn(communeFilter)"
-                          type="text"
-                          placeholder="Buscar"
+                        <input v-model="communeFilter" @input="filterFn(communeFilter)" type="text" placeholder="Buscar"
                           style="
                             padding: 7px;
                             margin-top: 10px;
                             border-radius: 20px;
                             border: 1px solid #333;
                             outline: none;
-                          "
-                        />
+                          " />
                       </q-item-section>
                     </q-item>
                     <q-item>
@@ -124,52 +74,27 @@
 
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-input
-                    type="text"
-                    outlined
-                    rounded
-                    dense
-                    label="Dirección del cliente"
-                    v-model="direccion"
-                    ref="placesInput"
-                    id="placesInput"
-                    @keypress="autocompleteLocation"
-                    @keydown="autocompleteLocation"
-                  />
+                  <q-input type="text" outlined rounded dense label="Dirección del cliente" v-model="direccion"
+                    ref="placesInput" id="placesInput" @keypress="autocompleteLocation"
+                    @keydown="autocompleteLocation" />
                 </q-item-section>
               </q-item>
               <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-input
-                    type="text"
-                    outlined
-                    rounded
-                    dense
-                    label="Departamento del cliente"
-                    v-model="direccion2"
-                  />
+                  <q-input type="text" outlined rounded dense label="Departamento del cliente" v-model="direccion2" />
                 </q-item-section>
               </q-item>
               <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <q-item-section>
-                  <q-select
-                    ref="select"
-                    rounded
-                    outlined
-                    dense
-                    v-model="metodo_pago"
-                    :options="metodos_pago"
-                    :options-dense="true"
-                    hide-hint
-                    label="Metodo de pago"
-                    :virtual-scroll-sticky-size-start="80"
-                    style="margin-bottom: 5px"
-                  >
+                  <q-select ref="select" rounded outlined dense v-model="metodo_pago" :options="metodos_pago"
+                    :options-dense="true" hide-hint label="Metodo de pago" :virtual-scroll-sticky-size-start="80"
+                    style="margin-bottom: 5px">
                     <template v-slot:prepend>
                       <q-icon name="payments" />
                     </template>
                   </q-select>
-                  <p v-if="this.metodo_pago == 'Efectivo'"><b>Nota:</b> El monto total no puede exceder los 30000 si el metodo de pago es <b>Efectivo</b></p>
+                  <p v-if="this.metodo_pago == 'Efectivo'"><b>Nota:</b> El monto total no puede exceder los 30000 si el
+                    metodo de pago es <b>Efectivo</b></p>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -179,148 +104,79 @@
             <q-list class="column">
               <q-item>
                 <q-item-section>
-                  <q-item-label style="font-weight: bold; font-size: 18px"
-                    >Cargo a cliente:
-                    <q-icon
-                      :name="editCosts ? 'clear' : 'edit'"
-                      style="cursor: pointer"
-                      :color="editCosts ? 'red' : 'blue'"
-                      @click="handleClickEditCosts($refs)"
-                  /></q-item-label>
-                  <q-item-label
-                    style="font-size: 18px"
-                    v-if="editCosts === false"
-                    >{{ format(costs.costo_cliente) }}</q-item-label
-                  >
-                  <q-input
-                    ref="inputCostEdit"
-                    type="number"
-                    outlined
-                    rounded
-                    dense
-                    v-model="deliveryCostEdited"
-                    label="Nuevo costo ($)"
-                    input-class="text-right"
-                    style="width: 40%; margin-top: 10px"
-                    :style="getStyle"
-                    :min="0"
-                  ></q-input>
+                  <q-item-label style="font-weight: bold; font-size: 18px">Cargo a cliente:
+                    <q-icon :name="editCosts ? 'clear' : 'edit'" style="cursor: pointer"
+                      :color="editCosts ? 'red' : 'blue'" @click="handleClickEditCosts($refs)" />
+                  </q-item-label>
+                  <q-item-label style="font-size: 18px" v-if="editCosts === false">{{ format(costs.costo_cliente) }}
+                  </q-item-label>
+                  <q-input ref="inputCostEdit" type="number" outlined rounded dense v-model="deliveryCostEdited"
+                    label="Nuevo costo ($)" input-class="text-right" style="width: 40%; margin-top: 10px"
+                    :style="getStyle" :min="0"></q-input>
                 </q-item-section>
               </q-item>
               <q-item>
                 <q-item-section>
-                  <q-item-label style="font-weight: bold"
-                    >Cargo a local:</q-item-label
-                  >
+                  <q-item-label style="font-weight: bold">Cargo a local:</q-item-label>
                   <q-item-label v-if="editCosts">{{
-                    format(newLocalCost)
+                      format(newLocalCost)
                   }}</q-item-label>
                   <q-item-label v-else>{{
-                    format(costs.costo_local)
+                      format(costs.costo_local)
                   }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
           </q-step>
 
-          <q-step
-            :name="3"
-            title="Ingresar información"
-            icon="person"
-            :done="step > 3"
-          >
+          <q-step :name="3" title="Ingresar información" icon="person" :done="step > 3">
             <q-list class="column">
               <q-item>
                 <q-item-section>
-                  <q-input
-                    type="text"
-                    outlined
-                    rounded
-                    dense
-                    label="Nombre del cliente"
-                    v-model="nombre"
-                  />
+                  <q-input type="text" outlined rounded dense label="Nombre del cliente" v-model="nombre" />
                 </q-item-section>
               </q-item>
               <q-list class="row">
                 <q-item class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                   <q-item-section>
-                    <q-input
-                      type="number"
-                      outlined
-                      rounded
-                      dense
-                      label="Telefono (+56)"
-                      v-model="telefono"
-                  /></q-item-section>
+                    <q-input type="number" outlined rounded dense label="Telefono (+56)" v-model="telefono" />
+                  </q-item-section>
                 </q-item>
                 <q-item class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                   <q-item-section>
-                    <q-input
-                      type="text"
-                      outlined
-                      rounded
-                      dense
-                      label="Email"
-                      v-model="email"
-                  /></q-item-section>
+                    <q-input type="text" outlined rounded dense label="Email" v-model="email" />
+                  </q-item-section>
                 </q-item>
                 <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <q-item-section>
-                    <q-input
-                      v-model="notes"
-                      outlined
-                      rounded
-                      dense
-                      type="textarea"
-                      placeholder="Acá puede colocar los productos que están siendo comprados. Esta nota será leída por el cliente"
-                  /></q-item-section>
+                    <q-input v-model="notes" outlined rounded dense type="textarea"
+                      placeholder="Acá puede colocar los productos que están siendo comprados. Esta nota será leída por el cliente" />
+                  </q-item-section>
                 </q-item>
                 <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <q-item-section>
-                    <q-input
-                      type="number"
-                      min="0"
-                      oninput="this.value = Math.abs(this.value)"
-                      outlined
-                      rounded
-                      dense
-                      v-model="subtotal"
-                      label="Total pedido ($)"
-                      input-class="text-right"
-                    ></q-input
-                  ></q-item-section>
+                    <q-input type="number" min="0" oninput="this.value = Math.abs(this.value)" outlined rounded dense
+                      v-model="subtotal" label="Total pedido ($)" input-class="text-right"></q-input>
+                  </q-item-section>
                 </q-item>
-                <q-item
-                  v-if="
-                    metodo_pago !== 'Pago Online' &&
-                      metodo_pago !== 'Transferencia' &&
-                      metodo_pago !== 'Seleccionar...'
-                  "
-                  class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-                >
+                <q-item v-if="
+                  metodo_pago !== 'Pago Online' &&
+                  metodo_pago !== 'Transferencia' &&
+                  metodo_pago !== 'Seleccionar...'
+                " class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <q-item-section>
-                    <span
-                      style="
+                    <span style="
                         font-size: 16px;
                         margin-bottom: 15px;
                         font-weight: 500;
-                      "
-                      class="q-ml-sm"
-                    >
+                      " class="q-ml-sm">
                       ¿En cuántos minutos quieres que llegue el repartidor al
                       local?
                     </span>
 
                     <div style="display: flex; justify-content: center">
-                      <q-input
-                        v-model="newTime"
-                        color="primary"
-                        label="Minutos"
-                        style="width: 100px"
-                        type="number"
-                        :min="10"
-                      >
+                      <q-input v-model="newTime" color="primary" label="Minutos" style="width: 100px" type="number"
+                        :min="10">
                         <template v-slot:prepend>
                           <q-icon name="query_builder" />
                         </template>
@@ -329,86 +185,53 @@
                   </q-item-section>
                 </q-item>
               </q-list>
-              <q-item
-                style="
+              <q-item style="
                   flex-direction: column;
                   justify-content: flex-end;
                   align-items: flex-end;
-                "
-              >
+                ">
                 <p style="font-size: 16px">
                   <strong>Costo reparto: </strong>
                   {{
-                    editCosts
-                      ? format(+deliveryCostEdited)
-                      : format(+costs.costo_cliente)
+                      editCosts
+                        ? format(+deliveryCostEdited)
+                        : format(+costs.costo_cliente)
                   }}
                 </p>
                 <p style="font-size: 16px">
                   <strong>Total: </strong>
                   {{
-                    (
-                      (editCosts ? +deliveryCostEdited : costs.costo_cliente) +
-                      +subtotal
-                    ).toLocaleString("es-CL", {
-                      style: "currency",
-                      currency: "CLP"
-                    })
+                      (
+                        (editCosts ? +deliveryCostEdited : costs.costo_cliente) +
+                        +subtotal
+                      ).toLocaleString("es-CL", {
+                        style: "currency",
+                        currency: "CLP"
+                      })
                   }}
                 </p>
-                <p v-if="this.metodo_pago == 'Efectivo'"><b>Nota:</b> El monto total no puede exceder los 30000 si el metodo de pago es <b>Efectivo</b></p>
-                
+                <p v-if="this.metodo_pago == 'Efectivo'"><b>Nota:</b> El monto total no puede exceder los 30000 si el
+                  metodo de pago es <b>Efectivo</b></p>
+
               </q-item>
             </q-list>
           </q-step>
 
           <template v-slot:navigation>
-            <q-stepper-navigation
-              style="display: flex; justify-content: center"
-            >
-              <q-btn
-                v-if="step === 1"
-                @click="validateAddress()"
-                color="green"
-                :label="'Validar'"
-                rounded
-                size="sm"
-                style="position: relative; bottom: 0px; margin-right: 10px"
-              />
-              <q-btn
-                v-if="step > 1"
-                rounded
-                color="primary"
-                size="sm"
-                @click="
-                  Object.keys(costs).length === 0
-                    ? (step = 1)
-                    : $refs.stepper.previous()
-                "
-                label="Atrás"
-                style="position: relative; bottom: 0px; margin-right: 10px"
-                class="q-ml-sm"
-              />
-              <q-btn
-                v-if="step === 3 && (((editCosts ? +deliveryCostEdited : costs.costo_cliente) +
-                      +subtotal) < 30000)"
-                @click="createOrder()"
-                color="green"
-                :label="'Crear'"
-                rounded
-                size="sm"
-                :disabled="step === 3 && verifyForm"
-              />
+            <q-stepper-navigation style="display: flex; justify-content: center">
+              <q-btn v-if="step === 1" @click="validateAddress()" color="green" :label="'Validar'" rounded size="sm"
+                style="position: relative; bottom: 0px; margin-right: 10px" />
+              <q-btn v-if="step > 1" rounded color="primary" size="sm" @click="
+                Object.keys(costs).length === 0
+                  ? (step = 1)
+                  : $refs.stepper.previous()
+              " label="Atrás" style="position: relative; bottom: 0px; margin-right: 10px" class="q-ml-sm" />
+              <q-btn v-if="step === 3 && (((editCosts ? +deliveryCostEdited : costs.costo_cliente) +
+              +subtotal) < 30000)" @click="createOrder()" color="green" :label="'Crear'" rounded size="sm"
+                :disabled="step === 3 && verifyForm" />
 
-              <q-btn
-                v-if="step === 2"
-                @click="confirm()"
-                color="green"
-                :label="'Confirmar'"
-                rounded
-                size="sm"
-                style="position: relative; bottom: 0px; margin-right: 10px"
-              />
+              <q-btn v-if="step === 2" @click="confirm()" color="green" :label="'Confirmar'" rounded size="sm"
+                style="position: relative; bottom: 0px; margin-right: 10px" />
             </q-stepper-navigation>
           </template>
         </q-stepper>
@@ -578,7 +401,7 @@ export default {
           direccion2:
             this.direccion2 !== null
               ? this.direccion2.charAt(0).toUpperCase() +
-                this.direccion2.slice(1)
+              this.direccion2.slice(1)
               : "",
           comuna: this.comuna
         },
@@ -589,18 +412,18 @@ export default {
         uber: {
           es_uber: true
         },
-        nota: !this.notes ? '' :this.notes.replaceAll("\n", ".-"),
+        nota: !this.notes ? '' : this.notes.replaceAll("\n", ".-"),
         metodo_pago: this.metodo_pago,
         correo: this.email,
         tiempos:
           this.metodo_pago !== "Pago Online" &&
-          this.metodo_pago !== "Transferencia" &&
-          this.metodo_pago !== "Seleccionar..."
+            this.metodo_pago !== "Transferencia" &&
+            this.metodo_pago !== "Seleccionar..."
             ? {
-                pickup_ready_dt: +this.newTime,
-                pickup_deadline_dt: +this.newTime + 15,
-                delivery_type: "Uber"
-              }
+              pickup_ready_dt: +this.newTime,
+              pickup_deadline_dt: +this.newTime + 15,
+              delivery_type: "Uber"
+            }
             : null,
         costo_delivery: this.editCosts
           ? +this.deliveryCostEdited
@@ -838,8 +661,41 @@ export default {
         let place = this.autocomplete.getPlace();
         this.isGoogleAddress = true;
         this.direccion = "";
-        this.direccion = place.name + ", " + place.vicinity;
-        this.comuna = place.vicinity;
+        this.comuna = "";
+        let pais = "";
+        let comuna1 = "";
+        let comuna2 = "";
+        let number = "";
+        let route = "";
+        /* this.direccion = place.name + ", " + place.vicinity;
+        this.comuna = place.vicinity; */
+        place.address_components.forEach(address => {
+          address.types.forEach(type => {
+            if (type == "route") {
+              route = address.short_name;
+            }
+            else if (type == "street_number") {
+              number = address.short_name;
+            }
+            else if (type == "locality") {
+              comuna1 = address.short_name;
+            }
+            else if (type == "administrative_area_level_3") {
+              comuna2 = address.short_name;
+            }
+            else if (type == "country") {
+              pais = address.long_name;
+            }
+          });
+        });
+        if (comuna1 != "") {
+          this.direccion = route + " " + number + ", " + comuna1;
+          this.comuna = comuna1;
+        }
+        else if (comuna2 != "") {
+          this.direccion = route + " " + number + ", " + comuna2;
+          this.comuna = comuna2
+        };
       });
     }
   }
@@ -873,6 +729,7 @@ export default {
   flex-direction: column;
   align-items: center;
 }
+
 .pac-container {
   box-sizing: content-box;
   padding-right: 4px;
