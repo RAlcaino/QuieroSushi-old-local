@@ -409,6 +409,7 @@
       </div>
     </q-drawer>
     <q-page-container class="bg-white">
+      <panel-migration-notice></panel-migration-notice>
       <template
         v-if="
           getStoreLocals('ACTIVE').length > 1 &&
@@ -557,6 +558,7 @@ import SecureLS from "secure-ls";
 import ModalOrderCanceled from "src/components/modals/ModalOrderCanceled.vue";
 import ModalNotification from "src/components/modals/ModalNotification.vue";
 import ModalNewOwnOrder from "src/components/modals/ModalNewOwnOrder.vue";
+import PanelMigrationNotice from "src/components/PanelMigrationNotice.vue";
 
 export default {
   inject: [
@@ -579,7 +581,8 @@ export default {
     ModalStatusOrder,
     ModalOrderCanceled,
     ModalNotification,
-    ModalNewOwnOrder
+    ModalNewOwnOrder,
+    PanelMigrationNotice
   },
   created() {
     this.updateTime();
