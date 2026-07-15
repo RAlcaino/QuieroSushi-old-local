@@ -1,65 +1,52 @@
 import { register } from "register-service-worker";
-import { Notify } from "quasar";
-import {
-  Loading,
-  // optional!, for example below
-  // with custom spinner
-  QSpinnerGears,
-} from "quasar";
+import { Loading, QSpinnerGears } from "quasar";
 
 const loading = Loading;
-// The ready(), registered(), cached(), updatefound() and updated()
-// events passes a ServiceWorkerRegistration instance in their arguments.
-// ServiceWorkerRegistration: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration
+let refreshing = false;
+
+function reloadForUpdate() {
+  if (refreshing) {
+    return;
+  }
+
+  refreshing = true;
+  window.location.reload();
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.addEventListener("controllerchange", reloadForUpdate);
+}
 
 register(process.env.SERVICE_WORKER_FILE, {
-  // The registrationOptions object will be passed as the second argument
-  // to ServiceWorkerContainer.register()
-  // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register#Parameter
-
-  // registrationOptions: { scope: './' },
-
-  ready(registration) {
-    console.log("Service worker is active.");
+  ready() {
     loading.hide();
+    console.log("Service worker is active.");
   },
 
   registered(registration) {
-    console.log("Service worker has been registered.");
     loading.hide();
+    console.log("Service worker has been registered.");
+
+    // Buscar nueva versión en cada carga de la app
+    registration.update();
   },
 
-  cached(registration) {
+  cached() {
     console.log("Content has been cached for offline use.");
   },
 
-  updatefound(registration) {
+  updatefound() {
     console.log("New content is downloading!");
-    try {
-      registration.update();
-      loading.show({
-        spinner: QSpinnerGears,
-        message: "Espere un momento...",
-      });
-    } catch (err) {
-      console.err("SW update failed:", err);
-    }
+    loading.show({
+      spinner: QSpinnerGears,
+      message: "Actualizando panel..."
+    });
   },
 
-  updated(registration) {
+  updated() {
     loading.hide();
-    Notify.create({
-      message: "Es necesario actualizar la página",
-      icon: "info",
-      color: "blue",
-      textColor: "white",
-      position: "top",
-      timeout: 1500,
-      onDismiss() {
-        location.reload(true);
-      },
-    });
-    console.log("New content is available; please refresh!.");
+    console.log("New content is available; reloading.");
+    reloadForUpdate();
   },
 
   offline() {
@@ -69,6 +56,7 @@ register(process.env.SERVICE_WORKER_FILE, {
   },
 
   error(err) {
+    loading.hide();
     console.error("Error during service worker registration:", err);
-  },
+  }
 });

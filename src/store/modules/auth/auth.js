@@ -1,3 +1,17 @@
+import {
+  applyPanelBlock,
+  resolveBlockReason,
+  shouldShowBlockModal,
+  hasMigrationBlockedLocals
+} from "src/utils/applyPanelBlock";
+import { getPanelBlockConfig } from "src/config/panelBlock";
+
+const getBlockUserContext = state => ({
+  userId: state.user.id,
+  role: state.user.role,
+  godMode: state.godMode
+});
+
 const state = {
   authenticated: false,
   godMode: false,
@@ -15,6 +29,7 @@ const state = {
     locals: [],
     qdLocals: [],
     debt: false,
+    blockReason: "none",
     notifications: []
   },
   availableMenuOptions: [],
@@ -41,8 +56,28 @@ const mutations = {
     state.user.id = payload.id;
     state.user.email = payload.email;
     state.user.role = payload.role.name;
-    state.user.locals = payload.locals;
-    state.user.qdLocals = payload.qdLocals;
+
+    const blockedData = applyPanelBlock(
+      payload.locals || [],
+      payload.qdLocals || [],
+      payload.email,
+      {
+        userId: payload.id,
+        role: payload.role.name
+      }
+    );
+
+    state.user.locals = blockedData.locals;
+    state.user.qdLocals = blockedData.qdLocals;
+    state.user.blockReason = resolveBlockReason(
+      blockedData.locals,
+      blockedData.isMigrationBlock
+    );
+    state.user.debt = shouldShowBlockModal(
+      state.user.blockReason,
+      blockedData.locals
+    );
+
     let date = new Date();
     date.setMinutes(date.getMinutes() + 5);
     let currentHour = date.getHours();
@@ -53,11 +88,7 @@ const mutations = {
     state.nextUpdateTime.currentMinute = currentMinute;
     state.nextUpdateTime.currentSecond = currentSecond;
 
-    let locals = [...payload.locals];
-
-    if (locals.some(item => item.localStatus === "bloqueado")) {
-      state.user.debt = true;
-    }
+    let locals = [...blockedData.locals];
 
     if (payload.locals.length > 1) {
       state.currentLocal.id = -1;
@@ -87,6 +118,7 @@ const mutations = {
     state.user.role = "";
     state.user.locals = [];
     state.user.debt = false;
+    state.user.blockReason = "none";
     state.user.notifications = [];
 
     state.token = "";
@@ -125,10 +157,59 @@ const mutations = {
     state.installPromptEvent = payload;
   },
   setLocals(state, payload) {
-    state.user.locals = payload;
+    const blockedData = applyPanelBlock(
+      payload || [],
+      state.user.qdLocals || [],
+      state.user.email,
+      getBlockUserContext(state)
+    );
+
+    state.user.locals = blockedData.locals;
+    state.user.blockReason = resolveBlockReason(
+      blockedData.locals,
+      blockedData.isMigrationBlock
+    );
+    state.user.debt = shouldShowBlockModal(
+      state.user.blockReason,
+      blockedData.locals
+    );
   },
   setQDLocals(state, payload) {
-    state.user.qdLocals = payload;
+    const blockedData = applyPanelBlock(
+      state.user.locals || [],
+      payload || [],
+      state.user.email,
+      getBlockUserContext(state)
+    );
+
+    state.user.qdLocals = blockedData.qdLocals;
+    state.user.blockReason = resolveBlockReason(
+      blockedData.locals,
+      blockedData.isMigrationBlock
+    );
+    state.user.debt = shouldShowBlockModal(
+      state.user.blockReason,
+      blockedData.locals
+    );
+  },
+  reapplyPanelBlock(state) {
+    const blockedData = applyPanelBlock(
+      state.user.locals || [],
+      state.user.qdLocals || [],
+      state.user.email,
+      getBlockUserContext(state)
+    );
+
+    state.user.locals = blockedData.locals;
+    state.user.qdLocals = blockedData.qdLocals;
+    state.user.blockReason = resolveBlockReason(
+      blockedData.locals,
+      blockedData.isMigrationBlock
+    );
+    state.user.debt = shouldShowBlockModal(
+      state.user.blockReason,
+      blockedData.locals
+    );
   },
   setToken(state, payload) {
     state.token = payload;
@@ -200,6 +281,18 @@ const mutations = {
     state.serverTime = payload;
   },
   setDebt(state, payload) {
+    if (!payload && state.user.blockReason === "migration") {
+      const locals = state.user.locals || [];
+      const panelBlock = getPanelBlockConfig();
+
+      if (
+        panelBlock.allowClose === false &&
+        hasMigrationBlockedLocals(locals)
+      ) {
+        return;
+      }
+    }
+
     state.user.debt = payload;
   },
   setNotifications(state, payload) {
@@ -312,7 +405,9 @@ const sortAndFilter = locals => {
     return 0;
   });
 
-  let result = locals.filter(item => item.localStatus === "normal");
+  let result = locals.filter(
+    item => item.localStatus === "normal" || item._panelMigrationBlock === true
+  );
 
   if (result.length === 0) {
     return locals;

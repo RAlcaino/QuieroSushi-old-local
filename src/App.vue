@@ -8,6 +8,7 @@
 import jwt_decode from "jwt-decode";
 import SecureLS from "secure-ls";
 import $ from "jquery";
+import { loadPanelBlockConfig } from "src/config/panelBlock";
 
 export default {
   name: "App",
@@ -40,6 +41,8 @@ export default {
   },
   async mounted() {
     console.log("app mounted");
+    await loadPanelBlockConfig();
+    this.$store.commit("auth/reapplyPanelBlock");
     this.init();
   },
   data() {
@@ -193,6 +196,7 @@ export default {
             name: item.name,
             cartStatus: item.cartStatus,
             localStatus: item.localStatus,
+            _panelMigrationBlock: item._panelMigrationBlock,
             preparationTime: item.preparationTime,
             deliveryTime: item.deliveryTime
           };
@@ -203,7 +207,10 @@ export default {
       if (option === "ALL") {
         return locals;
       } else if (option === "ACTIVE") {
-        return locals.filter(item => item.localStatus === "normal");
+        return locals.filter(
+          item =>
+            item.localStatus === "normal" || item._panelMigrationBlock === true
+        );
       }
     },
     getStoreQDLocals(option) {
@@ -218,6 +225,7 @@ export default {
             name: item.name,
             cartStatus: item.cartStatus,
             localStatus: item.localStatus,
+            _panelMigrationBlock: item._panelMigrationBlock,
             preparationTime: item.preparationTime,
             deliveryTime: item.deliveryTime,
             direccion: item.direccion
@@ -229,7 +237,10 @@ export default {
       if (option === "ALL") {
         return locals;
       } else if (option === "ACTIVE") {
-        return locals.filter(item => item.localStatus === "normal");
+        return locals.filter(
+          item =>
+            item.localStatus === "normal" || item._panelMigrationBlock === true
+        );
       }
     },
     scrollTop() {

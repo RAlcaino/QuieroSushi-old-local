@@ -168,11 +168,7 @@
           style="font-size: 11px
         !important"
           @click="save(2)"
-          :disable="
-            this.$store.getters['auth/getDataLocals'].every(
-              item => item.localStatus === 'bloqueado'
-            )
-          "
+          :disable="getStoreLocals('ACTIVE').length === 0"
         />
         <q-btn
           rounded

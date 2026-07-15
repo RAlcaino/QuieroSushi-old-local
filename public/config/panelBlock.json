@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "allowClose": false,
+  "allowedLocalIds": [],
+  "allowedQdLocalIds": [],
+  "allowedEmails": [],
+  "blockAllAfter": "2026-07-07T08:00:00-04:00",
+  "newPanelUrl": "https://local.qsushi.cl",
+  "finalPanelUrl": "https://local.quierosushi.cl",
+  "supportWhatsApp": "56983916149",
+  "supportWhatsAppMessage": "Hola, no tengo acceso a mi correo registrado y necesito actualizarlo para usar el nuevo panel."
+}

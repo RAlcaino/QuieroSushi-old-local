@@ -7,6 +7,7 @@ module.exports = function (ctx) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
     boot: [
+      'panelBlock',
       'i18n',
       'axios',
       'apex',
@@ -110,7 +111,18 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
-      workboxOptions: { skipWaiting: true, clientsClaim: true }, // only for GenerateSW
+      workboxOptions: {
+        skipWaiting: true,
+        clientsClaim: true,
+        // panelBlock.json se edita en servidor sin rebuild; no precachear
+        exclude: [/config\/.*\.json$/],
+        runtimeCaching: [
+          {
+            urlPattern: /\/config\/.*\.json$/,
+            handler: 'NetworkOnly'
+          }
+        ]
+      },
       manifest: {
         name: 'QuieroSushi',
         short_name: 'QuieroSushi',

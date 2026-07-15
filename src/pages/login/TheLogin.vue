@@ -150,7 +150,6 @@ export default {
             availableMenuOptions: response.data.result.availableMenuOptions
           };
           this.bus.$emit("login", data);
-          sessionStorage.setItem("panel-migration-pending", "1");
           this.hideLoading();
 
           if (response.data.result.locals.length === 0) {
